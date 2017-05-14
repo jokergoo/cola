@@ -1,0 +1,73 @@
+
+
+```{r}
+suppressPackageStartupMessages(source("/home/guz/project/development/cola/load.R"))
+```
+
+```{r}
+data = read.table("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/unifiedScaled.txt", 
+	header = TRUE, row.names = 1, check.names = FALSE)
+data = as.matrix(data)
+
+subtype = read.table("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/TCGA_unified_CORE_ClaNC840.txt", 
+	sep = "\t", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE)
+subtype = structure(unlist(subtype[1, -(1:2)]), names = colnames(subtype)[-(1:2)])
+
+data = data[, names(subtype)]
+dim(data)
+subtype
+```
+
+```{r}
+ALL_TOP_VALUE_METHOD()
+ALL_PARTITION_METHOD()
+```
+
+```{r, eval = FALSE}
+res_list = run_all(data, top_n = c(2000, 4000, 6000), k = 2:6, known = subtype, mc.cores = 4)
+```
+
+```{r}
+res_list = readRDS("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/TCGA_subgroup_p0.8.rds")
+res_list
+```
+
+```{r}
+collect_plots(res_list, fun = plot_ecdf)
+collect_plots(res_list, k = 3, fun = consensus_heatmap)
+collect_plots(res_list, k = 3, fun = membership_heatmap)
+```
+
+```{r}
+top_rows_overlap(res_list, top_n = 2000)
+top_rows_overlap(res_list, top_n = 4000)
+top_rows_overlap(res_list, top_n = 6000)
+top_rows_overlap(res_list, top_n = 2000, show_heatmap = TRUE)
+top_rows_overlap(res_list, top_n = 2000, type = "correspondance")
+```
+
+```{r}
+res = get_single_run(res_list, top_method = "AAC", partition_method = "skmeans")
+res
+```
+
+```{r}
+collect_plots(res)
+```
+
+```{r}
+select_k(res)
+consensus_heatmap(res, k = 3)
+membership_heatmap(res, k = 3)
+get_signatures(res, k = 3)
+```
+
+```{r}
+get_class(res, k = 3)
+```
+
+```{r}
+collect_classes(res_list)
+collect_classes(res)
+```
+

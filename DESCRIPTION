@@ -1,0 +1,19 @@
+Package: cola
+Type: Package
+Title: Unsupervised subgroup classification based on consensus clustering
+Version: 0.99.0
+Date: 2017-4-14
+Author: Zuguang Gu
+Maintainer: Zuguang Gu <z.gu@dkfz.de>
+Depends: R (>= 3.3.0)
+Imports: ComplexHeatmap, matrixStats, GetoptLong, circlize, clue,
+  parallel, RColorBrewer, cluster, NMF, mclust, e1071, skmeans, cclust,
+  digest, png, ggplots, ggplot2, bioDist, pyry
+Suggests: venneuler
+VignetteBuilder: knitr
+Description: Parallel compare methods for subgroup classification
+URL: https://github.com/jokergoo/subgroup
+License: GPL (>= 2)
+Packaged: 2017-4-14 00:00:00 UTC; Administrator
+Repository: CRAN
+Date/Publication: 2017-4-14 00:00:00
