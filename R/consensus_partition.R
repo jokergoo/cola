@@ -378,7 +378,7 @@ membership_heatmap = function(res, k, show_legend = TRUE,
 	return(invisible(m3))
 }
 
-top_rows_overlap = function(res_list, top_n = 2000, type = c("venn", "correspondance"), show_heatmap = FALSE) {
+top_rows_overlap = function(res_list, top_n = 2000, type = c("venn", "correspondance")) {
 
 	all_value_list = res_list$list[[1]]$.env$all_value_list
 
@@ -391,16 +391,22 @@ top_rows_overlap = function(res_list, top_n = 2000, type = c("venn", "correspond
 	} else if(type == "correspondance") {
 		correspond_between_rankings(all_value_list, top_n = top_n)
 	}
+}
 
-    if(show_heatmap) {
-    	for(i in seq_along(lt)) {
-			if(dev.interactive()) {
-				readline(prompt = "press enter to load next plot: ")
-			}
-    		mat = res_list$.env$data[lt[[i]], ]
-    		draw(Heatmap(t(scale(t(mat))), show_row_names = FALSE, column_title = qq("top @{length(lt[[i]])} rows of @{res_list$top_method[i]}")))
-    	}
-    }
+top_rows_heatmap = function(res_list, top_n = 2000) {
+	
+	all_value_list = res_list$list[[1]]$.env$all_value_list
+    lt = lapply(all_value_list, function(x) order(x, decreasing = TRUE)[1:top_n])
+    
+    for(i in seq_along(lt)) {
+		if(dev.interactive()) {
+			readline(prompt = "press enter to load next plot: ")
+		}
+		mat = res_list$.env$data[lt[[i]], ]
+		draw(Heatmap(t(scale(t(mat))), name = "scaled_expr", show_row_names = FALSE, 
+			column_title = qq("top @{length(lt[[i]])} rows of @{res_list$top_method[i]}"),
+			show_row_dend = FALSE, show_column_name = FALSE))
+	}
 }
 
 venn_euler = function(lt, ...) {
@@ -416,4 +422,34 @@ venn_euler = function(lt, ...) {
         paste(colnames(category)[as.logical(x)], collapse = "&")
     })
     plot(getFromNamespace("venneuler", "venneuler")(set), ...)
+}
+
+dimension_reduction = function(res, k, method = c("mds", "tsne"),
+	silhouette_cutoff = 0.5, remove = FALSE) {
+
+	method = match.arg(method)
+	data = res$.env$data
+
+	ik = which(res$k == k)
+
+	class_df = get_class(res, k)
+	class_color = res$object_list[[ik]]$class_color
+
+	l = class_df$silhouette >= silhouette_cutoff
+	if(method == "mds") {
+		loc = cmdscale(dist(t(data)))
+	} else if(method == "tsne") {
+		loc = Rtsne(as.matrix(t(data)))$Y	
+	}
+
+	colnames(loc) = c("P1", "P2")
+	loc = as.data.frame(loc)
+
+	if(remove) {
+		plot(loc[l, ], pch = 16, col = class_color[as.character(class_df$class[l])],
+			cex = 1)
+	} else {
+		plot(loc, pch = ifelse(l, 16, 4), col = class_color[as.character(class_df$class)],
+			cex = ifelse(l, 1, 0.7))
+	}
 }

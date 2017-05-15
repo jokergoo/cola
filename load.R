@@ -20,6 +20,7 @@ library(gplots)
 library(ggplot2)
 library(bioDist)
 library(pryr)
+library(Rtsne)
 
 Rfiles = list.files("~/project/development/cola/R", full.names = TRUE)
 for(rf in Rfiles) {

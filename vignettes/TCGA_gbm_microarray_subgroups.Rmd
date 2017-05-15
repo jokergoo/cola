@@ -15,13 +15,17 @@ subtype = structure(unlist(subtype[1, -(1:2)]), names = colnames(subtype)[-(1:2)
 
 data = data[, names(subtype)]
 dim(data)
-subtype
+table(subtype)
 ```
+
+Get all supported top methods and partition methods:
 
 ```{r}
 ALL_TOP_VALUE_METHOD()
 ALL_PARTITION_METHOD()
 ```
+
+Run clustering for all combination of methods in batch:
 
 ```{r, eval = FALSE}
 res_list = run_all(data, top_n = c(2000, 4000, 6000), k = 2:6, known = subtype, mc.cores = 4)
@@ -32,28 +36,50 @@ res_list = readRDS("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/TCGA_subgroup
 res_list
 ```
 
-```{r}
+Collect all plots for a k:
+
+```{r, fig.width = 14, fig.height = 14*length(ALL_TOP_VALUE_METHOD())/length(ALL_PARTITION_METHOD())}
 collect_plots(res_list, fun = plot_ecdf)
 collect_plots(res_list, k = 3, fun = consensus_heatmap)
 collect_plots(res_list, k = 3, fun = membership_heatmap)
+collect_plots(res_list, k = 3, fun = get_signatures)
 ```
 
-```{r}
+Overlap of top rows in different top methods:
+
+```{r, fig.width = 14, fig.height = 14/3}
+par(mfrow = c(1, 3))
 top_rows_overlap(res_list, top_n = 2000)
 top_rows_overlap(res_list, top_n = 4000)
 top_rows_overlap(res_list, top_n = 6000)
-top_rows_overlap(res_list, top_n = 2000, show_heatmap = TRUE)
+```
+
+Also visualize the correspondance of rankings between different scoreing methods:
+
+```{r, fig.wdith = 14, fig.height = 8}
 top_rows_overlap(res_list, top_n = 2000, type = "correspondance")
 ```
+
+Heatmaps for the top rows:
+
+```{r}
+top_rows_heatmap(res_list, top_n = 2000)
+```
+
+Get clustering in a specified combination of top method and partition method:
 
 ```{r}
 res = get_single_run(res_list, top_method = "AAC", partition_method = "skmeans")
 res
 ```
 
-```{r}
+Collect all plots
+
+```{r, fig.width = 14, fig.height = 14*4/5}
 collect_plots(res)
 ```
+
+plots:
 
 ```{r}
 select_k(res)
@@ -62,12 +88,24 @@ membership_heatmap(res, k = 3)
 get_signatures(res, k = 3)
 ```
 
-```{r}
-get_class(res, k = 3)
-```
+Get classifications
 
 ```{r}
-collect_classes(res_list)
+class_df = get_class(res, k = 3)
+head(class_df)
+```
+
+MDS or T-sne plots:
+
+```{r}
+dimension_reduction(res, k = 3)
+dimension_reduction(res, k = 3, method = "tsne")
+```
+
+Consistency of classes.
+
+```{r}
+collect_classes(res_list, k = 3)
 collect_classes(res)
 ```
 
