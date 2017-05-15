@@ -1,4 +1,8 @@
- 
+
+
+#' A bottle of cola
+#'
+#' @export
 cola = function() {
 	cat(
 "        _  

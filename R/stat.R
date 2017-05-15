@@ -1,12 +1,36 @@
 
-# == title
-# Calculate AAC value for each column in the matrix
-#
-# == param
-# -mat a numeric matrix, AAC is calculated for each column
-# -cor_method pass to `stats::cor`
-# -min_cor minimal absolute correlation
-#
+
+#' AAC score
+#'
+#' @param mat a numeric matrix. AAC score is calculated by columns 
+#' @param cor_method pass to `stats::cor()`
+#' @param min_cor minimal absolute correlation
+#' 
+#' @details 
+#' AAC score for a given item is the area above the curve of the curmulative 
+#' distribution of the absolute correlation to all other items.
+#'
+#' @return A vector of AAC scores
+#' @export
+#' @import stats cor ecdf
+#'
+#' @examples
+#' set.seed(12345)
+#' require(matrixStats)
+#' nr1 = 100
+#' mat1 = matrix(rnorm(100*nr1), nrow = nr1)
+#' 
+#' nr2 = 10
+#' require(mvtnorm)
+#' sigma = matrix(0.8, nrow = nr2, ncol = nr2); diag(sigma) = 1
+#' mat2 = t(rmvnorm(100, mean = rep(0, nr2), sigma = sigma))
+#' 
+#' nr3 = 50
+#' sigma = matrix(0.5, nrow = nr3, ncol = nr3); diag(sigma) = 1
+#' mat3 = t(rmvnorm(100, mean = rep(0, nr3), sigma = sigma))
+#' 
+#' mat = t(rbind(mat1, mat2, mat3))
+#' AAC_cor(t(mat))
 AAC_cor = function(mat, cor_method = "pearson", min_cor = 0.2) {
 	n = ncol(mat)
 	v = numeric(n)

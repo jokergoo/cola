@@ -4,6 +4,8 @@
 suppressPackageStartupMessages(source("/home/guz/project/development/cola/load.R"))
 ```
 
+Data is from https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/.
+
 ```{r}
 data = read.table("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/unifiedScaled.txt", 
 	header = TRUE, row.names = 1, check.names = FALSE)
@@ -56,7 +58,7 @@ top_rows_overlap(res_list, top_n = 6000)
 
 Also visualize the correspondance of rankings between different scoreing methods:
 
-```{r, fig.wdith = 14, fig.height = 8}
+```{r, fig.width = 14, fig.height = 8}
 top_rows_overlap(res_list, top_n = 2000, type = "correspondance")
 ```
 

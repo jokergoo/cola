@@ -1,4 +1,36 @@
 
+#' Get signature rows
+#'
+#' @param res A `consensus_partition` class object. The object can be returned
+#'        from `get_single_run()`.
+#' @param k number of partitions
+#' @param silhouette_cutoff cutoff for silhouette values. Columns with values 
+#'        less than it are not used for finding signature rows.
+#' @param fdr_cutoff cutoff for fdr of the difference between subgroups.
+#' @param scale_rows whether apply row scaling when making the heatmap.
+#' @param annotation a data frame which contains annotation of columns.
+#' @param annotation_color colors for the annotations.
+#' @param show_legend whether draw the legends on the heatmap.
+#' @param ... other arguments
+#' 
+#' @details 
+#' Basically the function apply test for the difference of subgroups in every
+#' row. Also, to call it a signature for a given subgroup, the values in the
+#' corresponding subgroup should have the highest mean value compared to all
+#' other subgroups. The minimal p-value compared to all other subgroups is taken
+#' as the p-value of the row and used for FDR calculation.
+#'
+#' @return 
+#' A list of three elements:
+#' -`mat` the matrix for the signatures
+#' -`fdr` FDR for rows
+#' -`gropu` subgroups that the rows are significant for
+#' 
+#' @export
+#' @import GetoptLong
+#' @import stats
+#' @import ComplexHeatmap
+#' @import circlize
 get_signatures = function(res, k,
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = 0.05, 

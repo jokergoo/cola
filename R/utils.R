@@ -4,14 +4,6 @@ strrep = function(x, times) {
 	return(paste0(x, collapse = ""))
 }
 
-# == title
-# Adjust class IDs
-#
-# == param
-# -class a vector of class ID
-# -reference a vector of reference class ID
-# -full_set full set of class IDs
-#
 relabel_class = function(class, reference, full_set = unique(c(reference, class))) {
 	class = as.character(class)
 	reference = as.character(reference)

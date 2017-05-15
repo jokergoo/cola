@@ -1,11 +1,17 @@
 
-# == title
-# Run jobs for all paramters
-#
-# == param
-# -data data matrix
-# -top_method top_method
-# -partition_method
+#' Run subgroup classification in a batch
+#'
+#' @param data 
+#' @param top_method 
+#' @param partition_method 
+#' @param mc.cores 
+#' @param get_signatures 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 run_all = function(data, top_method = ALL_TOP_VALUE_METHOD(), 
 	partition_method = ALL_PARTITION_METHOD(), 
 	mc.cores = 1, get_signatures = TRUE, ...) {
