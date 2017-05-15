@@ -3,7 +3,32 @@ add_transparency = function (col, transparency = 0) {
     rgb(t(col2rgb(col)/255), alpha = 1 - transparency)
 }
 
-correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "", col1 = 1, col2 = 2, top_n = length(x1)) {
+#' Correspond two rankings
+#'
+#' @param x1 a vector of scores calculated by one metric.
+#' @param x2 a vector of scores calculated by another metric.
+#' @param name1 name of the first metric.
+#' @param name2 name of the second metric.
+#' @param col1 color of the lines for the first metric.
+#' @param col2 color of the lines for the second metric.
+#' @param top_n top n elements to visualize
+#' 
+#' @details
+#' In `x1` and `x2`, the i^{th} element is the same object but with different 
+#' scores under different metrics.
+#'
+#' @export
+#' @import grid
+#'
+#' @examples
+#' require(matrixStats)
+#' mat = matrix(runif(1000), ncol = 10)
+#' x1 = rowSds(mat)
+#' x2 = rowMads(mat)
+#' correspond_between_two_rankings(x1, x2, name1 = "sd", name2 = "mad", top_n = 20)
+correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "", 
+	col1 = 1, col2 = 2, top_n = length(x1)) {
+	
 	r1 = rank(x1, ties.method = "random")
 	r2 = rank(x2, ties.method = "random")
 
@@ -35,6 +60,24 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "", col1 
 	upViewport()
 }
 
+#' Correspond between a list of rankings
+#'
+#' @param lt a list of scores under different metrics.
+#' @param top_n top n elements to visualize.
+#' @param col colors
+#'
+#' @export
+#' @import grid
+#' @import RColorBrewer
+#'
+#' @examples
+#' require(matrixStats)
+#' mat = matrix(runif(1000), ncol = 10)
+#' x1 = rowSds(mat)
+#' x2 = rowMads(mat)
+#' x3 = rowSds(mat)/rowMeans(mat)
+#' correspond_between_rankings(lt = list(sd = x1, mad = x2, vc = x3), 
+#'     top_n = 20)
 correspond_between_rankings = function(lt, top_n = length(lt[[1]]), 
 	col = brewer.pal(length(lt), "Set1")) {
 

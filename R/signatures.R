@@ -2,7 +2,7 @@
 #' Get signature rows
 #'
 #' @param res A `consensus_partition` class object. The object can be returned
-#'        from `get_single_run()`.
+#'        from [get_single_run()].
 #' @param k number of partitions
 #' @param silhouette_cutoff cutoff for silhouette values. Columns with values 
 #'        less than it are not used for finding signature rows.

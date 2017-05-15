@@ -7,13 +7,14 @@ Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.3.0)
 Imports: ComplexHeatmap, matrixStats, GetoptLong, circlize, clue,
-  parallel, RColorBrewer, cluster, NMF, mclust, e1071, skmeans, cclust,
-  digest, png, ggplots, ggplot2, bioDist, pyry
-Suggests: venneuler
-VignetteBuilder: knitr
-Description: Parallel compare methods for subgroup classification
-URL: https://github.com/jokergoo/subgroup
+  parallel, RColorBrewer, cluster, mclust, skmeans, cclust,
+  png, gplots, ggplot2, bioDist, pryr, crayon, NMF, Rtsne
+Suggests: venneuler, mvtnorm
+Description: Parallel compare methods for subgroup classification.
+URL: https://github.com/jokergoo/cola
 License: GPL (>= 2)
 Packaged: 2017-4-14 00:00:00 UTC; Administrator
 Repository: CRAN
+Roxygen: list(markdown = TRUE)
 Date/Publication: 2017-4-14 00:00:00
+RoxygenNote: 6.0.1

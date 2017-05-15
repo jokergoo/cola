@@ -3,7 +3,7 @@
 #' AAC score
 #'
 #' @param mat a numeric matrix. AAC score is calculated by columns 
-#' @param cor_method pass to `stats::cor()`
+#' @param cor_method pass to [stats::cor()]
 #' @param min_cor minimal absolute correlation
 #' 
 #' @details 
@@ -12,7 +12,7 @@
 #'
 #' @return A vector of AAC scores
 #' @export
-#' @import stats cor ecdf
+#' @import stats
 #'
 #' @examples
 #' set.seed(12345)
@@ -67,6 +67,14 @@ PAC = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
 }
 
 
+#' Cophenetic correlation coefficient in all methods
+#'
+#' @param res_list a `run_all` object
+#' @param top_method a vector of top methods
+#' @param partition_method a vector of partition methods
+#'
+#' @export
+#' @import ggplot2
 mean_cophcor = function(res_list, top_method = res_list$top_method, partition_method = res_list$partition_method) {
 	
 	df = data.frame(top_method = character(0), partition_method = character(0), k = numeric(0), mean_cophcor = numeric(0))
@@ -77,11 +85,11 @@ mean_cophcor = function(res_list, top_method = res_list$top_method, partition_me
 	        for(ik in seq_along(res$k)) {
 	        	k = res$k[ik]
 	        	df = rbind(df, data.frame(top_method = top_method[i], partition_method = partition_method[j], k = k, 
-	        		mean_cophcor = cophcor(res$object_list[[ik]]$consensus)))
+	        		cophcor = cophcor(res$object_list[[ik]]$consensus)))
 	        }
 	    }
 	}
 
-	gp = ggplot(df, aes(x = k, y = mean_cophcor)) + geom_line() + geom_point() + facet_grid(top_method ~ partition_method)
+	gp = ggplot(df, aes(x = k, y = cophcor)) + geom_line() + geom_point() + facet_grid(top_method ~ partition_method)
 	print(gp)
 }

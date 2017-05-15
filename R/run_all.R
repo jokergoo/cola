@@ -1,17 +1,24 @@
 
 #' Run subgroup classification in a batch
 #'
-#' @param data 
-#' @param top_method 
-#' @param partition_method 
-#' @param mc.cores 
-#' @param get_signatures 
-#' @param ... 
+#' @param data a numeric matrix where subgroups are found by columns.
+#' @param top_method method which are used to extract top n rows. Allowed methods
+#'        are in [ALL_TOP_METHOD()] and can be self-added by [register_top_value_fun()].
+#' @param partition_method method which are used to do partition on data columns. 
+#'        Allowed methods are in [ALL_PARTITION_METHOD()] and can be self-added 
+#'        by [register_partition_fun()].
+#' @param mc.cores number of cores to use.
+#' @param get_signatures whether to run [get_signatures()] for each partition.
+#' @param ... other arguments passed to [consensus_partition()].
 #'
-#' @return
+#' @return 
+#' a `run_all` class object. Following methods can be used on it: [collect_plots()],
+#' [collect_classes()], [get_class()], [get_single_run()].
+#' 
 #' @export
-#'
-#' @examples
+#' @import GetoptLong
+#' @import parallel
+#' @import pryr
 run_all = function(data, top_method = ALL_TOP_VALUE_METHOD(), 
 	partition_method = ALL_PARTITION_METHOD(), 
 	mc.cores = 1, get_signatures = TRUE, ...) {
@@ -35,7 +42,8 @@ run_all = function(data, top_method = ALL_TOP_VALUE_METHOD(),
 	.env$all_value_list = all_value_list
 
 	.env$data = data
-	res = list(list = list(), top_method = top_method, partition_method = partition_method, .env = .env)
+	res = list(list = list(), top_method = top_method, partition_method = partition_method, 
+		.env = .env)
 	comb = expand.grid(top_method, partition_method, stringsAsFactors = FALSE)
 	comb = comb[sample(nrow(comb), nrow(comb)), ]
 	res$list = mclapply(seq_len(nrow(comb)), function(i) {
@@ -43,7 +51,8 @@ run_all = function(data, top_method = ALL_TOP_VALUE_METHOD(),
 		tm = comb[i, 1]
 		pm = comb[i, 2]
 		qqcat("running classification for @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
-		time_used = system.time(res <- consensus_partition(top_method = tm, partition_method = pm, .env = .env, ...))
+		time_used = system.time(res <- consensus_partition(top_method = tm, 
+			partition_method = pm, .env = .env, ...))
 		mem = pryr::mem_used()
 		attr(res, "system.time") = time_used
 		attr(res, "mem_used") = as.numeric(mem)
@@ -62,13 +71,30 @@ run_all = function(data, top_method = ALL_TOP_VALUE_METHOD(),
 	return(res)
 }
 
+
+#' Print the run_all object
+#'
+#' @param x a `run_all` object
+#' @param ... other arguments
+#' 
+#' @export
+#' @import GetoptLong
 print.run_all = function(x, ...) {
 	qqcat("Top rows are extracted by '@{paste(x$top_method, collapse = ', ')}' methods.\n")
 	qqcat("Subgroups are detected by '@{paste(x$partition_method, collapse = ', ')}' method.\n")
 	qqcat("Number of partitions are tried for k = @{paste(x$list[[1]]$k, collapse = ', ')}\n")
 }
 
-get_single_run = function(res, top_method = "sd", partition_method = "kmeans") {
+#' Get object for a single combination of top method and partition method
+#'
+#' @param res_list object returned from [run_all()].
+#' @param top_method a single string which is used in [run_all()]
+#' @param partition_method a single string which is used in [run_all()]
+#'
+#' @return a `consensus_partition` class object.
+#' @export
+get_single_run = function(res_list, top_method = res_list$top_method[1], 
+	partition_method = res_list$partition_method[1]) {
 	nm = paste0(top_method, ":", partition_method)
-	res$list[[nm]]
+	res_list$list[[nm]]
 }

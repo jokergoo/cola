@@ -1,4 +1,24 @@
 
+#' Consensus partition
+#'
+#' @param data a numeric matrix where subgroups are found by columns.
+#' @param top_method a single top method
+#' @param top_n number of rows with top values
+#' @param partition_method a single partition method
+#' @param k number of partitions. The value is a vector.
+#' @param p_sampling probability of sampling from top n rows.
+#' @param partition_repeat number of repeats for the random sampling.
+#' @param partition_param parameters for the partition method
+#' @param known a known class. If defined, the similarity between the predicted
+#'        classes and the known classes is calculated.
+#' @param .env an environment, internally used.
+#'
+#' @return
+#' a `consensus_partition` class object.
+#' 
+#' @export
+#' @import GetoptLong
+#' @import clue
 consensus_partition = function(data,
 	top_method = "sd",
 	top_n = seq(min(2000, round(nrow(data)*0.2)), min(c(6000, round(nrow(data)*0.6))), length.out = 5),
@@ -163,12 +183,26 @@ consensus_partition = function(data,
 	return(invisible(res))
 }
 
+#' Print the consensus_partition object
+#'
+#' @param x a `consensus_partition` object
+#' @param ... other arguments
+#'
+#' @export
+#' @import GetoptLong
 print.consensus_partition = function(x, ...) {
 	qqcat("top rows are extracted by '@{x$top_method}' method.\n")
 	qqcat("Subgroups are detected by '@{x$partition_method}' method.\n")
 	qqcat("Number of partitionings are tried for k = @{paste(x$k, collapse = ', ')}\n")
 }
 
+
+#' Plot the ecdf of the consensus matrix
+#'
+#' @param res a `consensus_partition` object.
+#' @param ... other arguments.
+#'
+#' @export
 plot_ecdf = function(res, ...) {
 	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), main = "ECDF of consensus matrix", xlab = "p")
 	for(i in 1:length(res$object_list)) {
@@ -179,6 +213,17 @@ plot_ecdf = function(res, ...) {
 	legend("bottomright", pch = 15, legend = paste0("k = ", res$k), col = res$k-1)
 }
 
+
+#' Several plots for determine the optimized number of partitions
+#'
+#' @param res a `consensus_partition` object
+#' @param plot 0: plot all four plots; 1: only the ecdf plot; 2: plot cophenetic 
+#'        correlation coefficient; 3: mean silhouette; 4: proportion increase of 
+#'        the AUC of the ecdf.
+#'
+#' @export
+#' @import graphics
+#' @importFrom NMF cophcor
 select_k = function(res, plot = 0) {
 	op = par(no.readonly = TRUE)
 
@@ -221,6 +266,18 @@ select_k = function(res, plot = 0) {
 	par(op)
 }
 
+#' Heatmap for the consensus matrix
+#'
+#' @param res a `consensus_partition` object.
+#' @param k number of partitions.
+#' @param show_legend whether show heatmap and annotation legends.
+#' @param annotation a data frame with column annotations
+#' @param annotation_color colors for the annotations
+#'
+#' @return
+#' The consensus matrix.
+#' 
+#' @export
 consensus_heatmap = function(res, k, show_legend = TRUE,
 	annotation = data.frame(known = res$known),
 	annotation_color = list(known = res$known_color)) {
@@ -250,7 +307,7 @@ consensus_heatmap = function(res, k, show_legend = TRUE,
 	
 	ht_list = ht_list +	Heatmap(consensus_mat, name = "consensus", show_row_names = FALSE, show_row_dend = FALSE,
 		col = colorRamp2(c(0, 1), c("white", "blue")), row_order = mat_col_od, column_order = mat_col_od,
-		cluster_rows = FALSE, cluster_columns = FALSE, show_column_name = FALSE)
+		cluster_rows = FALSE, cluster_columns = FALSE, show_column_names = FALSE)
 	
 	if(nrow(annotation)) {
 		ht_list = ht_list + rowAnnotation(df = annotation, col = annotation_color, show_annotation_name = TRUE,
@@ -262,10 +319,26 @@ consensus_heatmap = function(res, k, show_legend = TRUE,
 	return(invisible(consensus_mat))
 }
 
+#' General method for get_class
+#'
+#' @param x x
+#' @param ... other arguments
+#' 
+#' @export
 get_class = function(x, ...) {
 	UseMethod("get_class", x)
 }
 
+#' Get class from the consensus_partition object
+#'
+#' @param x a `consensus_parittion` object
+#' @param k number of partitions
+#' @param ... other arguments.
+#'
+#' @return
+#' A data frame with class IDs and other columns.
+#' 
+#' @export
 get_class.consensus_partition = function(x, k, ...) {
 	res = x
 	i = which(res$k == k)
@@ -274,6 +347,19 @@ get_class.consensus_partition = function(x, k, ...) {
 		class = res$object_list[[i]]$classification$class)
 }
 
+#' Get class from the run_all object
+#'
+#' @param x a `run_all` object
+#' @param k number of partitions
+#' @param ... other arguments
+#' 
+#' @details 
+#' The class IDs is re-calculated by merging class IDs from all methods.
+#'
+#' @return
+#' A data frame with class IDs and other columns.
+#' 
+#' @export
 get_class.run_all = function(x, k, ...) {
 	res = x
 	partition_list = NULL
@@ -309,6 +395,18 @@ get_class.run_all = function(x, k, ...) {
 	cbind(as.data.frame(m), class = class)
 }
 
+#' Heatmap of membership of columns in each random sampling
+#'
+#' @param res a `consensus_partition` object
+#' @param k number of partitions.
+#' @param show_legend whether show heatmap and annotation legends.
+#' @param annotation a data frame with column annotations
+#' @param annotation_color colors for the annotations
+#'
+#' @return
+#' The membership matrix.
+#' 
+#' @export
 membership_heatmap = function(res, k, show_legend = TRUE, 
 	annotation = data.frame(known = res$known),
 	annotation_color = list(known = res$known_color)) {
@@ -378,6 +476,13 @@ membership_heatmap = function(res, k, show_legend = TRUE,
 	return(invisible(m3))
 }
 
+#' Overlap of top rows from different top methods
+#'
+#' @param res_list a `run_all` object
+#' @param top_n number of top rows
+#' @param type venn: use venn euler plots; correspondance: use [correspond_between_rankings()].
+#'
+#' @export
 top_rows_overlap = function(res_list, top_n = 2000, type = c("venn", "correspondance")) {
 
 	all_value_list = res_list$list[[1]]$.env$all_value_list
@@ -393,6 +498,13 @@ top_rows_overlap = function(res_list, top_n = 2000, type = c("venn", "correspond
 	}
 }
 
+#' Heatmap for the top rows
+#'
+#' @param res_list a `run_all` object
+#' @param top_n number of top rows
+#'
+#' @export
+#' @import ComplexHeatmap
 top_rows_heatmap = function(res_list, top_n = 2000) {
 	
 	all_value_list = res_list$list[[1]]$.env$all_value_list
@@ -405,10 +517,17 @@ top_rows_heatmap = function(res_list, top_n = 2000) {
 		mat = res_list$.env$data[lt[[i]], ]
 		draw(Heatmap(t(scale(t(mat))), name = "scaled_expr", show_row_names = FALSE, 
 			column_title = qq("top @{length(lt[[i]])} rows of @{res_list$top_method[i]}"),
-			show_row_dend = FALSE, show_column_name = FALSE))
+			show_row_dend = FALSE, show_column_names = FALSE))
 	}
 }
 
+#' Make Venn Euler diagram from a list
+#'
+#' @param lt a list of items
+#' @param ... other arguments
+#'
+#' @export
+#' @importFrom gplots venn
 venn_euler = function(lt, ...) {
 
 	if(!requireNamespace("venneuler")) {
@@ -424,6 +543,18 @@ venn_euler = function(lt, ...) {
     plot(getFromNamespace("venneuler", "venneuler")(set), ...)
 }
 
+#' Visualize columns after dimension reduction
+#'
+#' @param res a `consensus_partition` object
+#' @param k number of partitions
+#' @param method which method to reduce the dimension of the data.
+#' @param silhouette_cutoff cutoff of silhouette. Data points with values less
+#'        than it will be mapped to small points.
+#' @param remove whether to remove columns which have less silhouette values than
+#'        the cutoff.
+#'
+#' @export
+#' @import Rtsne
 dimension_reduction = function(res, k, method = c("mds", "tsne"),
 	silhouette_cutoff = 0.5, remove = FALSE) {
 

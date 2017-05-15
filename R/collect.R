@@ -1,8 +1,30 @@
 
+#' General method for collect_plots
+#'
+#' @param x x
+#' @param ... other arguments 
+#'
+#' @export
 collect_plots = function(x, ...) {
 	UseMethod("collect_plots", x)
 }
 
+
+#' Collect plots from run_all object
+#'
+#' @param x a `run_all` object from `run_all()`.
+#' @param k number of partitions.
+#' @param fun function used to generate plots. Valid functions are [consensus_heatmap()],
+#'        [plot_ecdf()], [membership_heatmap()] and [get_signatures()].
+#' @param top_method a vector of top methods.
+#' @param partition_method a vector of partition methods.
+#' @param ... other arguments passed to corresponding `fun`.
+#'
+#' @export
+#' @import grid
+#' @import png
+#' @import grDevices
+#' @import utils
 collect_plots.run_all = function(x, k = 2, fun = consensus_heatmap,
 	top_method = x$top_method, partition_method = x$partition_method, ...) {
 
@@ -10,7 +32,7 @@ collect_plots.run_all = function(x, k = 2, fun = consensus_heatmap,
 
 	reference_class = NULL
 	grid.newpage()
-	pushViewport(viewport(layout = grid.layout(nr = length(top_method)+1, 
+	pushViewport(viewport(layout = grid.layout(nrow = length(top_method)+1, 
 	    ncol = length(partition_method)+1,
 	    widths = unit.c(2*grobHeight(textGrob("foo")), unit(rep(1, length(partition_method)), "null")),
 	    heights = unit.c(2*grobHeight(textGrob("foo")), unit(rep(1, length(top_method)), "null")))))
@@ -94,6 +116,15 @@ collect_plots.run_all = function(x, k = 2, fun = consensus_heatmap,
 }
 
 
+#' Collect plots from consensus_partition object
+#'
+#' @param x a `consensus_partition` object
+#' @param ... other arguments
+#'
+#' @export
+#' @import grid
+#' @import png
+#'
 collect_plots.consensus_partition = function(x, ...) {
 
 	res = x
@@ -169,10 +200,27 @@ collect_plots.consensus_partition = function(x, ...) {
 }
 
 
+#' General method for collect_classes
+#'
+#' @param x x
+#' @param ... other arguments
+#'
+#' @export
 collect_classes = function(x, ...) {
 	UseMethod("collect_classes", x)
 }
 
+
+#' Collect classes from run_all object
+#'
+#' @param x a `run_all` object returned by [run_all()].
+#' @param k number of partitions
+#' @param top_method a vector of top methods
+#' @param partition_method a vector of partition methods
+#' @param ... other arguments.
+#'
+#' @export
+#' @import ComplexHeatmap
 collect_classes.run_all = function(x, k, 
 	top_method = x$top_method, partition_method = x$partition_method, ...) {
 
@@ -241,6 +289,13 @@ collect_classes.run_all = function(x, k,
 	})
 }
 
+#' Collect classes from consensus_partition object
+#'
+#' @param x a `consensus_partition` object
+#' @param ... other arguments.
+#'
+#' @export
+#' @import ComplexHeatmap
 collect_classes.consensus_partition = function(x, ...) {
 	res = x
 	all_k = res$k
@@ -265,5 +320,4 @@ collect_classes.consensus_partition = function(x, ...) {
 	}
 	
     draw(ht_list,gap = unit(gap, "mm"), row_order = do.call("order", as.data.frame(class_mat)))
-    
 }
