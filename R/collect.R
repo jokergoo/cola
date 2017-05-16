@@ -148,7 +148,7 @@ collect_plots.consensus_partition = function(x, ...) {
 
 	file_name = tempfile()
     png(file_name)
-    oe = try(collect_classes(res))
+    oe = try(collect_classes(res, show_legend = FALSE))
     dev.off()
     if(!inherits(oe, "try-error")) {
         pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 5))
@@ -292,11 +292,12 @@ collect_classes.run_all = function(x, k,
 #' Collect classes from consensus_partition object
 #'
 #' @param x a `consensus_partition` object
+#' @param show_legend whether show legend.
 #' @param ... other arguments.
 #'
 #' @export
 #' @import ComplexHeatmap
-collect_classes.consensus_partition = function(x, ...) {
+collect_classes.consensus_partition = function(x, show_legend = TRUE, ...) {
 	res = x
 	all_k = res$k
 
@@ -312,12 +313,14 @@ collect_classes.consensus_partition = function(x, ...) {
 		}
 		previous_class = class
 		ht_list = ht_list + Heatmap(membership, col = colorRamp2(c(0, 1), c("white", "red")),
-			show_row_names = FALSE, cluster_columns = FALSE, cluster_rows = FALSE, show_heatmap_legend = FALSE) + 
+			show_row_names = FALSE, cluster_columns = FALSE, cluster_rows = FALSE, show_heatmap_legend = i == 1) + 
 			Heatmap(class, col = res$object_list[[i]]$class_color, 
-				show_row_names = FALSE, show_heatmap_legend = FALSE, name = paste(all_k[i], "_classes"))
+				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), name = paste(all_k[i], "_classes"))
 		gap = c(gap, c(0, 4))
 		class_mat = cbind(class_mat, as.numeric(res$object_list[[i]]$classification$class))
 	}
 	
-    draw(ht_list,gap = unit(gap, "mm"), row_order = do.call("order", as.data.frame(class_mat)))
+    draw(ht_list,gap = unit(gap, "mm"), row_order = do.call("order", as.data.frame(class_mat)),
+    	column_title = qq("classes from k = '@{paste(all_k, collapse = ', ')}'"),
+    	show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
 }

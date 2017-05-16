@@ -40,7 +40,7 @@ res_list
 
 Collect all plots for a k:
 
-```{r, fig.width = 14, fig.height = 14*length(ALL_TOP_VALUE_METHOD())/length(ALL_PARTITION_METHOD())}
+```{r, fig.width = 14, fig.height = 14*length(ALL_TOP_VALUE_METHOD())/length(ALL_PARTITION_METHOD()), results = "hide"}
 collect_plots(res_list, fun = plot_ecdf)
 collect_plots(res_list, k = 3, fun = consensus_heatmap)
 collect_plots(res_list, k = 3, fun = membership_heatmap)
@@ -77,13 +77,13 @@ res
 
 Collect all plots
 
-```{r, fig.width = 14, fig.height = 14*4/5}
+```{r, fig.width = 14, fig.height = 14*4/5, results = "hide"}
 collect_plots(res)
 ```
 
 plots:
 
-```{r}
+```{r, results = "hide"}
 select_k(res)
 consensus_heatmap(res, k = 3)
 membership_heatmap(res, k = 3)

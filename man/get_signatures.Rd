@@ -6,7 +6,8 @@
 \usage{
 get_signatures(res, k, silhouette_cutoff = 0.5, fdr_cutoff = 0.05,
   scale_rows = TRUE, annotation = data.frame(known = res$known),
-  annotation_color = list(known = res$known_color), show_legend = TRUE, ...)
+  annotation_color = list(known = res$known_color), show_legend = TRUE,
+  show_column_names = FALSE, ...)
 }
 \arguments{
 \item{res}{A \code{consensus_partition} class object. The object can be returned
@@ -26,6 +27,8 @@ less than it are not used for finding signature rows.}
 \item{annotation_color}{colors for the annotations.}
 
 \item{show_legend}{whether draw the legends on the heatmap.}
+
+\item{show_column_names}{whether show column names on the heatmap.}
 
 \item{...}{other arguments}
 }

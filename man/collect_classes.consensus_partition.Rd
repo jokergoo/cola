@@ -4,10 +4,12 @@
 \alias{collect_classes.consensus_partition}
 \title{Collect classes from consensus_partition object}
 \usage{
-\method{collect_classes}{consensus_partition}(x, ...)
+\method{collect_classes}{consensus_partition}(x, show_legend = TRUE, ...)
 }
 \arguments{
 \item{x}{a \code{consensus_partition} object}
+
+\item{show_legend}{whether show legend.}
 
 \item{...}{other arguments.}
 }

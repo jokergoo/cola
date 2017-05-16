@@ -42,3 +42,27 @@ column_order_by_group = function(factor, mat) {
 		}
 	}))
 }
+
+test_between_known_factors = function(df) {
+	nm = colnames(df)
+	n = ncol(df)
+	p.value = matrix(NA, nrow = n, ncol = n, dimnames = list(nm, nm))
+	for(i in 1:(n-1)) {
+		for(j in (i+1):n) {
+			if(is.numeric(df[[i]]) && is.numeric(df[[j]])) {
+				qqcat("@{nm[i]} ~ @{nm[j]}: correlation test\n")
+				p.value[i, j] = cor.test(df[[i]], df[[j]])$p.value
+			} else if(is.numeric(df[[i]]) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
+				qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
+				try({p.value[i, j] = oneway.test(df[[i]] ~ df[[j]])$p.value})
+			} else if(is.numeric(df[[j]]) && (is.character(df[[i]]) || is.factor(df[[i]]))) {
+				qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
+				try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value})
+			} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
+				qqcat("@{nm[i]} ~ @{nm[j]}: chiseq test\n")
+				p.value[i, j] = chisq.test(df[[i]], df[[j]])$p.value
+			}
+		}
+	}
+	return(p.value)
+}

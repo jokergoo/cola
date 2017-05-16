@@ -11,6 +11,7 @@
 #' @param annotation a data frame which contains annotation of columns.
 #' @param annotation_color colors for the annotations.
 #' @param show_legend whether draw the legends on the heatmap.
+#' @param show_column_names whether show column names on the heatmap.
 #' @param ... other arguments
 #' 
 #' @details 
@@ -38,6 +39,7 @@ get_signatures = function(res, k,
 	annotation = data.frame(known = res$known),
 	annotation_color = list(known = res$known_color),
 	show_legend = TRUE,
+	show_column_names = FALSE,
 	...) {
 
 	i = which(res$k == k)
@@ -221,7 +223,8 @@ get_signatures = function(res, k,
 			show_legend = c(TRUE, rep(FALSE, k - 1), TRUE)),
 		cluster_columns = FALSE, column_order = mat_col_od1,
 		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
-		bottom_annotation = bottom_anno1, show_column_names = FALSE, split = group2, combined_name_fun = NULL)
+		use_raster = TRUE, raster_quality = 2,
+		bottom_annotation = bottom_anno1, show_column_names = show_column_names, split = group2, combined_name_fun = NULL)
  	if(scale_rows) {
 		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"))
 	}
@@ -240,7 +243,8 @@ get_signatures = function(res, k,
 				show_legend = FALSE),
 			cluster_columns = FALSE, column_order = mat_col_od2,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
-			column_title = "ambiguous samples", bottom_annotation = bottom_anno2, show_column_names = FALSE)
+			use_raster = TRUE, raster_quality = 2,
+			column_title = "ambiguous samples", bottom_annotation = bottom_anno2, show_column_names = show_column_names)
 	}
 
 	draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, ', top 5k signatures', '')}"),

@@ -5,7 +5,7 @@
 \title{Visualize columns after dimension reduction}
 \usage{
 dimension_reduction(res, k, method = c("mds", "tsne"),
-  silhouette_cutoff = 0.5, remove = FALSE)
+  silhouette_cutoff = 0.5, remove = FALSE, ...)
 }
 \arguments{
 \item{res}{a \code{consensus_partition} object}
@@ -19,6 +19,8 @@ than it will be mapped to small points.}
 
 \item{remove}{whether to remove columns which have less silhouette values than
 the cutoff.}
+
+\item{...}{pass to \code{\link[Rtsne:Rtsne]{Rtsne::Rtsne()}}}
 }
 \description{
 Visualize columns after dimension reduction

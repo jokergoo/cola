@@ -5,6 +5,8 @@
 suppressPackageStartupMessages(source("/home/guz/project/development/cola/load.R"))
 ```
 
+Data is from https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/.
+
 
 ```r
 data = read.table("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/unifiedScaled.txt", 
@@ -96,174 +98,6 @@ collect_plots(res_list, k = 3, fun = membership_heatmap)
 collect_plots(res_list, k = 3, fun = get_signatures)
 ```
 
-```
-## 119/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 7802 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 165/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8401 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 171/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8356 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 162/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8581 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 158/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8781 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 157/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8631 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 154/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8446 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 81/173 samples (in 2 classes) remain after filtering by silhouette (>= 0.5).
-## 5287 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 145/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9736 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 140/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9418 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 152/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9627 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 166/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8963 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 164/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8974 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 130/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9702 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 58/173 samples (in 2 classes) remain after filtering by silhouette (>= 0.5).
-## 7606 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 122/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9444 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 126/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9603 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 145/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9535 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 161/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8932 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 160/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8931 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 85/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9253 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 118/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9449 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 127/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9409 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 161/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9443 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 153/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9594 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 164/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8811 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 161/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 8729 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 105/173 samples (in 2 classes) remain after filtering by silhouette (>= 0.5).
-## 7696 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-4.png)
 
 Overlap of top rows in different top methods:
@@ -317,36 +151,6 @@ Collect all plots
 collect_plots(res)
 ```
 
-```
-## 173/173 samples (in 2 classes) remain after filtering by silhouette (>= 0.5).
-## 7618 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 161/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9443 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 132/173 samples (in 4 classes) remain after filtering by silhouette (>= 0.5).
-## 9678 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 145/173 samples (in 5 classes) remain after filtering by silhouette (>= 0.5).
-## 10861 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
-```
-## 130/173 samples (in 6 classes) remain after filtering by silhouette (>= 0.5).
-## 10447 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
-```
-
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
 
 plots:
@@ -372,12 +176,6 @@ membership_heatmap(res, k = 3)
 
 ```r
 get_signatures(res, k = 3)
-```
-
-```
-## 161/173 samples (in 3 classes) remain after filtering by silhouette (>= 0.5).
-## 9443 signatures under fdr < 0.05
-## Only take top 5000 signatures with highest fdr
 ```
 
 ![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-4.png)

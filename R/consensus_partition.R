@@ -552,11 +552,12 @@ venn_euler = function(lt, ...) {
 #'        than it will be mapped to small points.
 #' @param remove whether to remove columns which have less silhouette values than
 #'        the cutoff.
+#' @param ... pass to [Rtsne::Rtsne()]
 #'
 #' @export
 #' @import Rtsne
 dimension_reduction = function(res, k, method = c("mds", "tsne"),
-	silhouette_cutoff = 0.5, remove = FALSE) {
+	silhouette_cutoff = 0.5, remove = FALSE, ...) {
 
 	method = match.arg(method)
 	data = res$.env$data
@@ -570,7 +571,7 @@ dimension_reduction = function(res, k, method = c("mds", "tsne"),
 	if(method == "mds") {
 		loc = cmdscale(dist(t(data)))
 	} else if(method == "tsne") {
-		loc = Rtsne(as.matrix(t(data)))$Y	
+		loc = Rtsne(as.matrix(t(data)), ...)$Y	
 	}
 
 	colnames(loc) = c("P1", "P2")
