@@ -7,7 +7,7 @@
 register_top_value_fun(...)
 }
 \arguments{
-\item{...}{a named list of functions}
+\item{...}{a named list of functions.}
 }
 \description{
 Register user-defined top value functions

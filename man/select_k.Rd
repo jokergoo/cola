@@ -9,9 +9,13 @@ select_k(res, plot = 0)
 \arguments{
 \item{res}{a \code{consensus_partition} object}
 
-\item{plot}{0: plot all four plots; 1: only the ecdf plot; 2: plot cophenetic
-correlation coefficient; 3: mean silhouette; 4: proportion increase of
-the AUC of the ecdf.}
+\item{plot}{\itemize{
+\item 0: plot all four plots;
+- 1: only the ecdf plot;
+- 2: plot cophenetic correlation coefficient;
+- 3: mean silhouette;
+- 4: proportion increase of the AUC of the ecdf.
+}}
 }
 \description{
 Several plots for determine the optimized number of partitions

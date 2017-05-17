@@ -7,7 +7,7 @@
 top_rows_overlap(res_list, top_n = 2000, type = c("venn", "correspondance"))
 }
 \arguments{
-\item{res_list}{a \code{run_all} object}
+\item{res_list}{a \code{consensus_partition_all_methods} object}
 
 \item{top_n}{number of top rows}
 

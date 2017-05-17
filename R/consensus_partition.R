@@ -2,14 +2,14 @@
 #' Consensus partition
 #'
 #' @param data a numeric matrix where subgroups are found by columns.
-#' @param top_method a single top method
-#' @param top_n number of rows with top values
-#' @param partition_method a single partition method
+#' @param top_method a single top method. Avaialble methods are in [ALL_TOP_VALUE_METHOD()].
+#' @param top_n number of rows with top values.
+#' @param partition_method a single partition method. Avaialble methods are in [ALL_PARTITION_METHOD()].
 #' @param k number of partitions. The value is a vector.
-#' @param p_sampling probability of sampling from top n rows.
+#' @param p_sampling proportion of the top n rows to sample.
 #' @param partition_repeat number of repeats for the random sampling.
-#' @param partition_param parameters for the partition method
-#' @param known a known class. If defined, the similarity between the predicted
+#' @param partition_param parameters for the partition method.
+#' @param known a known class. If defined, the similarity between the predicted.
 #'        classes and the known classes is calculated.
 #' @param .env an environment, internally used.
 #'
@@ -20,9 +20,9 @@
 #' @import GetoptLong
 #' @import clue
 consensus_partition = function(data,
-	top_method = "sd",
+	top_method = ALL_TOP_VALUE_METHOD()[1],
 	top_n = seq(min(2000, round(nrow(data)*0.2)), min(c(6000, round(nrow(data)*0.6))), length.out = 5),
-	partition_method = "kmeans",
+	partition_method = ALL_TOP_VALUE_METHOD()[1],
 	k = 2:6, p_sampling = 0.8,
 	partition_repeat = 50,
 	partition_param = list(),
@@ -150,7 +150,7 @@ consensus_partition = function(data,
 
 		suppressWarnings(class_color <- structure(brewer.pal(k, "Set2")[1:k], names = 1:k))
 
-		concordance_to_known = NULL
+		concordance_to_known = NA
 		if(!is.null(known)) {
 			concordance_to_known = cl_dissimilarity(cl_ensemble(as.cl_partition(classification$class), 
 				                                                as.cl_partition(known)))
@@ -217,9 +217,11 @@ plot_ecdf = function(res, ...) {
 #' Several plots for determine the optimized number of partitions
 #'
 #' @param res a `consensus_partition` object
-#' @param plot 0: plot all four plots; 1: only the ecdf plot; 2: plot cophenetic 
-#'        correlation coefficient; 3: mean silhouette; 4: proportion increase of 
-#'        the AUC of the ecdf.
+#' @param plot - 0: plot all four plots; 
+#'             - 1: only the ecdf plot; 
+#'             - 2: plot cophenetic correlation coefficient; 
+#'             - 3: mean silhouette; 
+#'             - 4: proportion increase of the AUC of the ecdf.
 #'
 #' @export
 #' @import graphics
@@ -243,7 +245,7 @@ select_k = function(res, plot = 0) {
 	if(plot %in% c(0, 3)) {
 		mean_silhouette = sapply(res$object_list, function(x) {
 			y = x$classification$silhouette
-			mean(y[y > 0])
+			mean(y)
 		})
 		plot(res$k, mean_silhouette, type = "b", xlab = "k, number of clusters", ylab = "mean silhouette")
 	}
@@ -347,9 +349,9 @@ get_class.consensus_partition = function(x, k, ...) {
 		class = res$object_list[[i]]$classification$class)
 }
 
-#' Get class from the run_all object
+#' Get class from the consensus_partition_all_methods object
 #'
-#' @param x a `run_all` object
+#' @param x a `consensus_partition_all_methods` object
 #' @param k number of partitions
 #' @param ... other arguments
 #' 
@@ -360,7 +362,7 @@ get_class.consensus_partition = function(x, k, ...) {
 #' A data frame with class IDs and other columns.
 #' 
 #' @export
-get_class.run_all = function(x, k, ...) {
+get_class.consensus_partition_all_methods = function(x, k, ...) {
 	res = x
 	partition_list = NULL
 	mean_cophcor = NULL
@@ -478,7 +480,7 @@ membership_heatmap = function(res, k, show_legend = TRUE,
 
 #' Overlap of top rows from different top methods
 #'
-#' @param res_list a `run_all` object
+#' @param res_list a `consensus_partition_all_methods` object
 #' @param top_n number of top rows
 #' @param type venn: use venn euler plots; correspondance: use [correspond_between_rankings()].
 #'
@@ -500,7 +502,7 @@ top_rows_overlap = function(res_list, top_n = 2000, type = c("venn", "correspond
 
 #' Heatmap for the top rows
 #'
-#' @param res_list a `run_all` object
+#' @param res_list a `consensus_partition_all_methods` object
 #' @param top_n number of top rows
 #'
 #' @export

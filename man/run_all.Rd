@@ -12,7 +12,7 @@ run_all(data, top_method = ALL_TOP_VALUE_METHOD(),
 \item{data}{a numeric matrix where subgroups are found by columns.}
 
 \item{top_method}{method which are used to extract top n rows. Allowed methods
-are in \code{\link[=ALL_TOP_METHOD]{ALL_TOP_METHOD()}} and can be self-added by \code{\link[=register_top_value_fun]{register_top_value_fun()}}.}
+are in \code{\link[=ALL_TOP_VALUE_METHOD]{ALL_TOP_VALUE_METHOD()}} and can be self-added by \code{\link[=register_top_value_fun]{register_top_value_fun()}}.}
 
 \item{partition_method}{method which are used to do partition on data columns.
 Allowed methods are in \code{\link[=ALL_PARTITION_METHOD]{ALL_PARTITION_METHOD()}} and can be self-added
@@ -25,7 +25,7 @@ by \code{\link[=register_partition_fun]{register_partition_fun()}}.}
 \item{...}{other arguments passed to \code{\link[=consensus_partition]{consensus_partition()}}.}
 }
 \value{
-a \code{run_all} class object. Following methods can be used on it: \code{\link[=collect_plots]{collect_plots()}},
+a \code{consensus_partition_all_methods} class object. Following methods can be used on it: \code{\link[=collect_plots]{collect_plots()}},
 \code{\link[=collect_classes]{collect_classes()}}, \code{\link[=get_class]{get_class()}}, \code{\link[=get_single_run]{get_single_run()}}.
 }
 \description{

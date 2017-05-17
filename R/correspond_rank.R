@@ -13,6 +13,8 @@ add_transparency = function (col, transparency = 0) {
 #' @param col2 color of the lines for the second metric.
 #' @param top_n top n elements to visualize
 #' @param transparency transparency of the connection lines.
+#' @param newpage whether to plot in a new graphic page.
+#' @param ratio ratio of width of the left barplots, connection lines and right barplots.
 #' 
 #' @details
 #' In `x1` and `x2`, the i^{th} element is the same object but with different 
@@ -28,13 +30,20 @@ add_transparency = function (col, transparency = 0) {
 #' x2 = rowMads(mat)
 #' correspond_between_two_rankings(x1, x2, name1 = "sd", name2 = "mad", top_n = 20)
 correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "", 
-	col1 = 1, col2 = 2, top_n = length(x1), transparency = 0.9) {
+	col1 = 1, col2 = 2, top_n = length(x1), transparency = 0.9, newpage = FALSE,
+	ratio = c(1, 1, 1)) {
 	
+	if(newpage) {
+		grid.newpage()
+	}
+
 	r1 = rank(x1, ties.method = "random")
 	r2 = rank(x2, ties.method = "random")
 
 	n = length(x1)
-	pushViewport(viewport(layout = grid.layout(nrow = 1, ncol = 3), height = unit(1, "npc") - unit(2, "cm")))
+	text_height = grobHeight(textGrob("foo"))*2
+	pushViewport(viewport(layout = grid.layout(nrow = 1, ncol = 3, widths = unit(ratio, "null")), 
+		height = unit(1, "npc") - text_height - unit(1, "cm"), y = unit(1, "cm"), just = "bottom"))
 	
 	max_x1 = max(x1)
 	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, 
@@ -42,7 +51,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 	grid.segments(max_x1 - x1, r1, max_x1, r1, default.units = "native", gp = gpar(col = "#EFEFEF"))
 	l = r2 >= n - top_n
 	grid.points(unit(runif(sum(l)), "npc"), r1[l], default.units = "native", pch = 16, size = unit(1, "mm"), gp = gpar(col = add_transparency(col2, 0.8)))
-	grid.text(name1, x = 1, y = unit(n + 1, "native") + unit(2, "mm"), default.units = "npc", just = c("right", "bottom"))
+	grid.text(name1, x = 1, y = unit(n + 1, "native") + unit(1, "mm"), default.units = "npc", just = c("right", "bottom"))
 	upViewport()
 
 	max_x2 = max(x2)
@@ -51,7 +60,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 	grid.segments(0, r2, x2, r2, default.units = "native", gp = gpar(col = "#EFEFEF"))
 	l = r1 >= n - top_n
 	grid.points(unit(runif(sum(l)), "npc"), r2[l], default.units = "native", pch = 16, size = unit(1, "mm"), gp = gpar(col = add_transparency(col1, 0.8)))
-	grid.text(name2, x = 0, y = unit(n + 1, "native") + unit(2, "mm"), default.units = "native", just = c("left", "bottom"))
+	grid.text(name2, x = 0, y = unit(n + 1, "native") + unit(1, "mm"), default.units = "native", just = c("left", "bottom"))
 	upViewport()
 
 	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2, xscale = c(0, 1), yscale = c(0, n + 1)))
@@ -67,7 +76,11 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 	# add a venn diagram at the bottom
 	n_intersect = length(intersect(order(x1, decreasing = TRUE)[1:top_n], order(x2, decreasing = TRUE)[1:top_n]))
 	n_union = 2*top_n - n_intersect
-	grid.rect(x = 0.5, y = unit(0.5, "cm"), width = unit(0.5, "npc"), height = unit(0.5, "cm"))
+	grid.roundrect(x = unit(0.25, "npc"), y = unit(0.4, "cm"), width = unit(0.5*top_n/n_union, "npc"), 
+		height = unit(0.4, "cm"), gp = gpar(fill = add_transparency(col1, 0.5), col = NA), just = "left")
+	grid.roundrect(x = unit(0.75, "npc"), y = unit(0.4, "cm"), width = unit(0.5*top_n/n_union, "npc"), 
+		height = unit(0.4, "cm"), gp = gpar(fill = add_transparency(col2, 0.5), col = NA), just = "right")
+	grid.text(qq("top @{top_n}"), x = unit(0.5, "npc"), y = unit(0.7, "cm"), just = "bottom", gp = gpar(fontsize = 8))
 
 }
 
@@ -75,8 +88,11 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 #'
 #' @param lt a list of scores under different metrics.
 #' @param top_n top n elements to visualize.
-#' @param col colors
-#' @param transparency transparency of the connection lines.
+#' @param col colors for items in `lt`.
+#' @param ... pass to [correspond_between_two_rankings()].
+#' 
+#' @details
+#' It makes plots for pairwise comparison between two ranking.
 #'
 #' @export
 #' @import grid
@@ -91,7 +107,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 #' correspond_between_rankings(lt = list(sd = x1, mad = x2, vc = x3), 
 #'     top_n = 20)
 correspond_between_rankings = function(lt, top_n = length(lt[[1]]), 
-	col = brewer.pal(length(lt), "Set1"), transparency = 0.95) {
+	col = brewer.pal(length(lt), "Set1"), ...) {
 
 	nm = names(lt)
 	n = length(lt)
@@ -109,7 +125,7 @@ correspond_between_rankings = function(lt, top_n = length(lt[[1]]),
 			k = k + 1
 			pushViewport(viewport(layout.pos.row = 1, layout.pos.col = k))
 			pushViewport(viewport(width = 0.9))
-			correspond_between_two_rankings(lt[[i]], lt[[j]], nm[i], nm[j], col[i], col[j], top_n, transparency)
+			correspond_between_two_rankings(lt[[i]], lt[[j]], nm[i], nm[j], col[i], col[j], top_n, ...)
 			upViewport()
 			upViewport()
 		}

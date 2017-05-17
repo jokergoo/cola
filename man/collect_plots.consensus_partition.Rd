@@ -14,3 +14,7 @@
 \description{
 Collect plots from consensus_partition object
 }
+\details{
+Plots by \code{\link[=select_k]{select_k()}}, \link{collect_classes.consensus_partition}, \code{\link[=consensus_heatmap]{consensus_heatmap()}}, \code{\link[=membership_heatmap]{membership_heatmap()}} and \code{\link[=get_signatures]{get_signatures()}}
+are arranged in one single page.
+}

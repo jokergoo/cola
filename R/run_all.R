@@ -3,7 +3,7 @@
 #'
 #' @param data a numeric matrix where subgroups are found by columns.
 #' @param top_method method which are used to extract top n rows. Allowed methods
-#'        are in [ALL_TOP_METHOD()] and can be self-added by [register_top_value_fun()].
+#'        are in [ALL_TOP_VALUE_METHOD()] and can be self-added by [register_top_value_fun()].
 #' @param partition_method method which are used to do partition on data columns. 
 #'        Allowed methods are in [ALL_PARTITION_METHOD()] and can be self-added 
 #'        by [register_partition_fun()].
@@ -12,7 +12,7 @@
 #' @param ... other arguments passed to [consensus_partition()].
 #'
 #' @return 
-#' a `run_all` class object. Following methods can be used on it: [collect_plots()],
+#' a `consensus_partition_all_methods` class object. Following methods can be used on it: [collect_plots()],
 #' [collect_classes()], [get_class()], [get_single_run()].
 #' 
 #' @export
@@ -66,20 +66,20 @@ run_all = function(data, top_method = ALL_TOP_VALUE_METHOD(),
 
 	names(res$list) = paste(comb[, 1], comb[, 2], sep = ":")
 
-	class(res) = c("run_all", "list")
+	class(res) = c("consensus_partition_all_methods", "list")
 
 	return(res)
 }
 
 
-#' Print the run_all object
+#' Print the consensus_partition_all_methods object
 #'
-#' @param x a `run_all` object
+#' @param x a `consensus_partition_all_methods` object
 #' @param ... other arguments
 #' 
 #' @export
 #' @import GetoptLong
-print.run_all = function(x, ...) {
+print.consensus_partition_all_methods = function(x, ...) {
 	qqcat("Top rows are extracted by '@{paste(x$top_method, collapse = ', ')}' methods.\n")
 	qqcat("Subgroups are detected by '@{paste(x$partition_method, collapse = ', ')}' method.\n")
 	qqcat("Number of partitions are tried for k = @{paste(x$list[[1]]$k, collapse = ', ')}\n")

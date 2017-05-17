@@ -7,7 +7,7 @@
 ALL_TOP_VALUE_METHOD()
 }
 \value{
-a vector of supported top methods
+a vector of supported top methods.
 }
 \description{
 All supported top methods

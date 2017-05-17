@@ -8,7 +8,7 @@ Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.3.0)
 Imports: ComplexHeatmap, matrixStats, GetoptLong, circlize, clue,
   parallel, RColorBrewer, cluster, mclust, skmeans, cclust,
-  png, gplots, ggplot2, bioDist, pryr, crayon, NMF, Rtsne
+  png, gplots, bioDist, pryr, crayon, NMF, Rtsne
 Suggests: venneuler, mvtnorm
 Description: Parallel compare methods for subgroup classification.
 URL: https://github.com/jokergoo/cola

@@ -5,7 +5,8 @@
 \title{Correspond two rankings}
 \usage{
 correspond_between_two_rankings(x1, x2, name1 = "", name2 = "", col1 = 1,
-  col2 = 2, top_n = length(x1))
+  col2 = 2, top_n = length(x1), transparency = 0.9, newpage = FALSE,
+  ratio = c(1, 1, 1))
 }
 \arguments{
 \item{x1}{a vector of scores calculated by one metric.}
@@ -21,6 +22,12 @@ correspond_between_two_rankings(x1, x2, name1 = "", name2 = "", col1 = 1,
 \item{col2}{color of the lines for the second metric.}
 
 \item{top_n}{top n elements to visualize}
+
+\item{transparency}{transparency of the connection lines.}
+
+\item{newpage}{whether to plot in a new graphic page.}
+
+\item{ratio}{ratio of width of the left barplots, connection lines and right barplots.}
 }
 \description{
 Correspond two rankings

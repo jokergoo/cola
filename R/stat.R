@@ -2,9 +2,9 @@
 
 #' AAC score
 #'
-#' @param mat a numeric matrix. AAC score is calculated by columns 
-#' @param cor_method pass to [stats::cor()]
-#' @param min_cor minimal absolute correlation
+#' @param mat a numeric matrix. AAC score is calculated by columns.
+#' @param cor_method pass to [stats::cor()].
+#' @param min_cor minimal absolute correlation.
 #' 
 #' @details 
 #' AAC score for a given item is the area above the curve of the curmulative 
@@ -29,9 +29,10 @@
 #' sigma = matrix(0.5, nrow = nr3, ncol = nr3); diag(sigma) = 1
 #' mat3 = t(rmvnorm(100, mean = rep(0, nr3), sigma = sigma))
 #' 
-#' mat = t(rbind(mat1, mat2, mat3))
-#' AAC_cor(t(mat))
-AAC_cor = function(mat, cor_method = "pearson", min_cor = 0.2) {
+#' mat = rbind(mat1, mat2, mat3)
+#' AAC_score = AAC(t(mat))
+#' plot(AAC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
+AAC = function(mat, cor_method = "pearson", min_cor = 0.2) {
 	n = ncol(mat)
 	v = numeric(n)
 	for(i in 1:n) {
@@ -66,30 +67,3 @@ PAC = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
 	Fn(x2) - Fn(x1)
 }
 
-
-#' Cophenetic correlation coefficient in all methods
-#'
-#' @param res_list a `run_all` object
-#' @param top_method a vector of top methods
-#' @param partition_method a vector of partition methods
-#'
-#' @export
-#' @import ggplot2
-mean_cophcor = function(res_list, top_method = res_list$top_method, partition_method = res_list$partition_method) {
-	
-	df = data.frame(top_method = character(0), partition_method = character(0), k = numeric(0), mean_cophcor = numeric(0))
-	for(i in seq_along(top_method)) {
-	    for(j in seq_along(partition_method)) {    
-	    	res = get_single_run(res_list, top_method = top_method[i], partition_method = partition_method[j])
-
-	        for(ik in seq_along(res$k)) {
-	        	k = res$k[ik]
-	        	df = rbind(df, data.frame(top_method = top_method[i], partition_method = partition_method[j], k = k, 
-	        		cophcor = cophcor(res$object_list[[ik]]$consensus)))
-	        }
-	    }
-	}
-
-	gp = ggplot(df, aes(x = k, y = cophcor)) + geom_line() + geom_point() + facet_grid(top_method ~ partition_method)
-	print(gp)
-}

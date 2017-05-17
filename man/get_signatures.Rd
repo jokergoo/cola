@@ -16,9 +16,10 @@ from \code{\link[=get_single_run]{get_single_run()}}.}
 \item{k}{number of partitions}
 
 \item{silhouette_cutoff}{cutoff for silhouette values. Columns with values
-less than it are not used for finding signature rows.}
+less than it are not used for finding signature rows. For selecting a
+proper silhouette value, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}
 
-\item{fdr_cutoff}{cutoff for fdr of the difference between subgroups.}
+\item{fdr_cutoff}{cutoff for FDR of the difference between subgroups.}
 
 \item{scale_rows}{whether apply row scaling when making the heatmap.}
 
@@ -34,9 +35,10 @@ less than it are not used for finding signature rows.}
 }
 \value{
 A list of three elements:
+
 -\code{mat} the matrix for the signatures
 -\code{fdr} FDR for rows
--\code{gropu} subgroups that the rows are significant for
+-\code{group} subgroups that the rows are significantly high
 }
 \description{
 Get signature rows

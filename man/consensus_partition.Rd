@@ -4,29 +4,30 @@
 \alias{consensus_partition}
 \title{Consensus partition}
 \usage{
-consensus_partition(data, top_method = "sd", top_n = seq(min(2000,
-  round(nrow(data) * 0.2)), min(c(6000, round(nrow(data) * 0.6))), length.out =
-  5), partition_method = "kmeans", k = 2:6, p_sampling = 0.8,
-  partition_repeat = 50, partition_param = list(), known = NULL, .env)
+consensus_partition(data, top_method = ALL_TOP_VALUE_METHOD()[1],
+  top_n = seq(min(2000, round(nrow(data) * 0.2)), min(c(6000, round(nrow(data)
+  * 0.6))), length.out = 5), partition_method = ALL_TOP_VALUE_METHOD()[1],
+  k = 2:6, p_sampling = 0.8, partition_repeat = 50,
+  partition_param = list(), known = NULL, .env)
 }
 \arguments{
 \item{data}{a numeric matrix where subgroups are found by columns.}
 
-\item{top_method}{a single top method}
+\item{top_method}{a single top method. Avaialble methods are in \code{\link[=ALL_TOP_VALUE_METHOD]{ALL_TOP_VALUE_METHOD()}}.}
 
-\item{top_n}{number of rows with top values}
+\item{top_n}{number of rows with top values.}
 
-\item{partition_method}{a single partition method}
+\item{partition_method}{a single partition method. Avaialble methods are in \code{\link[=ALL_PARTITION_METHOD]{ALL_PARTITION_METHOD()}}.}
 
 \item{k}{number of partitions. The value is a vector.}
 
-\item{p_sampling}{probability of sampling from top n rows.}
+\item{p_sampling}{proportion of the top n rows to sample.}
 
 \item{partition_repeat}{number of repeats for the random sampling.}
 
-\item{partition_param}{parameters for the partition method}
+\item{partition_param}{parameters for the partition method.}
 
-\item{known}{a known class. If defined, the similarity between the predicted
+\item{known}{a known class. If defined, the similarity between the predicted.
 classes and the known classes is calculated.}
 
 \item{.env}{an environment, internally used.}

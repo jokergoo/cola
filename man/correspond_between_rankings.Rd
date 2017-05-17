@@ -5,17 +5,22 @@
 \title{Correspond between a list of rankings}
 \usage{
 correspond_between_rankings(lt, top_n = length(lt[[1]]),
-  col = brewer.pal(length(lt), "Set1"))
+  col = brewer.pal(length(lt), "Set1"), ...)
 }
 \arguments{
 \item{lt}{a list of scores under different metrics.}
 
 \item{top_n}{top n elements to visualize.}
 
-\item{col}{colors}
+\item{col}{colors for items in \code{lt}.}
+
+\item{...}{pass to \code{\link[=correspond_between_two_rankings]{correspond_between_two_rankings()}}.}
 }
 \description{
 Correspond between a list of rankings
+}
+\details{
+It makes plots for pairwise comparison between two ranking.
 }
 \examples{
 require(matrixStats)

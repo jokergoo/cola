@@ -10,9 +10,9 @@ collect_plots = function(x, ...) {
 }
 
 
-#' Collect plots from run_all object
+#' Collect plots from consensus_partition_all_methods object
 #'
-#' @param x a `run_all` object from `run_all()`.
+#' @param x a `consensus_partition_all_methods` object from `run_all()`.
 #' @param k number of partitions.
 #' @param fun function used to generate plots. Valid functions are [consensus_heatmap()],
 #'        [plot_ecdf()], [membership_heatmap()] and [get_signatures()].
@@ -25,7 +25,7 @@ collect_plots = function(x, ...) {
 #' @import png
 #' @import grDevices
 #' @import utils
-collect_plots.run_all = function(x, k = 2, fun = consensus_heatmap,
+collect_plots.consensus_partition_all_methods = function(x, k = 2, fun = consensus_heatmap,
 	top_method = x$top_method, partition_method = x$partition_method, ...) {
 
 	res_list = x
@@ -120,6 +120,10 @@ collect_plots.run_all = function(x, k = 2, fun = consensus_heatmap,
 #'
 #' @param x a `consensus_partition` object
 #' @param ... other arguments
+#' 
+#' @details
+#' Plots by [select_k()], [collect_classes.consensus_partition], [consensus_heatmap()], [membership_heatmap()] and [get_signatures()]
+#' are arranged in one single page.
 #'
 #' @export
 #' @import grid
@@ -211,9 +215,9 @@ collect_classes = function(x, ...) {
 }
 
 
-#' Collect classes from run_all object
+#' Collect classes from consensus_partition_all_methods object
 #'
-#' @param x a `run_all` object returned by [run_all()].
+#' @param x a `consensus_partition_all_methods` object returned by [run_all()].
 #' @param k number of partitions
 #' @param top_method a vector of top methods
 #' @param partition_method a vector of partition methods
@@ -221,7 +225,7 @@ collect_classes = function(x, ...) {
 #'
 #' @export
 #' @import ComplexHeatmap
-collect_classes.run_all = function(x, k, 
+collect_classes.consensus_partition_all_methods = function(x, k, 
 	top_method = x$top_method, partition_method = x$partition_method, ...) {
 
 	res_list = x
@@ -324,3 +328,41 @@ collect_classes.consensus_partition = function(x, show_legend = TRUE, ...) {
     	column_title = qq("classes from k = '@{paste(all_k, collapse = ', ')}'"),
     	show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
 }
+
+
+#' Cophenetic correlation coefficient in all methods
+#'
+#' @param res_list a `consensus_partition_all_methods` object
+#' @param top_method a vector of top methods
+#' @param partition_method a vector of partition methods
+#' 
+#' @details
+#' A data frame with following columns:
+#' 
+#' -`cophcor`: the cophenetic correlation coefficient
+#' -`mean_silhouette`: mean silhouette
+#' -`concordance_to_known`: correlation to known factors if it is provided.
+#'
+#' @export
+#' @importFrom NMF cophcor
+collect_stat = function(res_list, top_method = res_list$top_method, 
+	partition_method = res_list$partition_method) {
+	
+	df = data.frame(top_method = character(0), partition_method = character(0), k = numeric(0), cophcor = numeric(0),
+		mean_silhouette = numeric(0), concordance_to_known = numeric(0))
+	for(i in seq_along(top_method)) {
+	    for(j in seq_along(partition_method)) {    
+	    	res = get_single_run(res_list, top_method = top_method[i], partition_method = partition_method[j])
+
+	        for(ik in seq_along(res$k)) {
+	        	k = res$k[ik]
+	        	df = rbind(df, data.frame(top_method = top_method[i], partition_method = partition_method[j], k = k, 
+	        		cophcor = cophcor(res$object_list[[ik]]$consensus),
+	        		mean_silhouette = mean(res$object_list[[ik]]$classification$silhouette),
+	        		concordance_to_known = res$object_list[[ik]]$concordance_to_known))
+	        }
+	    }
+	}
+	return(df)
+}
+

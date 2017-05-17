@@ -5,8 +5,9 @@
 #'        from [get_single_run()].
 #' @param k number of partitions
 #' @param silhouette_cutoff cutoff for silhouette values. Columns with values 
-#'        less than it are not used for finding signature rows.
-#' @param fdr_cutoff cutoff for fdr of the difference between subgroups.
+#'        less than it are not used for finding signature rows. For selecting a 
+#'        proper silhouette value, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
+#' @param fdr_cutoff cutoff for FDR of the difference between subgroups.
 #' @param scale_rows whether apply row scaling when making the heatmap.
 #' @param annotation a data frame which contains annotation of columns.
 #' @param annotation_color colors for the annotations.
@@ -23,9 +24,10 @@
 #'
 #' @return 
 #' A list of three elements:
+#' 
 #' -`mat` the matrix for the signatures
 #' -`fdr` FDR for rows
-#' -`gropu` subgroups that the rows are significant for
+#' -`group` subgroups that the rows are significantly high
 #' 
 #' @export
 #' @import GetoptLong

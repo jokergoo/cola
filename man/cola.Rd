@@ -9,3 +9,6 @@ cola()
 \description{
 A bottle of cola
 }
+\details{
+Simply provide you a cola, but not freezing.
+}

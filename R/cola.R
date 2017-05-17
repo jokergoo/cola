@@ -1,13 +1,5 @@
 
-
-#' A bottle of cola
-#'
-#' @export
-#' @importFrom  crayon red green yellow blue magenta cyan silver
-#' @importFrom  crayon bgRed bgGreen bgYellow bgBlue bgMagenta bgCyan bgWhite
-#' @importFrom  crayon reset
-cola = function() {
-	cola_logo = 
+cola_logo = 
 "        _        
       .!.!.      
        ! !       
@@ -22,6 +14,18 @@ cola = function() {
      :     :     
       '''''      
 "
+
+#' A bottle of cola
+#' 
+#' @details
+#' Simply provide you a cola, but not freezing.
+#'
+#' @export
+#' @importFrom  crayon red green yellow blue magenta cyan silver
+#' @importFrom  crayon bgRed bgGreen bgYellow bgBlue bgMagenta bgCyan bgWhite
+#' @importFrom  crayon reset
+cola = function() {
+
     bg_color = sample(c("bgRed", "bgGreen", "bgYellow", "bgBlue", "bgMagenta", "bgCyan", "bgWhite"), 1)
 	text_color = sample(c("red", "green", "yellow", "blue", "magenta", "cyan", "silver"), 1)
 
