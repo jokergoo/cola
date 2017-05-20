@@ -11,13 +11,19 @@ relabel_class = function(class, reference, full_set = unique(c(reference, class)
 	tb = tapply(reference, class, table, simplify = FALSE)
 	map = NULL
 	while(length(tb)) {
-		max_p = sapply(tb, function(x) max(x))
-		which_max = sapply(tb, function(x) names(which.max(x)))
-		max_i = which.max(max_p)
-		map = c(map, structure(which_max[max_i], names = names(tb)[max_i]))
-		tb = tb[-max_i]
-		tb = lapply(tb, function(x) x[!(names(x) %in% map)])
-		tb = tb[sapply(tb, length) > 0]
+		max_n = sapply(tb, function(x) max(x))
+		max_p = sapply(tb, function(x) max(x)/sum(x))
+		l = max_p > 0.5
+		if(sum(l)) {
+			which_max = sapply(tb[l], function(x) names(which.max(x)))
+			max_i = which.max(max_n)
+			map = c(map, structure(which_max[max_i], names = names(tb)[max_i]))
+			tb = tb[-max_i]
+			tb = lapply(tb, function(x) x[!(names(x) %in% map)])
+			tb = tb[sapply(tb, length) > 0]
+		} else {
+			break
+		}
 	}
 	sdf = setdiff(full_set, map)
 	if(length(sdf)) {
@@ -130,4 +136,12 @@ test_between_known_factors = function(x, y = NULL, verbose = TRUE) {
 		}
 	}
 	return(p.value)
+}
+
+
+adjust_outlier = function(x, q = 0.05) {
+	qu = quantile(x, c(1, 1 - q))
+	x[x < qu[1]] = qu[1]
+	x[x > qu[2]] = qu[2]
+	x
 }

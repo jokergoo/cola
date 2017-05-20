@@ -9,7 +9,6 @@ GetoptLong(
 
 source("/home/guz/project/development/cola/load.R")
 
-
 ############################################################
 anno_text =
 "id    hipo_id     subtype batch
@@ -95,10 +94,12 @@ load(qq("@{PROJECT_DIR}/expression/hipo16_rnaseq_count_rpkm.RData"))
 count = count[names(GENE), SAMPLE_ID]
 rpkm = rpkm[names(GENE), SAMPLE_ID]
 data = log2(rpkm + 1)
+data = t(apply(data, 1, remove_outlier))
+data = adjust_outlier(data)
 
 res = run_all(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, known = SAMPLE$subtype, mc.cores = ncore)
 
-saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/hipo16_rnaseq_subgroup_p@{p}.rds"))
+saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo16_rnaseq_subgroup_p@{p}.rds"))
 
 # for(p in c(0.2, 0.4, 0.6, 0.8)) {
 # 	cmd = qq("Rscript-3.1.2 /home/guz/project/development/subgroup/test_hipo16_rnaseq.R --p @{p} --ncore 4")

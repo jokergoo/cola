@@ -7,6 +7,7 @@ GetoptLong(
 )
 
 source("/home/guz/project/development/cola/load.R")
+
 setwd("/icgc/dkfzlsdf/analysis/hipo/hipo_015/hipo15_rnaseq_cell_analysis")
 default_param = list(
 	"normalization.method" = "rpkm",

@@ -125,6 +125,7 @@ ALL_PARTITION_METHOD = function() {
 #' @import cclust
 #' @import cluster
 #' @import bioDist
+#' @import kohonen
 register_partition_fun(
 	hclust = function(mat, k, ...) {
 		hc = hclust(d = cor.dist(t(mat), abs = FALSE), ...)
@@ -142,14 +143,17 @@ register_partition_fun(
 	Mclust = function(mat, k, ...) {
 		Mclust(data = t(mat), G = k, ...)
 	}, 
-	clara = function(mat, k, ...) {
-		clara(x = t(mat), k = k, ...)
-	},
+	# clara = function(mat, k, ...) {
+	# 	clara(x = t(mat), k = k, ...)
+	# },
 	pam = function(mat, k, ...) {
 		pam(t(mat), k = k, ...)
 	},
 	cclust = function(mat, k, ...) {
 		cclust(x = t(mat), centers = k, ...)
+	},
+	som = function(mat, k, ...) {
+		som(mat, grid = somgrid(1, k), ...)$unit.classif
 	}
 )
 
