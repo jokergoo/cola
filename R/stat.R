@@ -36,10 +36,15 @@
 AAC = function(mat, cor_method = "pearson", min_cor = 0.2, mc.cores = 1) {
 	n = ncol(mat)
 	
-	le = cut(1:n, mc.cores)
-	ind_list = split(n, le)
+	if(mc.cores > 1) {
+		le = cut(1:n, mc.cores)
+		ind_list = split(n, le)
+	} else {
+		ind_list = list(1:n)
+	}
 
 	v_list = mclapply(ind_list, function(ind) {
+		v = numeric(length(ind))
 		for(i in ind) {
 			suppressWarnings(cor_v <- abs(cor(mat[, i, drop = FALSE], mat[, -i, drop = FALSE], method = cor_method)))
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {

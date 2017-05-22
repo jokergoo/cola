@@ -36,8 +36,9 @@
 #' @import circlize
 get_signatures = function(res, k,
 	silhouette_cutoff = 0.5, 
-	fdr_cutoff = 0.05, 
+	fdr_cutoff = ifelse(row_diff_by == "samr", 0.1, 0.05), 
 	scale_rows = TRUE,
+	row_diff_by = c("compare_to_highest_subgroup", "Ftest", "samr"),
 	anno = res$known_anno, 
 	anno_col = if(missing(anno)) res$known_col else NULL,
 	show_legend = TRUE,
@@ -64,11 +65,6 @@ get_signatures = function(res, k,
 
 	qqcat("@{length(class)}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
 
-	nm = paste0(res$partition_method, "_", res$top_method, "_signatures_", k)
-	if(is.null(res$.env[[nm]])) {
-		res$.env[[nm]] = list()	
-	}
-
 	if(sum(tb > 1) <= 1) {
 		stop("not enough samples.")
 	}
@@ -76,58 +72,53 @@ get_signatures = function(res, k,
 		stop("not enough classes.")
 	}
 
-	find_signatures = TRUE
-	if(!is.null(res$.env[[nm]]$silhouette_cutoff)) {
-		if(abs(res$.env[[nm]]$silhouette_cutoff - silhouette_cutoff) < 1e-6) {
-			p = res$.env[[nm]]$p
-			group = res$.env[[nm]]$group
-			find_signatures = FALSE
-		}
-	}
+	if(inherits(row_diff_by, "function")) {
+		qqcat("calculate row difference between subgroups by user-defined function\n")
+		fdr = row_diff_by(data2, class)
+	} else {
+		row_diff_by = match.arg(row_diff_by)
 
-	if(find_signatures) {
-		p = numeric(nrow(data2))
-		group = NULL
-		for(i in seq_len(nrow(data2))) {
-			if(interactive()) cat(strrep("\b", 100))
-			if(interactive()) qqcat("pairwise t-test: @{i}/@{nrow(data2)}")
-			x = data2[i, ]
+		nm = paste0("signature_fdr_", res$top_method, "_", res$partition_method)
 
-			group_mean = tapply(x, class, mean)
-			max_group = names(which.max(group_mean))
-			fit = pairwise.t.test(x, class)
-			pmat = fit$p.value
-			all_p = c(pmat[, which(colnames(pmat) == max_group)], pmat[which(rownames(pmat) == max_group), ])
-			all_p = all_p[!is.na(all_p)]
-			if(length(all_p)) {
-				# if(all(all_p < 0.05)) {
-					p[i] = min(all_p)
-				# } else {
-				# 	p[i] = NA
-				# }
+		find_signature = TRUE
+		if(!is.null(res$.env[[nm]])) {
+			if(row_diff_by == "samr") {
+				if(res$.env[[nm]]$row_diff_by == "samr" && abs(res$.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+					fdr = res$.env[[nm]]$fdr
+					find_signature = FALSE
+				}
 			} else {
-				p[i] = NA
+				if(res$.env[[nm]]$row_diff_by == row_diff_by) {
+					fdr = res$.env[[nm]]$fdr
+					find_signature = FALSE
+				}
 			}
-			group[i] = max_group
 		}
-		if(interactive()) cat("\n")
+
+		if(find_signature) {
+			qqcat("calculate row difference between subgroups by @{row_diff_by}\n")
+			if(row_diff_by == "compare_to_highest_subgroup") {
+				fdr = compare_to_highest_subgroup(data2, class)
+			} else if(row_diff_by == "samr") {
+				fdr = samr(data2, class, fdr.output = fdr_cutoff)
+			} else if(row_diff_by == "Ftest") {
+				fdr = Ftest(data2, class)
+			}
+		}
+
+		res$.env[[nm]]$row_diff_by = row_diff_by
+		res$.env[[nm]]$fdr_cutoff = fdr_cutoff
+		res$.env[[nm]]$fdr = fdr
 	}
 
-	fdr = p.adjust(p, "BH")
-	fdr[is.na(fdr)] = Inf
-
-	res$.env[[nm]]$silhouette_cutoff = silhouette_cutoff
-	res$.env[[nm]]$p = p
-	res$.env[[nm]]$group = group
-
-	col_list = rep(list(colorRamp2(c(0, 1), c("white", "red"))), k)
-	names(col_list) = colnames(obj$membership)
-
-	if(is.null(fdr_cutoff)) {
-		fdr_cutoff_v = c(0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001)
-		i = which.min(abs(500 - sapply(fdr_cutoff_v, function(x) sum(fdr < x))))
-		fdr_cutoff = fdr_cutoff_v[i]
+	group = character(nrow(data2))
+	for(i in seq_len(nrow(data2))) {
+		x = data2[i, ]
+		group_mean = tapply(x, class, mean)
+		max_group = names(which.max(group_mean))
+		group[i] = max_group
 	}
+
 	mat = data[fdr < fdr_cutoff, ]
 	fdr2 = fdr[fdr < fdr_cutoff]
 	group2 = group[fdr < fdr_cutoff]
@@ -148,13 +139,6 @@ get_signatures = function(res, k,
 		
 	}
 	base_mean = rowMeans(mat1)
-
-	if(nrow(annotation) == 0) {
-		bottom_anno1 = NULL
-	} else {
-		bottom_anno1 = HeatmapAnnotation(df = annotation[column_used_logical, ,drop = FALSE], col = annotation_color,
-			show_annotation_name = !has_ambiguous, annotation_name_side = "right")
-	}
 
 	if(is.null(anno)) {
 		bottom_anno1 = NULL
@@ -219,6 +203,9 @@ get_signatures = function(res, k,
 			} else {
 				bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
 					show_annotation_name = TRUE, annotation_name_side = "right")
+				for(i in seq_along(bottom_anno2$anno_list)) {
+					bottom_anno2@anno_list[[i]]@color_mapping = bottom_anno1@anno_list[[i]]@color_mapping
+				}
 			}
 		}
 	}
@@ -228,14 +215,18 @@ get_signatures = function(res, k,
 	group2 = factor(group2, levels = sort(unique(group2)))
 	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = class_col)
 
+	membership_mat = as.data.frame(get_membership(res, k))
+	col_list = rep(list(colorRamp2(c(0, 1), c("white", "red"))), k)
+	names(col_list) = colnames(membership_mat)
+
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
-		top_annotation = HeatmapAnnotation(as.data.frame(obj$membership)[column_used_logical, ],
-			class = obj$classification$class[column_used_logical],
-			silhouette = anno_barplot(obj$classification$silhouette[column_used_logical], ylim = silhouette_range,
-				gp = gpar(fill = ifelse(obj$classification$silhouette[column_used_logical] >= silhouette_cutoff, "grey", "#EEEEEE"),
-					      col = ifelse(obj$classification$silhouette[column_used_logical] >= silhouette_cutoff, "black", NA)),
+		top_annotation = HeatmapAnnotation(df = membership_mat[column_used_logical, ],
+			class = class_df$class[column_used_logical],
+			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
+				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "grey", "#EEEEEE"),
+					      col = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", NA)),
 				baseline = 0, axis = !has_ambiguous, axis_side = "right"),
-			col = c(list(class = class_color), col_list),
+			col = c(list(class = class_col), col_list),
 			annotation_height = unit(c(rep(4, k+1), 15), "mm"),
 			show_annotation_name = if(has_ambiguous) FALSE else c(rep(TRUE, k+1), FALSE),
 			annotation_name_side = "right",
@@ -249,13 +240,13 @@ get_signatures = function(res, k,
 	}
 	if(has_ambiguous) {
 		ht_list = ht_list + Heatmap(use_mat2, name = paste0(heatmap_name, 2), col = col_fun,
-			top_annotation = HeatmapAnnotation(as.data.frame(obj$membership)[!column_used_logical, ],
-				class = obj$classification$class[!column_used_logical],
-				silhouette2 = anno_barplot(obj$classification$silhouette[!column_used_logical], ylim = silhouette_range,
-					gp = gpar(fill = ifelse(obj$classification$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
-					      col = ifelse(obj$classification$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
+			top_annotation = HeatmapAnnotation(df = membership_mat[!column_used_logical, ],
+				class = class_df$class[!column_used_logical],
+				silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
+					gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
+					      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
 					baseline = 0, axis = TRUE, axis_side = "right"), 
-				col = c(list(class = class_color), col_list),
+				col = c(list(class = class_col), col_list),
 				annotation_height = unit(c(rep(4, k+1), 15), "mm"),
 				show_annotation_name = c(rep(TRUE, k+1), FALSE),
 				annotation_name_side = "right",
@@ -283,4 +274,102 @@ get_signatures = function(res, k,
 	}
 
 	return(invisible(mat_return))
+}
+
+
+
+compare_to_highest_subgroup = function(mat, class) {
+
+	od = order(class)
+	class = class[od]
+	mat = mat[, od, drop = FALSE]
+	class = as.numeric(factor(class))
+
+	group = apply(mat, 1, function(x) {
+		group_mean = tapply(x, class, mean)
+		which.max(group_mean)
+	})
+
+	# class and subgroup_index are all numeric
+	compare_to_one_subgroup = function(mat, class, subgroup_index) {
+		
+		oc = setdiff(class, subgroup_index)
+		pmat = matrix(NA, nrow = nrow(mat), ncol = length(oc))
+		for(i in seq_along(oc)) {
+			l = class == subgroup_index | class == oc[i]
+			m2 = mat[, l]
+			fa = factor(class[l])
+			pmat[, i] = rowttests(m2, fa)[, "p.value"]
+		}
+		rowMins(pmat, na.rm = TRUE)
+	}
+
+	p = tapply(seq_len(nrow(mat)), group, function(ind) {
+		compare_to_one_subgroup(mat[ind, , drop = FALSE], class, group[ind][1])
+	})
+	p2 = numeric(length(group))
+	for(i in seq_along(p)) {
+		p2[group == i] = p[[i]]
+	}
+
+	fdr = p.adjust(p2, "BH")
+	fdr[is.na(fdr)] = Inf
+	return(fdr)
+}
+
+#' @importFrom samr SAM
+samr = function(mat, class, ...) {
+	class = as.numeric(factor(class))
+	n_class = length(unique(class))
+	
+	tempf = tempfile()
+	sink(tempf)
+	if(n_class == 2) {
+		samfit = SAM(mat, class, resp.type = "Two class unpaired", nperm = 1000, ...)
+	} else {
+		samfit = SAM(mat, class, resp.type = "Multiclass", nperm = 1000, ...)
+	}
+	sink(NULL)
+	file.remove(tempf)
+
+	sig_index = NULL
+	if(!is.null(samfit$siggenes.table$genes.up)) {
+		id = samfit$siggenes.table$genes.up
+		if(is.null(dim(id))) id = matrix(id, nrow = 1)
+		sig_index = c(sig_index, id[, 2])
+	}
+	if(!is.null(samfit$siggenes.table$genes.lo)) {
+		id = samfit$siggenes.table$genes.lo
+		if(is.null(dim(id))) id = matrix(id, nrow = 1)
+		sig_index = c(sig_index, id[, 2])
+	}
+	sig_index = as.numeric(sig_index)
+	fdr = rep(1, nrow(mat))
+	fdr[sig_index] = 0
+
+	return(fdr)
+}
+
+Ftest = function(mat, class) {
+	p = rowFtests(mat, factor(class))[, "p.value"]
+	fdr = p.adjust(p, "BH")
+	fdr[is.na(fdr)] = Inf
+	return(fdr)
+}
+
+test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
+	set.seed(100)
+	x = matrix(rnorm(1000 * 20), ncol = 20)
+	dd = sample(1:1000, size = 100)
+	u = matrix(2 * rnorm(100), ncol = 10, nrow = 100)
+	x[dd, 11:20] = x[dd, 11:20] + u
+	row_diff = rep("no", 1000)
+	row_diff[dd] = "yes"
+	y = c(rep(1, 10), rep(2, 10))
+	fdr = fun(x, y)
+
+	ht = Heatmap(x, top_annotation = HeatmapAnnotation(foo = as.character(y), col = list(foo = c("1" = "blue", "2" = "red")))) +
+	Heatmap(row_diff, name = "diff", col = c("yes" = "red", "no" = "white"), width = unit(5, "mm")) +
+	Heatmap(fdr, name = "fdr", width = unit(5, "mm"), show_row_names = FALSE)
+	draw(ht, split = fdr < fdr_cutoff)
 }

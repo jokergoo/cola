@@ -1,4 +1,16 @@
 
+ConsensusPartition = setClass("ConsensusPartition",
+	slots = list(
+		object_list = "list", 
+		k = "numeric", 
+		n_partition = "numeric",  
+		partition_method = "character", 
+		top_method = "character",
+		known_anno = "ANY", 
+		known_col = "ANY", 
+		.env = "environment"
+))
+
 #' Consensus partition
 #'
 #' @param data a numeric matrix where subgroups are found by columns.
@@ -134,10 +146,6 @@ consensus_partition = function(data,
 			class = as.vector(cl_class_ids(x))
 			map = relabel_class(class, class_ids)
 			class = as.numeric(map[as.character(class)])
-			od = order(class_ids)
-			cat(paste(class_ids[od], collapse = ""), "\n")
-			cat(paste(class[od], collapse = ""), "\n")
-			cat("\n")
 			class
 		}))
 		rownames(membership_each) = rownames(membership_mat)
@@ -203,7 +211,7 @@ consensus_partition = function(data,
 		sum((x[2:n] - x[1:(n-1)])*f(x[2:n]))
 	})
 	delta_k = ak
-	for(i in seq_along(res$k)[-1]) {
+	for(i in seq_along(k)[-1]) {
 		delta_k[i] = (ak[i] - ak[i-1])/ak[i-1]
 	}
 	for(i in seq_along(object_list)) {
@@ -222,10 +230,9 @@ consensus_partition = function(data,
 		}
 	}
 
-	res = list(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n),  
+	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n),  
 		partition_method = partition_method, top_method = top_method,
 		known_anno = known_anno, known_col = known_col, .env = .env)
-	class(res) = c("consensus_partition", "list")
 	
 	return(res)
 }
@@ -237,11 +244,13 @@ consensus_partition = function(data,
 #'
 #' @export
 #' @import GetoptLong
-print.consensus_partition = function(x, ...) {
-	qqcat("A 'consensus_partition' object with k = @{paste(x$k, collapse = ', ')}\n")
-	qqcat("  top rows are extracted by '@{x$top_method}' method.\n")
-	qqcat("  subgroups are detected by '@{x$partition_method}' method.\n")
-}
+setMethod("show",
+	signature = "ConsensusPartition",
+	definition = function(object) {
+	qqcat("A 'consensus_partition' object with k = @{paste(object@k, collapse = ', ')}\n")
+	qqcat("  top rows are extracted by '@{object@top_method}' method.\n")
+	qqcat("  subgroups are detected by '@{object@partition_method}' method.\n")
+})
 
 
 #' Plot the ecdf of the consensus matrix
@@ -250,16 +259,18 @@ print.consensus_partition = function(x, ...) {
 #' @param ... other arguments.
 #'
 #' @export
-plot_ecdf = function(res, ...) {
+setMethod("plot_ecdf",
+	signature = "ConsensusPartition",
+	definition = function(object, ...) {
 	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x", ylab = "P(X >= x)")
-	for(i in seq_along(res$k)) {
-		consensus_mat = get_consensus(res, k = res$k[i])
+	for(i in seq_along(object@k)) {
+		consensus_mat = get_consensus(object, k = object@k[i])
 		f = ecdf(consensus_mat[lower.tri(consensus_mat)])
 		x = seq(0, 1, length = 100)
 		lines(x, f(x), col = i)
 	}
-	legend("bottomright", pch = 15, legend = paste0("k = ", res$k), col = seq_along(res$k))
-}
+	legend("bottomright", pch = 15, legend = paste0("k = ", object@k), col = seq_along(object@k))
+})
 
 
 #' Several plots for determine the optimized number of partitions
@@ -269,22 +280,24 @@ plot_ecdf = function(res, ...) {
 #' @export
 #' @import graphics
 #' @importFrom NMF cophcor
-select_partition_number = function(res) {
+setMethod("select_partition_number",
+	signature = "ConsensusPartition",
+	definition = function(object) {
 	op = par(no.readonly = TRUE)
 
-	m = get_stat(res)
+	m = get_stat(object)
 	nm = colnames(m)
 
 	par(mfrow = c(2, 3), mar = c(4, 4, 1, 1))
 
-	plot_ecdf(res)
+	plot_ecdf(object)
 
 	for(i in seq_len(ncol(m))) {
-		plot(res$k, m[, i], type = "b", xlab = "k", ylab = nm[i])
+		plot(object@k, m[, i], type = "b", xlab = "k", ylab = nm[i])
 	}
 
 	par(op)
-}
+})
 
 #' Heatmap for the consensus matrix
 #'
@@ -298,20 +311,22 @@ select_partition_number = function(res) {
 #' The consensus matrix.
 #' 
 #' @export
-consensus_heatmap = function(res, k, show_legend = TRUE,
-	anno = res$known_anno, 
-	anno_col = if(missing(anno)) res$known_col else NULL) {
+setMethod("consensus_heatmap",
+	signature = "ConsensusPartition",
+	definition = function(object, k, show_legend = TRUE,
+	anno = object@known_anno, 
+	anno_col = if(missing(anno)) object@known_col else NULL) {
 
-	class_df = get_class(res, k)
+	class_df = get_class(object, k)
 	class_ids = class_df$class
 	class_col = class_df$class_col
 	class_col = structure(unique(class_col), names = unique(class_ids))
 
-	consensus_mat = get_consensus(res, k)
+	consensus_mat = get_consensus(object, k)
 
 	mat_col_od = column_order_by_group(class_ids, consensus_mat)
 
-	membership_mat = get_membership(res, k)
+	membership_mat = get_membership(object, k)
 
 	ht_list = Heatmap(membership_mat, name = "membership", cluster_columns = FALSE, show_row_names = FALSE, 
 		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red"))) + 
@@ -342,9 +357,9 @@ consensus_heatmap = function(res, k, show_legend = TRUE,
 				annotation_name_side = "bottom", width = unit(ncol(anno)*5, "mm"))
 		}
 	}
-	draw(ht_list, main_heatmap = "consensus", column_title = qq("consensus @{res$partition_method} with @{k} groups from @{res$n_partition} partitions"),
+	draw(ht_list, main_heatmap = "consensus", column_title = qq("consensus @{object@partition_method} with @{k} groups from @{object@n_partition} partitions"),
 		show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
-}
+})
 
 #' Heatmap of membership of columns in each random sampling
 #'
@@ -358,20 +373,22 @@ consensus_heatmap = function(res, k, show_legend = TRUE,
 #' The membership matrix.
 #' 
 #' @export
-membership_heatmap = function(res, k, show_legend = TRUE, 
-	anno = res$known_anno, 
-	anno_col = if(missing(anno)) res$known_col else NULL) {
+setMethod("membership_heatmap",
+	signature = "ConsensusPartition",
+	definition = function(object, k, show_legend = TRUE, 
+	anno = object@known_anno, 
+	anno_col = if(missing(anno)) object@known_col else NULL) {
 
-	class_df = get_class(res, k)
+	class_df = get_class(object, k)
 	class_ids = class_df$class
 	class_col = class_df$class_col
 	class_col = structure(unique(class_col), names = unique(class_ids))
 
-	membership_mat = get_membership(res, k)
+	membership_mat = get_membership(object, k)
 	col_list = rep(list(colorRamp2(c(0, 1), c("white", "red"))), k)
 	names(col_list) = colnames(membership_mat)
 
-	membership_each = get_membership(res, k, each = TRUE)
+	membership_each = get_membership(object, k, each = TRUE)
 	membership_each = t(membership_each)
 	mat_col_od = column_order_by_group(class_ids, membership_each)
 
@@ -399,7 +416,7 @@ membership_heatmap = function(res, k, show_legend = TRUE,
 		}
 	}
 
-	param = get_param(res, k)
+	param = get_param(object, k)
 
 	n_row_level = unique(param$n_row)
 	suppressWarnings(n_row_col <- structure(brewer.pal(length(n_row_level), "Set2"), names = n_row_level))
@@ -417,9 +434,9 @@ membership_heatmap = function(res, k, show_legend = TRUE,
 	Heatmap(as.character(param$n_row), name = "n_row", col = n_row_col,
 		width = unit(5, "mm"), show_row_names = FALSE)
 
-	draw(ht, row_title = qq("@{round(res$n_partition/length(n_row_level))} x @{length(n_row_level)} random samplings"),
+	draw(ht, row_title = qq("@{round(object@n_partition/length(n_row_level))} x @{length(n_row_level)} random samplings"),
 		show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
-}
+})
 
 #' Visualize columns after dimension reduction
 #'
@@ -434,17 +451,19 @@ membership_heatmap = function(res, k, show_legend = TRUE,
 #'
 #' @export
 #' @import Rtsne
-dimension_reduction = function(res, k, method = c("mds", "tsne"),
+setMethod("dimension_reduction",
+	signature = "ConsensusPartition",
+	definition = function(object, k, method = c("mds", "pca", "tsne"),
 	silhouette_cutoff = 0.5, remove = FALSE, ...) {
 
 	method = match.arg(method)
-	data = res$.env$data
+	data = object@.env$data
 
 	data = t(scale(t(data)))
 
-	ik = which(res$k == k)
+	ik = which(object@k == k)
 
-	class_df = get_class(res, k)
+	class_df = get_class(object, k)
 	class_ids = class_df$class
 	class_col = class_df$class_col
 	class_col = structure(unique(class_col), names = unique(class_ids))
@@ -452,6 +471,8 @@ dimension_reduction = function(res, k, method = c("mds", "tsne"),
 	l = class_df$silhouette >= silhouette_cutoff
 	if(method == "mds") {
 		loc = cmdscale(dist(t(data)))
+	} else if(method == "pca") {
+		loc = prcomp(data)
 	} else if(method == "tsne") {
 		loc = Rtsne(as.matrix(t(data)), ...)$Y	
 	}
@@ -467,4 +488,4 @@ dimension_reduction = function(res, k, method = c("mds", "tsne"),
 			cex = ifelse(l, 1, 0.7))
 	}
 	title(qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} points"))
-}
+})

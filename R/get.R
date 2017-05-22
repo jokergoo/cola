@@ -1,43 +1,42 @@
 
-get_param = function(res, k) {
-	i = which(res$k == k)
-	res$object_list[[i]]$param
-}
+setMethod("get_param",
+	signature = "ConsensusPartition",
+	definition = function(object, k) {
+	i = which(object@k == k)
+	object@object_list[[i]]$param
+})
 
-get_consensus = function(res, k) {
-	i = which(res$k == k)
-	res$object_list[[i]]$consensus
-}
+setMethod("get_consensus",
+	signature = "ConsensusPartition",
+	definition = function(object, k) {
+	i = which(object@k == k)
+	object@object_list[[i]]$consensus
+})
 
-get_membership = function(res, k, each = FALSE) {
-	i = which(res$k == k)
+setmethod("get_membership",
+	signature = "ConsensusPartition",
+	definition = function(object, k, each = FALSE) {
+	i = which(object@k == k)
 	if(each) {
-		res$object_list[[i]]$membership_each
+		object@object_list[[i]]$membership_each
 	} else {
-		res$object_list[[i]]$membership
+		object@object_list[[i]]$membership
 	}
-}
+})
 
-get_stat = function(res, k = res$k) {
-	m = matrix(nrow = length(k), ncol = length(res$object_list[[1]]$stat) - 1)
+setMethod("get_stat",
+	signature = "ConsensusPartition",
+	definition = function(object, k = object@k) {
+	m = matrix(nrow = length(k), ncol = length(object@object_list[[1]]$stat) - 1)
 	rownames(m) = k
-	colnames(m) = setdiff(names(res$object_list[[1]]$stat), "ecdf")
+	colnames(m) = setdiff(names(object@object_list[[1]]$stat), "ecdf")
 	for(i in seq_along(k)) {
-		m[i, ] = unlist(res$object_list[[i]]$stat[colnames(m)])
+		m[i, ] = unlist(object@object_list[[i]]$stat[colnames(m)])
 	}
-	m
-}
+	return(m)
+})
 
 
-#' General method for get_class
-#'
-#' @param x x
-#' @param ... other arguments
-#' 
-#' @export
-get_class = function(x, ...) {
-	UseMethod("get_class", x)
-}
 
 #' Get class from the consensus_partition object
 #'
@@ -49,12 +48,12 @@ get_class = function(x, ...) {
 #' A data frame with class IDs and other columns.
 #' 
 #' @export
-get_class.consensus_partition = function(x, k, ...) {
-	res = x
-	i = which(res$k == k)
-	
-	res$object_list[[i]]$class_df
-}
+setMethod("get_class",
+	signature = "ConsensusPartition",
+	definition = function(object, k) {
+	i = which(object@k == k)
+	object@object_list[[i]]$class_df
+})
 
 #' Get class from the consensus_partition_all_methods object
 #'
