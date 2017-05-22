@@ -4,26 +4,25 @@ strrep = function(x, times) {
 	return(paste0(x, collapse = ""))
 }
 
-relabel_class = function(class, reference, full_set = unique(c(reference, class))) {
+
+# assume class and ref have same set of labels
+relabel_class = function(class, ref) {
 	class = as.character(class)
-	reference = as.character(reference)
+	ref = as.character(ref)
+
+	if(length(intersect(class, ref)) == 0) {
+		stop("class and ref must be from same set of labels.")
+	}
+	all_class = union(class, ref)
+	n = length(all_class)
+
+	m = matrix(0, nrow = n, ncol = n, dimnames = list(all_class, all_class))
+	tb = table(class, ref)
+	m[rownames(tb), colnames(tb)] = tb
+
+	imap = solve_LSAP(tb, maximum = TRUE)
+	map = structure(rownames(m)[imap], names = rownames(m))
 	
-	tb = tapply(reference, class, table, simplify = FALSE)
-	map = NULL
-	while(length(tb)) {
-		max_p = sapply(tb, function(x) max(x))
-		which_max = sapply(tb, function(x) names(which.max(x)))
-		max_i = which.max(max_p)
-		map = c(map, structure(which_max[max_i], names = names(tb)[max_i]))
-		tb = tb[-max_i]
-		tb = lapply(tb, function(x) x[!(names(x) %in% map)])
-		tb = tb[sapply(tb, length) > 0]
-	}
-	sdf = setdiff(full_set, map)
-	if(length(sdf)) {
-		unmapped = structure(sdf, names = setdiff(full_set, names(map)))
-		map = c(map, unmapped)
-	}
 	return(map)
 }
 
@@ -130,4 +129,12 @@ test_between_known_factors = function(x, y = NULL, verbose = TRUE) {
 		}
 	}
 	return(p.value)
+}
+
+
+adjust_outlier = function(x, q = 0.05) {
+	qu = quantile(x, c(q, 1 - q))
+	x[x < qu[1]] = qu[1]
+	x[x > qu[2]] = qu[2]
+	x
 }

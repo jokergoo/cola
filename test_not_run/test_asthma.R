@@ -15,7 +15,7 @@ data = deseq2[gt[rownames(deseq2)] == "protein_coding", ]
 
 res = run_all(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, known = SAMPLE$phenotype, mc.cores = ncore)
 
-saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/hipo35_asthma_rnaseq_subgroup_p@{p}.rds"))
+saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo35_asthma_rnaseq_subgroup_p@{p}.rds"))
 
 
 ################ old dataset ################3
@@ -115,7 +115,7 @@ data = expr[gt[rownames(expr)] == "protein_coding", l]
 
 res = run_all(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, known = anno_old$phenotype[l], mc.cores = ncore)
 
-saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/hipo35_asthma_rnaseq_heidelberg_year0_subgroup_p@{p}.rds"))
+saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo35_asthma_rnaseq_heidelberg_year0_subgroup_p@{p}.rds"))
 
 
 	
@@ -124,4 +124,4 @@ data = expr[gt[rownames(expr)] == "protein_coding", l]
 
 res = run_all(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, known = anno_old$phenotype[l], mc.cores = ncore)
 
-saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/subgroup_test/hipo35_asthma_rnaseq_heidelberg_year3more_subgroup_p@{p}.rds"))
+saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo35_asthma_rnaseq_heidelberg_year3more_subgroup_p@{p}.rds"))

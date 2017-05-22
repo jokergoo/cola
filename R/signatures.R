@@ -38,23 +38,20 @@ get_signatures = function(res, k,
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = 0.05, 
 	scale_rows = TRUE,
-	annotation = data.frame(known = res$known),
-	annotation_color = list(known = res$known_color),
+	anno = res$known_anno, 
+	anno_col = if(missing(anno)) res$known_col else NULL,
 	show_legend = TRUE,
 	show_column_names = FALSE,
 	...) {
 
-	i = which(res$k == k)
+	class_df = get_class(res, k)
+	class_ids = class_df$class
+	class_col = class_df$class_col
+	class_col = structure(unique(class_col), names = unique(class_ids))
 
-	obj = res$object_list[[i]]
-
-	data = res$.env$data
-	class_ids = res$classification$class
-	class_color = obj$class_color
-
-	l = obj$classification$silhouette >= silhouette_cutoff
+	l = class_df$silhouette >= silhouette_cutoff
 	data2 = data[, l]
-	class = obj$classification$class[l]
+	class = class_df$class[l]
 	column_used_index = which(l)
 	tb = table(class)
 	l = as.character(class) %in% names(which(tb <= 1))
@@ -65,7 +62,7 @@ get_signatures = function(res, k,
 	column_used_logical[column_used_index] = TRUE
 	has_ambiguous = sum(!column_used_logical)
 
-	qqcat("@{length(class)}/@{length(obj$classification$class)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
+	qqcat("@{length(class)}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
 
 	nm = paste0(res$partition_method, "_", res$top_method, "_signatures_", k)
 	if(is.null(res$.env[[nm]])) {
@@ -95,8 +92,6 @@ get_signatures = function(res, k,
 			if(interactive()) cat(strrep("\b", 100))
 			if(interactive()) qqcat("pairwise t-test: @{i}/@{nrow(data2)}")
 			x = data2[i, ]
-			# df = data.frame(value = x, class = class)
-			# oneway.test(value ~ class, data = df)$p.value
 
 			group_mean = tapply(x, class, mean)
 			max_group = names(which.max(group_mean))
@@ -140,12 +135,6 @@ get_signatures = function(res, k,
 	mat_return = list(mat = mat, fdr = fdr2, group = group2)
 	qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
-	p = sort(p)
-	f = ecdf(p)
-	p = c(0, p, 1)
-	n2 = length(p)
-	res$.env[[nm]]$AUC = sum((p[2:n2] - p[1:(n2-1)])*f(p[-n2]))
-
 	more_than_5k = FALSE
 	if(nrow(mat) > 5000) {
 		more_than_5k = TRUE
@@ -165,6 +154,28 @@ get_signatures = function(res, k,
 	} else {
 		bottom_anno1 = HeatmapAnnotation(df = annotation[column_used_logical, ,drop = FALSE], col = annotation_color,
 			show_annotation_name = !has_ambiguous, annotation_name_side = "right")
+	}
+
+	if(is.null(anno)) {
+		bottom_anno1 = NULL
+	} else {
+		if(is.atomic(anno)) {
+			anno_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = anno_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = anno_nm
+			}
+		}
+
+		if(is.null(anno_col)) {
+			bottom_anno1 = HeatmapAnnotation(df = anno[column_used_logical, , drop = FALSE],
+				show_annotation_name = !has_ambiguous, annotation_name_side = "right")
+		} else {
+			bottom_anno1 = HeatmapAnnotation(df = anno[column_used_logical, , drop = FALSE], col = anno_col,
+				show_annotation_name = !has_ambiguous, annotation_name_side = "right")
+		}
 	}
 
 	if(scale_rows) {
@@ -195,21 +206,27 @@ get_signatures = function(res, k,
 	mat_col_od1 = column_order_by_group(class, use_mat1)
 
 	if(has_ambiguous) {
-		class2 = obj$classification$class[!column_used_logical]
+		class2 = class_df$class[!column_used_logical]
 		mat_col_od2 = column_order_by_group(class2, use_mat2)
 
-		if(nrow(annotation) == 0) {
+		if(is.null(anno)) {
 			bottom_anno2 = NULL
-		} else { 
-			bottom_anno2 = HeatmapAnnotation(df = annotation[!column_used_logical, ,drop = FALSE], col = annotation_color, 
-				show_annotation_name = TRUE, annotation_name_side = "right", show_legend = FALSE)
+		} else {
+
+			if(is.null(anno_col)) {
+				bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE],
+					show_annotation_name = TRUE, annotation_name_side = "right")
+			} else {
+				bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
+					show_annotation_name = TRUE, annotation_name_side = "right")
+			}
 		}
 	}
-	silhouette_range = range(obj$classification$silhouette)
+	silhouette_range = range(class_df$silhouette)
 	silhouette_range[2] = 1
 
 	group2 = factor(group2, levels = sort(unique(group2)))
-	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = class_color)
+	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = class_col)
 
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = HeatmapAnnotation(as.data.frame(obj$membership)[column_used_logical, ],

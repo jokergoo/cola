@@ -9,8 +9,6 @@
 #' @param p_sampling proportion of the top n rows to sample.
 #' @param partition_repeat number of repeats for the random sampling.
 #' @param partition_param parameters for the partition method.
-#' @param known a known class. If defined, the similarity between the predicted.
-#'        classes and the known classes is calculated.
 #' @param .env an environment, internally used.
 #'
 #' @return
@@ -22,11 +20,13 @@
 consensus_partition = function(data,
 	top_method = ALL_TOP_VALUE_METHOD()[1],
 	top_n = seq(min(2000, round(nrow(data)*0.2)), min(c(6000, round(nrow(data)*0.6))), length.out = 5),
-	partition_method = ALL_TOP_VALUE_METHOD()[1],
+	partition_method = ALL_PARTITION_METHOD()[1],
 	k = 2:6, p_sampling = 0.8,
 	partition_repeat = 50,
 	partition_param = list(),
-	known = NULL, .env) {
+	known_anno = NULL,
+	known_col = NULL,
+	.env) {
 
 	if(missing(.env)) {
 		if(is.data.frame(data)) data = as.matrix(data)
@@ -34,7 +34,7 @@ consensus_partition = function(data,
 
 		l = rowSds(data) == 0
 		data = data[!l, , drop = FALSE]
-		qqcat("removed @{sum(l)} rows with sd = 0\n")
+		if(sum(l)) qqcat("removed @{sum(l)} rows with sd = 0\n")
 
 		.env = new.env()
 		.env$data = data
@@ -44,14 +44,22 @@ consensus_partition = function(data,
 
 		l = rowSds(data) == 0
 		data = data[!l, , drop = FALSE]
-		qqcat("removed @{sum(l)} rows with sd = 0\n")
+		if(sum(l)) qqcat("removed @{sum(l)} rows with sd = 0\n")
 
 		.env$data = data
 	} else {
 		data = .env$data
 	}
+
+	if(!top_method %in% ALL_TOP_VALUE_METHOD()) {
+		stop(qq("the top method: @{top_method} has not beed defined yet."))
+	}
+	if(!partition_method %in% ALL_PARTITION_METHOD()) {
+		stop(qq("the partition method: @{partition_method} has not beed defined yet."))
+	}
 	
 	top_n = round(top_n)
+	top_n = top_n[top_n < nrow(data)]
 
 	partition_fun = get_partition_fun(partition_method, partition_param)
 
@@ -75,11 +83,11 @@ consensus_partition = function(data,
 	}
 
 	scale_method = attr(partition_fun, "scale_method")
-	if("normal" %in% scale_method) {
-		cat("rows are scaled before sent to partitioning\n")
+	if("standardization" %in% scale_method) {
+		cat("rows are scaled before sent to partition\n")
 		data = t(scale(t(data)))
-	} else if("positive" %in% scale_method) {
-		cat("rows are scaled before sent to partitioning\n")
+	} else if("rescale" %in% scale_method) {
+		cat("rows are scaled before sent to partition\n")
 		row_min = rowMeans(data)
 		row_max = rowMaxs(data)
 		row_range = row_max - row_min
@@ -109,57 +117,73 @@ consensus_partition = function(data,
 		partition_list = do.call("c", partition_list)
 		partition_list = cl_ensemble(list = partition_list)
 
-		qqcat("@{prefix}merging @{length(partition_list)} partitions into an ensemble object.\n")
+		qqcat("@{prefix}merging @{length(partition_list)} partitions into a single ensemble object.\n")
 		partition_consensus = cl_consensus(partition_list)
+
+		class_ids = as.vector(cl_class_ids(partition_consensus))
 
 		membership_mat = cl_membership(partition_consensus)
 
 		class(membership_mat) = "matrix"
 		colnames(membership_mat) = paste0("p", 1:ncol(membership_mat))
+		attr(membership_mat, "n_of_classes") = NULL
+		attr(membership_mat, "is_cl_hard_partition") = NULL
 
 		qqcat("@{prefix}calculate consensus matrix for samples clustered in a same group.\n")
-		group_mat = do.call("cbind", lapply(partition_list, function(x) {
-			membership = cl_membership(x)
-			v = numeric(nrow(membership))
-			for(i in seq_len(ncol(membership))) {
-				v[as.logical(membership[, i])] = i
-			}
-			return(v)
+		membership_each = do.call("cbind", lapply(partition_list, function(x) {
+			class = as.vector(cl_class_ids(x))
+			map = relabel_class(class, class_ids)
+			class = as.numeric(map[as.character(class)])
+			od = order(class_ids)
+			cat(paste(class_ids[od], collapse = ""), "\n")
+			cat(paste(class[od], collapse = ""), "\n")
+			cat("\n")
+			class
 		}))
+		rownames(membership_each) = rownames(membership_mat)
+
 		consensus_mat = matrix(1, nrow = nrow(membership_mat), ncol = nrow(membership_mat))
-		for(i in 1:(nrow(group_mat)-1)) {
-			for(j in (i+1):nrow(group_mat)) {
-				consensus_mat[i, j] = sum(group_mat[i, ] == group_mat[j, ])/ncol(group_mat)
+		for(i in 1:(nrow(membership_each)-1)) {
+			for(j in (i+1):nrow(membership_each)) {
+				consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ])/ncol(membership_each)
 				consensus_mat[j, i] = consensus_mat[i, j]
 			}
 	 	}
 	 	rownames(consensus_mat) = rownames(membership_mat)
 	 	colnames(consensus_mat) = rownames(membership_mat)
 
-	 	class_ids = as.vector(cl_class_ids(partition_consensus))
+	 	suppressWarnings(class_color <- structure(brewer.pal(k, "Set2")[1:k], names = 1:k))
+
+	 	class_df = data.frame(
+	 		class = class_ids,
+	 		class_col =  class_color[class_ids],
+	 		entropy = apply(membership_mat, 1, entropy),
+	 		stringsAsFactors = FALSE
+	 	)
+	 	rownames(class_df) = colnames(data)
+
 	 	if(length(unique(class_ids)) == 1) {
-	 		classification = data.frame(class = class_ids, entropy = apply(membership_mat, 1, entropy), 
-				silhouette = rep(1, length(class_ids)))
+	 		class_df$silhouette = rep(NA, length(class_ids))
 	 	} else {
-			classification = data.frame(class = class_ids, entropy = apply(membership_mat, 1, entropy), 
-				silhouette = silhouette(class_ids, dist(t(consensus_mat)))[, "sil_width"])
-		}
-		rownames(classification) = colnames(data)
-		unique_class = sort(unique(class_ids))
-		n_class = length(unique_class)
-
-		suppressWarnings(class_color <- structure(brewer.pal(k, "Set2")[1:k], names = 1:k))
-
-		concordance_to_known = NA
-		if(!is.null(known)) {
-			concordance_to_known = cl_dissimilarity(cl_ensemble(as.cl_partition(classification$class), 
-				                                                as.cl_partition(known)))
+			class_df$silhouette = silhouette(class_ids, dist(t(consensus_mat)))[, "sil_width"]
 		}
 
-		return(list(classification = classification, class_color = class_color, membership = membership_mat, 
-			consensus = consensus_mat, param = param, PAC = PAC(membership_mat), membership_each = group_mat,
-			concordance_to_known = concordance_to_known,
-			ecdf = ecdf(membership_mat[lower.tri(membership_mat)])))
+		stat = list(
+			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
+			cophcor =  cophcor(consensus_mat),
+			PAC = PAC(consensus_mat),
+			mean_silhouette = mean(class_df$silhouette),
+			APN = APN(class_df$class, membership_mat)
+		)
+		
+		return(list(
+			class_df = class_df, 
+			membership = membership_mat, 
+			consensus = consensus_mat, 
+			param = param, 
+			membership_each = membership_each,
+			stat = stat
+		))
 	}
 
 	object_list = lapply(k, function(y) {
@@ -172,15 +196,38 @@ consensus_partition = function(data,
 	rm(partition_list)
 	gc(verbose = FALSE)
 
-	if(!is.null(known)) {
-		known_color = structure(seq_along(unique(known)), names = unique(known))
-	} else {
-		known_color = NULL
+	ak = sapply(object_list, function(obj) {
+		f = obj$stat$ecdf
+		x = seq(0, 1, length = 100)
+		n = length(x)
+		sum((x[2:n] - x[1:(n-1)])*f(x[2:n]))
+	})
+	delta_k = ak
+	for(i in seq_along(res$k)[-1]) {
+		delta_k[i] = (ak[i] - ak[i-1])/ak[i-1]
 	}
-	res = list(object_list = object_list, k = k, partition_method = partition_method, top_method = top_method, .env = .env,
-		known = known, known_color = known_color)
+	for(i in seq_along(object_list)) {
+		object_list[[i]]$stat$area_increased = delta_k[i]
+	}
+
+	if(!is.null(known_anno)) {
+		if(is.atomic(known_anno)) {
+			known_nm = deparse(substitute(known_anno))
+			known_anno = data.frame(known_anno)
+			colnames(known_anno) = knwon_nm
+			if(!is.null(known_col)) {
+				known_col = list(known_col)
+				names(known_col) = knwon_nm
+			}
+		}
+	}
+
+	res = list(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n),  
+		partition_method = partition_method, top_method = top_method,
+		known_anno = known_anno, known_col = known_col, .env = .env)
 	class(res) = c("consensus_partition", "list")
-	return(invisible(res))
+	
+	return(res)
 }
 
 #' Print the consensus_partition object
@@ -191,9 +238,9 @@ consensus_partition = function(data,
 #' @export
 #' @import GetoptLong
 print.consensus_partition = function(x, ...) {
-	qqcat("top rows are extracted by '@{x$top_method}' method.\n")
-	qqcat("Subgroups are detected by '@{x$partition_method}' method.\n")
-	qqcat("Number of partitionings are tried for k = @{paste(x$k, collapse = ', ')}\n")
+	qqcat("A 'consensus_partition' object with k = @{paste(x$k, collapse = ', ')}\n")
+	qqcat("  top rows are extracted by '@{x$top_method}' method.\n")
+	qqcat("  subgroups are detected by '@{x$partition_method}' method.\n")
 }
 
 
@@ -204,67 +251,38 @@ print.consensus_partition = function(x, ...) {
 #'
 #' @export
 plot_ecdf = function(res, ...) {
-	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), main = "ECDF of consensus matrix", xlab = "p")
-	for(i in 1:length(res$object_list)) {
-		f = res$object_list[[i]]$ecdf
+	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x", ylab = "P(X >= x)")
+	for(i in seq_along(res$k)) {
+		consensus_mat = get_consensus(res, k = res$k[i])
+		f = ecdf(consensus_mat[lower.tri(consensus_mat)])
 		x = seq(0, 1, length = 100)
 		lines(x, f(x), col = i)
 	}
-	legend("bottomright", pch = 15, legend = paste0("k = ", res$k), col = res$k-1)
+	legend("bottomright", pch = 15, legend = paste0("k = ", res$k), col = seq_along(res$k))
 }
 
 
 #' Several plots for determine the optimized number of partitions
 #'
 #' @param res a `consensus_partition` object
-#' @param plot - 0: plot all four plots; 
-#'             - 1: only the ecdf plot; 
-#'             - 2: plot cophenetic correlation coefficient; 
-#'             - 3: mean silhouette; 
-#'             - 4: proportion increase of the AUC of the ecdf.
 #'
 #' @export
 #' @import graphics
 #' @importFrom NMF cophcor
-select_k = function(res, plot = 0) {
+select_partition_number = function(res) {
 	op = par(no.readonly = TRUE)
 
-	if(plot == 0) {
-		par(mfrow = c(2, 2))
+	m = get_stat(res)
+	nm = colnames(m)
+
+	par(mfrow = c(2, 3), mar = c(4, 4, 1, 1))
+
+	plot_ecdf(res)
+
+	for(i in seq_len(ncol(m))) {
+		plot(res$k, m[, i], type = "b", xlab = "k", ylab = nm[i])
 	}
 
-	if(plot %in% c(0, 1)) {
-		plot_ecdf(res)
-	}
-
-	if(plot %in% c(0, 2)) {
-		# plot(res$k, sapply(res$object_list, function(x) x$PAC),type = "b", xlab = "k, number of clusters", ylab = "PAC")
-		plot(res$k, sapply(res$object_list, function(x) cophcor(x$consensus)), type = "b", xlab = "k, number of clusters", ylab = "Cophenetic Correlation Coefficient")
-	}
-
-	if(plot %in% c(0, 3)) {
-		mean_silhouette = sapply(res$object_list, function(x) {
-			y = x$classification$silhouette
-			mean(y)
-		})
-		plot(res$k, mean_silhouette, type = "b", xlab = "k, number of clusters", ylab = "mean silhouette")
-	}
-
-	if(plot %in% c(0, 4)) {
-		ak = sapply(res$object_list, function(obj) {
-			consensus_mat = obj$consensus
-			x = sort(consensus_mat[lower.tri(consensus_mat)])
-			Fn = ecdf(x)
-			x = c(0, x, 1)
-			n = length(x)
-			sum((x[2:n] - x[1:(n-1)])*Fn(x[2:n]))
-		})
-		delta_k = ak
-		for(i in 2:length(res$k)) {
-			delta_k[i] = (ak[i] - ak[i-1])/ak[i-1]
-		}
-		plot(res$k, delta_k, type = "b", xlab = "k, number of clusters", ylab = "Proportion increase")
-	}
 	par(op)
 }
 
@@ -281,120 +299,51 @@ select_k = function(res, plot = 0) {
 #' 
 #' @export
 consensus_heatmap = function(res, k, show_legend = TRUE,
-	annotation = data.frame(known = res$known),
-	annotation_color = list(known = res$known_color)) {
+	anno = res$known_anno, 
+	anno_col = if(missing(anno)) res$known_col else NULL) {
 
-	i = which(res$k == k)
+	class_df = get_class(res, k)
+	class_ids = class_df$class
+	class_col = class_df$class_col
+	class_col = structure(unique(class_col), names = unique(class_ids))
 
-	obj = res$object_list[[i]]
-
-	class_ids = obj$classification$class
-	class_color = obj$class_color
-
-	consensus_mat = obj$consensus
+	consensus_mat = get_consensus(res, k)
 
 	mat_col_od = column_order_by_group(class_ids, consensus_mat)
 
-	membership_mat = obj$membership
+	membership_mat = get_membership(res, k)
 
 	ht_list = Heatmap(membership_mat, name = "membership", cluster_columns = FALSE, show_row_names = FALSE, 
 		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red"))) + 
-	Heatmap(obj$classification$entropy, name = "entropy", width = unit(5, "mm"), 
-		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "orange")),
-		heatmap_legend_param = list(at = c(0, 0.5, 1), labels = c("hetergeneous", "", "homogeneous"),
-			color_bar = "continuous", legend_height = unit(2, "cm"))) +
-	Heatmap(obj$classification$silhouette, name = "silhouette", width = unit(5, "mm"), 
+	Heatmap(class_df$silhouette, name = "silhouette", width = unit(5, "mm"), 
 		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple"))) +
-	Heatmap(class_ids, name = "class", col = class_color, show_row_names = FALSE, width = unit(5, "mm"))
+	Heatmap(class_ids, name = "class", col = structure(unique(class_col), names = unique(class_ids)), 
+		show_row_names = FALSE, width = unit(5, "mm"))
 	
 	ht_list = ht_list +	Heatmap(consensus_mat, name = "consensus", show_row_names = FALSE, show_row_dend = FALSE,
 		col = colorRamp2(c(0, 1), c("white", "blue")), row_order = mat_col_od, column_order = mat_col_od,
 		cluster_rows = FALSE, cluster_columns = FALSE, show_column_names = FALSE)
 	
-	if(nrow(annotation)) {
-		ht_list = ht_list + rowAnnotation(df = annotation, col = annotation_color, show_annotation_name = TRUE,
-			annotation_name_side = "bottom", width = unit(ncol(annotation)*5, "mm"))
-	}
-	draw(ht_list, main_heatmap = "consensus", column_title = qq("consensus @{res$partition_method} with @{k} groups from @{nrow(obj$param)} partitions"),
-		show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
-
-	return(invisible(consensus_mat))
-}
-
-#' General method for get_class
-#'
-#' @param x x
-#' @param ... other arguments
-#' 
-#' @export
-get_class = function(x, ...) {
-	UseMethod("get_class", x)
-}
-
-#' Get class from the consensus_partition object
-#'
-#' @param x a `consensus_parittion` object
-#' @param k number of partitions
-#' @param ... other arguments.
-#'
-#' @return
-#' A data frame with class IDs and other columns.
-#' 
-#' @export
-get_class.consensus_partition = function(x, k, ...) {
-	res = x
-	i = which(res$k == k)
-	cbind(as.data.frame(res$object_list[[i]]$membership), 
-		silhouette = res$object_list[[i]]$classification$silhouette,
-		class = res$object_list[[i]]$classification$class)
-}
-
-#' Get class from the consensus_partition_all_methods object
-#'
-#' @param x a `consensus_partition_all_methods` object
-#' @param k number of partitions
-#' @param ... other arguments
-#' 
-#' @details 
-#' The class IDs is re-calculated by merging class IDs from all methods.
-#'
-#' @return
-#' A data frame with class IDs and other columns.
-#' 
-#' @export
-get_class.consensus_partition_all_methods = function(x, k, ...) {
-	res = x
-	partition_list = NULL
-	mean_cophcor = NULL
-	mean_silhouette = NULL
-	reference_class = NULL
-	for(tm in res$top_method) {
-		for(pm in res$partition_method) {
-			nm = paste0(tm, ":", pm)
-			obj = res$list[[nm]]
-			ik = which(obj$k == k)
-
-			membership = obj$object_list[[ik]]$membership
-			if(is.null(reference_class)) {
-	        	reference_class = obj$object_list[[ik]]$classification$class
-	        } else {
-	        	map = relabel_class(obj$object_list[[ik]]$classification$class, reference_class, 1:k)
-	        	map2 = structure(names(map), names = map)
-	        	membership = membership[, as.numeric(map2[as.character(1:k)]) ]
-				colnames(membership) = paste0("p", 1:k)
+	if(!is.null(anno)) {
+		if(is.atomic(anno)) {
+			anno_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = anno_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = anno_nm
 			}
-
-			partition_list = c(partition_list, list(as.cl_partition(membership)))
-			mean_cophcor = c(mean_cophcor, cophcor(obj$object_list[[ik]]$consensus))
-			mean_silhouette = c(mean_silhouette, mean(obj$object_list[[ik]]$classification$silhouette))
+		}
+		if(is.null(anno_col))
+			ht_list = ht_list + rowAnnotation(df = anno, show_annotation_name = TRUE,
+				annotation_name_side = "bottom", width = unit(ncol(anno)*5, "mm"))
+		else {
+			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col, show_annotation_name = TRUE,
+				annotation_name_side = "bottom", width = unit(ncol(anno)*5, "mm"))
 		}
 	}
-	consensus = cl_consensus(cl_ensemble(list = partition_list), weights = 1)
-	m = cl_membership(consensus)
-	class(m) = "matrix"
-	colnames(m) = paste0("p", 1:k)
-	class = as.vector(cl_class_ids(consensus))
-	cbind(as.data.frame(m), class = class)
+	draw(ht_list, main_heatmap = "consensus", column_title = qq("consensus @{res$partition_method} with @{k} groups from @{res$n_partition} partitions"),
+		show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
 }
 
 #' Heatmap of membership of columns in each random sampling
@@ -410,139 +359,66 @@ get_class.consensus_partition_all_methods = function(x, k, ...) {
 #' 
 #' @export
 membership_heatmap = function(res, k, show_legend = TRUE, 
-	annotation = data.frame(known = res$known),
-	annotation_color = list(known = res$known_color)) {
+	anno = res$known_anno, 
+	anno_col = if(missing(anno)) res$known_col else NULL) {
 
-	ik = which(res$k == k)
-	obj = res$object_list[[ik]]
-	
-	class_ids = obj$classification$class
-	class_color = obj$class_color
+	class_df = get_class(res, k)
+	class_ids = class_df$class
+	class_col = class_df$class_col
+	class_col = structure(unique(class_col), names = unique(class_ids))
 
+	membership_mat = get_membership(res, k)
 	col_list = rep(list(colorRamp2(c(0, 1), c("white", "red"))), k)
-	names(col_list) = colnames(obj$membership)
+	names(col_list) = colnames(membership_mat)
 
-	m = obj$membership_each
-	m2 = matrix(nrow = nrow(m), ncol = ncol(m))
-	for(i in seq_len(ncol(m))) {
-		map = relabel_class(m[, i], class_ids)
-		m2[, i] = map[as.character(m[, i])]
-	}
+	membership_each = get_membership(res, k, each = TRUE)
+	membership_each = t(membership_each)
+	mat_col_od = column_order_by_group(class_ids, membership_each)
 
-	m2 = as.numeric(m2)
-	dim(m2) = dim(m)
-
-	m3 = t(m2)
 	suppressWarnings(col <- structure(brewer.pal(k, "Set1"), names = 1:k))
 
-	mat_col_od = do.call("c", lapply(sort(unique(class_ids)), function(le) {
-		m = m3[, class_ids == le, drop = FALSE]
-		if(ncol(m) == 1) {
-			which(class_ids == le)
-		} else {
-			hc1 = hclust(dist(t(m)))
-			oe = try({ 
-				hc1 = as.hclust(reorder(as.dendrogram(hc1), colSums(m)))
-			}, silent = TRUE)
-			col_od1 = hc1$order
-			which(class_ids == le)[col_od1]
-		}
-	}))
-
-	if(nrow(annotation) == 0) {
+	if(is.null(anno)) {
 		bottom_anno = NULL
 	} else {
-		bottom_anno = HeatmapAnnotation(df = annotation, col = annotation_color,
-			show_annotation_name = TRUE, annotation_name_side = "right")
+		if(is.atomic(anno)) {
+			anno_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = anno_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = anno_nm
+			}
+		}
+
+		if(is.null(anno_col)) {
+			bottom_anno = HeatmapAnnotation(df = anno,
+				show_annotation_name = TRUE, annotation_name_side = "right")
+		} else {
+			bottom_anno = HeatmapAnnotation(df = anno, col = anno_col,
+				show_annotation_name = TRUE, annotation_name_side = "right")
+		}
 	}
 
-	n_row_level = unique(obj$param$n_row)
-	n_row_col = structure(brewer.pal(length(n_row_level), "Set2"), names = n_row_level)
-	ht = Heatmap(m3, name = "cluster", show_row_dend = FALSE, show_column_dend = FALSE, col = col,
+	param = get_param(res, k)
+
+	n_row_level = unique(param$n_row)
+	suppressWarnings(n_row_col <- structure(brewer.pal(length(n_row_level), "Set2"), names = n_row_level))
+	
+	ht = Heatmap(membership_each, name = "cluster", show_row_dend = FALSE, show_column_dend = FALSE, col = col,
 		column_title = qq("membership heatmap, k = @{k}"), column_order = mat_col_od, cluster_columns = FALSE,
-		row_title = qq("@{nrow(m2)} samplings"),
-		split = obj$param$n_row,
-		top_annotation = HeatmapAnnotation(df = as.data.frame(obj$membership),
-			class = class_ids, col = c(list(class = class_color), col_list),
+		split = param$n_row,
+		top_annotation = HeatmapAnnotation(df = as.data.frame(membership_mat),
+			class = class_ids, col = c(list(class = class_col), col_list),
 			show_annotation_name = TRUE, annotation_name_side = "right",
 			show_legend = c(TRUE, rep(FALSE, k - 1), TRUE)),
 		bottom_annotation = bottom_anno,
 		combined_name_fun = function(x) paste0(x, " rows")
 		) + 
-	Heatmap(as.character(obj$param$n_row), name = "n_row", col = n_row_col,
+	Heatmap(as.character(param$n_row), name = "n_row", col = n_row_col,
 		width = unit(5, "mm"), show_row_names = FALSE)
 
-	draw(ht, row_title = qq("@{round(ncol(m2)/length(n_row_level))} x @{length(n_row_level)} random samplings"),
+	draw(ht, row_title = qq("@{round(res$n_partition/length(n_row_level))} x @{length(n_row_level)} random samplings"),
 		show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
-
-	return(invisible(m3))
-}
-
-#' Overlap of top rows from different top methods
-#'
-#' @param res_list a `consensus_partition_all_methods` object
-#' @param top_n number of top rows
-#' @param type venn: use venn euler plots; correspondance: use [correspond_between_rankings()].
-#'
-#' @export
-top_rows_overlap = function(res_list, top_n = 2000, type = c("venn", "correspondance")) {
-
-	all_value_list = res_list$list[[1]]$.env$all_value_list
-
-	type = match.arg(type)
-
-    lt = lapply(all_value_list, function(x) order(x, decreasing = TRUE)[1:top_n])
-    
-    if(type == "venn") {
-   		venn_euler(lt, main = qq("top @{top_n} rows"))
-	} else if(type == "correspondance") {
-		correspond_between_rankings(all_value_list, top_n = top_n)
-	}
-}
-
-#' Heatmap for the top rows
-#'
-#' @param res_list a `consensus_partition_all_methods` object
-#' @param top_n number of top rows
-#'
-#' @export
-#' @import ComplexHeatmap
-top_rows_heatmap = function(res_list, top_n = 2000) {
-	
-	all_value_list = res_list$list[[1]]$.env$all_value_list
-    lt = lapply(all_value_list, function(x) order(x, decreasing = TRUE)[1:top_n])
-    
-    for(i in seq_along(lt)) {
-		if(dev.interactive()) {
-			readline(prompt = "press enter to load next plot: ")
-		}
-		mat = res_list$.env$data[lt[[i]], ]
-		draw(Heatmap(t(scale(t(mat))), name = "scaled_expr", show_row_names = FALSE, 
-			column_title = qq("top @{length(lt[[i]])} rows of @{res_list$top_method[i]}"),
-			show_row_dend = FALSE, show_column_names = FALSE))
-	}
-}
-
-#' Make Venn Euler diagram from a list
-#'
-#' @param lt a list of items
-#' @param ... other arguments
-#'
-#' @export
-#' @importFrom gplots venn
-venn_euler = function(lt, ...) {
-
-	if(!requireNamespace("venneuler")) {
-		stop("You need to install venneuler package.")
-	}
-    foo = venn(lt, show.plot = FALSE)
-    foo = foo[-1, ]
-    set = foo[, "num"]
-    category = foo[, -1]
-    names(set) = apply(category, 1, function(x) {
-        paste(colnames(category)[as.logical(x)], collapse = "&")
-    })
-    plot(getFromNamespace("venneuler", "venneuler")(set), ...)
 }
 
 #' Visualize columns after dimension reduction
@@ -564,10 +440,14 @@ dimension_reduction = function(res, k, method = c("mds", "tsne"),
 	method = match.arg(method)
 	data = res$.env$data
 
+	data = t(scale(t(data)))
+
 	ik = which(res$k == k)
 
 	class_df = get_class(res, k)
-	class_color = res$object_list[[ik]]$class_color
+	class_ids = class_df$class
+	class_col = class_df$class_col
+	class_col = structure(unique(class_col), names = unique(class_ids))
 
 	l = class_df$silhouette >= silhouette_cutoff
 	if(method == "mds") {
@@ -580,10 +460,11 @@ dimension_reduction = function(res, k, method = c("mds", "tsne"),
 	loc = as.data.frame(loc)
 
 	if(remove) {
-		plot(loc[l, ], pch = 16, col = class_color[as.character(class_df$class[l])],
+		plot(loc[l, ], pch = 16, col = class_col[as.character(class_df$class[l])],
 			cex = 1)
 	} else {
-		plot(loc, pch = ifelse(l, 16, 4), col = class_color[as.character(class_df$class)],
+		plot(loc, pch = ifelse(l, 16, 4), col = class_col[as.character(class_df$class)],
 			cex = ifelse(l, 1, 0.7))
 	}
+	title(qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} points"))
 }

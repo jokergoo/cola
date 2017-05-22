@@ -13,6 +13,7 @@
 #' @return A vector of AAC scores
 #' @export
 #' @import stats
+#' @import parallel
 #'
 #' @examples
 #' set.seed(12345)
@@ -32,25 +33,28 @@
 #' mat = rbind(mat1, mat2, mat3)
 #' AAC_score = AAC(t(mat))
 #' plot(AAC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
-AAC = function(mat, cor_method = "pearson", min_cor = 0.2) {
+AAC = function(mat, cor_method = "pearson", min_cor = 0.2, mc.cores = 1) {
 	n = ncol(mat)
-	v = numeric(n)
-	for(i in 1:n) {
-		suppressWarnings(cor_v <- abs(cor(mat[, i, drop = FALSE], mat[, -i, drop = FALSE], method = cor_method)))
-		if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
-			v[i] = 1
-		} else {
-			f = ecdf(cor_v)
-			cor_v = seq(min_cor, 1, length = 100)
-			n2 = length(cor_v)
-			v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
+	
+	le = cut(1:n, mc.cores)
+	ind_list = split(n, le)
+
+	v_list = mclapply(ind_list, function(ind) {
+		for(i in ind) {
+			suppressWarnings(cor_v <- abs(cor(mat[, i, drop = FALSE], mat[, -i, drop = FALSE], method = cor_method)))
+			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
+				v[i] = 1
+			} else {
+				f = ecdf(cor_v)
+				cor_v = seq(min_cor, 1, length = 100)
+				n2 = length(cor_v)
+				v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
+			}
 		}
-		# if(interactive()) {
-		# 	cat(strrep("\b", 100))
-		# 	cat("AAC of the ecdf of correlations for ", i, "/", n, sep = "")
-		# }
-	}
-	# if(interactive()) cat("\n")
+		return(v)
+	}, mc.cores = mc.cores)
+
+	v = do.call("c", v_list)
 	v = (1 - min_cor) - v
 	return(v)
 }
@@ -62,8 +66,30 @@ entropy = function(p) {
 	-sum(p*log2(p))/abs(sum(p2*log2(p2)))
 }
 
-PAC = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
-	Fn = ecdf(consensus_mat[lower.tri(consensus_mat)])
-	Fn(x2) - Fn(x1)
+PAC = function(consensus_mat) {
+	f = ecdf(consensus_mat[lower.tri(consensus_mat)])
+
+	offset1 = seq(0, 0.3, by = 0.05)
+	offset2 = 1 - seq(0, 0.3, by = 0.05)
+
+	m_score = matrix(nrow = length(offset1), ncol = length(offset2))
+	for(i in seq_along(offset1)) {
+		for(j in seq_along(offset2)) {
+			x = seq(offset1[i], offset2[j], length = 100)
+			n2 = length(x)
+			v = sum((x[2:n2] - x[1:(n2-1)])*f(x[-n2]))
+			rg = offset2[j] - offset1[i]
+
+			m_score[i, j] = abs(v - rg*f(offset1[i]))/rg
+		}
+	}
+	mean(m_score)
 }
 
+APN = function(class_id, membership_each) {
+	ind_list = tapply(seq_along(class_id), class_id, function(x) x, simplify = FALSE)
+	s = sum(sapply(ind_list, function(ind) {
+		sum(apply(membership_each[ind, , drop = FALSE], 2, function(x) 1 - sum(x == class_id[ind])/length(ind)))
+	}))
+	s/ncol(membership_each)/length(ind_list)
+}
