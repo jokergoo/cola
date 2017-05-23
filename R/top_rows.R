@@ -14,7 +14,7 @@ setMethod("top_rows_overlap",
 	all_value_list = object@.env$all_value_list
 
 	top_rows_overlap(all_value_list)
-}
+})
 
 setMethod("top_rows_overlap",
 	signature = "matrix",

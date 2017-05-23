@@ -1,14 +1,4 @@
 
-#' General method for collect_plots
-#'
-#' @param x x
-#' @param ... other arguments 
-#'
-#' @export
-collect_plots = function(x, ...) {
-	UseMethod("collect_plots", x)
-}
-
 
 #' Collect plots from consensus_partition_all_methods object
 #'
@@ -25,10 +15,10 @@ collect_plots = function(x, ...) {
 #' @import png
 #' @import grDevices
 #' @import utils
-collect_plots.consensus_partition_all_methods = function(x, k = 2, fun = consensus_heatmap,
-	top_method = x$top_method, partition_method = x$partition_method, ...) {
-
-	res_list = x
+setMethod("collect_plots",
+	signature = "ConsensusClusterList",
+	definition = function(object, k = 2, fun = consensus_heatmap,
+	top_method = object@top_method, partition_method = object@partition_method, ...) {
 
 	reference_class = NULL
 	grid.newpage()
@@ -46,59 +36,17 @@ collect_plots.consensus_partition_all_methods = function(x, k = 2, fun = consens
 	    grid.text(partition_method[j])
 	    upViewport()
 	}
-	max_mean_score = 0
-	max_i = NULL
-	max_j = NULL
+	
 	for(i in seq_along(top_method)) {
 	    for(j in seq_along(partition_method)) {  
-	    	res = get_single_run(res_list, top_method = top_method[i], partition_method = partition_method[j])
-
-	        # relabel the class according to the class in the first object
-	        ik = which(res$k == k)
-	        if(is.null(reference_class)) {
-	        	reference_class = res$object_list[[ik]]$classification$class
-	        } else {
-	        	# following elements need to be relabeled
-	        	# - res$object_list[[ik]]$classification$class
-	        	# - column order of res$object_list[[ik]]$membership
-	        	# - res$object_list[[ik]]$membership_each
-	        	map = relabel_class(res$object_list[[ik]]$classification$class, reference_class, 1:k)
-	        	map2 = structure(names(map), names = map)
-	        	res$object_list[[ik]]$classification$class = as.numeric(map[as.character(res$object_list[[ik]]$classification$class)])
-	        	res$object_list[[ik]]$membership = res$object_list[[ik]]$membership[, as.numeric(map2[as.character(1:k)]) ]
-				colnames(res$object_list[[ik]]$membership) = paste0("p", 1:k)
-				odim = dim(res$object_list[[ik]]$membership_each)
-				res$object_list[[ik]]$membership_each = as.numeric(map[as.character(res$object_list[[ik]]$membership_each)])
-				dim(res$object_list[[ik]]$membership_each) = odim
-	        }
-
-	        consensus_mat = res$object_list[[ik]]$consensus
-			mean_consensus = tapply(seq_along(res$object_list[[ik]]$classification$class), 
-				res$object_list[[ik]]$classification$class, function(ind) {
-				m = consensus_mat[ind, ind, drop = FALSE]
-				if(nrow(m) > 1) {
-					mean(m[lower.tri(m)])
-				} else {
-					NA
-				}
-			})
-			tb = table(res$object_list[[ik]]$classification$class)
-			l = is.na(mean_consensus)
-			mean_consensus = mean_consensus[!l]
-			tb = tb[!l]
-			mean_score = sum(mean_consensus*tb)/sum(tb)
-			if(mean_score > max_mean_score) {
-				max_mean_score = mean_score
-				max_i = i
-				max_j = j
-			}
+	    	res = get_single_run(object, top_method = top_method[i], partition_method = partition_method[j])
 
 	        file_name = tempfile()
 	        png(file_name)
 	        oe = try(fun(res, k = k, show_legend = FALSE, ...))
 	        dev.off()
 	        if(!inherits(oe, "try-error")) {
-		        pushViewport(viewport(layout.pos.row = i+1, layout.pos.col = j+1))
+		        pushViewport(viewport(layout.pos.row = i + 1, layout.pos.col = j + 1))
 		        grid.raster(readPNG(file_name))
 		        grid.rect(gp = gpar(fill = "transparent"))
 		        upViewport()
@@ -107,11 +55,6 @@ collect_plots.consensus_partition_all_methods = function(x, k = 2, fun = consens
 	    }
 	}
 
-	if(!is.null(max_i)) {
-		pushViewport(viewport(layout.pos.row = max_i+1, layout.pos.col = max_j+1))
-        grid.rect(gp = gpar(fill = "transparent", col = "red", lwd = 2))
-        upViewport()
-	}
 	upViewport()
 }
 
@@ -129,33 +72,33 @@ collect_plots.consensus_partition_all_methods = function(x, k = 2, fun = consens
 #' @import grid
 #' @import png
 #'
-collect_plots.consensus_partition = function(x, ...) {
+setMethod("collect_plots",
+	signature = "ConsensusCluster",
+	definition = function(object, ...) {
 
-	res = x
-	all_k = res$k
+	all_k = object$k
 	grid.newpage()
-	pushViewport(viewport(layout = grid.layout(nrow = 4, ncol = max(c(5, length(all_k))))))
-
-	for(i in 1:4) {
-		file_name = tempfile()
-        png(file_name)
-        oe = try(select_k(res, plot = i))
-        dev.off()
-        if(!inherits(oe, "try-error")) {
-	        pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i))
-	        grid.raster(readPNG(file_name))
-	        grid.rect(gp = gpar(fill = "transparent"))
-	        upViewport()
-	    }
-	    file.remove(file_name)
-	}
-
+	pushViewport(viewport(layout = grid.layout(nrow = 4, ncol = max(c(2, length(all_k))))))
+	
+	# ecdf
 	file_name = tempfile()
     png(file_name)
-    oe = try(collect_classes(res, show_legend = FALSE))
+    oe = try(plot_ecdf(object))
     dev.off()
     if(!inherits(oe, "try-error")) {
-        pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 5))
+        pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
+        grid.raster(readPNG(file_name))
+        grid.rect(gp = gpar(fill = "transparent"))
+        upViewport()
+    }
+    file.remove(file_name)
+	
+	file_name = tempfile()
+    png(file_name)
+    oe = try(collect_classes(object, show_legend = FALSE))
+    dev.off()
+    if(!inherits(oe, "try-error")) {
+        pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
         grid.raster(readPNG(file_name))
         grid.rect(gp = gpar(fill = "transparent"))
         upViewport()
@@ -165,7 +108,7 @@ collect_plots.consensus_partition = function(x, ...) {
 	for(i in seq_along(all_k)) {
 		file_name = tempfile()
         png(file_name)
-        oe = try(consensus_heatmap(res, k = all_k[i], show_legend = FALSE, ...))
+        oe = try(consensus_heatmap(object, k = all_k[i], show_legend = FALSE, ...))
         dev.off()
         if(!inherits(oe, "try-error")) {
 	        pushViewport(viewport(layout.pos.row = 2, layout.pos.col = i))
@@ -177,7 +120,7 @@ collect_plots.consensus_partition = function(x, ...) {
 
 	    file_name = tempfile()
         png(file_name)
-        oe = try(membership_heatmap(res, k = all_k[i], show_legend = FALSE, ...))
+        oe = try(membership_heatmap(object, k = all_k[i], show_legend = FALSE, ...))
         dev.off()
         if(!inherits(oe, "try-error")) {
 	        pushViewport(viewport(layout.pos.row = 3, layout.pos.col = i))
@@ -189,7 +132,7 @@ collect_plots.consensus_partition = function(x, ...) {
 
 	    file_name = tempfile()
         png(file_name)
-        oe = try(get_signatures(res, k = all_k[i], show_legend = FALSE, ...))
+        oe = try(get_signatures(object, k = all_k[i], show_legend = FALSE, ...))
         dev.off()
         if(!inherits(oe, "try-error")) {
 	        pushViewport(viewport(layout.pos.row = 4, layout.pos.col = i))
@@ -204,17 +147,6 @@ collect_plots.consensus_partition = function(x, ...) {
 }
 
 
-#' General method for collect_classes
-#'
-#' @param x x
-#' @param ... other arguments
-#'
-#' @export
-collect_classes = function(x, ...) {
-	UseMethod("collect_classes", x)
-}
-
-
 #' Collect classes from consensus_partition_all_methods object
 #'
 #' @param x a `consensus_partition_all_methods` object returned by [run_all()].
@@ -225,8 +157,10 @@ collect_classes = function(x, ...) {
 #'
 #' @export
 #' @import ComplexHeatmap
-collect_classes.consensus_partition_all_methods = function(x, k, 
-	top_method = x$top_method, partition_method = x$partition_method, ...) {
+setMethod("collect_classes",
+	signature = "ConsensusPartitionList",
+	definition = function(object, k, 
+	top_method = object@top_method, partition_method = object@partition_method, ...) {
 
 	res_list = x
 
@@ -238,10 +172,10 @@ collect_classes.consensus_partition_all_methods = function(x, k,
 	mem_used = NULL
 	for(i in seq_along(top_method)) {
 	    for(j in seq_along(partition_method)) {  
-	    	res = get_single_run(res_list, top_method = top_method[i], partition_method = partition_method[j])
+	    	res = get_single_run(object, top_method = top_method[i], partition_method = partition_method[j])
 
 	        # relabel the class according to the class in the first object
-	        ik = which(res$k == k)
+	        ik = which(res@k == k)
 	        if(is.null(reference_class)) {
 	        	reference_class = res$object_list[[ik]]$classification$class
 	        } else {

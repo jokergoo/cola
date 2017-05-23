@@ -34,18 +34,20 @@
 #' @import stats
 #' @import ComplexHeatmap
 #' @import circlize
-get_signatures = function(res, k,
+setMethod("get_signatures",
+	signature = "ConsensusPartition",
+	definition = function(object, k,
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = ifelse(row_diff_by == "samr", 0.1, 0.05), 
 	scale_rows = TRUE,
 	row_diff_by = c("compare_to_highest_subgroup", "Ftest", "samr"),
-	anno = res$known_anno, 
-	anno_col = if(missing(anno)) res$known_col else NULL,
+	anno = object@known_anno, 
+	anno_col = if(missing(anno)) object@known_col else NULL,
 	show_legend = TRUE,
 	show_column_names = FALSE,
 	...) {
 
-	class_df = get_class(res, k)
+	class_df = get_class(object, k)
 	class_ids = class_df$class
 	class_col = class_df$class_col
 	class_col = structure(unique(class_col), names = unique(class_ids))
@@ -78,18 +80,18 @@ get_signatures = function(res, k,
 	} else {
 		row_diff_by = match.arg(row_diff_by)
 
-		nm = paste0("signature_fdr_", res$top_method, "_", res$partition_method)
+		nm = paste0("signature_fdr_", object@top_method, "_", object@partition_method)
 
 		find_signature = TRUE
-		if(!is.null(res$.env[[nm]])) {
+		if(!is.null(object@.env[[nm]])) {
 			if(row_diff_by == "samr") {
-				if(res$.env[[nm]]$row_diff_by == "samr" && abs(res$.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
-					fdr = res$.env[[nm]]$fdr
+				if(object@.env[[nm]]$row_diff_by == "samr" && abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+					fdr = object@.env[[nm]]$fdr
 					find_signature = FALSE
 				}
 			} else {
-				if(res$.env[[nm]]$row_diff_by == row_diff_by) {
-					fdr = res$.env[[nm]]$fdr
+				if(object@.env[[nm]]$row_diff_by == row_diff_by) {
+					fdr = object@.env[[nm]]$fdr
 					find_signature = FALSE
 				}
 			}
@@ -106,9 +108,9 @@ get_signatures = function(res, k,
 			}
 		}
 
-		res$.env[[nm]]$row_diff_by = row_diff_by
-		res$.env[[nm]]$fdr_cutoff = fdr_cutoff
-		res$.env[[nm]]$fdr = fdr
+		object@.env[[nm]]$row_diff_by = row_diff_by
+		object@.env[[nm]]$fdr_cutoff = fdr_cutoff
+		object@.env[[nm]]$fdr = fdr
 	}
 
 	group = character(nrow(data2))
@@ -215,7 +217,7 @@ get_signatures = function(res, k,
 	group2 = factor(group2, levels = sort(unique(group2)))
 	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = class_col)
 
-	membership_mat = as.data.frame(get_membership(res, k))
+	membership_mat = as.data.frame(get_membership(object, k))
 	col_list = rep(list(colorRamp2(c(0, 1), c("white", "red"))), k)
 	names(col_list) = colnames(membership_mat)
 
