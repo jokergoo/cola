@@ -1,40 +1,38 @@
 
-#' Get signature rows
-#'
-#' @param res A `consensus_partition` class object. The object can be returned
-#'        from [get_single_run()].
-#' @param k number of partitions
-#' @param silhouette_cutoff cutoff for silhouette values. Columns with values 
-#'        less than it are not used for finding signature rows. For selecting a 
-#'        proper silhouette value, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
-#' @param fdr_cutoff cutoff for FDR of the difference between subgroups.
-#' @param scale_rows whether apply row scaling when making the heatmap.
-#' @param annotation a data frame which contains annotation of columns.
-#' @param annotation_color colors for the annotations.
-#' @param show_legend whether draw the legends on the heatmap.
-#' @param show_column_names whether show column names on the heatmap.
-#' @param ... other arguments
-#' 
-#' @details 
-#' Basically the function apply test for the difference of subgroups in every
-#' row. Also, to call it a signature for a given subgroup, the values in the
-#' corresponding subgroup should have the highest mean value compared to all
-#' other subgroups. The minimal p-value compared to all other subgroups is taken
-#' as the p-value of the row and used for FDR calculation.
-#'
-#' @return 
-#' A list of three elements:
-#' 
-#' -`mat` the matrix for the signatures
-#' -`fdr` FDR for rows
-#' -`group` subgroups that the rows are significantly high
-#' 
-#' @export
-#' @import GetoptLong
-#' @import stats
-#' @import ComplexHeatmap
-#' @import circlize
-setMethod("get_signatures",
+# == title
+# Get signature rows
+#
+# == param
+# -object A `ConsensusPartition-class` object. The object can be returned
+#        from `get_single_run`.
+# -k number of partitions
+# -silhouette_cutoff cutoff for silhouette values. Columns with values 
+#        less than it are not used for finding signature rows. For selecting a 
+#        proper silhouette value, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
+# -fdr_cutoff cutoff for FDR of the difference between subgroups.
+# -scale_rows whether apply row scaling when making the heatmap.
+# -row_diff_by methods to get rows which are significantly different between subgroups.
+# -anno a data frame with known annotation of columns.
+# -anno_col a list of colors for the annotations in ``anno``.
+# -show_legend whether draw the legends on the heatmap.
+# -show_column_names whether show column names on the heatmap.
+# -... other arguments
+# 
+# == details 
+# Basically the function apply test for the difference of subgroups in every
+# row. Also, to call it a signature for a given subgroup, the values in the
+# corresponding subgroup should have the highest mean value compared to all
+# other subgroups. The minimal p-value compared to all other subgroups is taken
+# as the p-value of the row and used for FDR calculation.
+#
+# == return 
+# A list of three elements:
+# 
+# -``mat`` the matrix for the signatures
+# -``fdr`` FDR for rows
+# -``group`` subgroups that the rows are significantly high
+# 
+setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
 	silhouette_cutoff = 0.5, 
@@ -276,9 +274,7 @@ setMethod("get_signatures",
 	}
 
 	return(invisible(mat_return))
-}
-
-
+})
 
 compare_to_highest_subgroup = function(mat, class) {
 
@@ -319,7 +315,6 @@ compare_to_highest_subgroup = function(mat, class) {
 	return(fdr)
 }
 
-#' @importFrom samr SAM
 samr = function(mat, class, ...) {
 	class = as.numeric(factor(class))
 	n_class = length(unique(class))
@@ -327,9 +322,9 @@ samr = function(mat, class, ...) {
 	tempf = tempfile()
 	sink(tempf)
 	if(n_class == 2) {
-		samfit = SAM(mat, class, resp.type = "Two class unpaired", nperm = 1000, ...)
+		samfit = SAM(mat, class, resp.type = "Two class unpaired", nperms = 1000, ...)
 	} else {
-		samfit = SAM(mat, class, resp.type = "Multiclass", nperm = 1000, ...)
+		samfit = SAM(mat, class, resp.type = "Multiclass", nperms = 1000, ...)
 	}
 	sink(NULL)
 	file.remove(tempf)

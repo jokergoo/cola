@@ -5,7 +5,6 @@ strrep = function(x, times) {
 }
 
 
-# assume class and ref have same set of labels
 relabel_class = function(class, ref) {
 	class = as.character(class)
 	ref = as.character(ref)
@@ -43,31 +42,32 @@ column_order_by_group = function(factor, mat) {
 }
 
 
-#' Test whether known factors are correlated
-#'
-#' @param x a data frame or a vector which contains discrete or continuous variables.
-#' @param y a data frame or a vector which contains discrete or continuous variables.
-#' @param verbose whether print messages.
-#' 
-#' @details
-#' Pairwise test is applied to every two columns in the data frame. Methods are:
-#' 
-#' - two numeric variables: correlation test by [stats::cor.test()] is applied;
-#' - two character or factor variables: Chi-squared test by [stats::chisq.test()] is applied;
-#' - one numeric variable and one character/factor variable: oneway ANOVA test by [stats::oneway.test()] is applied.
-#' 
-#' This function can be used to test the correlation between the predicted classes and other known factors.
-#' 
-#' @return a matrix of p-values.
-#' @export
-#' @importFrom stats cor.test oneway.test chisq.test
-#' 
-#' @examples
-#' df = data.frame(v1 = rnorm(100), v2 = sample(letters[1:3], 100, replace = TRUE), 
-#'     v3 = sample(LETTERS[5:6], 100, replace = TRUE))
-#' test_between_known_factors(df)
-#' x = runif(100)
-#' test_between_known_factors(x, df)
+# == title
+# Test whether known factors are correlated
+#
+# == param
+# -x a data frame or a vector which contains discrete or continuous variables.
+# -y a data frame or a vector which contains discrete or continuous variables.
+# -verbose whether print messages.
+# 
+# == details
+# Pairwise test is applied to every two columns in the data frame. Methods are:
+# 
+# - two numeric variables: correlation test by `stats::cor.test` is applied;
+# - two character or factor variables: Chi-squared test by `stats::chisq.test` is applied;
+# - one numeric variable and one character/factor variable: oneway ANOVA test by `stats::oneway.test` is applied.
+# 
+# This function can be used to test the correlation between the predicted classes and other known factors.
+# 
+# == return 
+# A matrix of p-values.
+# 
+# == examples
+# df = data.frame(v1 = rnorm(100), v2 = sample(letters[1:3], 100, replace = TRUE), 
+#     v3 = sample(LETTERS[5:6], 100, replace = TRUE))
+# test_between_known_factors(df)
+# x = runif(100)
+# test_between_known_factors(x, df)
 test_between_known_factors = function(x, y = NULL, verbose = TRUE) {
 	
 	if(is.null(y)) {
@@ -131,7 +131,21 @@ test_between_known_factors = function(x, y = NULL, verbose = TRUE) {
 	return(p.value)
 }
 
-
+# == title
+# Adjust outliers
+#
+# == param
+# -x a numeric vector
+# -q quantile to adjust
+# 
+# == details
+# Vaules larger than percential ``1 - q`` are adjusted to ``1 - q`` and 
+# values smaller than percential ``q`` are adjusted to ``q``.
+#
+# == example
+# x = rnorm(10)
+# x[1] = 100
+# adjust_outlier(x)
 adjust_outlier = function(x, q = 0.05) {
 	qu = quantile(x, c(q, 1 - q))
 	x[x < qu[1]] = qu[1]

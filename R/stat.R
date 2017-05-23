@@ -1,38 +1,39 @@
 
 
-#' AAC score
-#'
-#' @param mat a numeric matrix. AAC score is calculated by columns.
-#' @param cor_method pass to [stats::cor()].
-#' @param min_cor minimal absolute correlation.
-#' 
-#' @details 
-#' AAC score for a given item is the area above the curve of the curmulative 
-#' distribution of the absolute correlation to all other items.
-#'
-#' @return A vector of AAC scores
-#' @export
-#' @import stats
-#' @import parallel
-#'
-#' @examples
-#' set.seed(12345)
-#' require(matrixStats)
-#' nr1 = 100
-#' mat1 = matrix(rnorm(100*nr1), nrow = nr1)
-#' 
-#' nr2 = 10
-#' require(mvtnorm)
-#' sigma = matrix(0.8, nrow = nr2, ncol = nr2); diag(sigma) = 1
-#' mat2 = t(rmvnorm(100, mean = rep(0, nr2), sigma = sigma))
-#' 
-#' nr3 = 50
-#' sigma = matrix(0.5, nrow = nr3, ncol = nr3); diag(sigma) = 1
-#' mat3 = t(rmvnorm(100, mean = rep(0, nr3), sigma = sigma))
-#' 
-#' mat = rbind(mat1, mat2, mat3)
-#' AAC_score = AAC(t(mat))
-#' plot(AAC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
+# == title
+# AAC score
+#
+# == param
+# -mat a numeric matrix. AAC score is calculated by columns.
+# -cor_method pass to `stats::cor`.
+# -min_cor minimal absolute correlation.
+# -mc.cores number of cores.
+# 
+# == details 
+# AAC score for a given item is the area above the curve of the curmulative 
+# distribution of the absolute correlation to all other items.
+#
+# == return 
+# A vector of AAC scores
+#
+# == examples
+# set.seed(12345)
+# require(matrixStats)
+# nr1 = 100
+# mat1 = matrix(rnorm(100*nr1), nrow = nr1)
+# 
+# nr2 = 10
+# require(mvtnorm)
+# sigma = matrix(0.8, nrow = nr2, ncol = nr2); diag(sigma) = 1
+# mat2 = t(rmvnorm(100, mean = rep(0, nr2), sigma = sigma))
+# 
+# nr3 = 50
+# sigma = matrix(0.5, nrow = nr3, ncol = nr3); diag(sigma) = 1
+# mat3 = t(rmvnorm(100, mean = rep(0, nr3), sigma = sigma))
+# 
+# mat = rbind(mat1, mat2, mat3)
+# AAC_score = AAC(t(mat))
+# plot(AAC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
 AAC = function(mat, cor_method = "pearson", min_cor = 0.2, mc.cores = 1) {
 	n = ncol(mat)
 	
@@ -71,6 +72,19 @@ entropy = function(p) {
 	-sum(p*log2(p))/abs(sum(p2*log2(p2)))
 }
 
+# == title
+# PAC scores
+#
+# == param
+# -consensus_mat consensus matrix
+# 
+# == details
+# This a variant of the orignial PAC (proportion of ambiguous clustering) method with 
+# slight modification.
+# 
+# == return 
+# A single PAC score
+# 
 PAC = function(consensus_mat) {
 	f = ecdf(consensus_mat[lower.tri(consensus_mat)])
 

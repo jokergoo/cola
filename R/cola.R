@@ -15,15 +15,14 @@ cola_logo =
       '''''      
 "
 
-#' A bottle of cola
-#' 
-#' @details
-#' Simply provide you a cola, but not freezing.
-#'
-#' @export
-#' @importFrom  crayon red green yellow blue magenta cyan silver
-#' @importFrom  crayon bgRed bgGreen bgYellow bgBlue bgMagenta bgCyan bgWhite
-#' @importFrom  crayon reset
+# = title
+# A bottle of cola
+# 
+# == details
+# Simply provide you a bottle of cola.
+#
+# == example
+# cola()
 cola = function() {
 
     bg_color = sample(c("bgRed", "bgGreen", "bgYellow", "bgBlue", "bgMagenta", "bgCyan", "bgWhite"), 1)

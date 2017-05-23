@@ -1,34 +1,23 @@
 
-ConsensusPartition = setClass("ConsensusPartition",
-	slots = list(
-		object_list = "list", 
-		k = "numeric", 
-		n_partition = "numeric",  
-		partition_method = "character", 
-		top_method = "character",
-		known_anno = "ANY", 
-		known_col = "ANY", 
-		.env = "environment"
-))
-
-#' Consensus partition
-#'
-#' @param data a numeric matrix where subgroups are found by columns.
-#' @param top_method a single top method. Avaialble methods are in [ALL_TOP_VALUE_METHOD()].
-#' @param top_n number of rows with top values.
-#' @param partition_method a single partition method. Avaialble methods are in [ALL_PARTITION_METHOD()].
-#' @param k number of partitions. The value is a vector.
-#' @param p_sampling proportion of the top n rows to sample.
-#' @param partition_repeat number of repeats for the random sampling.
-#' @param partition_param parameters for the partition method.
-#' @param .env an environment, internally used.
-#'
-#' @return
-#' a `consensus_partition` class object.
-#' 
-#' @export
-#' @import GetoptLong
-#' @import clue
+# == title
+# Consensus partition
+#
+# == param
+# -data a numeric matrix where subgroups are found by columns.
+# -top_method a single top method. Avaialble methods are in `ALL_TOP_VALUE_METHOD`.
+# -top_n number of rows with top values.
+# -partition_method a single partition method. Avaialble methods are in `ALL_PARTITION_METHOD`.
+# -k number of partitions. The value is a vector.
+# -p_sampling proportion of the top n rows to sample.
+# -partition_repeat number of repeats for the random sampling.
+# -partition_param parameters for the partition method.
+# -known_anno a data frame with known annotation of columns.
+# -known_col a list of colors for the annotations in ``known_anno``.
+# -.env an environment, internally used.
+#
+# == return
+# A `ConsensusPartition-class` object.
+#
 consensus_partition = function(data,
 	top_method = ALL_TOP_VALUE_METHOD()[1],
 	top_n = seq(min(2000, round(nrow(data)*0.2)), min(c(6000, round(nrow(data)*0.6))), length.out = 5),
@@ -222,10 +211,10 @@ consensus_partition = function(data,
 		if(is.atomic(known_anno)) {
 			known_nm = deparse(substitute(known_anno))
 			known_anno = data.frame(known_anno)
-			colnames(known_anno) = knwon_nm
+			colnames(known_anno) = known_nm
 			if(!is.null(known_col)) {
 				known_col = list(known_col)
-				names(known_col) = knwon_nm
+				names(known_col) = known_nm
 			}
 		}
 	}
@@ -237,14 +226,14 @@ consensus_partition = function(data,
 	return(res)
 }
 
-#' Print the consensus_partition object
-#'
-#' @param x a `consensus_partition` object
-#' @param ... other arguments
-#'
-#' @export
-#' @import GetoptLong
-setMethod("show",
+# == title
+# Print the consensus_partition object
+#
+# == param
+# -object a `ConsensusPartition-class` object
+# -... other arguments
+#
+setMethod(f = "show",
 	signature = "ConsensusPartition",
 	definition = function(object) {
 	qqcat("A 'consensus_partition' object with k = @{paste(object@k, collapse = ', ')}\n")
@@ -252,14 +241,14 @@ setMethod("show",
 	qqcat("  subgroups are detected by '@{object@partition_method}' method.\n")
 })
 
-
-#' Plot the ecdf of the consensus matrix
-#'
-#' @param res a `consensus_partition` object.
-#' @param ... other arguments.
-#'
-#' @export
-setMethod("plot_ecdf",
+# == title
+# Plot the ecdf of the consensus matrix
+#
+# == param
+# -object a `ConsensusPartition-class` object.
+# -... other arguments.
+#
+setMethod(f = "plot_ecdf",
 	signature = "ConsensusPartition",
 	definition = function(object, ...) {
 	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x", ylab = "P(X >= x)")
@@ -272,15 +261,13 @@ setMethod("plot_ecdf",
 	legend("bottomright", pch = 15, legend = paste0("k = ", object@k), col = seq_along(object@k))
 })
 
-
-#' Several plots for determine the optimized number of partitions
-#'
-#' @param res a `consensus_partition` object
-#'
-#' @export
-#' @import graphics
-#' @importFrom NMF cophcor
-setMethod("select_partition_number",
+# == title
+# Several plots for determine the optimized number of partitions
+#
+# == param
+# -object a `ConsensusPartition-class` object
+#
+setMethod(f = "select_partition_number",
 	signature = "ConsensusPartition",
 	definition = function(object) {
 	op = par(no.readonly = TRUE)
@@ -299,19 +286,17 @@ setMethod("select_partition_number",
 	par(op)
 })
 
-#' Heatmap for the consensus matrix
-#'
-#' @param res a `consensus_partition` object.
-#' @param k number of partitions.
-#' @param show_legend whether show heatmap and annotation legends.
-#' @param annotation a data frame with column annotations
-#' @param annotation_color colors for the annotations
-#'
-#' @return
-#' The consensus matrix.
-#' 
-#' @export
-setMethod("consensus_heatmap",
+# == title
+# Heatmap for the consensus matrix
+#
+# == param
+# -object a `ConsensusPartition-class` object.
+# -k number of partitions.
+# -show_legend whether show heatmap and annotation legends.
+# -anno a data frame with column annotations
+# -anno_col colors for the annotations
+#
+setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, show_legend = TRUE,
 	anno = object@known_anno, 
@@ -361,19 +346,17 @@ setMethod("consensus_heatmap",
 		show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
 })
 
-#' Heatmap of membership of columns in each random sampling
-#'
-#' @param res a `consensus_partition` object
-#' @param k number of partitions.
-#' @param show_legend whether show heatmap and annotation legends.
-#' @param annotation a data frame with column annotations
-#' @param annotation_color colors for the annotations
-#'
-#' @return
-#' The membership matrix.
-#' 
-#' @export
-setMethod("membership_heatmap",
+# == title
+# Heatmap of membership of columns in each random sampling
+#
+# == param
+# -object a `ConsensusPartition-class` object
+# -k number of partitions.
+# -show_legend whether show heatmap and annotation legends.
+# -anno a data frame with column annotations
+# -anno_col colors for the annotations
+#
+setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, show_legend = TRUE, 
 	anno = object@known_anno, 
@@ -438,26 +421,36 @@ setMethod("membership_heatmap",
 		show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
 })
 
-#' Visualize columns after dimension reduction
-#'
-#' @param res a `consensus_partition` object
-#' @param k number of partitions
-#' @param method which method to reduce the dimension of the data.
-#' @param silhouette_cutoff cutoff of silhouette. Data points with values less
-#'        than it will be mapped to small points.
-#' @param remove whether to remove columns which have less silhouette values than
-#'        the cutoff.
-#' @param ... pass to [Rtsne::Rtsne()]
-#'
-#' @export
-#' @import Rtsne
-setMethod("dimension_reduction",
+# == title
+# Visualize columns after dimension reduction
+#
+# == param
+# -object a `ConsensusPartition-class` object
+# -k number of partitions
+# -top_n top n rows to use.
+# -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
+#         ``pca`` uses ``stats::prcomp`` and ``tsne`` uses `Rtsne::Rtsne`.
+# -silhouette_cutoff cutoff of silhouette. Data points with values less
+#        than it will be mapped to small points.
+# -remove whether to remove columns which have less silhouette values than
+#        the cutoff.
+# -... pass to `Rtsne::Rtsne`
+#
+setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
-	definition = function(object, k, method = c("mds", "pca", "tsne"),
+	definition = function(object, k, top_n = NULL,
+	method = c("mds", "pca", "tsne"),
 	silhouette_cutoff = 0.5, remove = FALSE, ...) {
 
 	method = match.arg(method)
 	data = object@.env$data
+
+	if(!is.null(top_n)) {
+		top_n = min(c(top_n, nrow(data)))
+		all_value = object@.env$all_value_list[[object@top_method]]
+		ind = order(all_value)[1:top_n]
+		data = data[ind, , drop = FALSE]
+	}
 
 	data = t(scale(t(data)))
 
@@ -472,7 +465,7 @@ setMethod("dimension_reduction",
 	if(method == "mds") {
 		loc = cmdscale(dist(t(data)))
 	} else if(method == "pca") {
-		loc = prcomp(data)
+		loc = prcomp(t(data))$x[, 1:2]
 	} else if(method == "tsne") {
 		loc = Rtsne(as.matrix(t(data)), ...)$Y	
 	}

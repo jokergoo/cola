@@ -5,41 +5,42 @@ get_top_value_fun = function(method) {
 	.ENV$ALL_TOP_VALUE_FUN[[method]]
 }
 
-#' Register user-defined top value functions
-#'
-#' @param ... a named list of functions.
-#' 
-#' @details 
-#' The user-defined function should only accept one argument which is the data
-#' matrix and the scores are calculated by rows.
-#' 
-#' To remove a top method, use [remove_top_value_method()].
-#'
-#' @export
-#' 
-#' @examples 
-#' ALL_TOP_VALUE_METHOD()
-#' register_top_value_fun(mean = function(mat) rowMeans(mat),
-#'                        median = function(mat) rowMedians(mat))
-#' ALL_TOP_VALUE_METHOD()
+# == title
+# Register user-defined top value functions
+#
+# == param
+# -... a named list of functions.
+# 
+# == details 
+# The user-defined function should only accept one argument which is the data
+# matrix and the scores are calculated by rows.
+# 
+# To remove a top method, use `remove_top_value_method`.
+# 
+# == examples 
+# ALL_TOP_VALUE_METHOD()
+# register_top_value_fun(mean = function(mat) rowMeans(mat),
+#                        median = function(mat) rowMedians(mat))
+# ALL_TOP_VALUE_METHOD()
+# remove_top_value_method(c("mean", "median"))
 register_top_value_fun = function(...) {
 	lt = list(...)
 	.ENV$ALL_TOP_VALUE_FUN = c(.ENV$ALL_TOP_VALUE_FUN, lt)
 	.ENV$ALL_TOP_VALUE_METHOD = union(.ENV$ALL_TOP_VALUE_METHOD, names(lt))
 }
 
-#' All supported top methods
-#'
-#' @return a vector of supported top methods.
-#' @export
-#'
-#' @examples
-#' ALL_TOP_VALUE_METHOD()
+# == title
+# All supported top methods
+#
+# == return 
+# A vector of supported top methods.
+#
+# == examples
+# ALL_TOP_VALUE_METHOD()
 ALL_TOP_VALUE_METHOD = function() {
 	.ENV$ALL_TOP_VALUE_METHOD
 }
 
-#' @import matrixStats
 register_top_value_fun(
 	sd = function(mat) {
 		rowSds(mat)
@@ -71,30 +72,31 @@ get_partition_fun = function(method, partition_param = list()) {
 	return(fun2)
 }
 
-#' Register user-defined partition functions
-#'
-#' @param ... a named list of functions
-#' @param scale_method normally, data matrix are scaled by rows before sent to
-#'        the partition function. The default scaling is apply by [base::scale()].
-#'        However, some partition function may not accept negative values which may
-#'        be produced by [base::scale()]. Here `scale_method` can be set to `rescale`
-#'        which scale rows by `(x - min)/(max - min)`.
-#' 
-#' @details 
-#' The user-defined function should only accept two arguments which are the data
-#' matrix and the number of partitions. The function should return a vector of
-#' partitions (or group classes).
-#' 
-#' The partition function is applied on rows.
-#' 
-#' To remove a partition method, use [remove_partition_method()].
-#'
-#' @export
-#' 
-#' @examples
-#' ALL_PARTITION_METHOD()
-#' register_top_value_fun(random = function(mat, k) sample(k, nrow(mat), replace = TRUE))
-#' ALL_PARTITION_METHOD()
+# == title
+# Register user-defined partition functions
+#
+# == param
+# -... a named list of functions
+# -scale_method normally, data matrix are scaled by rows before sent to
+#        the partition function. The default scaling is apply by `base::scale`.
+#        However, some partition function may not accept negative values which may
+#        be produced by `base::scale`. Here ``scale_method`` can be set to ``rescale``
+#        which scale rows by ``(x - min)/(max - min)``.
+# 
+# == details 
+# The user-defined function should only accept two arguments which are the data
+# matrix and the number of partitions. The function should return a vector of
+# partitions (or group classes).
+# 
+# The partition function is applied on rows.
+# 
+# To remove a partition method, use `remove_partition_method`.
+#
+# == examples
+# ALL_PARTITION_METHOD()
+# register_partition_fun(random = function(mat, k) sample(k, nrow(mat), replace = TRUE))
+# ALL_PARTITION_METHOD()
+# remove_partition_method("random")
 register_partition_fun = function(..., scale_method = c("standardization", "rescale", "none")) {
 	
 	scale_method = match.arg(scale_method)
@@ -109,22 +111,18 @@ register_partition_fun = function(..., scale_method = c("standardization", "resc
 	.ENV$ALL_PARTITION_METHOD = union(.ENV$ALL_PARTITION_METHOD, names(lt))
 }
 
-#' All supported partition methods
-#'
-#' @return a vector of supported partition methods
-#' @export
-#'
-#' @examples
-#' ALL_PARTITION_METHOD()
+# == title
+# All supported partition methods
+#
+# == return 
+# A vector of supported partition methods
+#
+# == examples
+# ALL_PARTITION_METHOD()
 ALL_PARTITION_METHOD = function() {
 	.ENV$ALL_PARTITION_METHOD
 }
 
-#' @import skmeans
-#' @import mclust
-#' @import cclust
-#' @import cluster
-#' @import kohonen
 register_partition_fun(
 	hclust = function(mat, k, ...) {
 		hc = hclust(d = dist(t(mat)), ...)
@@ -156,11 +154,12 @@ register_partition_fun(
 	}
 )
 
-#' Remove top methods
-#'
-#' @param method name of the top methods to be removed.
-#'
-#' @export
+# == title
+# Remove top methods
+#
+# == param
+# -method name of the top methods to be removed.
+#
 remove_top_value_method = function(method) {
 	nm_keep = setdiff(.ENV$ALL_TOP_VALUE_METHOD, method)
 	.ENV$ALL_TOP_VALUE_FUN = .ENV$ALL_TOP_VALUE_FUN[nm_keep]
@@ -168,11 +167,12 @@ remove_top_value_method = function(method) {
 }
 
 
-#' Remove partition methods
-#'
-#' @param method name of the partition methods to be removed.
-#'
-#' @export
+# == title
+# Remove partition methods
+#
+# == param
+# -method name of the partition methods to be removed.
+#
 remove_partition_method = function(method) {
 	nm_keep = setdiff(.ENV$ALL_PARTITION_METHOD, method)
 	.ENV$ALL_PARTITION_FUN = .ENV$ALL_PARTITION_FUN[nm_keep]
