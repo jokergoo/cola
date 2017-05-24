@@ -7,17 +7,21 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-source("/home/guz/project/development/cola/load.R")
+source("~/project/cola/load.R")
 #############################################
 ### TCGA GBM
-data = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/unifiedScaled.txt", header = TRUE, row.names = 1, check.names = FALSE)
-data = as.matrix(data)
+# data = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/unifiedScaled.txt", header = TRUE, row.names = 1, check.names = FALSE)
+# data = as.matrix(data)
 
-subtype = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_unified_CORE_ClaNC840.txt", sep = "\t", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE)
-subtype = structure(unlist(subtype[1, -(1:2)]), names = colnames(subtype)[-(1:2)])
+# subtype = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_unified_CORE_ClaNC840.txt", sep = "\t", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE)
+# subtype = structure(unlist(subtype[1, -(1:2)]), names = colnames(subtype)[-(1:2)])
 
-data = data[, names(subtype)]
-res = run_all(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, known = subtype, mc.cores = ncore)
+# data = data[, names(subtype)]
+
+remove_partition_method("Mclust")
+
+load("~/project/cola/inst/extdata/TCGA_GBM_microarray.Rdata")
+res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, known = subtype, mc.cores = ncore)
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup_p@{p}.rds"))
 

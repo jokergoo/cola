@@ -55,7 +55,7 @@ run_all_consensus_partition_methods = function(data, top_method = ALL_TOP_VALUE_
 			partition_method = pm, .env = .env, ...))
 		attr(res, "system.time") = time_used
 		if(get_signatures) {
-			for(k in res$k) {
+			for(k in res@k) {
 				try(get_signatures(res, k = k))
 			}
 		}

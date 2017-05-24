@@ -19,7 +19,7 @@ relabel_class = function(class, ref) {
 	tb = table(class, ref)
 	m[rownames(tb), colnames(tb)] = tb
 
-	imap = solve_LSAP(tb, maximum = TRUE)
+	imap = solve_LSAP(m, maximum = TRUE)
 	map = structure(rownames(m)[imap], names = rownames(m))
 	
 	return(map)

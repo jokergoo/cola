@@ -96,7 +96,7 @@ consensus_partition = function(data,
 	}
 
 	for(i in seq_along(top_n)) {
-		qqcat("get top @{top_n[i]} by @{top_method} method\n")
+		qqcat("get top @{top_n[i]} rows by @{top_method} method\n")
 		ind = order(all_value, decreasing = TRUE)[1:top_n[i]]
 
 		for(j in 1:partition_repeat) {

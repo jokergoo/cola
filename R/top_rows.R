@@ -67,7 +67,11 @@ setMethod(f = "top_rows_overlap",
 	lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
     
     if(type == "venn") {
-    	if(!requireNamespace("venneuler")) {
+    	oe = try(has_venneuler <- requireNamespace("venneuler"))
+    	if(inherits(oe, "try-error")) {
+    		venn(lt)
+    		title(qq("top @{top_n} rows"))
+    	} else if(!has_venneuler) {
     		venn(lt)
     		title(qq("top @{top_n} rows"))
     	} else {
@@ -154,8 +158,10 @@ setMethod(f = "top_rows_heatmap",
 # venn_euler(lt)
 venn_euler = function(lt, ...) {
 
-	if(!requireNamespace("venneuler")) {
-		stop("You need to install venneuler package.")
+	oe = try(has_venneuler <- requireNamespace("venneuler"))
+	if(inherits(oe, "try-error")) {
+		message("You need to install venneuler package.")
+		return(invisible(NULL))
 	}
     foo = venn(lt, show.plot = FALSE)
     foo = foo[-1, ]

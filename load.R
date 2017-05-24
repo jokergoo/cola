@@ -12,13 +12,15 @@ library(NMF)
 library(mclust)
 library(skmeans)
 library(cclust)
-library(digest)
 library(png)
-library(venneuler)
+# library(venneuler)
 library(gplots)
 library(Rtsne)
+library(samr)
+library(genefilter)
+library(kohonen)
 
-Rfiles = list.files("~/project/development/cola/R", full.names = TRUE)
+Rfiles = list.files("~/project/cola/R", full.names = TRUE)
 for(rf in Rfiles) {
 	source(rf)
 }

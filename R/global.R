@@ -50,8 +50,7 @@ register_top_value_fun(
 		rowSds(mat)/(s + quantile(s, 0.1))
 	},
 	MAD = function(mat) {
-		s = rowMeans(mat)
-		rowMads(mat)/(rowMedians(mat) + quantile(s, 0.1))
+		rowMads(mat)
 	},
 	AAC = function(mat) {
 		AAC(t(mat))
