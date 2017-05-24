@@ -6,17 +6,17 @@
 # -object a `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
 # -k number of partitions.
 # -fun function used to generate plots. Valid functions are `consensus_heatmap,ConsensusPartition-method`,
-#        `plot_ecdf,ConsensusPartition-method`, `membership_heatmap,ConsensusPartition-method` and `get_signatures,ConsensusPartition-method`.
+#        `plot_ecdf,ConsensusPartition-method`, `membership_heatmap,ConsensusPartition-method` and 
+#        `get_signatures,ConsensusPartition-method`.
 # -top_method a vector of top methods.
 # -partition_method a vector of partition methods.
 # -... other arguments passed to corresponding ``fun``.
 #
 setMethod(f = "collect_plots",
 	signature = "ConsensusPartitionList",
-	definition = function(object, k = 2, fun = consensus_heatmap,
+	definition = function(object, k, fun = consensus_heatmap,
 	top_method = object@top_method, partition_method = object@partition_method, ...) {
 
-	reference_class = NULL
 	grid.newpage()
 	pushViewport(viewport(layout = grid.layout(nrow = length(top_method)+1, 
 	    ncol = length(partition_method)+1,
@@ -37,16 +37,20 @@ setMethod(f = "collect_plots",
 	    for(j in seq_along(partition_method)) {  
 	    	res = get_single_run(object, top_method = top_method[i], partition_method = partition_method[j])
 
+	    	pushViewport(viewport(layout.pos.row = i + 1, layout.pos.col = j + 1))
+	    	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
+    		# image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
+    		image_width = 800
+    		image_height = 800
 	        file_name = tempfile()
-	        png(file_name)
-	        oe = try(fun(res, k = k, show_legend = FALSE, ...))
+	        png(file_name, width = image_width, height = image_height)
+	        oe = try(fun(res, k = k, show_legend = FALSE, show_column_names = FALSE, use_raster = FALSE, ...))
 	        dev.off()
 	        if(!inherits(oe, "try-error")) {
-		        pushViewport(viewport(layout.pos.row = i + 1, layout.pos.col = j + 1))
 		        grid.raster(readPNG(file_name))
-		        grid.rect(gp = gpar(fill = "transparent"))
-		        upViewport()
 		    }
+		    grid.rect(gp = gpar(fill = "transparent"))
+		    upViewport()
 		    file.remove(file_name)
 	    }
 	}
@@ -69,70 +73,74 @@ setMethod(f = "collect_plots",
 	signature = "ConsensusPartition",
 	definition = function(object, ...) {
 
-	all_k = object$k
+	all_k = object@k
 	grid.newpage()
 	pushViewport(viewport(layout = grid.layout(nrow = 4, ncol = max(c(2, length(all_k))))))
 	
 	# ecdf
+	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
 	file_name = tempfile()
-    png(file_name)
+	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
+ #    image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
+	image_width = 800
+	image_height = 800
+    png(file_name, width = image_width*2, height = image_height*2)
     oe = try(plot_ecdf(object))
     dev.off()
     if(!inherits(oe, "try-error")) {
-        pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
-        grid.raster(readPNG(file_name))
-        grid.rect(gp = gpar(fill = "transparent"))
-        upViewport()
+    	grid.raster(readPNG(file_name))
     }
+    grid.rect(gp = gpar(fill = "transparent"))
+    upViewport()
     file.remove(file_name)
 	
+	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
 	file_name = tempfile()
-    png(file_name)
+    png(file_name, width = image_width*2, height = image_height*2)
     oe = try(collect_classes(object, show_legend = FALSE))
     dev.off()
     if(!inherits(oe, "try-error")) {
-        pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
         grid.raster(readPNG(file_name))
-        grid.rect(gp = gpar(fill = "transparent"))
-        upViewport()
     }
+    grid.rect(gp = gpar(fill = "transparent"))
+    upViewport()
     file.remove(file_name)
 
 	for(i in seq_along(all_k)) {
+		pushViewport(viewport(layout.pos.row = 2, layout.pos.col = i))
 		file_name = tempfile()
-        png(file_name)
+        png(file_name, width = image_width*2, height = image_height*2)
         oe = try(consensus_heatmap(object, k = all_k[i], show_legend = FALSE, ...))
         dev.off()
         if(!inherits(oe, "try-error")) {
-	        pushViewport(viewport(layout.pos.row = 2, layout.pos.col = i))
-	        grid.raster(readPNG(file_name))
-	        grid.rect(gp = gpar(fill = "transparent"))
-	        upViewport()
+	        grid.raster(readPNG(file_name))  
 	    }
+	    grid.rect(gp = gpar(fill = "transparent"))
+	    upViewport()
 	    file.remove(file_name)
 
+	    pushViewport(viewport(layout.pos.row = 3, layout.pos.col = i))
 	    file_name = tempfile()
-        png(file_name)
-        oe = try(membership_heatmap(object, k = all_k[i], show_legend = FALSE, ...))
+        png(file_name, width = image_width*2, height=  image_height*2)
+        oe = try(membership_heatmap(object, k = all_k[i], show_legend = FALSE, show_column_names = FALSE, ...))
         dev.off()
         if(!inherits(oe, "try-error")) {
-	        pushViewport(viewport(layout.pos.row = 3, layout.pos.col = i))
 	        grid.raster(readPNG(file_name))
-	        grid.rect(gp = gpar(fill = "transparent"))
-	        upViewport()
 	    }
+	    grid.rect(gp = gpar(fill = "transparent"))
+	    upViewport()
 	    file.remove(file_name)
 
+	    pushViewport(viewport(layout.pos.row = 4, layout.pos.col = i))
 	    file_name = tempfile()
-        png(file_name)
-        oe = try(get_signatures(object, k = all_k[i], show_legend = FALSE, ...))
+        png(file_name, width = image_width*2, height=  image_height*2)
+        oe = try(get_signatures(object, k = all_k[i], show_legend = FALSE, show_column_names = FALSE, use_raster = FALSE, ...))
         dev.off()
         if(!inherits(oe, "try-error")) {
-	        pushViewport(viewport(layout.pos.row = 4, layout.pos.col = i))
-	        grid.raster(readPNG(file_name))
-	        grid.rect(gp = gpar(fill = "transparent"))
-	        upViewport()
+	        grid.raster(readPNG(file_name))  
 	    }
+	    grid.rect(gp = gpar(fill = "transparent"))
+	    upViewport()
 	    file.remove(file_name)
 	}
 	upViewport()
@@ -157,37 +165,30 @@ setMethod(f = "collect_classes",
 	top_method_vec = NULL
 	partition_method_vec = NULL
 	class_df = NULL
-	reference_class = NULL
 	time_used = NULL
 	for(i in seq_along(top_method)) {
 	    for(j in seq_along(partition_method)) {  
 	    	res = get_single_run(object, top_method = top_method[i], partition_method = partition_method[j])
 
-	        # relabel the class according to the class in the first object
-	        ik = which(res@k == k)
-	        if(is.null(reference_class)) {
-	        	reference_class = res$object_list[[ik]]$classification$class
-	        } else {
-	        	map = relabel_class(res$object_list[[ik]]$classification$class, reference_class)
-	        	res$object_list[[ik]]$classification$class = as.numeric(map[as.character(res$object_list[[ik]]$classification$class)])
-	        }
-
 	        top_method_vec = c(top_method_vec, top_method[i])
 	        partition_method_vec = c(partition_method_vec, partition_method[j])
-	        class_df = cbind(class_df, res$object_list[[ik]]$classification$class)
+	        class_df = cbind(class_df, get_class(res, k)[, "class"])
 	        time_used = c(time_used, attr(res, "system.time")[3])
 	    }
 	}
 
 	class_df = as.matrix(class_df)
-	ht = Heatmap(class_df, name = "class", col = res$object_list[[ik]]$class_color, 
+	colnames(class_df) = paste(top_method_vec, partition_method_vec, sep = "/")
+	class_col = structure(unique(res@object_list[[1]]$class_df$class_col), names = unique(res@object_list[[1]]$class_df$class))
+	class_col = class_col[order(names(class_col))]
+	ht = Heatmap(class_df, name = "class", col = class_col, 
 		top_annotation = HeatmapAnnotation(top_method = top_method_vec, partition_method = partition_method_vec,
 			time_used = anno_barplot(time_used, axis = TRUE, axis_side = "right", baseline = 0),
 			show_annotation_name = c(TRUE, TRUE, FALSE, FALSE), annotation_name_side = "right",
-			col = list(top_method = structure(names = top_method, brewer.pal(length(top_method), "Set1")),
-			           partition_method = structure(names = partition_method, brewer.pal(length(partition_method), "Set2"))),
-			annotation_height = unit(c(5, 5, 20, 20), "mm")),
-		show_row_names = FALSE, show_column_names = FALSE, show_row_dend = FALSE, cluster_columns = TRUE,
+			col = list(top_method = structure(names = top_method, brewer_pal_set1_col[seq_along(top_method)]),
+			           partition_method = structure(names = partition_method, brewer_pal_set2_col[seq_along(partition_method)])),
+			annotation_height = unit(c(5, 5, 20), "mm")),
+		show_row_names = FALSE, show_row_dend = FALSE, cluster_columns = TRUE,
 		show_column_dend = FALSE,
 		column_order = order(partition_method_vec, top_method_vec))
 
@@ -196,18 +197,12 @@ setMethod(f = "collect_classes",
 	ht = ht + Heatmap(class_df2[, -ncol(class_df2)], name = "membership", col = colorRamp2(c(0, 1), c("white", "red")),
 		show_row_names = FALSE, cluster_columns = FALSE)
 
-	map = relabel_class(class_df2[, ncol(class_df2)], class_df[, 1])
-	consensus_class = map[as.character(class_df2[, ncol(class_df2)])]
-	ht = ht + Heatmap(consensus_class, col =  res$object_list[[ik]]$class_color, name = "consensus_class", show_row_names = FALSE)
+	ht = ht + Heatmap(class_df2[, "class"], col =  class_col, name = "consensus_class", show_row_names = FALSE)
 
-	if(!is.null(object@list[[1]]$known_anno)) {
-		ht = ht + rowAnnotation(df = object@list[[1]]$known_anno, name = "known", col = object@list[[1]]$known_col,
-			width = unit(5*ncol(object@list[[1]]$known_anno), "mm"))
-	}
-
-	draw(ht, column_title = "classification from all methods", row_title = "samples", row_order = order(consensus_class), cluster_rows = FALSE)
+	draw(ht, column_title = "classification from all methods", row_title = qq("@{nrow(class_df)} samples"), row_order = order(class_df2[, "class"]), 
+		cluster_rows = FALSE)
 	decorate_annotation("time_used", {
-		grid.text("time_used", x = unit(1, "npc") + unit(1.5, "cm"), just = "left")
+		grid.text("time_used (s)", x = unit(1, "npc") + unit(1, "cm"), just = "left")
 	})
 })
 
@@ -229,26 +224,30 @@ setMethod(f = "collect_classes",
 	gap = NULL
 	class_mat = NULL
 	for(i in seq_along(all_k)) {
-		membership = object@object_list[[i]]@membership
-		class = object@object_list[[i]]@class_df$class
-		class_col = object@object_list[[i]]@class_df$class_col
+		membership = object@object_list[[i]]$membership
+		class = object@object_list[[i]]$class_df$class
+		class_col = object@object_list[[i]]$class_df$class_col
 		class_col = structure(unique(class_col), names = unique(class))
-		if(i > 1) {
-			map = relabel_class(class, previous_class)
-			class = map[as.character(class)]
-		}
-		previous_class = class
+		class_col = class_col[order(names(class_col))]
+
 		ht_list = ht_list + Heatmap(membership, col = colorRamp2(c(0, 1), c("white", "red")),
-			show_row_names = FALSE, cluster_columns = FALSE, cluster_rows = FALSE, show_heatmap_legend = i == 1) + 
+			show_row_names = FALSE, cluster_columns = FALSE, cluster_rows = FALSE, show_heatmap_legend = i == 1,
+			name = paste0("membership_", all_k[i])) + 
 			Heatmap(class, col = class_col, 
 				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), name = paste(all_k[i], "_classes"))
 		gap = c(gap, c(0, 4))
 		class_mat = cbind(class_mat, as.numeric(class))
 	}
-	
+
     draw(ht_list,gap = unit(gap, "mm"), row_order = do.call("order", as.data.frame(class_mat)),
     	column_title = qq("classes from k = '@{paste(all_k, collapse = ', ')}'"),
     	show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
+
+    for(k in all_k) {
+    	decorate_heatmap_body(paste0("membership_", k), {
+    		grid.rect(0, width = unit(1+1/k, "npc"), just = "left", gp = gpar(col = "black", fill = "transparent"))
+    	})
+    }
 })
 
 

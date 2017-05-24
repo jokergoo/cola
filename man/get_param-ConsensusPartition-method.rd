@@ -8,12 +8,13 @@ Get parameters
 Get parameters
 }
 \usage{
-\S4method{get_param}{ConsensusPartition}(object, k)
+\S4method{get_param}{ConsensusPartition}(object, k, unique = TRUE)
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object}
   \item{k}{number of partitions}
+  \item{unique}{whether apply \code{\link[base]{unique}} to rows}
 
 }
 \examples{

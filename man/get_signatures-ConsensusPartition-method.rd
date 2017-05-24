@@ -16,7 +16,7 @@ Get signature rows
     anno = object@known_anno,
     anno_col = if(missing(anno)) object@known_col else NULL,
     show_legend = TRUE,
-    show_column_names = FALSE,
+    show_column_names = TRUE, use_raster = TRUE,
     ...)
 }
 \arguments{
@@ -31,6 +31,7 @@ Get signature rows
   \item{anno_col}{a list of colors for the annotations in \code{anno}.}
   \item{show_legend}{whether draw the legends on the heatmap.}
   \item{show_column_names}{whether show column names on the heatmap.}
+  \item{use_raster}{internally used}
   \item{...}{other arguments}
 
 }

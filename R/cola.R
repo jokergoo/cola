@@ -21,6 +21,8 @@ cola_logo =
 # == details
 # Simply provide you a bottle of cola.
 #
+# The ASCII art is from http://ascii.co.uk/art/coke
+#
 # == example
 # cola()
 cola = function() {
@@ -41,7 +43,7 @@ cola = function() {
         } else {
             lines2 = c(lines2, fun(lines[i]))
         }
-        lines2 = c(lines2, reset("\n"))    
+        lines2 = c(lines2, crayon::reset("\n"))    
     }
 
     cat(paste(lines2, collapse = ""))

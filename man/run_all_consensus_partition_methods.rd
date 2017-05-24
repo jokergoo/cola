@@ -9,7 +9,7 @@ Run subgroup classification in a batch
 \usage{
 run_all_consensus_partition_methods(data, top_method = ALL_TOP_VALUE_METHOD(),
     partition_method = ALL_PARTITION_METHOD(),
-    mc.cores = 1, get_signatures = TRUE, ...)
+    mc.cores = 1, get_signatures = FALSE, ...)
 }
 \arguments{
 

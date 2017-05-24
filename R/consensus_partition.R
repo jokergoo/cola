@@ -149,11 +149,10 @@ consensus_partition = function(data,
 	 	rownames(consensus_mat) = rownames(membership_mat)
 	 	colnames(consensus_mat) = rownames(membership_mat)
 
-	 	suppressWarnings(class_color <- structure(brewer.pal(k, "Set2")[1:k], names = 1:k))
+	 	class_color = brewer_pal_set2_col[1:k]
 
 	 	class_df = data.frame(
 	 		class = class_ids,
-	 		class_col =  class_color[class_ids],
 	 		entropy = apply(membership_mat, 1, entropy),
 	 		stringsAsFactors = FALSE
 	 	)
@@ -295,17 +294,19 @@ setMethod(f = "select_partition_number",
 # -show_legend whether show heatmap and annotation legends.
 # -anno a data frame with column annotations
 # -anno_col colors for the annotations
+# -... other arguments
 #
 setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, show_legend = TRUE,
 	anno = object@known_anno, 
-	anno_col = if(missing(anno)) object@known_col else NULL) {
+	anno_col = if(missing(anno)) object@known_col else NULL, ...) {
 
 	class_df = get_class(object, k)
 	class_ids = class_df$class
 	class_col = class_df$class_col
 	class_col = structure(unique(class_col), names = unique(class_ids))
+	class_col = class_col[order(names(class_col))]
 
 	consensus_mat = get_consensus(object, k)
 
@@ -355,17 +356,21 @@ setMethod(f = "consensus_heatmap",
 # -show_legend whether show heatmap and annotation legends.
 # -anno a data frame with column annotations
 # -anno_col colors for the annotations
+# -show_column_names whether show column names in the heatmap
+# -... other arguments
 #
 setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, show_legend = TRUE, 
 	anno = object@known_anno, 
-	anno_col = if(missing(anno)) object@known_col else NULL) {
+	anno_col = if(missing(anno)) object@known_col else NULL,
+	show_column_names = TRUE, ...) {
 
 	class_df = get_class(object, k)
 	class_ids = class_df$class
 	class_col = class_df$class_col
 	class_col = structure(unique(class_col), names = unique(class_ids))
+	class_col = class_col[order(names(class_col))]
 
 	membership_mat = get_membership(object, k)
 	col_list = rep(list(colorRamp2(c(0, 1), c("white", "red"))), k)
@@ -375,7 +380,7 @@ setMethod(f = "membership_heatmap",
 	membership_each = t(membership_each)
 	mat_col_od = column_order_by_group(class_ids, membership_each)
 
-	suppressWarnings(col <- structure(brewer.pal(k, "Set1"), names = 1:k))
+	col = brewer_pal_set1_col[1:k]
 
 	if(is.null(anno)) {
 		bottom_anno = NULL
@@ -399,10 +404,10 @@ setMethod(f = "membership_heatmap",
 		}
 	}
 
-	param = get_param(object, k)
+	param = get_param(object, k, unique = FALSE)
 
 	n_row_level = unique(param$n_row)
-	suppressWarnings(n_row_col <- structure(brewer.pal(length(n_row_level), "Set2"), names = n_row_level))
+	n_row_col = structure(brewer_pal_set2_col[seq_along(n_row_level)], names = n_row_level)
 	
 	ht = Heatmap(membership_each, name = "cluster", show_row_dend = FALSE, show_column_dend = FALSE, col = col,
 		column_title = qq("membership heatmap, k = @{k}"), column_order = mat_col_od, cluster_columns = FALSE,
@@ -412,7 +417,8 @@ setMethod(f = "membership_heatmap",
 			show_annotation_name = TRUE, annotation_name_side = "right",
 			show_legend = c(TRUE, rep(FALSE, k - 1), TRUE)),
 		bottom_annotation = bottom_anno,
-		combined_name_fun = function(x) paste0(x, " rows")
+		combined_name_fun = function(x) paste0(x, " rows"),
+		show_column_names = show_column_names
 		) + 
 	Heatmap(as.character(param$n_row), name = "n_row", col = n_row_col,
 		width = unit(5, "mm"), show_row_names = FALSE)
@@ -434,13 +440,15 @@ setMethod(f = "membership_heatmap",
 #        than it will be mapped to small points.
 # -remove whether to remove columns which have less silhouette values than
 #        the cutoff.
-# -... pass to `Rtsne::Rtsne`
+# -tsne_param parameters pass to `Rtsne::Rtsne`
+# -... other arguments
 #
 setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,
 	method = c("mds", "pca", "tsne"),
-	silhouette_cutoff = 0.5, remove = FALSE, ...) {
+	silhouette_cutoff = 0.5, remove = FALSE,
+	tsne_param = list(), ...) {
 
 	method = match.arg(method)
 	data = object@.env$data
@@ -460,6 +468,7 @@ setMethod(f = "dimension_reduction",
 	class_ids = class_df$class
 	class_col = class_df$class_col
 	class_col = structure(unique(class_col), names = unique(class_ids))
+	class_col = class_col[order(names(class_col))]
 
 	l = class_df$silhouette >= silhouette_cutoff
 	if(method == "mds") {
@@ -467,7 +476,7 @@ setMethod(f = "dimension_reduction",
 	} else if(method == "pca") {
 		loc = prcomp(t(data))$x[, 1:2]
 	} else if(method == "tsne") {
-		loc = Rtsne(as.matrix(t(data)), ...)$Y	
+		loc = do.call("Rtsne", c(list(X = as.matrix(t(data))), tsne_param))$Y
 	}
 
 	colnames(loc) = c("P1", "P2")
@@ -480,5 +489,5 @@ setMethod(f = "dimension_reduction",
 		plot(loc, pch = ifelse(l, 16, 4), col = class_col[as.character(class_df$class)],
 			cex = ifelse(l, 1, 0.7))
 	}
-	title(qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} points"))
+	title(qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"))
 })

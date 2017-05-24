@@ -14,7 +14,7 @@ setMethod(f = "top_rows_overlap",
 
 	all_value_list = object@.env$all_value_list
 
-	top_rows_overlap(all_value_list)
+	top_rows_overlap(all_value_list, type = type)
 })
 
 # == title
@@ -66,6 +66,7 @@ setMethod(f = "top_rows_overlap",
 
 	lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
     
+    type = match.arg(type)
     if(type == "venn") {
     	oe = try(has_venneuler <- requireNamespace("venneuler"))
     	if(inherits(oe, "try-error")) {
@@ -78,7 +79,7 @@ setMethod(f = "top_rows_overlap",
    			venn_euler(lt, main = qq("top @{top_n} rows"))
    		}
 	} else if(type == "correspondance") {
-		correspond_between_rankings(lt, top_n = top_n)
+		correspond_between_rankings(object, top_n = top_n)
 	}
 })
 

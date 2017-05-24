@@ -10,7 +10,7 @@ Heatmap for the consensus matrix
 \usage{
 \S4method{consensus_heatmap}{ConsensusPartition}(object, k, show_legend = TRUE,
     anno = object@known_anno,
-    anno_col = if(missing(anno)) object@known_col else NULL)
+    anno_col = if(missing(anno)) object@known_col else NULL, ...)
 }
 \arguments{
 
@@ -19,6 +19,7 @@ Heatmap for the consensus matrix
   \item{show_legend}{whether show heatmap and annotation legends.}
   \item{anno}{a data frame with column annotations}
   \item{anno_col}{colors for the annotations}
+  \item{...}{other arguments}
 
 }
 \examples{

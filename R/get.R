@@ -5,12 +5,17 @@
 # == param
 # -object a `ConsensusPartition-class` object
 # -k number of partitions
+# -unique whether apply `base::unique` to rows
 #
 setMethod(f = "get_param",
 	signature = "ConsensusPartition",
-	definition = function(object, k) {
+	definition = function(object, k, unique = TRUE) {
 	i = which(object@k == k)
-	object@object_list[[i]]$param
+	if(unique) {
+		unique(object@object_list[[i]]$param)
+	} else {
+		object@object_list[[i]]$param
+	}
 })
 
 # == title
@@ -110,7 +115,7 @@ setMethod(f = "get_class",
 		for(pm in object@partition_method) {
 			nm = paste0(tm, ":", pm)
 			obj = object@list[[nm]]
-			ik = which(obj$k == k)
+			ik = which(obj@k == k)
 
 			membership = get_membership(obj, k)
 			if(is.null(reference_class)) {

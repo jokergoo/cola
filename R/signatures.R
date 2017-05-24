@@ -16,6 +16,7 @@
 # -anno_col a list of colors for the annotations in ``anno``.
 # -show_legend whether draw the legends on the heatmap.
 # -show_column_names whether show column names on the heatmap.
+# -use_raster internally used
 # -... other arguments
 # 
 # == details 
@@ -42,13 +43,14 @@ setMethod(f = "get_signatures",
 	anno = object@known_anno, 
 	anno_col = if(missing(anno)) object@known_col else NULL,
 	show_legend = TRUE,
-	show_column_names = FALSE,
+	show_column_names = TRUE, use_raster = TRUE,
 	...) {
 
 	class_df = get_class(object, k)
 	class_ids = class_df$class
 	class_col = class_df$class_col
 	class_col = structure(unique(class_col), names = unique(class_ids))
+	class_col = class_col[order(names(class_col))]
 
 	l = class_df$silhouette >= silhouette_cutoff
 	data2 = data[, l]
@@ -62,8 +64,9 @@ setMethod(f = "get_signatures",
 	column_used_logical = rep(FALSE, ncol(data))
 	column_used_logical[column_used_index] = TRUE
 	has_ambiguous = sum(!column_used_logical)
+	n_sample_used = length(class)
 
-	qqcat("@{length(class)}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
+	qqcat("@{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
 
 	if(sum(tb > 1) <= 1) {
 		stop("not enough samples.")
@@ -78,17 +81,20 @@ setMethod(f = "get_signatures",
 	} else {
 		row_diff_by = match.arg(row_diff_by)
 
-		nm = paste0("signature_fdr_", object@top_method, "_", object@partition_method)
+		nm = paste0("signature_fdr_", object@top_method, "_", object@partition_method, "_", k, "groups")
 
 		find_signature = TRUE
 		if(!is.null(object@.env[[nm]])) {
 			if(row_diff_by == "samr") {
-				if(object@.env[[nm]]$row_diff_by == "samr" && abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+				if(object@.env[[nm]]$row_diff_by == "samr" && 
+				   object@.env[[nm]]$n_sample_used == n_sample_used && 
+				   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
 					fdr = object@.env[[nm]]$fdr
 					find_signature = FALSE
 				}
 			} else {
-				if(object@.env[[nm]]$row_diff_by == row_diff_by) {
+				if(object@.env[[nm]]$row_diff_by == row_diff_by &&
+				   object@.env[[nm]]$n_sample_used == n_sample_used) {
 					fdr = object@.env[[nm]]$fdr
 					find_signature = FALSE
 				}
@@ -109,6 +115,7 @@ setMethod(f = "get_signatures",
 		object@.env[[nm]]$row_diff_by = row_diff_by
 		object@.env[[nm]]$fdr_cutoff = fdr_cutoff
 		object@.env[[nm]]$fdr = fdr
+		object@.env[[nm]]$n_sample_used = n_sample_used
 	}
 
 	group = character(nrow(data2))
@@ -233,7 +240,7 @@ setMethod(f = "get_signatures",
 			show_legend = c(TRUE, rep(FALSE, k - 1), TRUE)),
 		cluster_columns = FALSE, column_order = mat_col_od1,
 		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
-		use_raster = TRUE, raster_quality = 2,
+		use_raster = use_raster, raster_quality = 2,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, split = group2, combined_name_fun = NULL)
  	if(scale_rows) {
 		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"))
@@ -253,7 +260,7 @@ setMethod(f = "get_signatures",
 				show_legend = FALSE),
 			cluster_columns = FALSE, column_order = mat_col_od2,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
-			use_raster = TRUE, raster_quality = 2,
+			use_raster = use_raster, raster_quality = 2,
 			column_title = "ambiguous samples", bottom_annotation = bottom_anno2, show_column_names = show_column_names)
 	}
 
@@ -369,4 +376,44 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 	Heatmap(row_diff, name = "diff", col = c("yes" = "red", "no" = "white"), width = unit(5, "mm")) +
 	Heatmap(fdr, name = "fdr", width = unit(5, "mm"), show_row_names = FALSE)
 	draw(ht, split = fdr < fdr_cutoff)
+}
+
+
+
+# lines = strsplit(readLines("h.all.v6.0.symbols.gmt"), "\t")
+# genesets = lapply(lines, function(x) x[-(1:2)])
+# names(genesets) = sapply(lines, function(x) x[1])
+BHI = function(x, map = NULL, genesets) {
+	match_mat = matrix(0, nrow = nrow(x$mat), ncol = length(genesets))
+
+	g = rownames(mat)
+	if(!is.null(map)) {
+		g2 = map[g]
+		l = is.na(g2)
+		g2[l] = g[l]
+		g = g2
+	}
+	rownames(match_mat) = g
+	colnames(match_mat) = names(genesets)
+
+	for(i in seq_along(genesets)) {
+		match_mat[genesets[[i]], i] = 1
+	}
+
+	mean(tapply(seq_len(nrow(x$mat)), x$group, function(ind) {
+		g2 = g[ind]
+		submat = matrix(0, nrow = length(g2), ncol = length(g2))
+		rownames(submat) = g2
+		colnames(submat) = g2
+
+		for(i in 1:(length(g2) - 1)) {
+			for(j in i:length(g2)) {
+				submat[i, j] = colSums(match_mat[g2[c(i, j)], ]) == 2
+				submat[j, i] = submat[i, j]
+			}
+		}
+
+		mean(submat[lower.tri(submat)])
+	}))
+
 }

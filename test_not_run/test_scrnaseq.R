@@ -7,7 +7,7 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-source("/home/guz/project/development/cola/load.R")
+source("~/project/development/cola/load.R")
 
 # load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_scRNAseq_gencode19_expression.RData")
 load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_spheroids_gencode19_expression.RData")
@@ -28,7 +28,9 @@ data = log10(rpkm[l, ] + 1)
 data = data[, !colnames(data) %in% c("Invasive_1", "Invasive_10", "Invasive_11", "Invasive_14", "Round_13", "Round_3", "Round_bulk", "invasive_bulk")]
 cell_type = gsub("_\\d+$", "", colnames(data))
 
-res = run_all(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, known = cell_type, mc.cores = ncore)
+data = t(apply(data, 1, adjust_outlier))
+res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = ncore,
+	known_anno = data.frame(cell_type = cell_type))
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/scrnaseq_subgroup_p@{p}.rds"))
 

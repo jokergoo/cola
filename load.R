@@ -19,8 +19,13 @@ library(Rtsne)
 library(samr)
 library(genefilter)
 library(kohonen)
+library(crayon)
 
-Rfiles = list.files("~/project/cola/R", full.names = TRUE)
+if(grepl("tbi", Sys.info()["nodename"]) & Sys.info()["user"] == "guz") {
+	Rfiles = list.files("~/project/development/cola/R", full.names = TRUE)
+} else {
+	Rfiles = list.files("~/project/cola/R", full.names = TRUE)
+}
 for(rf in Rfiles) {
 	source(rf)
 }

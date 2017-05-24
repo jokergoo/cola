@@ -109,7 +109,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 # correspond_between_rankings(lt = list(sd = x1, mad = x2, vc = x3), 
 #     top_n = 20)
 correspond_between_rankings = function(lt, top_n = length(lt[[1]]), 
-	col = brewer.pal(length(lt), "Set1"), ...) {
+	col = brewer_pal_set1_col[1:length(lt)], ...) {
 
 	nm = names(lt)
 	n = length(lt)

@@ -18,7 +18,7 @@
 #
 run_all_consensus_partition_methods = function(data, top_method = ALL_TOP_VALUE_METHOD(), 
 	partition_method = ALL_PARTITION_METHOD(), 
-	mc.cores = 1, get_signatures = TRUE, ...) {
+	mc.cores = 1, get_signatures = FALSE, ...) {
 		
 	.env = new.env()
 	
@@ -39,7 +39,7 @@ run_all_consensus_partition_methods = function(data, top_method = ALL_TOP_VALUE_
 	.env$all_value_list = all_value_list
 
 	.env$data = data
-	res = ConsensusPartitionList(
+	res_list = ConsensusPartitionList(
 		list = list(), 
 		top_method = top_method, 
 		partition_method = partition_method, 
@@ -76,10 +76,13 @@ run_all_consensus_partition_methods = function(data, top_method = ALL_TOP_VALUE_
 	        	# - res$object_list[[ik]]$classification$class
 	        	# - column order of res$object_list[[ik]]$membership
 	        	# - res$object_list[[ik]]$membership_each
-	        	class = get_class(res, k)[, "class"]
+	        	class_df = get_class(res, k)
+	        	class = class_df[, "class"]
+	        	class_col = structure(unique(class_df$class_col), names = unique(class))
 	        	map = relabel_class(class, reference_class[[ik]])
 	        	map2 = structure(names(map), names = map)
 	        	res@object_list[[ik]]$class_df$class = as.numeric(map[as.character(class)])
+	        	res@object_list[[ik]]$class_df$class_col = class_col[as.character(res@object_list[[ik]]$class_df$class)]
 	        	
 	        	res@object_list[[ik]]$membership = res@object_list[[ik]]$membership[, as.numeric(map2[as.character(1:k)]) ]
 				colnames(res@object_list[[ik]]$membership) = paste0("p", 1:k)
@@ -92,10 +95,10 @@ run_all_consensus_partition_methods = function(data, top_method = ALL_TOP_VALUE_
 	    lt[[i]] = res
 	}
 
-	res@list = lt
-	names(res@list) = paste(comb[, 1], comb[, 2], sep = ":")
+	res_list@list = lt
+	names(res_list@list) = paste(comb[, 1], comb[, 2], sep = ":")
 
-	return(res)
+	return(res_list)
 }
 
 # == title

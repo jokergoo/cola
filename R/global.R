@@ -136,12 +136,9 @@ register_partition_fun(
 	skmeans = function(mat, k, ...) {
 		skmeans(x = t(mat), k = k, ...)
 	},
-	Mclust = function(mat, k, ...) {
-		Mclust(data = t(mat), G = k, ...)
+	hddc = function(mat, k, ...) {
+		hddc(data = t(mat), K = k, show = FALSE, ...)$class
 	}, 
-	# clara = function(mat, k, ...) {
-	# 	clara(x = t(mat), k = k, ...)
-	# },
 	pam = function(mat, k, ...) {
 		pam(t(mat), k = k, ...)
 	},
@@ -149,7 +146,7 @@ register_partition_fun(
 		cclust(x = t(mat), centers = k, ...)
 	},
 	som = function(mat, k, ...) {
-		som(mat, grid = somgrid(1, k), ...)$unit.classif
+		som(t(mat), grid = somgrid(1, k), ...)$unit.classif
 	}
 )
 
@@ -177,3 +174,7 @@ remove_partition_method = function(method) {
 	.ENV$ALL_PARTITION_FUN = .ENV$ALL_PARTITION_FUN[nm_keep]
 	.ENV$ALL_PARTITION_METHOD = nm_keep
 }
+
+
+brewer_pal_set1_col =  brewer.pal(9, "Set1")
+brewer_pal_set2_col =  brewer.pal(8, "Set2")

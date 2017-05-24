@@ -8,7 +8,7 @@ Correspond between a list of rankings
 }
 \usage{
 correspond_between_rankings(lt, top_n = length(lt[[1]]),
-    col = brewer.pal(length(lt), "Set1"), ...)
+    col = brewer_pal_set1_col[1:length(lt)], ...)
 }
 \arguments{
 
