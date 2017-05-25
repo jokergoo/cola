@@ -1,5 +1,5 @@
-\name{test_between_known_factors}
-\alias{test_between_known_factors}
+\name{test_between_factors}
+\alias{test_between_factors}
 \title{
 Test whether known factors are correlated
 }
@@ -7,7 +7,7 @@ Test whether known factors are correlated
 Test whether known factors are correlated
 }
 \usage{
-test_between_known_factors(x, y = NULL, verbose = TRUE)
+test_between_factors(x, y = NULL, verbose = TRUE)
 }
 \arguments{
 
@@ -21,7 +21,7 @@ Pairwise test is applied to every two columns in the data frame. Methods are:
 
 \itemize{
   \item two numeric variables: correlation test by \code{\link[stats]{cor.test}} is applied;
-  \item two character or factor variables: Chi-squared test by \code{\link[stats]{chisq.test}} is applied;
+  \item two character or factor variables: Chi-squared test by \code{\link[stats]{fisher.test}} is applied;
   \item one numeric variable and one character/factor variable: oneway ANOVA test by \code{\link[stats]{oneway.test}} is applied.
 }
 
@@ -33,7 +33,7 @@ A matrix of p-values.
 \examples{
 df = data.frame(v1 = rnorm(100), v2 = sample(letters[1:3], 100, replace = TRUE), 
     v3 = sample(LETTERS[5:6], 100, replace = TRUE))
-test_between_known_factors(df)
+test_between_factors(df)
 x = runif(100)
-test_between_known_factors(x, df)
+test_between_factors(x, df)
 }

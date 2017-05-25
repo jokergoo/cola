@@ -20,6 +20,7 @@ library(samr)
 library(genefilter)
 library(kohonen)
 library(crayon)
+library(HDclassif)
 
 if(grepl("tbi", Sys.info()["nodename"]) & Sys.info()["user"] == "guz") {
 	Rfiles = list.files("~/project/development/cola/R", full.names = TRUE)

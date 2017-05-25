@@ -383,10 +383,14 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 # lines = strsplit(readLines("h.all.v6.0.symbols.gmt"), "\t")
 # genesets = lapply(lines, function(x) x[-(1:2)])
 # names(genesets) = sapply(lines, function(x) x[1])
-BHI = function(x, map = NULL, genesets) {
+BHI = function(x, map = NULL, genesets, min_count = 50, max_count = 5000) {
 	match_mat = matrix(0, nrow = nrow(x$mat), ncol = length(genesets))
 
-	g = rownames(mat)
+	gl = sapply(genesets, length)
+	l = gl >= min_count & gl <= max_count
+	genesets = genesets[l]
+
+	g = rownames(x$mat)
 	if(!is.null(map)) {
 		g2 = map[g]
 		l = is.na(g2)

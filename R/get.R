@@ -73,6 +73,27 @@ setMethod(f = "get_stat",
 
 
 # == title
+# Get parameters
+#
+# == param
+# -object a `ConsensusPartitionList-class` object
+# -k number of partitions.
+#
+setMethod(f = "get_stat",
+	signature = "ConsensusPartitionList",
+	definition = function(object, k) {
+	m = matrix(nrow = length(object@list), ncol = length(object@list[[1]]@object_list[[1]]$stat) - 1)
+	rownames(m) = names(object@list)
+	colnames(m) = setdiff(names(object@list[[1]]@object_list[[1]]$stat), "ecdf")
+	for(i in seq_along(object@list)) {
+		ik = which(object@list[[i]]@k == k)
+		m[i, ] = unlist(object@list[[i]]@object_list[[ik]]$stat[colnames(m)])
+	}
+	return(m)
+})
+
+
+# == title
 # Get class from the consensus_partition object
 #
 # == param
@@ -131,7 +152,8 @@ setMethod(f = "get_class",
 			mean_silhouette = c(mean_silhouette, mean(get_class(obj, k)[, "silhouette"]))
 		}
 	}
-	consensus = cl_consensus(cl_ensemble(list = partition_list), weights = 1)
+	mean_silhouette[mean_silhouette < 0] = 0
+	consensus = cl_consensus(cl_ensemble(list = partition_list), weights = mean_silhouette)
 	m = cl_membership(consensus)
 	class(m) = "matrix"
 	colnames(m) = paste0("p", 1:k)

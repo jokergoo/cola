@@ -1,6 +1,5 @@
 \name{get_stat-ConsensusPartition-method}
 \alias{get_stat,ConsensusPartition-method}
-\alias{get_stat}
 \title{
 Get parameters
 }

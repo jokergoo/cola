@@ -58,6 +58,8 @@ consensus_partition = function(data,
 	if(!partition_method %in% ALL_PARTITION_METHOD()) {
 		stop(qq("the partition method: @{partition_method} has not beed defined yet."))
 	}
+
+	k = sort(k)
 	
 	top_n = round(top_n)
 	top_n = top_n[top_n < nrow(data)]
@@ -153,6 +155,7 @@ consensus_partition = function(data,
 
 	 	class_df = data.frame(
 	 		class = class_ids,
+	 		class_col = class_color[class_ids],
 	 		entropy = apply(membership_mat, 1, entropy),
 	 		stringsAsFactors = FALSE
 	 	)
@@ -191,6 +194,27 @@ consensus_partition = function(data,
 
 	rm(partition_list)
 	gc(verbose = FALSE)
+
+	## adjust class labels
+	reference_class = object_list[[1]]$class_df$class
+	for(i in seq_along(k)[-1]) {
+		class_df = object_list[[i]]$class_df
+    	class = class_df[, "class"]
+    	class_col = structure(unique(class_df$class_col), names = unique(class))
+    	map = relabel_class(class, reference_class)
+    	map2 = structure(names(map), names = map)
+    	object_list[[i]]$class_df$class = as.numeric(map[as.character(class)])
+    	object_list[[i]]$class_df$class_col = class_col[as.character(object_list[[i]]$class_df$class)]
+    	
+    	object_list[[i]]$membership = object_list[[i]]$membership[, as.numeric(map2[as.character(1:k[i])]) ]
+		colnames(object_list[[i]]$membership) = paste0("p", 1:k[i])
+		
+		odim = dim(object_list[[i]]$membership_each)
+		object_list[[i]]$membership_each = as.numeric(map[as.character(object_list[[i]]$membership_each)])
+		dim(object_list[[i]]$membership_each) = odim
+
+		reference_class = object_list[[i]]$class_df$class
+	}
 
 	ak = sapply(object_list, function(obj) {
 		f = obj$stat$ecdf
@@ -318,13 +342,13 @@ setMethod(f = "consensus_heatmap",
 		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red"))) + 
 	Heatmap(class_df$silhouette, name = "silhouette", width = unit(5, "mm"), 
 		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple"))) +
-	Heatmap(class_ids, name = "class", col = structure(unique(class_col), names = unique(class_ids)), 
+	Heatmap(class_ids, name = "class", col = class_col, 
 		show_row_names = FALSE, width = unit(5, "mm"))
 	
 	ht_list = ht_list +	Heatmap(consensus_mat, name = "consensus", show_row_names = FALSE, show_row_dend = FALSE,
 		col = colorRamp2(c(0, 1), c("white", "blue")), row_order = mat_col_od, column_order = mat_col_od,
 		cluster_rows = FALSE, cluster_columns = FALSE, show_column_names = FALSE)
-	
+
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
 			anno_nm = deparse(substitute(anno))

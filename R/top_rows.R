@@ -171,5 +171,9 @@ venn_euler = function(lt, ...) {
     names(set) = apply(category, 1, function(x) {
         paste(colnames(category)[as.logical(x)], collapse = "&")
     })
-    plot(getFromNamespace("venneuler", "venneuler")(set), ...)
+    oe = try(fun <- getFromNamespace("venneuler", "venneuler"))
+    if(inherits(oe, "try-error")) {
+		return(invisible(NULL))
+	}
+    plot(fun(set), ...)
 }

@@ -61,42 +61,41 @@ run_all_consensus_partition_methods = function(data, top_method = ALL_TOP_VALUE_
 		}
 		return(res)
 	}, mc.cores = mc.cores)
-
-	cat("adjust class labels\n")
-	reference_class = vector("list", length(lt[[1]]@k))
+	names(lt) = paste(comb[, 1], comb[, 2], sep = ":")
+	
+	res_list@list = lt
+	# cat("adjust class labels according to the consensus classification\n")
+	reference_class = lapply(lt[[1]]@k, function(k) {
+		get_class(res_list, k)$class
+	})
 	for(i in seq_along(lt)) {
 		res = lt[[i]]
 		for(k in res@k) {
 			# relabel the class according to the class in the first object
 	        ik = which(res@k == k)
-	        if(is.null(reference_class[[ik]])) {
-	        	reference_class[[ik]] = get_class(res, k)[, "class"]
-	        } else {
-	        	# following elements need to be relabeled
-	        	# - res$object_list[[ik]]$classification$class
-	        	# - column order of res$object_list[[ik]]$membership
-	        	# - res$object_list[[ik]]$membership_each
-	        	class_df = get_class(res, k)
-	        	class = class_df[, "class"]
-	        	class_col = structure(unique(class_df$class_col), names = unique(class))
-	        	map = relabel_class(class, reference_class[[ik]])
-	        	map2 = structure(names(map), names = map)
-	        	res@object_list[[ik]]$class_df$class = as.numeric(map[as.character(class)])
-	        	res@object_list[[ik]]$class_df$class_col = class_col[as.character(res@object_list[[ik]]$class_df$class)]
-	        	
-	        	res@object_list[[ik]]$membership = res@object_list[[ik]]$membership[, as.numeric(map2[as.character(1:k)]) ]
-				colnames(res@object_list[[ik]]$membership) = paste0("p", 1:k)
-				
-				odim = dim(res@object_list[[ik]]$membership_each)
-				res@object_list[[ik]]$membership_each = as.numeric(map[as.character(res@object_list[[ik]]$membership_each)])
-				dim(res@object_list[[ik]]$membership_each) = odim
-	        }
+	        
+        	# following elements need to be relabeled
+        	# - res$object_list[[ik]]$classification$class
+        	# - column order of res$object_list[[ik]]$membership
+        	# - res$object_list[[ik]]$membership_each
+        	class_df = get_class(res, k)
+        	class = class_df[, "class"]
+        	class_col = structure(unique(class_df$class_col), names = unique(class))
+        	map = relabel_class(class, reference_class[[ik]])
+        	map2 = structure(names(map), names = map)
+        	res@object_list[[ik]]$class_df$class = as.numeric(map[as.character(class)])
+        	res@object_list[[ik]]$class_df$class_col = class_col[as.character(res@object_list[[ik]]$class_df$class)]
+        	
+        	res@object_list[[ik]]$membership = res@object_list[[ik]]$membership[, as.numeric(map2[as.character(1:k)]) ]
+			colnames(res@object_list[[ik]]$membership) = paste0("p", 1:k)
+			
+			odim = dim(res@object_list[[ik]]$membership_each)
+			res@object_list[[ik]]$membership_each = as.numeric(map[as.character(res@object_list[[ik]]$membership_each)])
+			dim(res@object_list[[ik]]$membership_each) = odim
+	        
 	    }
 	    lt[[i]] = res
 	}
-
-	res_list@list = lt
-	names(res_list@list) = paste(comb[, 1], comb[, 2], sep = ":")
 
 	return(res_list)
 }

@@ -36,7 +36,11 @@ setMethod(f = "collect_plots",
 	for(i in seq_along(top_method)) {
 	    for(j in seq_along(partition_method)) {  
 	    	res = get_single_run(object, top_method = top_method[i], partition_method = partition_method[j])
-
+	    	if(get_stat(res, k = k)[, "PAC"] < 0.1) {
+	    		border_color = "red"
+	    	} else {
+	    		border_color = "black"
+	    	}
 	    	pushViewport(viewport(layout.pos.row = i + 1, layout.pos.col = j + 1))
 	    	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
     		# image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
@@ -49,9 +53,9 @@ setMethod(f = "collect_plots",
 	        if(!inherits(oe, "try-error")) {
 		        grid.raster(readPNG(file_name))
 		    }
-		    grid.rect(gp = gpar(fill = "transparent"))
+		    grid.rect(gp = gpar(fill = "transparent", col = border_color))
 		    upViewport()
-		    file.remove(file_name)
+			if(file.exists(file_name)) file.remove(file_name)
 	    }
 	}
 
@@ -92,7 +96,7 @@ setMethod(f = "collect_plots",
     }
     grid.rect(gp = gpar(fill = "transparent"))
     upViewport()
-    file.remove(file_name)
+    if(file.exists(file_name)) file.remove(file_name)
 	
 	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
 	file_name = tempfile()
@@ -104,7 +108,10 @@ setMethod(f = "collect_plots",
     }
     grid.rect(gp = gpar(fill = "transparent"))
     upViewport()
-    file.remove(file_name)
+    if(file.exists(file_name)) file.remove(file_name)
+
+    pac = get_stat(object, k = all_k)[, "PAC"]
+    border_color = ifelse(pac < 0.1, "red", "black")
 
 	for(i in seq_along(all_k)) {
 		pushViewport(viewport(layout.pos.row = 2, layout.pos.col = i))
@@ -115,9 +122,9 @@ setMethod(f = "collect_plots",
         if(!inherits(oe, "try-error")) {
 	        grid.raster(readPNG(file_name))  
 	    }
-	    grid.rect(gp = gpar(fill = "transparent"))
+	    grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
-	    file.remove(file_name)
+	    if(file.exists(file_name)) file.remove(file_name)
 
 	    pushViewport(viewport(layout.pos.row = 3, layout.pos.col = i))
 	    file_name = tempfile()
@@ -127,9 +134,9 @@ setMethod(f = "collect_plots",
         if(!inherits(oe, "try-error")) {
 	        grid.raster(readPNG(file_name))
 	    }
-	    grid.rect(gp = gpar(fill = "transparent"))
+	    grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
-	    file.remove(file_name)
+	    if(file.exists(file_name)) file.remove(file_name)
 
 	    pushViewport(viewport(layout.pos.row = 4, layout.pos.col = i))
 	    file_name = tempfile()
@@ -139,9 +146,9 @@ setMethod(f = "collect_plots",
         if(!inherits(oe, "try-error")) {
 	        grid.raster(readPNG(file_name))  
 	    }
-	    grid.rect(gp = gpar(fill = "transparent"))
+	    grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
-	    file.remove(file_name)
+	    if(file.exists(file_name)) file.remove(file_name)
 	}
 	upViewport()
 
@@ -164,7 +171,8 @@ setMethod(f = "collect_classes",
 
 	top_method_vec = NULL
 	partition_method_vec = NULL
-	class_df = NULL
+	class_mat = NULL
+	silhouette_mat = NULL
 	time_used = NULL
 	for(i in seq_along(top_method)) {
 	    for(j in seq_along(partition_method)) {  
@@ -172,39 +180,55 @@ setMethod(f = "collect_classes",
 
 	        top_method_vec = c(top_method_vec, top_method[i])
 	        partition_method_vec = c(partition_method_vec, partition_method[j])
-	        class_df = cbind(class_df, get_class(res, k)[, "class"])
+	        class_df = get_class(res, k)
+	        class_mat = cbind(class_mat, class_df[, "class"])
+	        silhouette_mat = cbind(silhouette_mat, class_df[, "silhouette"])
 	        time_used = c(time_used, attr(res, "system.time")[3])
 	    }
 	}
 
-	class_df = as.matrix(class_df)
-	colnames(class_df) = paste(top_method_vec, partition_method_vec, sep = "/")
-	class_col = structure(unique(res@object_list[[1]]$class_df$class_col), names = unique(res@object_list[[1]]$class_df$class))
+	class_mat = as.matrix(class_mat)
+	colnames(class_mat) = paste(top_method_vec, partition_method_vec, sep = ":")
+	ik = which(res@k == k)
+	class_col = structure(unique(res@object_list[[ik]]$class_df$class_col), names = unique(res@object_list[[ik]]$class_df$class))
 	class_col = class_col[order(names(class_col))]
-	ht = Heatmap(class_df, name = "class", col = class_col, 
-		top_annotation = HeatmapAnnotation(top_method = top_method_vec, partition_method = partition_method_vec,
-			time_used = anno_barplot(time_used, axis = TRUE, axis_side = "right", baseline = 0),
-			show_annotation_name = c(TRUE, TRUE, FALSE, FALSE), annotation_name_side = "right",
+	
+	silhouette_mat = as.matrix(silhouette_mat)
+	silhouette_mat[silhouette_mat < 0] = 0
+
+	adjust_by_transparency = function(col, transparency) {
+		rgb( 1 - (1 - t(col2rgb(col)/255)) * (1 - transparency))
+	}
+
+	pac = get_stat(object, k)[, "PAC"][colnames(class_mat)]
+	ht = Heatmap(t(class_mat), name = "class", col = class_col, 
+		row_names_side = "left", show_row_dend = FALSE, cluster_columns = TRUE,
+		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
+		cell_fun = function(j, i, x, y, w, h, fill) {
+			col = adjust_by_transparency(fill, 1 - silhouette_mat[j, i])
+			grid.rect(x, y, w, h, gp = gpar(fill = col, col = col))
+		}) + 
+		Heatmap((pac < 0.1) + 0, name = "PAC < 0.1", col = c("1" = "orange", "0" = "white"),
+			show_row_names = FALSE, width = unit(2, "mm")) +
+		rowAnnotation(top_method = top_method_vec, 
+			partition_method = partition_method_vec,
+			show_annotation_name = TRUE, annotation_name_side = "bottom",
 			col = list(top_method = structure(names = top_method, brewer_pal_set1_col[seq_along(top_method)]),
 			           partition_method = structure(names = partition_method, brewer_pal_set2_col[seq_along(partition_method)])),
-			annotation_height = unit(c(5, 5, 20), "mm")),
-		show_row_names = FALSE, show_row_dend = FALSE, cluster_columns = TRUE,
-		show_column_dend = FALSE,
-		column_order = order(partition_method_vec, top_method_vec))
+			width = unit(10, "mm"))
+	
+	pl = lapply(object@list[paste(top_method_vec, partition_method_vec, sep = ":")], function(x) as.cl_partition(get_membership(x, k = k)))
+	clen = cl_ensemble(list = pl)
+	m_diss = cl_dissimilarity(clen, method = "comembership")
+	m_diss = as.matrix(m_diss)
 
-	class_df2 = get_class(object, k = k)
+	ht = ht + Heatmap(m_diss, name = "dissimilarity", show_row_names = FALSE, show_column_names = FALSE,
+		show_row_dend = FALSE, show_column_dend = FALSE, width = unit(8, "cm"))
 
-	ht = ht + Heatmap(class_df2[, -ncol(class_df2)], name = "membership", col = colorRamp2(c(0, 1), c("white", "red")),
-		show_row_names = FALSE, cluster_columns = FALSE)
+	draw(ht, main_heatmap = "dissimilarity", column_title = qq("classification from all methods, k = @{k}"))
 
-	ht = ht + Heatmap(class_df2[, "class"], col =  class_col, name = "consensus_class", show_row_names = FALSE)
-
-	draw(ht, column_title = "classification from all methods", row_title = qq("@{nrow(class_df)} samples"), row_order = order(class_df2[, "class"]), 
-		cluster_rows = FALSE)
-	decorate_annotation("time_used", {
-		grid.text("time_used (s)", x = unit(1, "npc") + unit(1, "cm"), just = "left")
-	})
 })
+
 
 # == title
 # Collect classes from ConsensusPartitionList object
@@ -244,8 +268,10 @@ setMethod(f = "collect_classes",
     	show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
 
     for(k in all_k) {
+    	ik = which(all_k == k )
+    	border_color = ifelse(object@object_list[[ik]]$stat$PAC < 0.1, "red", "black")
     	decorate_heatmap_body(paste0("membership_", k), {
-    		grid.rect(0, width = unit(1+1/k, "npc"), just = "left", gp = gpar(col = "black", fill = "transparent"))
+    		grid.rect(0, width = unit(1+1/k, "npc"), just = "left", gp = gpar(col = border_color, fill = "transparent"))
     	})
     }
 })

@@ -1,5 +1,6 @@
 \name{ConsensusPartition-class}
 \docType{class}
+\alias{ConsensusPartitionList}
 \alias{ConsensusPartition-class}
 \title{
 The ConsensusPartition class

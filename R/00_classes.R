@@ -3,6 +3,9 @@
 # == title
 # The ConsensusPartitionList class
 #
+# == alias
+# ConsensusPartition
+#
 # == details
 # The object contains results from all combinations of top methods
 # and partition methods.
@@ -32,6 +35,9 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 
 # == title
 # The ConsensusPartition class
+#
+# == alias
+# ConsensusPartitionList
 #
 # == methods
 # The `ConsensusPartition-class` has following methods:
