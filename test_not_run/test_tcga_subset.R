@@ -8,7 +8,7 @@ if(grepl("tbi", Sys.info()["nodename"]) & Sys.info()["user"] == "guz") {
 load("~/project/development/cola/inst/extdata/TCGA_GBM_microarray_subset.Rdata")
 data = t(apply(data, 1, adjust_outlier))
 res = run_all_consensus_partition_methods(data, top_n = c(500, 1000), k = 2:6,
-	# top_method = c("sd", "vc"), partition_method = c("kmeans", "hclust"),
+	top_method = c("sd", "vc"), partition_method = c("kmeans", "hclust"),
 	known_anno = data.frame(subtype = subtype),
 	known_col = list(subtype = structure(1:4, names = unique(subtype))))
 

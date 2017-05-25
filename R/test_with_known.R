@@ -5,6 +5,7 @@
 # == param
 # -x a data frame or a vector which contains discrete or continuous variables.
 # -y a data frame or a vector which contains discrete or continuous variables.
+# -all_factors are all columns in ``x`` and ``y`` are enforced to be factors.
 # -verbose whether print messages.
 # 
 # == details
@@ -25,10 +26,18 @@
 # test_between_factors(df)
 # x = runif(100)
 # test_between_factors(x, df)
-test_between_factors = function(x, y = NULL, verbose = TRUE) {
+test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE) {
 	
 	if(is.null(y)) {
 		df = x
+		if(is.matrix(df)) {
+			df = as.data.frame(df)
+		}
+		if(all_factors) {
+			for(i in seq_len(ncol(df))) {
+				df[[i]] = factor(df[[i]])
+			}
+		}
 		nm = colnames(df)
 		n = ncol(df)
 		p.value = matrix(NA, nrow = n, ncol = n, dimnames = list(nm, nm))
@@ -50,6 +59,12 @@ test_between_factors = function(x, y = NULL, verbose = TRUE) {
 			}
 		}
 	} else {
+		if(is.matrix(x)) {
+			x = as.data.frame(x)
+		}
+		if(is.matrix(y)) {
+			y = as.data.frame(y)
+		}
 		if(is.atomic(x)) {
 			df1 = data.frame(x)
 			colnames(df1) = deparse(substitute(x))
@@ -61,6 +76,14 @@ test_between_factors = function(x, y = NULL, verbose = TRUE) {
 			colnames(df2) = deparse(substitute(y))
 		} else {
 			df2 = y
+		}
+		if(all_factors) {
+			for(i in seq_len(ncol(df1))) {
+				df1[[i]] = factor(df1[[i]])
+			}
+			for(i in seq_len(ncol(df2))) {
+				df2[[i]] = factor(df2[[i]])
+			}
 		}
 		nm1 = colnames(df1)
 		nm2 = colnames(df2)

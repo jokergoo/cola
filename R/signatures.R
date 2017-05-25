@@ -130,7 +130,7 @@ setMethod(f = "get_signatures",
 	fdr2 = fdr[fdr < fdr_cutoff]
 	group2 = group[fdr < fdr_cutoff]
 	names(group2) = rownames(mat)
-	mat_return = list(mat = mat, fdr = fdr2, group = group2)
+	mat_return = list(mat = mat, confident_samples = column_used_logical, fdr = fdr2, group = group2)
 	qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
 	more_than_5k = FALSE
@@ -210,7 +210,7 @@ setMethod(f = "get_signatures",
 			} else {
 				bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
 					show_annotation_name = TRUE, annotation_name_side = "right")
-				for(i in seq_along(bottom_anno2$anno_list)) {
+				for(i in seq_along(bottom_anno2@anno_list)) {
 					bottom_anno2@anno_list[[i]]@color_mapping = bottom_anno1@anno_list[[i]]@color_mapping
 				}
 			}
@@ -230,8 +230,8 @@ setMethod(f = "get_signatures",
 		top_annotation = HeatmapAnnotation(df = membership_mat[column_used_logical, ],
 			class = class_df$class[column_used_logical],
 			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
-				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "grey", "#EEEEEE"),
-					      col = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", NA)),
+				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
+					      col = NA),
 				baseline = 0, axis = !has_ambiguous, axis_side = "right"),
 			col = c(list(class = class_col), col_list),
 			annotation_height = unit(c(rep(4, k+1), 15), "mm"),
@@ -245,6 +245,9 @@ setMethod(f = "get_signatures",
  	if(scale_rows) {
 		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"))
 	}
+
+	mat_return$class_col = class_col
+
 	if(has_ambiguous) {
 		ht_list = ht_list + Heatmap(use_mat2, name = paste0(heatmap_name, 2), col = col_fun,
 			top_annotation = HeatmapAnnotation(df = membership_mat[!column_used_logical, ],
@@ -380,15 +383,16 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 
 
 
-# lines = strsplit(readLines("h.all.v6.0.symbols.gmt"), "\t")
+# lines = strsplit(readLines("c2.all.v6.0.symbols.gmt"), "\t")
 # genesets = lapply(lines, function(x) x[-(1:2)])
 # names(genesets) = sapply(lines, function(x) x[1])
 BHI = function(x, map = NULL, genesets, min_count = 50, max_count = 5000) {
-	match_mat = matrix(0, nrow = nrow(x$mat), ncol = length(genesets))
-
+	
 	gl = sapply(genesets, length)
 	l = gl >= min_count & gl <= max_count
 	genesets = genesets[l]
+
+	match_mat = matrix(0, nrow = nrow(x$mat), ncol = length(genesets))
 
 	g = rownames(x$mat)
 	if(!is.null(map)) {
@@ -401,23 +405,86 @@ BHI = function(x, map = NULL, genesets, min_count = 50, max_count = 5000) {
 	colnames(match_mat) = names(genesets)
 
 	for(i in seq_along(genesets)) {
-		match_mat[genesets[[i]], i] = 1
+		match_mat[intersect(genesets[[i]], g), i] = 1
 	}
 
-	mean(tapply(seq_len(nrow(x$mat)), x$group, function(ind) {
+	bhi = mean(tapply(seq_len(nrow(x$mat)), x$group, function(ind) {
 		g2 = g[ind]
 		submat = matrix(0, nrow = length(g2), ncol = length(g2))
 		rownames(submat) = g2
 		colnames(submat) = g2
 
-		for(i in 1:(length(g2) - 1)) {
-			for(j in i:length(g2)) {
-				submat[i, j] = colSums(match_mat[g2[c(i, j)], ]) == 2
-				submat[j, i] = submat[i, j]
+		match_submat = match_mat[g2, ]
+		for(i in seq_len(ncol(match_submat))) {
+			l = match_submat[, i] == 1
+			if(sum(l) > 1) {
+				submat[l, l] = 1
 			}
 		}
 
 		mean(submat[lower.tri(submat)])
 	}))
 
+	return(bhi)
+}
+
+enrich_to_genesets = function(x, map = NULL, bg, genesets, min_count = 50, max_count = 5000) {
+	
+	genesets = lapply(genesets, function(x) intersect(x, bg))
+	gl = sapply(genesets, length)
+	l = gl >= min_count & gl <= max_count
+	genesets = genesets[l]
+
+	g = rownames(x$mat)
+	if(!is.null(map)) {
+		g2 = map[g]
+		l = is.na(g2)
+		g2[l] = g[l]
+		g = g2
+	}
+
+	n_groups = length(unique(x$group))
+	p_mat = matrix(nrow = length(genesets), ncol = n_groups)
+	colnames(p_mat) = 1:n_groups
+	for(gi in unique(x$group)) {
+		gp = unique(g[x$group == gi])
+		for(i in seq_along(genesets)) {
+			v1 = length(intersect(gp, genesets[[i]]))
+			v2 = length(gp) - v1
+			v3 = length(genesets[[i]]) - v1
+			v4 = length(bg) - v1 - v2 - v3
+			p_mat[i, gi] = fisher.test(matrix(c(v1, v2, v3, v4), nrow = 2))$p.value
+		}
+	}
+
+	fdr_mat = p.adjust(p_mat, "BH")
+	dim(fdr_mat) = dim(p_mat)
+	l = fdr < 0.05
+	if(sum(l)) {
+		match_mat2 = match_mat[, l, drop = FALSE]
+
+		mean_match = tapply(seq_along(x$group), x$group, function(ind) {
+			colMeans(match_mat2[ind, , drop = FALSE])
+		})
+		mean_match = do.call("cbind", mean_match)
+		ht_list = Heatmap(x$group, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = x$class_col)
+		
+		column_hc = hclust(dist(mean_match))
+		cn = colnames(match_mat2)
+
+		ht_list = ht_list + Heatmap(match_mat2, name = "in geneset", col = c("1" = "purple", "0" = "white"), 
+			show_row_names = FALSE, show_row_dend = FALSE, split = x$group, combined_name_fun = NULL,
+			cluster_columns = column_hc, show_column_dend = TRUE, clustering_method_rows = "ward.D",
+			show_column_names = TRUE, column_names_gp = gpar(fontsize = 8))
+		draw(ht_list, main_heatmap = "in geneset", column_title = qq("@{sum(l)}/@{length(l)} genesets with fdr < 0.05"))
+
+		
+		for(i in 1:n_groups) {
+			decorate_heatmap_body("in geneset", slice = i, {
+				grid.rect(gp = gpar(fill = "transparent", col = "black"))
+			})
+		}
+	} else {
+		cat("no significant geneset correlates to row groups.\n")
+	}
 }
