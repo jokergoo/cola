@@ -17,6 +17,7 @@
 # -show_legend whether draw the legends on the heatmap.
 # -show_column_names whether show column names on the heatmap.
 # -use_raster internally used
+# -plot whether to make the plot
 # -... other arguments
 # 
 # == details 
@@ -44,6 +45,7 @@ setMethod(f = "get_signatures",
 	anno_col = if(missing(anno)) object@known_col else NULL,
 	show_legend = TRUE,
 	show_column_names = TRUE, use_raster = TRUE,
+	plot = TRUE,
 	...) {
 
 	class_df = get_class(object, k)
@@ -132,6 +134,10 @@ setMethod(f = "get_signatures",
 	names(group2) = rownames(mat)
 	mat_return = list(mat = mat, confident_samples = column_used_logical, fdr = fdr2, group = group2)
 	qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
+
+	if(!plot) {
+		return(mat_return)
+	}
 
 	more_than_5k = FALSE
 	if(nrow(mat) > 5000) {
@@ -428,12 +434,16 @@ BHI = function(x, map = NULL, genesets, min_count = 50, max_count = 5000) {
 	return(bhi)
 }
 
-enrich_to_genesets = function(x, map = NULL, bg, genesets, min_count = 50, max_count = 5000) {
+# d2 = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/unifiedScaled.txt", header = TRUE, row.names = 1, check.names = FALSE)
+# bg = rownames(d2)
+enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count = 50, max_count = 5000) {
 	
 	genesets = lapply(genesets, function(x) intersect(x, bg))
 	gl = sapply(genesets, length)
 	l = gl >= min_count & gl <= max_count
 	genesets = genesets[l]
+
+	match_mat = matrix(0, nrow = nrow(x$mat), ncol = length(genesets))
 
 	g = rownames(x$mat)
 	if(!is.null(map)) {
@@ -442,6 +452,13 @@ enrich_to_genesets = function(x, map = NULL, bg, genesets, min_count = 50, max_c
 		g2[l] = g[l]
 		g = g2
 	}
+	rownames(match_mat) = g
+	colnames(match_mat) = names(genesets)
+
+	for(i in seq_along(genesets)) {
+		match_mat[intersect(genesets[[i]], g), i] = 1
+	}
+
 
 	n_groups = length(unique(x$group))
 	p_mat = matrix(nrow = length(genesets), ncol = n_groups)
