@@ -17,6 +17,7 @@ Get signature rows
     anno_col = if(missing(anno)) object@known_col else NULL,
     show_legend = TRUE,
     show_column_names = TRUE, use_raster = TRUE,
+    plot = TRUE,
     ...)
 }
 \arguments{
@@ -32,6 +33,7 @@ Get signature rows
   \item{show_legend}{whether draw the legends on the heatmap.}
   \item{show_column_names}{whether show column names on the heatmap.}
   \item{use_raster}{internally used}
+  \item{plot}{whether to make the plot}
   \item{...}{other arguments}
 
 }

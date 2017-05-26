@@ -389,16 +389,33 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 
 
 
+# == title
+# Co-occurrence of genes in gene sets
+#
+# == param
+# -x the object returned from `get_signatures`
+# -map mapping between rows of ``x$mat`` and genes in ``genesets``
+# -genesets a list
+# -min_count minimal number of genes in genesets
+# -max_count maximal number of genes in genesets
+#
+# == details
+# For genes in each row group, the co-occurence of every gene pair to be in a same gene set
+# is calculated. The mean co-occurence of all genes is used as the final statistic which can
+# be understanded as the mean number of gene sets that two genes co-exist.
+#
+gene_cooccurrence = function(x, map = NULL, genesets, min_count = 50, max_count = 5000) {
+
 # lines = strsplit(readLines("c2.all.v6.0.symbols.gmt"), "\t")
 # genesets = lapply(lines, function(x) x[-(1:2)])
 # names(genesets) = sapply(lines, function(x) x[1])
-BHI = function(x, map = NULL, genesets, min_count = 50, max_count = 5000) {
-	
+
 	gl = sapply(genesets, length)
 	l = gl >= min_count & gl <= max_count
+	qqcat("@{sum(l)}/@{length(l)} gene sets used.\n")
 	genesets = genesets[l]
 
-	match_mat = matrix(0, nrow = nrow(x$mat), ncol = length(genesets))
+	match_mat = matrix(FALSE, nrow = nrow(x$mat), ncol = length(genesets))
 
 	g = rownames(x$mat)
 	if(!is.null(map)) {
@@ -411,37 +428,52 @@ BHI = function(x, map = NULL, genesets, min_count = 50, max_count = 5000) {
 	colnames(match_mat) = names(genesets)
 
 	for(i in seq_along(genesets)) {
-		match_mat[intersect(genesets[[i]], g), i] = 1
+		match_mat[intersect(genesets[[i]], g), i] = TRUE
 	}
 
-	bhi = mean(tapply(seq_len(nrow(x$mat)), x$group, function(ind) {
-		g2 = g[ind]
-		submat = matrix(0, nrow = length(g2), ncol = length(g2))
-		rownames(submat) = g2
-		colnames(submat) = g2
+	unique_group = unique(x$group)
 
-		match_submat = match_mat[g2, ]
-		for(i in seq_len(ncol(match_submat))) {
-			l = match_submat[, i] == 1
-			if(sum(l) > 1) {
-				submat[l, l] = 1
-			}
-		}
+	cooccurrence = NULL
+	for(i in seq_along(unique_group)) {
+		ind = which(x$group == unique_group[i])
+		qqcat("gene co-occurrence in group @{unique_group[i]}, @{length(ind)} genes\n")
+		submat = gene_cooccurrence_in_geneset(match_mat[ind, ])
+		cooccurrence[i] = mean(submat[lower.tri(submat)])
+	}
+	names(cooccurrence) = unique_group
 
-		mean(submat[lower.tri(submat)])
-	}))
-
-	return(bhi)
+	return(cooccurrence)
 }
 
-# d2 = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/unifiedScaled.txt", header = TRUE, row.names = 1, check.names = FALSE)
-# bg = rownames(d2)
-enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count = 50, max_count = 5000) {
+
+# == title
+# Enrich signature genes to genesets
+#
+# == param
+# -x the object returned from `get_signatures`
+# -map mapping between rows of ``x$mat`` and genes in ``genesets``
+# -bg background gene list
+# -genesets a list
+# -min_count minimal number of genes in genesets
+# -max_count maximal number of genes in genesets
+# -fdr_cutoff1 cutoff of FDR for the geneset to be significantly enriched
+# -fdr_cutoff2 cutoff of RDR for the geneset to be not enriched
+#
+# == details
+# The function tries to find significantly enriched genesets which at the same time
+# are also subgroup specific.
+enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count = 50, max_count = 5000,
+	fdr_cutoff1 = 0.01, fdr_cutoff2 = 0.5) {
 	
+	# d2 = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/unifiedScaled.txt", header = TRUE, row.names = 1, check.names = FALSE)
+	# bg = rownames(d2)
+
 	genesets = lapply(genesets, function(x) intersect(x, bg))
 	gl = sapply(genesets, length)
 	l = gl >= min_count & gl <= max_count
+	qqcat("@{sum(l)}/@{length(l)} gene sets used\n")
 	genesets = genesets[l]
+	n_genesets = length(genesets)
 
 	match_mat = matrix(0, nrow = nrow(x$mat), ncol = length(genesets))
 
@@ -459,9 +491,19 @@ enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count 
 		match_mat[intersect(genesets[[i]], g), i] = 1
 	}
 
-
 	n_groups = length(unique(x$group))
 	p_mat = matrix(nrow = length(genesets), ncol = n_groups)
+	stat_list = lapply(1:n_groups, function(i) {
+		data.frame(geneset = names(genesets),
+			       gene_in_set = numeric(n_genesets),
+			       geneset_size = numeric(n_genesets),
+			       row_group_size = numeric(n_genesets),
+			       p_value = numeric(n_genesets),
+			       fdr = numeric(n_genesets),
+			       stringsAsFactors = FALSE)
+	})
+	names(stat_list) = sort(unique(x$group))
+
 	colnames(p_mat) = 1:n_groups
 	for(gi in unique(x$group)) {
 		gp = unique(g[x$group == gi])
@@ -470,38 +512,61 @@ enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count 
 			v2 = length(gp) - v1
 			v3 = length(genesets[[i]]) - v1
 			v4 = length(bg) - v1 - v2 - v3
-			p_mat[i, gi] = fisher.test(matrix(c(v1, v2, v3, v4), nrow = 2))$p.value
+			p_mat[i, gi] = fisher.test(matrix(c(v1, v2, v3, v4), nrow = 2), alternative = "greater")$p.value
+			stat_list[[gi]][i, "gene_in_set"] = v1
+			stat_list[[gi]][i, "geneset_size"] = v3 + v1
+			stat_list[[gi]][i, "row_group_size"] = v2 + v1
+			stat_list[[gi]][i, "p_value"] = p_mat[i, gi]
 		}
 	}
 
 	fdr_mat = p.adjust(p_mat, "BH")
 	dim(fdr_mat) = dim(p_mat)
-	l = fdr < 0.05
+
+	for(i in seq_along(stat_list)) {
+		stat_list[[i]]$fdr = fdr_mat[, i]
+	}
+	l = apply(fdr_mat, 1, function(x) {
+		ind = x < fdr_cutoff1
+		if(sum(ind) != 1) {
+			return(FALSE)
+		} else {
+			all(x[!ind] > fdr_cutoff2)
+		}
+	})
+
 	if(sum(l)) {
 		match_mat2 = match_mat[, l, drop = FALSE]
-
-		mean_match = tapply(seq_along(x$group), x$group, function(ind) {
-			colMeans(match_mat2[ind, , drop = FALSE])
+		fdr_mat2 = fdr_mat[l, , drop = FALSE]
+		min_fdr= rowMins(fdr_mat2)
+		stat_list = lapply(stat_list, function(df) {
+			df[l, , drop = FALSE]
 		})
-		mean_match = do.call("cbind", mean_match)
+
 		ht_list = Heatmap(x$group, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = x$class_col)
 		
-		column_hc = hclust(dist(mean_match))
-		cn = colnames(match_mat2)
-
-		ht_list = ht_list + Heatmap(match_mat2, name = "in geneset", col = c("1" = "purple", "0" = "white"), 
-			show_row_names = FALSE, show_row_dend = FALSE, split = x$group, combined_name_fun = NULL,
-			cluster_columns = column_hc, show_column_dend = TRUE, clustering_method_rows = "ward.D",
-			show_column_names = TRUE, column_names_gp = gpar(fontsize = 8))
-		draw(ht_list, main_heatmap = "in geneset", column_title = qq("@{sum(l)}/@{length(l)} genesets with fdr < 0.05"))
-
+		column_anno = as.character(apply(fdr_mat2, 1, function(x) which(x < fdr_cutoff1)))
 		
+		ht_list = ht_list + Heatmap(match_mat2, name = "in geneset", col = c("1" = "purple", "0" = "white"), 
+			top_annotation = HeatmapAnnotation(group = column_anno, col = list(group = x$class_col), show_legend = FALSE),
+			show_row_names = FALSE, show_row_dend = FALSE, split = x$group, combined_name_fun = NULL,
+			cluster_columns = FALSE, column_order = order(column_anno, min_fdr), show_column_dend = TRUE, clustering_method_rows = "ward.D",
+			show_column_names = FALSE, column_names_gp = gpar(fontsize = 8))
+		draw(ht_list, main_heatmap = "in geneset", column_title = qq("@{sum(l)}/@{length(l)} genesets which are subgroup specific"))
+
 		for(i in 1:n_groups) {
 			decorate_heatmap_body("in geneset", slice = i, {
 				grid.rect(gp = gpar(fill = "transparent", col = "black"))
 			})
 		}
+
+		sig_geneset_list = list()
+		for(ug in unique(column_anno)) {
+			sig_geneset_list[[ug]] = stat_list[[ug]][column_anno == ug, , drop = FALSE]
+		}
+		return(invisible(sig_geneset_list))
 	} else {
-		cat("no significant geneset correlates to row groups.\n")
+		cat("no significant geneset has enrichment for row groups.\n")
+		return(invisible(NULL))
 	}
 }

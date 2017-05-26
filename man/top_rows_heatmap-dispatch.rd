@@ -10,8 +10,8 @@ Method dispatch page for \code{top_rows_heatmap}.
 \code{top_rows_heatmap} can be dispatched on following classes:
 
 \itemize{
-\item \code{\link{top_rows_heatmap,matrix-method}}, \code{\link{matrix-class}} class method
 \item \code{\link{top_rows_heatmap,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
+\item \code{\link{top_rows_heatmap,matrix-method}}, \code{\link{matrix-class}} class method
 }
 }
 \examples{

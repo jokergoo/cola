@@ -17,3 +17,4 @@ Packaged: 2017-4-14 00:00:00 UTC; Administrator
 Repository: CRAN
 Roxygen: list(markdown = TRUE)
 Date/Publication: 2017-4-14 00:00:00
+LinkingTo: Rcpp

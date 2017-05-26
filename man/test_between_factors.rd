@@ -7,12 +7,13 @@ Test whether known factors are correlated
 Test whether known factors are correlated
 }
 \usage{
-test_between_factors(x, y = NULL, verbose = TRUE)
+test_between_factors(x, y = NULL, all_factors = FALSE, verbose = TRUE)
 }
 \arguments{
 
   \item{x}{a data frame or a vector which contains discrete or continuous variables.}
   \item{y}{a data frame or a vector which contains discrete or continuous variables.}
+  \item{all_factors}{are all columns in \code{x} and \code{y} are enforced to be factors.}
   \item{verbose}{whether print messages.}
 
 }
