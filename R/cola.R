@@ -15,7 +15,7 @@ cola_logo =
       '''''      
 "
 
-# = title
+# == title
 # A bottle of cola
 # 
 # == details

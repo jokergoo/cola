@@ -1,5 +1,5 @@
-\name{gene_cooccurrence}
-\alias{gene_cooccurrence}
+\name{gene_co_occurrence}
+\alias{gene_co_occurrence}
 \title{
 Co-occurrence of genes in gene sets
 }
@@ -7,13 +7,13 @@ Co-occurrence of genes in gene sets
 Co-occurrence of genes in gene sets
 }
 \usage{
-gene_cooccurrence(x, map = NULL, genesets, min_count = 50, max_count = 5000)
+gene_co_occurrence(x, genesets, map = NULL, min_count = 50, max_count = 5000)
 }
 \arguments{
 
   \item{x}{the object returned from \code{\link{get_signatures}}}
   \item{map}{mapping between rows of \code{x$mat} and genes in \code{genesets}}
-  \item{genesets}{a list}
+  \item{genesets}{a object constructed from \code{\link{msigdb_catalogue}}}
   \item{min_count}{minimal number of genes in genesets}
   \item{max_count}{maximal number of genes in genesets}
 

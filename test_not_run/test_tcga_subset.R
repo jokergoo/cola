@@ -31,7 +31,7 @@ collect_plots(obj)
 collect_classes(obj)
 consensus_heatmap(obj, k = 3)
 membership_heatmap(obj, k = 3)
-get_signatures(obj, k = 3)
+x = get_signatures(obj, k = 3)
 dimension_reduction(obj, k = 3)
 
 get_stat(obj)
@@ -41,3 +41,12 @@ get_membership(obj, k = 3)
 
 test_to_known(obj, k = 3)
 
+############ signature genes ###############
+msigdb = load_msigdb("msigdb_v6.0.xml")
+c2 = msigdb_catalogue(msigdb, category = "C2")
+gene_co_occurrence(x, genesets = c2)
+
+bg = rownames(read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/unifiedScaled.txt", header = TRUE, row.names = 1, check.names = FALSE))
+y = enrich_signatures_to_genesets(x, genesets = c2, bg = bg)
+
+enriched_functions_word_cloud(y, c2)

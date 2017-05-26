@@ -395,7 +395,7 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 # == param
 # -x the object returned from `get_signatures`
 # -map mapping between rows of ``x$mat`` and genes in ``genesets``
-# -genesets a list
+# -genesets a object constructed from `msigdb_catalogue`
 # -min_count minimal number of genes in genesets
 # -max_count maximal number of genes in genesets
 #
@@ -404,15 +404,13 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 # is calculated. The mean co-occurence of all genes is used as the final statistic which can
 # be understanded as the mean number of gene sets that two genes co-exist.
 #
-gene_cooccurrence = function(x, map = NULL, genesets, min_count = 50, max_count = 5000) {
+gene_co_occurrence = function(x, genesets, map = NULL, min_count = 50, max_count = 5000) {
 
-# lines = strsplit(readLines("c2.all.v6.0.symbols.gmt"), "\t")
-# genesets = lapply(lines, function(x) x[-(1:2)])
-# names(genesets) = sapply(lines, function(x) x[1])
+	genesets = genesets$list
 
 	gl = sapply(genesets, length)
 	l = gl >= min_count & gl <= max_count
-	qqcat("@{sum(l)}/@{length(l)} gene sets used.\n")
+	qqcat("@{sum(l)}/@{length(l)} gene sets used\n")
 	genesets = genesets[l]
 
 	match_mat = matrix(FALSE, nrow = nrow(x$mat), ncol = length(genesets))
@@ -425,18 +423,17 @@ gene_cooccurrence = function(x, map = NULL, genesets, min_count = 50, max_count 
 		g = g2
 	}
 	rownames(match_mat) = g
-	colnames(match_mat) = names(genesets)
 
 	for(i in seq_along(genesets)) {
 		match_mat[intersect(genesets[[i]], g), i] = TRUE
 	}
 
-	unique_group = unique(x$group)
+	unique_group = sort(unique(x$group))
 
 	cooccurrence = NULL
 	for(i in seq_along(unique_group)) {
 		ind = which(x$group == unique_group[i])
-		qqcat("gene co-occurrence in group @{unique_group[i]}, @{length(ind)} genes\n")
+		qqcat("gene co-occurrence in group @{unique_group[i]}, @{length(ind)} rows\n")
 		submat = gene_cooccurrence_in_geneset(match_mat[ind, ])
 		cooccurrence[i] = mean(submat[lower.tri(submat)])
 	}
@@ -453,7 +450,7 @@ gene_cooccurrence = function(x, map = NULL, genesets, min_count = 50, max_count 
 # -x the object returned from `get_signatures`
 # -map mapping between rows of ``x$mat`` and genes in ``genesets``
 # -bg background gene list
-# -genesets a list
+# -genesets a object constructed from `msigdb_catalogue`
 # -min_count minimal number of genes in genesets
 # -max_count maximal number of genes in genesets
 # -fdr_cutoff1 cutoff of FDR for the geneset to be significantly enriched
@@ -462,11 +459,10 @@ gene_cooccurrence = function(x, map = NULL, genesets, min_count = 50, max_count 
 # == details
 # The function tries to find significantly enriched genesets which at the same time
 # are also subgroup specific.
-enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count = 50, max_count = 5000,
+enrich_signatures_to_genesets = function(x, genesets, map = NULL, bg, min_count = 50, max_count = 5000,
 	fdr_cutoff1 = 0.01, fdr_cutoff2 = 0.5) {
 	
-	# d2 = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/unifiedScaled.txt", header = TRUE, row.names = 1, check.names = FALSE)
-	# bg = rownames(d2)
+	genesets = genesets$list
 
 	genesets = lapply(genesets, function(x) intersect(x, bg))
 	gl = sapply(genesets, length)
@@ -491,7 +487,8 @@ enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count 
 		match_mat[intersect(genesets[[i]], g), i] = 1
 	}
 
-	n_groups = length(unique(x$group))
+	unique_group = unique(x$group)
+	n_groups = length(unique_group)
 	p_mat = matrix(nrow = length(genesets), ncol = n_groups)
 	stat_list = lapply(1:n_groups, function(i) {
 		data.frame(geneset = names(genesets),
@@ -504,7 +501,7 @@ enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count 
 	})
 	names(stat_list) = sort(unique(x$group))
 
-	colnames(p_mat) = 1:n_groups
+	colnames(p_mat) = unique_group
 	for(gi in unique(x$group)) {
 		gp = unique(g[x$group == gi])
 		for(i in seq_along(genesets)) {
@@ -547,7 +544,7 @@ enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count 
 		
 		column_anno = as.character(apply(fdr_mat2, 1, function(x) which(x < fdr_cutoff1)))
 		
-		ht_list = ht_list + Heatmap(match_mat2, name = "in geneset", col = c("1" = "purple", "0" = "white"), 
+		ht_list = ht_list + Heatmap(match_mat2, name = "in geneset", col = c("1" = "purple", "0" = "#FFFFFFFF"), 
 			top_annotation = HeatmapAnnotation(group = column_anno, col = list(group = x$class_col), show_legend = FALSE),
 			show_row_names = FALSE, show_row_dend = FALSE, split = x$group, combined_name_fun = NULL,
 			cluster_columns = FALSE, column_order = order(column_anno, min_fdr), show_column_dend = TRUE, clustering_method_rows = "ward.D",
@@ -561,7 +558,7 @@ enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count 
 		}
 
 		sig_geneset_list = list()
-		for(ug in unique(column_anno)) {
+		for(ug in sort(unique(column_anno))) {
 			sig_geneset_list[[ug]] = stat_list[[ug]][column_anno == ug, , drop = FALSE]
 		}
 		return(invisible(sig_geneset_list))
@@ -570,3 +567,138 @@ enrich_signatures_to_genesets = function(x, map = NULL, bg, genesets, min_count 
 		return(invisible(NULL))
 	}
 }
+
+# == title
+# Word cloud for the enriched functions
+#
+# == param
+# -x the object returned from `enrich_signatures_to_genesets`
+# -genesets the object also used in `enrich_signatures_to_genesets`
+# -stopwords words that are not take into account for the word cloud
+#
+enriched_functions_word_cloud = function(x, genesets, stopwords = GS_STOPWORDS) {
+
+	for(i in seq_along(x)) {
+		df = x[[i]]
+		gs = df$geneset
+		gs_desc = genesets$meta[which(genesets$meta$id %in% gs), "desc"]
+
+		docs = Corpus(VectorSource(gs_desc))
+
+		docs = tm_map(docs, content_transformer(tolower))
+		docs = tm_map(docs, removeNumbers)
+		docs = tm_map(docs, removeWords, c(stopwords("SMART"), stopwords("english")))
+		docs = tm_map(docs, removeWords, GS_STOPWORDS)
+		docs = tm_map(docs, removePunctuation)
+		docs = tm_map(docs, stripWhitespace)
+
+		tdm.bigram = TermDocumentMatrix(docs)
+
+		freq = sort(rowSums(as.matrix(tdm.bigram)), decreasing = TRUE)
+		freq.df = data.frame(word = names(freq), freq = freq)
+
+		if(dev.interactive() && interactive()) {
+			readline(prompt = "press enter to load next plot: ")
+		}
+
+		wordcloud(words = freq.df$word, freq = freq.df$freq, min.freq = 2,
+		          max.words = 200, random.order = FALSE, rot.per = 0.35, 
+		          colors = brewer.pal(8, "Dark2"))
+		
+		text(0.5, 1, qq("group @{i}, @{nrow(df)} genesets"), adj = c(0.5, 0))
+	}
+}
+
+GS_STOPWORDS = c("gene", "genes", "geneid", "regulated", "cells", "cell", "involved", "compared")
+
+# == title
+# Load from MSigDB
+#
+# == param
+# -f path of the xml file.
+#
+# == details
+# The xml file can be downloaded from http://software.broadinstitute.org/gsea/downloads.jsp .
+#
+load_msigdb = function(f) {
+	x = read_xml(f)
+	genesets = xml_children(x)
+	geneset_id = xml_attr(genesets, "STANDARD_NAME")
+	geneset_organism = xml_attr(genesets, "ORGANISM")
+	geneset_desc = xml_attr(genesets, "DESCRIPTION_BRIEF")
+	geneset_category = xml_attr(genesets, "CATEGORY_CODE")
+	geneset_subcategory = xml_attr(genesets, "SUB_CATEGORY_CODE")
+	geneset_member = xml_attr(genesets, "MEMBERS_SYMBOLIZED")
+
+	geneset_meta = data.frame(id = geneset_id,
+		organism = geneset_organism,
+		desc = geneset_desc,
+		category = geneset_category,
+		sub_category = geneset_subcategory
+	)
+	geneset_list = strsplit(geneset_member, ",")
+	names(geneset_list) = geneset_id
+
+	l = geneset_meta$category == "ARCHIVED" | geneset_meta$organism %in% c("Danio rerio", "Macaca mulatta", "Human", "Mouse")
+	geneset_meta = geneset_meta[!l, ]
+	geneset_list = geneset_list[!l]
+
+	lt = list(meta = geneset_meta, list = geneset_list)
+	class(lt) = "msigdb"
+	return(lt)
+}
+
+# == title
+# Print the msigdb class object
+#
+# == param
+# -x the msigdb object
+# -... other arguments
+#
+print.msigdb = function(x, ...) {
+	all_organisms = sort(unique(x$meta$organism))
+	for(organism in all_organisms) {
+		l1 = x$meta$organism == organism
+		qqcat("@{organism}: @{sum(l1)} gene sets\n")
+		all_categories = sort(unique(x$meta$category[l1]))
+		for(category in all_categories) {
+			l2 = l1 & x$meta$category == category
+			all_sub_categories = sort(unique(x$meta$sub_category[l2]))
+			qqcat("  @{category}: @{sum(l2)} gene sets\n")
+			if(!identical(all_sub_categories, "")) {
+				for(sub_category in all_sub_categories) {
+					l3 = l2 & x$meta$sub_category == sub_category
+					qqcat("    @{sub_category}: @{sum(l3)} gene sets\n")
+				}
+			}
+		}
+	}
+}
+
+# == title
+# Get a catelogue from the whole MSigDB database
+#
+# == param
+# -x the msigdb object from `load_msigdb`
+# -category category
+# -sub_category sub category
+# -organism organism
+#
+msigdb_catalogue = function(x, category = "H", sub_category, organism = "Homo sapiens") {
+	if(missing(sub_category)) {
+		l = x$meta$organism == organism & x$meta$category == category
+	} else {
+		l = x$meta$organism == organism & x$meta$category == category & x$meta$sub_category == sub_category
+	}
+
+	if(sum(l) == 0) {
+		stop("No gene set found.")
+	}
+
+	x2 = x
+	x2$meta = x2$meta[l, , drop = FALSE]
+	x2$list = x2$list[l]
+	return(x2)
+}
+
+

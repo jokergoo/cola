@@ -54,7 +54,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 					try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value})
 				} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Fisher's exact test\n")
-					p.value[i, j] = fisher.test(df[[i]], df[[j]])$p.value
+					p.value[i, j] = fisher.test(df[[i]], df[[j]], alternative = "greater")$p.value
 				}
 			}
 		}
@@ -103,7 +103,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 					try({p.value[i, j] = oneway.test(df1[[i]] ~ df2[[j]])$p.value})
 				} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
 					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Fisher's exact test\n")
-					p.value[i, j] = fisher.test(df1[[i]], df2[[j]])$p.value
+					p.value[i, j] = fisher.test(df1[[i]], df2[[j]], alternative = "greater")$p.value
 				}
 			}
 		}
