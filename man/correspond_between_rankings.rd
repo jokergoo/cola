@@ -14,12 +14,18 @@ correspond_between_rankings(lt, top_n = length(lt[[1]]),
 
   \item{lt}{a list of scores under different metrics.}
   \item{top_n}{top n elements to visualize.}
-  \item{col}{colors for items in \code{lt}.}
+  \item{col}{colors for \code{lt}.}
   \item{...}{pass to \code{\link{correspond_between_two_rankings}}.}
 
 }
 \details{
 It makes plots for pairwise comparisons between different rankings.
+}
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 require(matrixStats)

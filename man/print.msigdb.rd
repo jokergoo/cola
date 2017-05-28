@@ -11,9 +11,15 @@ Print the msigdb class object
 }
 \arguments{
 
-  \item{x}{the msigdb object}
+  \item{x}{the \code{msigdb} object}
   \item{...}{other arguments}
 
+}
+\value{
+No value is returned
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 # There is no example

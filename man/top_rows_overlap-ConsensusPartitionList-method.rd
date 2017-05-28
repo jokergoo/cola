@@ -14,8 +14,14 @@ Overlap of top rows from different top methods
 
   \item{object}{a \code{\link{ConsensusPartitionList-class}} object}
   \item{top_n}{number of top rows}
-  \item{type}{\code{venn}: use venn euler plots; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
+  \item{type}{\code{venn}: use Venn Euler digram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
 
+}
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 # There is no example

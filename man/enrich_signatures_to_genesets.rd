@@ -26,6 +26,12 @@ enrich_signatures_to_genesets(x, genesets, map = NULL, bg, min_count = 50, max_c
 The function tries to find significantly enriched genesets which at the same time
 are also subgroup specific.
 }
+\value{
+A list with significant genesets in each subgroup
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

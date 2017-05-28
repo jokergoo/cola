@@ -2,10 +2,10 @@
 \alias{get_single_run,ConsensusPartitionList-method}
 \alias{get_single_run}
 \title{
-Get object for a single combination of top method and partition method
+Get result for a single top method and partition method
 }
 \description{
-Get object for a single combination of top method and partition method
+Get result for a single top method and partition method
 }
 \usage{
 \S4method{get_single_run}{ConsensusPartitionList}(object, top_method = object@top_method[1],
@@ -20,6 +20,9 @@ Get object for a single combination of top method and partition method
 }
 \value{
 A \code{\link{ConsensusPartition-class}} object.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 # There is no example

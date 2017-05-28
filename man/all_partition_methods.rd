@@ -1,5 +1,5 @@
-\name{ALL_PARTITION_METHOD}
-\alias{ALL_PARTITION_METHOD}
+\name{all_partition_methods}
+\alias{all_partition_methods}
 \title{
 All supported partition methods
 }
@@ -7,11 +7,14 @@ All supported partition methods
 All supported partition methods
 }
 \usage{
-ALL_PARTITION_METHOD()
+all_partition_methods()
 }
 \value{
 A vector of supported partition methods
 }
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
-ALL_PARTITION_METHOD()
+all_partition_methods()
 }

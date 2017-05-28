@@ -13,12 +13,15 @@
 # 
 # - two numeric variables: correlation test by `stats::cor.test` is applied;
 # - two character or factor variables: Chi-squared test by `stats::fisher.test` is applied;
-# - one numeric variable and one character/factor variable: oneway ANOVA test by `stats::oneway.test` is applied.
+# - one numeric variable and one character/factor variable: oneway ANOVA test by `stats::fisher.test` is applied.
 # 
 # This function can be used to test the correlation between the predicted classes and other known factors.
 # 
 # == return 
 # A matrix of p-values.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 # 
 # == examples
 # df = data.frame(v1 = rnorm(100), v2 = sample(letters[1:3], 100, replace = TRUE), 
@@ -119,6 +122,12 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 # -k number of partitions
 # -known a vector or a data frame with known factors
 #
+# == value
+# A matrix of p-values 
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartition",
 	definition = function(object, k, known = object@known_anno) {
@@ -137,6 +146,12 @@ setMethod(f = "test_to_known_factors",
 # -object a `ConsensusPartitionList-class` object
 # -k number of partitions
 # -known a vector or a data frame with known factors
+#
+# == value
+# A matrix of p-values 
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartitionList",

@@ -34,6 +34,9 @@
 # -``fdr`` FDR for rows
 # -``group`` subgroups that the rows are significantly high
 # 
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
@@ -404,6 +407,12 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 # is calculated. The mean co-occurence of all genes is used as the final statistic which can
 # be understanded as the mean number of gene sets that two genes co-exist.
 #
+# == value
+# The mean co-occurrence in each subgroup.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 gene_co_occurrence = function(x, genesets, map = NULL, min_count = 50, max_count = 5000) {
 
 	genesets = genesets$list
@@ -459,6 +468,13 @@ gene_co_occurrence = function(x, genesets, map = NULL, min_count = 50, max_count
 # == details
 # The function tries to find significantly enriched genesets which at the same time
 # are also subgroup specific.
+#
+# == value
+# A list with significant genesets in each subgroup
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 enrich_signatures_to_genesets = function(x, genesets, map = NULL, bg, min_count = 50, max_count = 5000,
 	fdr_cutoff1 = 0.01, fdr_cutoff2 = 0.5) {
 	
@@ -576,6 +592,12 @@ enrich_signatures_to_genesets = function(x, genesets, map = NULL, bg, min_count 
 # -genesets the object also used in `enrich_signatures_to_genesets`
 # -stopwords words that are not take into account for the word cloud
 #
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 enriched_functions_word_cloud = function(x, genesets, stopwords = GS_STOPWORDS) {
 
 	for(i in seq_along(x)) {
@@ -620,6 +642,15 @@ GS_STOPWORDS = c("gene", "genes", "geneid", "regulated", "cells", "cell", "invol
 # == details
 # The xml file can be downloaded from http://software.broadinstitute.org/gsea/downloads.jsp .
 #
+# == value
+# A ``msigdb`` class object with two elements:
+#
+# -``meta`` a data frame with geneset ids, organisms, description of the gene sets and categories.
+# -``list`` a list of gene sets of gene symbols.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 load_msigdb = function(f) {
 	x = read_xml(f)
 	genesets = xml_children(x)
@@ -652,8 +683,14 @@ load_msigdb = function(f) {
 # Print the msigdb class object
 #
 # == param
-# -x the msigdb object
+# -x the ``msigdb`` object
 # -... other arguments
+#
+# == value
+# No value is returned
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 print.msigdb = function(x, ...) {
 	all_organisms = sort(unique(x$meta$organism))
@@ -676,13 +713,19 @@ print.msigdb = function(x, ...) {
 }
 
 # == title
-# Get a catelogue from the whole MSigDB database
+# Get a catelogue from the whole msigdb database
 #
 # == param
 # -x the msigdb object from `load_msigdb`
 # -category category
 # -sub_category sub category
 # -organism organism
+#
+# == value
+# a ``msigdb`` object
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 msigdb_catalogue = function(x, category = "H", sub_category, organism = "Homo sapiens") {
 	if(missing(sub_category)) {

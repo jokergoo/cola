@@ -29,10 +29,16 @@ correspond_between_two_rankings(x1, x2, name1 = "", name2 = "",
 In \code{x1} and \code{x2}, the i^{th} element is the same object but with different 
 scores under different metrics.
 
-\code{x1} and \code{x2} are sorted in the plot, and lines are connecting the same object
+\code{x1} and \code{x2} are sorted in the plot. Lines are connecting the same object
 for those with top values. Shadows on the two sides are the sorted values for \code{x1}
-and \code{x2}, and points corresponds to positions of the top objects but random shifted
+and \code{x2}, and points corresponds to positions of the top objects but are randomly shifted
 on x-directions.
+}
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 require(matrixStats)

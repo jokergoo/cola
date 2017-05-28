@@ -11,10 +11,13 @@
 # 
 # == details 
 # AAC score for a given item is the area above the curve of the curmulative 
-# distribution of the absolute correlation to all other items.
+# distribution of the absolute correlation to all other items with ``x >= min_cor``.
 #
 # == return 
-# A vector of AAC scores
+# A vector of AAC scores.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 # == examples
 # set.seed(12345)
@@ -79,11 +82,16 @@ entropy = function(p) {
 # -consensus_mat consensus matrix
 # 
 # == details
-# This a variant of the orignial PAC (proportion of ambiguous clustering) method with 
-# slight modification.
+# This a variant of the orignial PAC (proportion of ambiguous clustering) method.
+#
+# Assume x_1 in [0, 0.3] and x_2 in [0.7, 1], we calculate s = (\\int_{x_1}^{x_2} F(x) - F(x1)*(x_2 - x_1))/(x_2 - x_1),
+# and the mean value is taken as the final value.
 # 
 # == return 
-# A single PAC score
+# A single PAC scores.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 # 
 PAC = function(consensus_mat) {
 	f = ecdf(consensus_mat[lower.tri(consensus_mat)])
@@ -102,7 +110,7 @@ PAC = function(consensus_mat) {
 			m_score[i, j] = abs(v - rg*f(offset1[i]))/rg
 		}
 	}
-	mean(m_score)
+	mean(m_score, trim = 0.2)
 }
 
 APN = function(class_id, membership_each) {

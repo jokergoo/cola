@@ -19,6 +19,12 @@ Collect classes from ConsensusPartitionList object
   \item{...}{other arguments.}
 
 }
+\value{
+No value is returned
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

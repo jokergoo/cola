@@ -47,11 +47,17 @@ column_order_by_group = function(factor, mat) {
 #
 # == param
 # -x a numeric vector
-# -q quantile to adjust
+# -q percential to adjust
 # 
 # == details
 # Vaules larger than percential ``1 - q`` are adjusted to ``1 - q`` and 
 # values smaller than percential ``q`` are adjusted to ``q``.
+#
+# == value
+# a numeric vector with same length as the original one.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
 # x = rnorm(10)

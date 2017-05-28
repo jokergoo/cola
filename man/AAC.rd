@@ -19,10 +19,13 @@ AAC(mat, cor_method = "pearson", min_cor = 0.2, mc.cores = 1)
 }
 \details{
 AAC score for a given item is the area above the curve of the curmulative 
-distribution of the absolute correlation to all other items.
+distribution of the absolute correlation to all other items with \code{x >= min_cor}.
 }
 \value{
-A vector of AAC scores
+A vector of AAC scores.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 set.seed(12345)

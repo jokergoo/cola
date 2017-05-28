@@ -1,23 +1,30 @@
 
 # == title
-# Run subgroup classification in a batch
+# Run subgroup classification for all methods
 #
 # == param
 # -data a numeric matrix where subgroups are found by columns.
 # -top_method method which are used to extract top n rows. Allowed methods
-#        are in `ALL_TOP_VALUE_METHOD` and can be self-added by `register_top_value_fun`.
+#        are in `all_top_value_methods` and can be self-added by `register_top_value_fun`.
 # -partition_method method which are used to do partition on data columns. 
-#        Allowed methods are in `ALL_PARTITION_METHOD` and can be self-added 
+#        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_fun`.
 # -mc.cores number of cores to use`.
-# -get_signatures whether to run `get_signatures` for each partition.
+# -get_signatures whether to run `get_signatures` for each method. If it is run, the results
+#         for the signature analysis will also be stored in the final object.
 # -... other arguments passed to `consensus_partition`.
+#
+# == details
+# The function run consensus partitions for all combination of top methods and parittion methods.
 #
 # == return 
 # a `ConsensusPartitionList-class` object. 
 #
-run_all_consensus_partition_methods = function(data, top_method = ALL_TOP_VALUE_METHOD(), 
-	partition_method = ALL_PARTITION_METHOD(), 
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+run_all_consensus_partition_methods = function(data, top_method = all_top_value_methods(), 
+	partition_method = all_partition_methods(), 
 	mc.cores = 1, get_signatures = FALSE, ...) {
 		
 	.env = new.env()
@@ -107,6 +114,12 @@ run_all_consensus_partition_methods = function(data, top_method = ALL_TOP_VALUE_
 # -object a `ConsensusPartitionList-class` object
 # -... other arguments
 #
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "show",
 	signature = "ConsensusPartitionList",
 	definition = function(object) {
@@ -116,7 +129,7 @@ setMethod(f = "show",
 })
 
 # == title
-# Get object for a single combination of top method and partition method
+# Get result for a single top method and partition method
 #
 # == param
 # -object a `ConsensusPartitionList-class` object
@@ -126,10 +139,19 @@ setMethod(f = "show",
 # == return 
 # A `ConsensusPartition-class` object.
 #
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "get_single_run",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_method = object@top_method[1], 
 		partition_method = object@partition_method[1]) {
+	if(!top_method %in% object@top_method) {
+		stop(qq("@{top_method} was not used in `run_all_consensus_partition_methods`."))
+	}
+	if(!partition_method %in% object@partition_method) {
+		stop(qq("@{partition_method} was not used in `run_all_consensus_partition_methods`."))
+	}
 	nm = paste0(top_method, ":", partition_method)
 	object@list[[nm]]
 })

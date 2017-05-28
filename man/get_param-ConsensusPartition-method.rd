@@ -17,6 +17,12 @@ Get parameters
   \item{unique}{whether apply \code{\link[base]{unique}} to rows}
 
 }
+\value{
+A data frame of parameters corresponding to the current k.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

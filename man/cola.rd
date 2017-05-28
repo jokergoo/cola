@@ -12,7 +12,13 @@ cola()
 \details{
 Simply provide you a bottle of cola.
 
-The ASCII art is from \url{http://ascii.co.uk/art/coke}
+The ASCII art is from \url{http://ascii.co.uk/art/coke} .
+}
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 cola()

@@ -7,6 +7,12 @@
 # -k number of partitions
 # -unique whether apply `base::unique` to rows
 #
+# == value
+# A data frame of parameters corresponding to the current k.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "get_param",
 	signature = "ConsensusPartition",
 	definition = function(object, k, unique = TRUE) {
@@ -25,6 +31,12 @@ setMethod(f = "get_param",
 # -object a `ConsensusPartition-class` object
 # -k number of partitions
 #
+# == value
+# A consensus matrix corresponding to the current k.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "get_consensus",
 	signature = "ConsensusPartition",
 	definition = function(object, k) {
@@ -38,8 +50,19 @@ setMethod(f = "get_consensus",
 # == param
 # -object a `ConsensusPartition-class` object
 # -k number of partitions
-# -each return the percentage membership matrix or the membership
+# -each whether return the percentage membership matrix or the membership
 #       in every random round
+#
+# == details
+# If ``each == TRUE``, the value in the membership matrix is the probability
+# to be in one subgroup, while if ``each == FALSE``, the membership matrix contains the 
+# class labels for the partitions in all randomizations.
+#
+# == value
+# A membership matrix where rows correspond to the columns in the original matrix.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "get_membership",
 	signature = "ConsensusPartition",
@@ -53,11 +76,24 @@ setMethod(f = "get_membership",
 })
 
 # == title
-# Get parameters
+# Get statistics
 #
 # == param
 # -object a `ConsensusPartition-class` object
 # -k number of partitions. The value can be a vector.
+#
+# == details
+# The statistics are:
+#
+# -cophcor cophenetic correlation coefficient
+# -PAC proportion of ambiguous clustering, calculated by `PAC`
+# -mean_silhouette the mean silhouette score
+#
+# == value
+# A matrix of partition statistics for all k.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "get_stat",
 	signature = "ConsensusPartition",
@@ -73,11 +109,18 @@ setMethod(f = "get_stat",
 
 
 # == title
-# Get parameters
+# Get statistics
 #
 # == param
 # -object a `ConsensusPartitionList-class` object
 # -k number of partitions.
+#
+# == value
+# A matrix of partition statistics for a selected k. Rows in the 
+# matrix correspond to all combination of top methods and partition methods.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "get_stat",
 	signature = "ConsensusPartitionList",
@@ -94,14 +137,18 @@ setMethod(f = "get_stat",
 
 
 # == title
-# Get class from the consensus_partition object
+# Get class from the ConsensusPartition object
 #
 # == param
 # -object a `ConsensusPartition-class` object
 # -k number of partitions
 #
 # == return
-# A data frame with class IDs and other columns.
+# A data frame with class IDs and other columns which are entropy of the membership matrix
+# and the silhouette scores which measure the stability of an item to stay in its subgroup.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "get_class",
 	signature = "ConsensusPartition",
@@ -111,22 +158,25 @@ setMethod(f = "get_class",
 })
 
 # == title
-# Get class from the consensus_partition_all_methods object
+# Get class from the ConsensusPartitionList object
 #
 # == param
 # -object a `ConsensusPartitionList-class` object
 # -k number of partitions
-# -... other arguments
 # 
 # == details 
-# The class IDs is re-calculated by merging class IDs from all methods.
+# The class IDs are inferred by merging partitions from all methods
+# by weighting the mean silhouette scores in each method. 
 #
 # == return
-# A data frame with class IDs and other columns.
+# A data frame with class IDs, membership, entropy and silhouette scores.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "get_class",
 	signature = "ConsensusPartitionList",
-	definition = function(object, k, ...) {
+	definition = function(object, k) {
 	res = object
 	partition_list = NULL
 	mean_cophcor = NULL
@@ -158,5 +208,9 @@ setMethod(f = "get_class",
 	class(m) = "matrix"
 	colnames(m) = paste0("p", 1:k)
 	class = as.vector(cl_class_ids(consensus))
-	cbind(as.data.frame(m), class = class)
+	df = cbind(as.data.frame(m), class = class)
+	df$entropy = apply(m, 1, entropy)
+	df$silhouette = silhouette(class, dist(t(consensus)))[, "sil_width"]
+
+	return(df)
 })

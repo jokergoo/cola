@@ -16,6 +16,12 @@ enriched_functions_word_cloud(x, genesets, stopwords = GS_STOPWORDS)
   \item{stopwords}{words that are not take into account for the word cloud}
 
 }
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

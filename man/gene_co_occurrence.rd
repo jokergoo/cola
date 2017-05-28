@@ -23,6 +23,12 @@ For genes in each row group, the co-occurence of every gene pair to be in a same
 is calculated. The mean co-occurence of all genes is used as the final statistic which can
 be understanded as the mean number of gene sets that two genes co-exist.
 }
+\value{
+The mean co-occurrence in each subgroup.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

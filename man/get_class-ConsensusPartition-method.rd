@@ -1,10 +1,10 @@
 \name{get_class-ConsensusPartition-method}
 \alias{get_class,ConsensusPartition-method}
 \title{
-Get class from the consensus_partition object
+Get class from the ConsensusPartition object
 }
 \description{
-Get class from the consensus_partition object
+Get class from the ConsensusPartition object
 }
 \usage{
 \S4method{get_class}{ConsensusPartition}(object, k)
@@ -16,7 +16,11 @@ Get class from the consensus_partition object
 
 }
 \value{
-A data frame with class IDs and other columns.
+A data frame with class IDs and other columns which are entropy of the membership matrix
+and the silhouette scores which measure the stability of an item to stay in its subgroup.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 # There is no example

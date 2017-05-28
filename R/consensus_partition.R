@@ -4,9 +4,9 @@
 #
 # == param
 # -data a numeric matrix where subgroups are found by columns.
-# -top_method a single top method. Avaialble methods are in `ALL_TOP_VALUE_METHOD`.
+# -top_method a single top method. Avaialble methods are in `all_top_value_methods`.
 # -top_n number of rows with top values.
-# -partition_method a single partition method. Avaialble methods are in `ALL_PARTITION_METHOD`.
+# -partition_method a single partition method. Avaialble methods are in `all_partition_methods`.
 # -k number of partitions. The value is a vector.
 # -p_sampling proportion of the top n rows to sample.
 # -partition_repeat number of repeats for the random sampling.
@@ -18,10 +18,13 @@
 # == return
 # A `ConsensusPartition-class` object.
 #
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 consensus_partition = function(data,
-	top_method = ALL_TOP_VALUE_METHOD()[1],
+	top_method = all_top_value_methods()[1],
 	top_n = seq(min(2000, round(nrow(data)*0.2)), min(c(6000, round(nrow(data)*0.6))), length.out = 5),
-	partition_method = ALL_PARTITION_METHOD()[1],
+	partition_method = all_partition_methods()[1],
 	k = 2:6, p_sampling = 0.8,
 	partition_repeat = 50,
 	partition_param = list(),
@@ -50,13 +53,6 @@ consensus_partition = function(data,
 		.env$data = data
 	} else {
 		data = .env$data
-	}
-
-	if(!top_method %in% ALL_TOP_VALUE_METHOD()) {
-		stop(qq("the top method: @{top_method} has not beed defined yet."))
-	}
-	if(!partition_method %in% ALL_PARTITION_METHOD()) {
-		stop(qq("the partition method: @{partition_method} has not beed defined yet."))
 	}
 
 	k = sort(k)
@@ -256,6 +252,12 @@ consensus_partition = function(data,
 # -object a `ConsensusPartition-class` object
 # -... other arguments
 #
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "show",
 	signature = "ConsensusPartition",
 	definition = function(object) {
@@ -270,6 +272,12 @@ setMethod(f = "show",
 # == param
 # -object a `ConsensusPartition-class` object.
 # -... other arguments.
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "plot_ecdf",
 	signature = "ConsensusPartition",
@@ -289,6 +297,12 @@ setMethod(f = "plot_ecdf",
 #
 # == param
 # -object a `ConsensusPartition-class` object
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "select_partition_number",
 	signature = "ConsensusPartition",
@@ -319,6 +333,12 @@ setMethod(f = "select_partition_number",
 # -anno a data frame with column annotations
 # -anno_col colors for the annotations
 # -... other arguments
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
@@ -383,6 +403,12 @@ setMethod(f = "consensus_heatmap",
 # -show_column_names whether show column names in the heatmap
 # -... other arguments
 #
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#`
 setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, show_legend = TRUE, 
@@ -466,6 +492,12 @@ setMethod(f = "membership_heatmap",
 #        the cutoff.
 # -tsne_param parameters pass to `Rtsne::Rtsne`
 # -... other arguments
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",

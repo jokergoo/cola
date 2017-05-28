@@ -24,6 +24,13 @@ Heatmap of membership of columns in each random sampling
   \item{...}{other arguments}
 
 }
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+`
+}
 \examples{
 # There is no example
 NULL

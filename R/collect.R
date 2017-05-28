@@ -6,11 +6,20 @@
 # -object a `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
 # -k number of partitions.
 # -fun function used to generate plots. Valid functions are `consensus_heatmap,ConsensusPartition-method`,
-#        `plot_ecdf,ConsensusPartition-method`, `membership_heatmap,ConsensusPartition-method` and 
-#        `get_signatures,ConsensusPartition-method`.
+#        `plot_ecdf,ConsensusPartition-method`, `membership_heatmap,ConsensusPartition-method`,
+#        `get_signatures,ConsensusPartition-method` and `dimension_reduction,ConsensusPartition-method`.
 # -top_method a vector of top methods.
 # -partition_method a vector of partition methods.
 # -... other arguments passed to corresponding ``fun``.
+#
+# == details
+# Plots for all combination of top methods and parittion methods are arranged in one page.
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "collect_plots",
 	signature = "ConsensusPartitionList",
@@ -72,6 +81,12 @@ setMethod(f = "collect_plots",
 # == details
 # Plots by `plot_ecdf,ConsensusPartition-method`, `collect_classes,ConsensusPartition-method`, `consensus_heatmap,ConsensusPartition-method`, `membership_heatmap,ConsensusPartition-method` 
 # and `get_signatures,ConsensusPartition-method` are arranged in one single page.
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "collect_plots",
 	signature = "ConsensusPartition",
@@ -164,6 +179,12 @@ setMethod(f = "collect_plots",
 # -partition_method a vector of partition methods
 # -... other arguments.
 #
+# == value
+# No value is returned
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, 
@@ -237,6 +258,15 @@ setMethod(f = "collect_classes",
 # -object a `ConsensusPartitionList-class` object
 # -show_legend whether show legend.
 # -... other arguments.
+#
+# == details
+# Membership matrix and the classes with each k are plotted in the heatmap.
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",

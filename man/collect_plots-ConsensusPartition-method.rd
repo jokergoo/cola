@@ -19,6 +19,12 @@ Collect plots from ConsensusPartition object
 Plots by \code{\link{plot_ecdf,ConsensusPartition-method}}, \code{\link{collect_classes,ConsensusPartition-method}}, \code{\link{consensus_heatmap,ConsensusPartition-method}}, \code{\link{membership_heatmap,ConsensusPartition-method}} 
 and \code{\link{get_signatures,ConsensusPartition-method}} are arranged in one single page.
 }
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

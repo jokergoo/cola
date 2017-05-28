@@ -16,6 +16,12 @@ Get consensus matrix
   \item{k}{number of partitions}
 
 }
+\value{
+A consensus matrix corresponding to the current k.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

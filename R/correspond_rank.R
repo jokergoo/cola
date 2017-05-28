@@ -22,10 +22,16 @@ add_transparency = function (col, transparency = 0) {
 # In ``x1`` and ``x2``, the i^{th} element is the same object but with different 
 # scores under different metrics.
 # 
-# ``x1`` and ``x2`` are sorted in the plot, and lines are connecting the same object
+# ``x1`` and ``x2`` are sorted in the plot. Lines are connecting the same object
 # for those with top values. Shadows on the two sides are the sorted values for ``x1``
-# and ``x2``, and points corresponds to positions of the top objects but random shifted
+# and ``x2``, and points corresponds to positions of the top objects but are randomly shifted
 # on x-directions.
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 # == examples
 # require(matrixStats)
@@ -39,6 +45,10 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 	
 	if(newpage) {
 		grid.newpage()
+	}
+
+	if(length(x1) != length(x2)) {
+		stop("Length of `x1` and `x2` should be the same.")
 	}
 
 	r1 = rank(x1, ties.method = "random")
@@ -94,12 +104,18 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 # == param
 # -lt a list of scores under different metrics.
 # -top_n top n elements to visualize.
-# -col colors for items in ``lt``.
+# -col colors for ``lt``.
 # -... pass to `correspond_between_two_rankings`.
 # 
 # == details
 # It makes plots for pairwise comparisons between different rankings.
 #
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+# 
 # == examples
 # require(matrixStats)
 # mat = matrix(runif(1000), ncol = 10)

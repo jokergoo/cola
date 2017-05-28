@@ -15,6 +15,12 @@ Several plots for determine the optimized number of partitions
   \item{object}{a \code{\link{ConsensusPartition-class}} object}
 
 }
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

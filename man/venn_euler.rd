@@ -16,9 +16,16 @@ venn_euler(lt, ...)
 
 }
 \details{
-The function calls \code{\link[venneuler]{venneuler}} to make the plot
+The function calls \code{\link[venneuler]{venneuler}} to make the plot.
+}
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
+set.seed(123)
 lt = list(foo = sample(100, 50), bar = sample(100, 50))
 venn_euler(lt)
 }

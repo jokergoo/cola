@@ -53,6 +53,9 @@ A list of three elements:
   \item{\code{group}}{subgroups that the rows are significantly high}
 }
 }
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

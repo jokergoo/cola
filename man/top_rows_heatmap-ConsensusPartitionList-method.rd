@@ -15,6 +15,12 @@ Heatmap of top rows from different top methods
   \item{top_n}{number of top rows}
 
 }
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

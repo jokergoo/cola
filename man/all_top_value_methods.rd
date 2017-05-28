@@ -1,5 +1,5 @@
-\name{ALL_TOP_VALUE_METHOD}
-\alias{ALL_TOP_VALUE_METHOD}
+\name{all_top_value_methods}
+\alias{all_top_value_methods}
 \title{
 All supported top methods
 }
@@ -7,11 +7,14 @@ All supported top methods
 All supported top methods
 }
 \usage{
-ALL_TOP_VALUE_METHOD()
+all_top_value_methods()
 }
 \value{
 A vector of supported top methods.
 }
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
-ALL_TOP_VALUE_METHOD()
+all_top_value_methods()
 }

@@ -16,17 +16,24 @@ register_partition_fun(..., scale_method = c("standardization", "rescale", "none
 
 }
 \details{
-The user-defined function should only accept two arguments which are the data
-matrix and the number of partitions. The function should return a vector of
-partitions (or group classes).
+The user-defined function should only accept three arguments. The first two arguments are the data
+matrix and the number of partitions. The third argument should always be \code{\link{...}} so that parameters
+for the partition function can be passed by \code{partition_param} from \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.
+The function should return a vector of partitions (or group classes).
 
 The partition function is applied on rows.
 
 To remove a partition method, use \code{\link{remove_partition_method}}.
 }
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
-ALL_PARTITION_METHOD()
+all_partition_methods()
 register_partition_fun(random = function(mat, k) sample(k, nrow(mat), replace = TRUE))
-ALL_PARTITION_METHOD()
+all_partition_methods()
 remove_partition_method("random")
 }

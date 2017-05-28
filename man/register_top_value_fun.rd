@@ -20,10 +20,16 @@ matrix and the scores are calculated by rows.
 
 To remove a top method, use \code{\link{remove_top_value_method}}.
 }
+\value{
+No value is returned.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
-ALL_TOP_VALUE_METHOD()
-register_top_value_fun(mean = function(mat) rowMeans(mat),
-                       median = function(mat) rowMedians(mat))
-ALL_TOP_VALUE_METHOD()
-remove_top_value_method(c("mean", "median"))
+all_top_value_methods()
+register_top_value_fun(AAC_spearman = function(mat) AAC(t(mat), cor_method = "spearman"),
+                       AAC_multicore = function(mat) AAC(t(mat), mc.cores = 2))
+all_top_value_methods()
+remove_top_value_method(c("AAC_spearman", "AAC_multicore"))
 }
