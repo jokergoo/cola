@@ -162,7 +162,15 @@ register_partition_fun(
 		skmeans(x = t(mat), k = k, ...)
 	},
 	hddc = function(mat, k, ...) {
-		hddc(data = t(mat), K = k, show = FALSE, ...)$class
+		i = 0
+		while(i < 50) {
+			suppressWarnings(cl <- hddc(data = t(mat), K = k, show = FALSE, ...)$class)
+			if(length(cl) != 0) {
+				return(cl)
+			}
+			i = i + 1
+		}
+		return(rep(1, ncol(mat)))
 	}, 
 	pam = function(mat, k, ...) {
 		pam(t(mat), k = k, ...)
@@ -171,7 +179,15 @@ register_partition_fun(
 		cclust(x = t(mat), centers = k, ...)
 	},
 	som = function(mat, k, ...) {
-		som(t(mat), grid = somgrid(1, k), ...)$unit.classif
+		i = 0
+		while(i < 50) {
+			cl = som(t(mat), grid = somgrid(1, k), ...)$unit.classif
+			if(length(unique(cl)) > 1) {
+				return(cl)
+			}
+			i = i + 1
+		}
+		return(rep(1, ncol(mat)))
 	}
 )
 

@@ -7,7 +7,7 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-source("~/project/development/cola/load.R")
+library(cola)
 
 # load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_scRNAseq_gencode19_expression.RData")
 load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_spheroids_gencode19_expression.RData")

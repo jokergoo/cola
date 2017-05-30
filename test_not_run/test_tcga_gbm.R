@@ -7,7 +7,7 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-source("~/project/development/cola/load.R")
+library(cola)
 
 #############################################
 ### TCGA GBM

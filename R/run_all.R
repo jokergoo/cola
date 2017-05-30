@@ -10,8 +10,6 @@
 #        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_fun`.
 # -mc.cores number of cores to use`.
-# -get_signatures whether to run `get_signatures` for each method. If it is run, the results
-#         for the signature analysis will also be stored in the final object.
 # -... other arguments passed to `consensus_partition`.
 #
 # == details
@@ -25,7 +23,7 @@
 #
 run_all_consensus_partition_methods = function(data, top_method = all_top_value_methods(), 
 	partition_method = all_partition_methods(), 
-	mc.cores = 1, get_signatures = FALSE, ...) {
+	mc.cores = 1, ...) {
 		
 	.env = new.env()
 	
@@ -61,10 +59,8 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 		time_used = system.time(res <- consensus_partition(top_method = tm, 
 			partition_method = pm, .env = .env, ...))
 		attr(res, "system.time") = time_used
-		if(get_signatures) {
-			for(k in res@k) {
-				try(get_signatures(res, k = k))
-			}
+		for(k in res@k) {
+			try(get_signatures(res, k = k))
 		}
 		return(res)
 	}, mc.cores = mc.cores)

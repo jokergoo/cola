@@ -9,9 +9,9 @@ relabel_class = function(class, ref) {
 	class = as.character(class)
 	ref = as.character(ref)
 
-	if(length(intersect(class, ref)) == 0) {
-		stop("class and ref must be from same set of labels.")
-	}
+	# if(length(intersect(class, ref)) == 0) {
+	# 	stop("class and ref must be from same set of labels.")
+	# }
 	all_class = union(class, ref)
 	n = length(all_class)
 

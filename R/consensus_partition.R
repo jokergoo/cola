@@ -197,6 +197,7 @@ consensus_partition = function(data,
 		class_df = object_list[[i]]$class_df
     	class = class_df[, "class"]
     	class_col = structure(unique(class_df$class_col), names = unique(class))
+
     	map = relabel_class(class, reference_class)
     	map2 = structure(names(map), names = map)
     	object_list[[i]]$class_df$class = as.numeric(map[as.character(class)])

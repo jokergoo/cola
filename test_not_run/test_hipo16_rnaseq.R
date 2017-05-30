@@ -7,7 +7,7 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-source("/home/guz/project/development/cola/load.R")
+library(cola)
 
 ############################################################
 anno_text =
@@ -94,10 +94,11 @@ load(qq("@{PROJECT_DIR}/expression/hipo16_rnaseq_count_rpkm.RData"))
 count = count[names(GENE), SAMPLE_ID]
 rpkm = rpkm[names(GENE), SAMPLE_ID]
 data = log2(rpkm + 1)
-data = t(apply(data, 1, remove_outlier))
+data = t(apply(data, 1, adjust_outlier))
 data = adjust_outlier(data)
 
-res = run_all(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, known = SAMPLE$subtype, mc.cores = ncore)
+res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, 
+	known_anno = data.frame(subtype = SAMPLE$subtype), mc.cores = ncore)
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo16_rnaseq_subgroup_p@{p}.rds"))
 
