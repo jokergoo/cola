@@ -31,7 +31,7 @@ if(grepl("tbi", Sys.info()["nodename"]) & Sys.info()["user"] == "guz") {
 	cpp_files = list.files("~/project/development/cola/src", pattern = "\\.cpp$", full.names = TRUE)
 } else {
 	Rfiles = list.files("~/project/cola/R", full.names = TRUE)
-	cpp_files = list.files("~/project/cola/src", full.names = TRUE)
+	cpp_files = list.files("~/project/cola/src", pattern = "\\.cpp$", full.names = TRUE)
 }
 for(rf in Rfiles) {
 	source(rf)

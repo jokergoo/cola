@@ -8,6 +8,7 @@ GetoptLong(
 )
 
 library(cola)
+register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 #############################################
 ### TCGA GBM
@@ -20,6 +21,7 @@ subtype = structure(unlist(subtype[1, -(1:2)]), names = colnames(subtype)[-(1:2)
 data = data[, names(subtype)]
 
 data = t(apply(data, 1, adjust_outlier))
+
 res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = ncore,
 	known_anno = data.frame(subtype = subtype))
 

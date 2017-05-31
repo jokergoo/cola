@@ -211,8 +211,6 @@ setMethod(f = "collect_classes",
 	class_mat = as.matrix(class_mat)
 	colnames(class_mat) = paste(top_method_vec, partition_method_vec, sep = ":")
 	ik = which(res@k == k)
-	class_col = structure(unique(res@object_list[[ik]]$class_df$class_col), names = unique(res@object_list[[ik]]$class_df$class))
-	class_col = class_col[order(names(class_col))]
 	
 	silhouette_mat = as.matrix(silhouette_mat)
 	silhouette_mat[silhouette_mat < 0] = 0
@@ -222,7 +220,7 @@ setMethod(f = "collect_classes",
 	}
 
 	pac = get_stat(object, k)[, "PAC"][colnames(class_mat)]
-	ht = Heatmap(t(class_mat), name = "class", col = class_col, 
+	ht = Heatmap(t(class_mat), name = "class", col = brewer_pal_set2_col, 
 		row_names_side = "left", show_row_dend = FALSE, cluster_columns = TRUE,
 		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
 		cell_fun = function(j, i, x, y, w, h, fill) {
@@ -280,14 +278,11 @@ setMethod(f = "collect_classes",
 	for(i in seq_along(all_k)) {
 		membership = object@object_list[[i]]$membership
 		class = object@object_list[[i]]$class_df$class
-		class_col = object@object_list[[i]]$class_df$class_col
-		class_col = structure(unique(class_col), names = unique(class))
-		class_col = class_col[order(names(class_col))]
 
 		ht_list = ht_list + Heatmap(membership, col = colorRamp2(c(0, 1), c("white", "red")),
 			show_row_names = FALSE, cluster_columns = FALSE, cluster_rows = FALSE, show_heatmap_legend = i == 1,
 			name = paste0("membership_", all_k[i])) + 
-			Heatmap(class, col = class_col, 
+			Heatmap(class, col = brewer_pal_set2_col, 
 				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), name = paste(all_k[i], "_classes"))
 		gap = c(gap, c(0, 4))
 		class_mat = cbind(class_mat, as.numeric(class))

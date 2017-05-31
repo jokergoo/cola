@@ -77,10 +77,17 @@ get_partition_fun = function(method, partition_param = list()) {
 	fun2 = function(mat, k) {
 		partition = do.call(fun, c(list(mat, k), partition_param))
 		if(is.atomic(partition)) {
-			as.cl_hard_partition(partition)
+			x = as.cl_hard_partition(partition)
 		} else {
-			as.cl_hard_partition(cl_membership(partition))
+			x = as.cl_hard_partition(cl_membership(partition))
 		}
+
+		nc = n_of_classes(x)
+		if(nc != k) {
+			cat(red(qq("!!! number of classes (@{nc}) in the partition is not same as @{k} !!!")))
+		}
+
+		return(x)
 	}
 	attr(fun2, "scale_method") = attr(fun, "scale_method")
 	return(fun2)
@@ -161,33 +168,38 @@ register_partition_fun(
 	skmeans = function(mat, k, ...) {
 		skmeans(x = t(mat), k = k, ...)
 	},
-	hddc = function(mat, k, ...) {
-		i = 0
-		while(i < 50) {
-			suppressWarnings(cl <- hddc(data = t(mat), K = k, show = FALSE, ...)$class)
-			if(length(cl) != 0) {
-				return(cl)
-			}
-			i = i + 1
-		}
-		return(rep(1, ncol(mat)))
-	}, 
+	# hddc = function(mat, k, ...) {
+	# 	i = 0
+	# 	while(i < 50) {
+	# 		suppressWarnings(cl <- hddc(data = t(mat), K = k, show = FALSE, ...)$class)
+	# 		if(length(cl) != 0) {
+	# 			return(cl)
+	# 		}
+	# 		i = i + 1
+	# 	}
+	# 	return(rep(1, ncol(mat)))
+	# }, 
 	pam = function(mat, k, ...) {
 		pam(t(mat), k = k, ...)
 	},
-	cclust = function(mat, k, ...) {
-		cclust(x = t(mat), centers = k, ...)
+	# cclust = function(mat, k, ...) {
+	# 	cclust(x = t(mat), centers = k, ...)
+	# },
+	mclust = function(mat, k, ...) {
+		pca = prcomp(t(mat))
+		Mclust(pca$x[, 1:3], G = k, ...)$classification
 	},
 	som = function(mat, k, ...) {
-		i = 0
-		while(i < 50) {
-			cl = som(t(mat), grid = somgrid(1, k), ...)$unit.classif
-			if(length(unique(cl)) > 1) {
-				return(cl)
-			}
-			i = i + 1
+		kr = floor(sqrt(ncol(mat)))
+		somfit = som(t(mat), grid = somgrid(kr, kr, "hexagonal"), ...)
+		cl = cutree(hclust(dist(somfit$codes[[1]])), k)
+		group = numeric(ncol(mat))
+		for(cl_unique in unique(cl)) {
+			ind = which(cl == cl_unique)
+			l = somfit$unit.classif %in% ind
+			group[l] = cl_unique
 		}
-		return(rep(1, ncol(mat)))
+		group
 	}
 )
 
@@ -230,4 +242,6 @@ remove_partition_method = function(method) {
 
 
 brewer_pal_set1_col =  brewer.pal(9, "Set1")
+names(brewer_pal_set1_col) = 1:9
 brewer_pal_set2_col =  brewer.pal(8, "Set2")
+names(brewer_pal_set2_col) = 1:8

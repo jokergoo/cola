@@ -8,6 +8,7 @@ GetoptLong(
 )
 
 library(cola)
+register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 ############################################################
 anno_text =

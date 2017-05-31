@@ -210,7 +210,20 @@ setMethod(f = "get_class",
 	class = as.vector(cl_class_ids(consensus))
 	df = cbind(as.data.frame(m), class = class)
 	df$entropy = apply(m, 1, entropy)
-	df$silhouette = silhouette(class, dist(t(consensus)))[, "sil_width"]
+
+	membership_each = do.call("cbind", lapply(partition_list, function(x) {
+		as.vector(cl_class_ids(x))
+	}))
+
+	consensus_mat = matrix(1, nrow = nrow(m), ncol = nrow(m))
+	for(i in 1:(nrow(membership_each)-1)) {
+		for(j in (i+1):nrow(membership_each)) {
+			consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ])/ncol(membership_each)
+			consensus_mat[j, i] = consensus_mat[i, j]
+		}
+ 	}
+ 
+	df$silhouette = silhouette(class, dist(t(consensus_mat)))[, "sil_width"]
 
 	return(df)
 })

@@ -8,6 +8,7 @@ GetoptLong(
 )
 
 library(cola)
+register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 # load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_scRNAseq_gencode19_expression.RData")
 load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_spheroids_gencode19_expression.RData")
@@ -29,6 +30,7 @@ data = data[, !colnames(data) %in% c("Invasive_1", "Invasive_10", "Invasive_11",
 cell_type = gsub("_\\d+$", "", colnames(data))
 
 data = t(apply(data, 1, adjust_outlier))
+
 res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = ncore,
 	known_anno = data.frame(cell_type = cell_type))
 

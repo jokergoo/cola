@@ -53,9 +53,8 @@ setMethod(f = "get_signatures",
 
 	class_df = get_class(object, k)
 	class_ids = class_df$class
-	class_col = class_df$class_col
-	class_col = structure(unique(class_col), names = unique(class_ids))
-	class_col = class_col[order(names(class_col))]
+
+	data = object@.env$data
 
 	l = class_df$silhouette >= silhouette_cutoff
 	data2 = data[, l]
@@ -216,12 +215,12 @@ setMethod(f = "get_signatures",
 			if(is.null(anno_col)) {
 				bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE],
 					show_annotation_name = TRUE, annotation_name_side = "right")
-			} else {
-				bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
-					show_annotation_name = TRUE, annotation_name_side = "right")
 				for(i in seq_along(bottom_anno2@anno_list)) {
 					bottom_anno2@anno_list[[i]]@color_mapping = bottom_anno1@anno_list[[i]]@color_mapping
 				}
+			} else {
+				bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
+					show_annotation_name = TRUE, annotation_name_side = "right")	
 			}
 		}
 	}
@@ -229,7 +228,7 @@ setMethod(f = "get_signatures",
 	silhouette_range[2] = 1
 
 	group2 = factor(group2, levels = sort(unique(group2)))
-	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = class_col)
+	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
 
 	membership_mat = as.data.frame(get_membership(object, k))
 	col_list = rep(list(colorRamp2(c(0, 1), c("white", "red"))), k)
@@ -242,7 +241,7 @@ setMethod(f = "get_signatures",
 				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
 					      col = NA),
 				baseline = 0, axis = !has_ambiguous, axis_side = "right"),
-			col = c(list(class = class_col), col_list),
+			col = c(list(class = brewer_pal_set2_col), col_list),
 			annotation_height = unit(c(rep(4, k+1), 15), "mm"),
 			show_annotation_name = if(has_ambiguous) FALSE else c(rep(TRUE, k+1), FALSE),
 			annotation_name_side = "right",
@@ -255,7 +254,7 @@ setMethod(f = "get_signatures",
 		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"))
 	}
 
-	mat_return$class_col = class_col
+	mat_return$class_col = brewer_pal_set2_col
 
 	if(has_ambiguous) {
 		ht_list = ht_list + Heatmap(use_mat2, name = paste0(heatmap_name, 2), col = col_fun,
@@ -265,7 +264,7 @@ setMethod(f = "get_signatures",
 					gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
 					      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
 					baseline = 0, axis = TRUE, axis_side = "right"), 
-				col = c(list(class = class_col), col_list),
+				col = c(list(class = brewer_pal_set2_col), col_list),
 				annotation_height = unit(c(rep(4, k+1), 15), "mm"),
 				show_annotation_name = c(rep(TRUE, k+1), FALSE),
 				annotation_name_side = "right",

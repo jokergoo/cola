@@ -32,7 +32,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 
 	l = rowSds(data) == 0
 	data = data[!l, , drop = FALSE]
-	if(sum(l)) qqcat("removed @{sum(l)} rows with sd = 0\n")
+	if(sum(l)) qqcat("removed @{sum(l)}/@{length(l)} rows with sd = 0\n")
 
 	all_value_list = lapply(top_method, function(tm) {
 		qqcat("calculate @{tm} score for all rows\n")
@@ -60,11 +60,17 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 			partition_method = pm, .env = .env, ...))
 		attr(res, "system.time") = time_used
 		for(k in res@k) {
-			try(get_signatures(res, k = k))
+			try(get_signatures(res, k = k, plot = FALSE))
 		}
 		return(res)
 	}, mc.cores = mc.cores)
 	names(lt) = paste(comb[, 1], comb[, 2], sep = ":")
+browser()
+	i_error = which(sapply(lt, inherits, "try-error"))
+	if(length(i_error)) {
+		sapply(lt[[i_error]], cat)
+		stop("There are errors when doing mclapply.")
+	}
 	
 	res_list@list = lt
 	# cat("adjust class labels according to the consensus classification\n")
@@ -83,11 +89,9 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
         	# - res$object_list[[ik]]$membership_each
         	class_df = get_class(res, k)
         	class = class_df[, "class"]
-        	class_col = structure(unique(class_df$class_col), names = unique(class))
         	map = relabel_class(class, reference_class[[ik]])
         	map2 = structure(names(map), names = map)
         	res@object_list[[ik]]$class_df$class = as.numeric(map[as.character(class)])
-        	res@object_list[[ik]]$class_df$class_col = class_col[as.character(res@object_list[[ik]]$class_df$class)]
         	
         	res@object_list[[ik]]$membership = res@object_list[[ik]]$membership[, as.numeric(map2[as.character(1:k)]) ]
 			colnames(res@object_list[[ik]]$membership) = paste0("p", 1:k)

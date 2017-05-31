@@ -7,7 +7,7 @@ Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.3.0)
 Imports: ComplexHeatmap, matrixStats, GetoptLong, circlize, clue, parallel, 
-  RColorBrewer, cluster, HDclassif, skmeans, cclust, png, gplots, genefilter, 
+  RColorBrewer, cluster, skmeans, png, gplots, genefilter, mclust,
   crayon, NMF, Rtsne, samr, methods, kohonen, tm, wordcloud, xml2
 Suggests: venneuler, mvtnorm
 Description: Parallel compare methods for subgroup classification.

@@ -7,6 +7,8 @@ GetoptLong(
 )
 
 library(cola)
+register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
+
 
 setwd("/icgc/dkfzlsdf/analysis/hipo/hipo_015/hipo15_rnaseq_cell_analysis")
 default_param = list(

@@ -83,10 +83,10 @@ consensus_partition = function(data,
 
 	scale_method = attr(partition_fun, "scale_method")
 	if("standardization" %in% scale_method) {
-		cat("rows are scaled before sent to partition\n")
+		cat("rows are scaled before sent to partition: standardization\n")
 		data = t(scale(t(data)))
 	} else if("rescale" %in% scale_method) {
-		cat("rows are scaled before sent to partition\n")
+		cat("rows are scaled before sent to partition: rescale\n")
 		row_min = rowMeans(data)
 		row_max = rowMaxs(data)
 		row_range = row_max - row_min
@@ -147,11 +147,8 @@ consensus_partition = function(data,
 	 	rownames(consensus_mat) = rownames(membership_mat)
 	 	colnames(consensus_mat) = rownames(membership_mat)
 
-	 	class_color = brewer_pal_set2_col[1:k]
-
 	 	class_df = data.frame(
 	 		class = class_ids,
-	 		class_col = class_color[class_ids],
 	 		entropy = apply(membership_mat, 1, entropy),
 	 		stringsAsFactors = FALSE
 	 	)
@@ -196,12 +193,10 @@ consensus_partition = function(data,
 	for(i in seq_along(k)[-1]) {
 		class_df = object_list[[i]]$class_df
     	class = class_df[, "class"]
-    	class_col = structure(unique(class_df$class_col), names = unique(class))
 
     	map = relabel_class(class, reference_class)
     	map2 = structure(names(map), names = map)
     	object_list[[i]]$class_df$class = as.numeric(map[as.character(class)])
-    	object_list[[i]]$class_df$class_col = class_col[as.character(object_list[[i]]$class_df$class)]
     	
     	object_list[[i]]$membership = object_list[[i]]$membership[, as.numeric(map2[as.character(1:k[i])]) ]
 		colnames(object_list[[i]]$membership) = paste0("p", 1:k[i])
@@ -349,9 +344,6 @@ setMethod(f = "consensus_heatmap",
 
 	class_df = get_class(object, k)
 	class_ids = class_df$class
-	class_col = class_df$class_col
-	class_col = structure(unique(class_col), names = unique(class_ids))
-	class_col = class_col[order(names(class_col))]
 
 	consensus_mat = get_consensus(object, k)
 
@@ -363,7 +355,7 @@ setMethod(f = "consensus_heatmap",
 		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red"))) + 
 	Heatmap(class_df$silhouette, name = "silhouette", width = unit(5, "mm"), 
 		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple"))) +
-	Heatmap(class_ids, name = "class", col = class_col, 
+	Heatmap(class_ids, name = "class", col = brewer_pal_set2_col, 
 		show_row_names = FALSE, width = unit(5, "mm"))
 	
 	ht_list = ht_list +	Heatmap(consensus_mat, name = "consensus", show_row_names = FALSE, show_row_dend = FALSE,
@@ -419,9 +411,6 @@ setMethod(f = "membership_heatmap",
 
 	class_df = get_class(object, k)
 	class_ids = class_df$class
-	class_col = class_df$class_col
-	class_col = structure(unique(class_col), names = unique(class_ids))
-	class_col = class_col[order(names(class_col))]
 
 	membership_mat = get_membership(object, k)
 	col_list = rep(list(colorRamp2(c(0, 1), c("white", "red"))), k)
@@ -464,7 +453,7 @@ setMethod(f = "membership_heatmap",
 		column_title = qq("membership heatmap, k = @{k}"), column_order = mat_col_od, cluster_columns = FALSE,
 		split = param$n_row,
 		top_annotation = HeatmapAnnotation(df = as.data.frame(membership_mat),
-			class = class_ids, col = c(list(class = class_col), col_list),
+			class = class_ids, col = c(list(class = brewer_pal_set2_col), col_list),
 			show_annotation_name = TRUE, annotation_name_side = "right",
 			show_legend = c(TRUE, rep(FALSE, k - 1), TRUE)),
 		bottom_annotation = bottom_anno,
@@ -523,9 +512,6 @@ setMethod(f = "dimension_reduction",
 
 	class_df = get_class(object, k)
 	class_ids = class_df$class
-	class_col = class_df$class_col
-	class_col = structure(unique(class_col), names = unique(class_ids))
-	class_col = class_col[order(names(class_col))]
 
 	l = class_df$silhouette >= silhouette_cutoff
 	if(method == "mds") {
@@ -540,10 +526,10 @@ setMethod(f = "dimension_reduction",
 	loc = as.data.frame(loc)
 
 	if(remove) {
-		plot(loc[l, ], pch = 16, col = class_col[as.character(class_df$class[l])],
+		plot(loc[l, ], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
 			cex = 1)
 	} else {
-		plot(loc, pch = ifelse(l, 16, 4), col = class_col[as.character(class_df$class)],
+		plot(loc, pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
 			cex = ifelse(l, 1, 0.7))
 	}
 	title(qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"))
