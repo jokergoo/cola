@@ -36,19 +36,11 @@ consensus_partition = function(data,
 		if(is.data.frame(data)) data = as.matrix(data)
 		if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
 
-		l = rowSds(data) == 0
-		data = data[!l, , drop = FALSE]
-		if(sum(l)) qqcat("removed @{sum(l)} rows with sd = 0\n")
-
 		.env = new.env()
 		.env$data = data
 	} else if(is.null(.env$data)) {
 		if(is.data.frame(data)) data = as.matrix(data)
 		if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
-
-		l = rowSds(data) == 0
-		data = data[!l, , drop = FALSE]
-		if(sum(l)) qqcat("removed @{sum(l)} rows with sd = 0\n")
 
 		.env$data = data
 	} else {
@@ -100,7 +92,6 @@ consensus_partition = function(data,
 		for(j in 1:partition_repeat) {
 			ind_sub = sample(ind, round(p_sampling*length(ind)))
 			mat = data[ind_sub, , drop = FALSE]
-
 			for(y in k) {
 				if(interactive()) cat(strrep("\b", 100))
 				if(interactive()) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}th sampling from top @{top_n[i]} rows.")
@@ -155,17 +146,18 @@ consensus_partition = function(data,
 	 	rownames(class_df) = colnames(data)
 
 	 	if(length(unique(class_ids)) == 1) {
-	 		class_df$silhouette = rep(NA, length(class_ids))
+	 		class_df$silhouette = rep(0, length(class_ids))
 	 	} else {
 			class_df$silhouette = silhouette(class_ids, dist(t(consensus_mat)))[, "sil_width"]
 		}
 
+		ind = order(all_value, decreasing = TRUE)[1:max(top_n)]
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
 			cophcor =  cophcor(consensus_mat),
 			PAC = PAC(consensus_mat),
 			mean_silhouette = mean(class_df$silhouette),
-			APN = APN(class_df$class, membership_mat)
+			tot_withinss = tot_withinss(class_df$class, data[ind, , drop = FALSE])
 		)
 		
 		return(list(

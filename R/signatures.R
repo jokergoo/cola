@@ -134,7 +134,7 @@ setMethod(f = "get_signatures",
 	fdr2 = fdr[fdr < fdr_cutoff]
 	group2 = group[fdr < fdr_cutoff]
 	names(group2) = rownames(mat)
-	mat_return = list(mat = mat, confident_samples = column_used_logical, fdr = fdr2, group = group2)
+	mat_return = list(mat = mat, confident_samples = column_used_logical, fdr = fdr2, group = group2, class_col = brewer_pal_set2_col)
 	qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
 	if(!plot) {
@@ -253,8 +253,6 @@ setMethod(f = "get_signatures",
  	if(scale_rows) {
 		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"))
 	}
-
-	mat_return$class_col = brewer_pal_set2_col
 
 	if(has_ambiguous) {
 		ht_list = ht_list + Heatmap(use_mat2, name = paste0(heatmap_name, 2), col = col_fun,
@@ -418,6 +416,9 @@ gene_co_occurrence = function(x, genesets, map = NULL, min_count = 50, max_count
 
 	gl = sapply(genesets, length)
 	l = gl >= min_count & gl <= max_count
+	if(sum(l) == 0) {
+		stop("no genesets left with cutoff of `min_count` and `max_count`.")
+	}
 	qqcat("@{sum(l)}/@{length(l)} gene sets used\n")
 	genesets = genesets[l]
 
@@ -434,6 +435,10 @@ gene_co_occurrence = function(x, genesets, map = NULL, min_count = 50, max_count
 
 	for(i in seq_along(genesets)) {
 		match_mat[intersect(genesets[[i]], g), i] = TRUE
+	}
+
+	if(sum(match_mat) == 0) {
+		stop("gene names in `x` have no overlap to `genesets`.")
 	}
 
 	unique_group = sort(unique(x$group))
@@ -475,13 +480,19 @@ gene_co_occurrence = function(x, genesets, map = NULL, min_count = 50, max_count
 # Zuguang Gu <z.gu@dkfz.de>
 #
 enrich_signatures_to_genesets = function(x, genesets, map = NULL, bg, min_count = 50, max_count = 5000,
-	fdr_cutoff1 = 0.01, fdr_cutoff2 = 0.5) {
+	fdr_cutoff1 = 0.05, fdr_cutoff2 = 0.5) {
 	
-	genesets = genesets$list
+	genesets0 = genesets
 
-	genesets = lapply(genesets, function(x) intersect(x, bg))
+	genesets = lapply(genesets0$list, function(x) intersect(x, bg))
 	gl = sapply(genesets, length)
+	if(all(gl == 0)) {
+		stop("gene names in `bg` have no overlap to `genesets`.")
+	}
 	l = gl >= min_count & gl <= max_count
+	if(sum(l) == 0) {
+		stop("no genesets left with cutoff of `min_count` and `max_count`.")
+	}
 	qqcat("@{sum(l)}/@{length(l)} gene sets used\n")
 	genesets = genesets[l]
 	n_genesets = length(genesets)
@@ -502,7 +513,7 @@ enrich_signatures_to_genesets = function(x, genesets, map = NULL, bg, min_count 
 		match_mat[intersect(genesets[[i]], g), i] = 1
 	}
 
-	unique_group = unique(x$group)
+	unique_group = sort(unique(x$group))
 	n_groups = length(unique_group)
 	p_mat = matrix(nrow = length(genesets), ncol = n_groups)
 	stat_list = lapply(1:n_groups, function(i) {
@@ -534,6 +545,7 @@ enrich_signatures_to_genesets = function(x, genesets, map = NULL, bg, min_count 
 
 	fdr_mat = p.adjust(p_mat, "BH")
 	dim(fdr_mat) = dim(p_mat)
+	colnames(fdr_mat) = unique_group
 
 	for(i in seq_along(stat_list)) {
 		stat_list[[i]]$fdr = fdr_mat[, i]
@@ -553,15 +565,21 @@ enrich_signatures_to_genesets = function(x, genesets, map = NULL, bg, min_count 
 		min_fdr= rowMins(fdr_mat2)
 		stat_list = lapply(stat_list, function(df) {
 			df[l, , drop = FALSE]
+			df[order(df$fdr), , drop = FALSE]
 		})
 
-		ht_list = Heatmap(x$group, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = x$class_col)
+		l_hit = rowSums(match_mat2) > 0
+		ht_list = Heatmap(x$group[l_hit], name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = x$class_col)
 		
 		column_anno = as.character(apply(fdr_mat2, 1, function(x) which(x < fdr_cutoff1)))
 		
-		ht_list = ht_list + Heatmap(match_mat2, name = "in geneset", col = c("1" = "purple", "0" = "#FFFFFFFF"), 
-			top_annotation = HeatmapAnnotation(group = column_anno, col = list(group = x$class_col), show_legend = FALSE),
-			show_row_names = FALSE, show_row_dend = FALSE, split = x$group, combined_name_fun = NULL,
+		fdr_col_fun = replicate(ncol(fdr_mat2), colorRamp2(c(0, -log10(fdr_cutoff1), -log10(fdr_cutoff1)*2), c("green", "white", "red")))
+		names(fdr_col_fun) = colnames(fdr_mat2)
+		ht_list = ht_list + Heatmap(match_mat2[l_hit, , drop = FALSE], name = "in geneset", col = c("1" = "purple", "0" = "#FFFFFFFF"), 
+			top_annotation = HeatmapAnnotation(group = column_anno, 
+				df = -log10(fdr_mat2),
+				col = c(list(group = x$class_col), fdr_col_fun), show_legend = TRUE, show_annotation_name = TRUE),
+			show_row_names = FALSE, show_row_dend = FALSE, split = x$group[l_hit], combined_name_fun = NULL,
 			cluster_columns = FALSE, column_order = order(column_anno, min_fdr), show_column_dend = TRUE, clustering_method_rows = "ward.D",
 			show_column_names = FALSE, column_names_gp = gpar(fontsize = 8))
 		draw(ht_list, main_heatmap = "in geneset", column_title = qq("@{sum(l)}/@{length(l)} genesets which are subgroup specific"))
@@ -576,6 +594,7 @@ enrich_signatures_to_genesets = function(x, genesets, map = NULL, bg, min_count 
 		for(ug in sort(unique(column_anno))) {
 			sig_geneset_list[[ug]] = stat_list[[ug]][column_anno == ug, , drop = FALSE]
 		}
+		attr(sig_geneset_list, "genesets") = genesets0
 		return(invisible(sig_geneset_list))
 	} else {
 		cat("no significant geneset has enrichment for row groups.\n")
@@ -597,7 +616,9 @@ enrich_signatures_to_genesets = function(x, genesets, map = NULL, bg, min_count 
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-enriched_functions_word_cloud = function(x, genesets, stopwords = GS_STOPWORDS) {
+enriched_functions_word_cloud = function(x, stopwords = GS_STOPWORDS) {
+
+	genesets = attr(x, "genesets")
 
 	for(i in seq_along(x)) {
 		df = x[[i]]
@@ -673,9 +694,11 @@ load_msigdb = function(f) {
 	geneset_meta = geneset_meta[!l, ]
 	geneset_list = geneset_list[!l]
 
-	lt = list(meta = geneset_meta, list = geneset_list)
-	class(lt) = "msigdb"
-	return(lt)
+	env = new.env()
+	env$meta = geneset_meta
+	env$list = geneset_list
+	class(env) = c("msigdb", "environment")
+	return(env)
 }
 
 # == title
@@ -737,9 +760,11 @@ msigdb_catalogue = function(x, category = "H", sub_category, organism = "Homo sa
 		stop("No gene set found.")
 	}
 
-	x2 = x
-	x2$meta = x2$meta[l, , drop = FALSE]
-	x2$list = x2$list[l]
+	x2 = new.env()
+	x2$meta = x$meta[l, , drop = FALSE]
+	x2$list = x$list[l]
+
+	class(x2) = c("msigdb", "environment")
 	return(x2)
 }
 

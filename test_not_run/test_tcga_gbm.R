@@ -8,6 +8,7 @@ GetoptLong(
 )
 
 library(cola)
+# source("/home/guz/project/development/cola/load.R")
 register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 #############################################
@@ -20,9 +21,8 @@ subtype = structure(unlist(subtype[1, -(1:2)]), names = colnames(subtype)[-(1:2)
 
 data = data[, names(subtype)]
 
-data = t(apply(data, 1, adjust_outlier))
-
-res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = ncore,
+data = adjust_matrix(data)
+res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = ncore,
 	known_anno = data.frame(subtype = subtype))
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup_p@{p}.rds"))

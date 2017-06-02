@@ -194,7 +194,6 @@ setMethod(f = "collect_classes",
 	partition_method_vec = NULL
 	class_mat = NULL
 	silhouette_mat = NULL
-	time_used = NULL
 	for(i in seq_along(top_method)) {
 	    for(j in seq_along(partition_method)) {  
 	    	res = get_single_run(object, top_method = top_method[i], partition_method = partition_method[j])
@@ -204,7 +203,6 @@ setMethod(f = "collect_classes",
 	        class_df = get_class(res, k)
 	        class_mat = cbind(class_mat, class_df[, "class"])
 	        silhouette_mat = cbind(silhouette_mat, class_df[, "silhouette"])
-	        time_used = c(time_used, attr(res, "system.time")[3])
 	    }
 	}
 

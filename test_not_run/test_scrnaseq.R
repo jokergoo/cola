@@ -7,6 +7,7 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
+# source("/home/guz/project/development/cola/load.R")
 library(cola)
 register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
@@ -29,9 +30,8 @@ data = log10(rpkm[l, ] + 1)
 data = data[, !colnames(data) %in% c("Invasive_1", "Invasive_10", "Invasive_11", "Invasive_14", "Round_13", "Round_3", "Round_bulk", "invasive_bulk")]
 cell_type = gsub("_\\d+$", "", colnames(data))
 
-data = t(apply(data, 1, adjust_outlier))
-
-res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = ncore,
+data = adjust_matrix(data)
+res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 3000), k = 2:6, mc.cores = ncore,
 	known_anno = data.frame(cell_type = cell_type))
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/scrnaseq_subgroup_p@{p}.rds"))

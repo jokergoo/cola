@@ -8,6 +8,7 @@ GetoptLong(
 )
 
 library(cola)
+# source("/home/guz/project/development/cola/load.R")
 register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 
@@ -15,7 +16,8 @@ source("/home/guz/project/analysis/LiNA/asthma_cohort/script/asthma_head.R")
 
 data = deseq2[gt[rownames(deseq2)] == "protein_coding", ]
 
-res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, 
+data = adjust_matrix(data)
+res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, p_sampling = p, 
 	known_anno = data.frame(phenotype = SAMPLE$phenotype), mc.cores = ncore)
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo35_asthma_rnaseq_subgroup_p@{p}.rds"))
@@ -115,8 +117,8 @@ expr = normalize.count(expr_old, method = "deseq2", gene_annotation, param = def
 	
 l = anno_old$year == 0
 data = expr[gt[rownames(expr)] == "protein_coding", l]
-data = t(apply(data, 1, adjust_outlier))
-res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, 
+data = adjust_matrix(data)
+res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, p_sampling = p, 
 	known_anno = data.frame(phenotype = anno_old$phenotype[l]), mc.cores = ncore)
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo35_asthma_rnaseq_heidelberg_year0_subgroup_p@{p}.rds"))
@@ -125,8 +127,8 @@ saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo35_asthma
 	
 l = anno_old$year > 1
 data = expr[gt[rownames(expr)] == "protein_coding", l]
-data = t(apply(data, 1, adjust_outlier))
-res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, 
+data = adjust_matrix(data)
+res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, p_sampling = p, 
 	known_anno = data.frame(phenotype = anno_old$phenotype[l]), mc.cores = ncore)
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo35_asthma_rnaseq_heidelberg_year3more_subgroup_p@{p}.rds"))

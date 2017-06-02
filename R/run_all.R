@@ -1,4 +1,15 @@
 
+try_and_trace = function(expr) {
+	env = new.env()
+	try(withCallingHandlers(expr, error = function(e) {
+		stack = sys.calls()
+		env$stack = stack
+	}), silent = TRUE)
+	return(env$stack)
+}
+
+
+
 # == title
 # Run subgroup classification for all methods
 #
@@ -30,10 +41,6 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	if(is.data.frame(data)) data = as.matrix(data)
 	if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
 
-	l = rowSds(data) == 0
-	data = data[!l, , drop = FALSE]
-	if(sum(l)) qqcat("removed @{sum(l)}/@{length(l)} rows with sd = 0\n")
-
 	all_value_list = lapply(top_method, function(tm) {
 		qqcat("calculate @{tm} score for all rows\n")
 		all_value = get_top_value_fun(tm)(data)
@@ -52,23 +59,26 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	comb = expand.grid(top_method, partition_method, stringsAsFactors = FALSE)
 	comb = comb[sample(nrow(comb), nrow(comb)), ]
 	lt = mclapply(seq_len(nrow(comb)), function(i) {
-		gc(verbose = FALSE)
 		tm = comb[i, 1]
 		pm = comb[i, 2]
 		qqcat("running classification for @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
-		time_used = system.time(res <- consensus_partition(top_method = tm, 
-			partition_method = pm, .env = .env, ...))
-		attr(res, "system.time") = time_used
+		x = try_and_trace(res <- consensus_partition(top_method = tm, partition_method = pm, .env = .env, ...))
+		
+		if(inherits(x, "pairlist")) {
+			print(x)
+		}
 		for(k in res@k) {
 			try(get_signatures(res, k = k, plot = FALSE))
 		}
 		return(res)
 	}, mc.cores = mc.cores)
 	names(lt) = paste(comb[, 1], comb[, 2], sep = ":")
-browser()
+	
 	i_error = which(sapply(lt, inherits, "try-error"))
 	if(length(i_error)) {
-		sapply(lt[[i_error]], cat)
+		for(i in i_error) {
+			cat(names(lt)[i], ": ", lt[[i]], "\n", sep = "")
+		}
 		stop("There are errors when doing mclapply.")
 	}
 	

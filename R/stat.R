@@ -42,15 +42,15 @@ AAC = function(mat, cor_method = "pearson", min_cor = 0.2, mc.cores = 1) {
 	
 	if(mc.cores > 1) {
 		le = cut(1:n, mc.cores)
-		ind_list = split(n, le)
+		ind_list = split(1:n, le)
 	} else {
 		ind_list = list(1:n)
 	}
 
 	v_list = mclapply(ind_list, function(ind) {
 		v = numeric(length(ind))
-		for(i in ind) {
-			suppressWarnings(cor_v <- abs(cor(mat[, i, drop = FALSE], mat[, -i, drop = FALSE], method = cor_method)))
+		for(i in seq_along(ind)) {
+			suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, -ind[i], drop = FALSE], method = cor_method)))
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
 				v[i] = 1
 			} else {
@@ -113,10 +113,17 @@ PAC = function(consensus_mat) {
 	mean(m_score, trim = 0.2)
 }
 
-APN = function(class_id, membership_each) {
-	ind_list = tapply(seq_along(class_id), class_id, function(x) x, simplify = FALSE)
-	s = sum(sapply(ind_list, function(ind) {
-		sum(apply(membership_each[ind, , drop = FALSE], 2, function(x) 1 - sum(x == class_id[ind])/length(ind)))
-	}))
-	s/ncol(membership_each)/length(ind_list)
+
+tot_withinss = function(class_id, mat) {
+	s = tapply(seq_along(class_id), class_id, function(ind) {
+		if(length(ind) == 1) {
+			return(0)
+		} else {
+			m = mat[, ind, drop = FALSE]
+			mean = rowMeans(m)
+			m = cbind(mean, m)
+			sum((dist(t(m))[1:length(ind)])^2)
+		}
+	})
+	sum(s)
 }

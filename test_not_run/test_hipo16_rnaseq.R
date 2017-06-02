@@ -8,6 +8,7 @@ GetoptLong(
 )
 
 library(cola)
+# source("/home/guz/project/development/cola/load.R")
 register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 ############################################################
@@ -95,10 +96,8 @@ load(qq("@{PROJECT_DIR}/expression/hipo16_rnaseq_count_rpkm.RData"))
 count = count[names(GENE), SAMPLE_ID]
 rpkm = rpkm[names(GENE), SAMPLE_ID]
 data = log2(rpkm + 1)
-data = t(apply(data, 1, adjust_outlier))
-data = adjust_outlier(data)
-
-res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, p_sampling = p, 
+data = adjust_matrix(data)
+res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, p_sampling = p, 
 	known_anno = data.frame(subtype = SAMPLE$subtype), mc.cores = ncore)
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo16_rnaseq_subgroup_p@{p}.rds"))

@@ -9,7 +9,7 @@ Run subgroup classification for all methods
 \usage{
 run_all_consensus_partition_methods(data, top_method = all_top_value_methods(),
     partition_method = all_partition_methods(),
-    mc.cores = 1, get_signatures = FALSE, ...)
+    mc.cores = 1, ...)
 }
 \arguments{
 
@@ -17,7 +17,6 @@ run_all_consensus_partition_methods(data, top_method = all_top_value_methods(),
   \item{top_method}{method which are used to extract top n rows. Allowed methods are in \code{\link{all_top_value_methods}} and can be self-added by \code{\link{register_top_value_fun}}.}
   \item{partition_method}{method which are used to do partition on data columns.  Allowed methods are in \code{\link{all_partition_methods}} and can be self-added  by \code{\link{register_partition_fun}}.}
   \item{mc.cores}{number of cores to use`.}
-  \item{get_signatures}{whether to run \code{\link{get_signatures}} for each method. If it is run, the results for the signature analysis will also be stored in the final object.}
   \item{...}{other arguments passed to \code{\link{consensus_partition}}.}
 
 }
