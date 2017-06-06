@@ -14,8 +14,14 @@ for(p in c(0.8)) {
 }
 
 for(p in c(0.8)) {
-	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_hipo16_rnaseq.R --p @{p} --ncore 4")
-	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=60:00:00,mem=10G,nodes=1:ppn=4 -N hipo16_rnaseq_subgroup_p@{p}' '@{cmd}'")
+	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_hipo16_rnaseq.R --p @{p} --ncore 4 --subtype IDH MES RTK_I RTK_II")
+	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=60:00:00,mem=10G,nodes=1:ppn=4 -N hipo16_rnaseq_subgroup_p@{p}_4' '@{cmd}'")
+	system(cmd)
+	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_hipo16_rnaseq.R --p @{p} --ncore 4 --subtype MES RTK_I RTK_II")
+	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=60:00:00,mem=10G,nodes=1:ppn=4 -N hipo16_rnaseq_subgroup_p@{p}_3' '@{cmd}'")
+	system(cmd)
+	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_hipo16_rnaseq.R --p @{p} --ncore 4 --subtype RTK_I RTK_II")
+	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=60:00:00,mem=10G,nodes=1:ppn=4 -N hipo16_rnaseq_subgroup_p@{p}_2' '@{cmd}'")
 	system(cmd)
 }
 

@@ -7,9 +7,9 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-library(cola)
-# source("/home/guz/project/development/cola/load.R")
-register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
+# library(cola)
+source("/home/guz/project/development/cola/load.R")
+# register_top_value_fun(AAC = function(mat) AAC(t(mat), method = "spearman", mc.cores = ncore))
 
 
 source("/home/guz/project/analysis/LiNA/asthma_cohort/script/asthma_head.R")

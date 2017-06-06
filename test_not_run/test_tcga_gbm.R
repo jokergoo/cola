@@ -7,9 +7,9 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-library(cola)
-# source("/home/guz/project/development/cola/load.R")
-register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
+# library(cola)
+source("/home/guz/project/development/cola/load.R")
+# register_top_value_fun(AAC = function(mat) AAC(t(mat), cor_method = "spearman", mc.cores = ncore))
 
 #############################################
 ### TCGA GBM
@@ -23,7 +23,7 @@ data = data[, names(subtype)]
 
 data = adjust_matrix(data)
 res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = ncore,
-	known_anno = data.frame(subtype = subtype))
+	known_anno = data.frame(subtype = subtype), known_col = list(subtype = structure(seq_len(4), names = unique(subtype))))
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup_p@{p}.rds"))
 

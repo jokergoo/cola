@@ -25,6 +25,7 @@ library(tm)
 library(wordcloud)
 library(xml2)
 library(Rcpp)
+library(wCorr)
 
 if(grepl("tbi", Sys.info()["nodename"]) & Sys.info()["user"] == "guz") {
 	Rfiles = list.files("~/project/development/cola/R", full.names = TRUE)

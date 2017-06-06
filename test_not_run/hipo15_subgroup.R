@@ -6,9 +6,9 @@ GetoptLong(
 	"datatype=s", "cell01"
 )
 
-library(cola)
-# source("/home/guz/project/development/cola/load.R")
-register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = 4))
+# library(cola)
+source("/home/guz/project/development/cola/load.R")
+# register_top_value_fun(AAC = function(mat) AAC(t(mat), cor_method = "spearman", mc.cores = 4))
 
 
 setwd("/icgc/dkfzlsdf/analysis/hipo/hipo_015/hipo15_rnaseq_cell_analysis")

@@ -7,9 +7,9 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-# source("/home/guz/project/development/cola/load.R")
-library(cola)
-register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
+source("/home/guz/project/development/cola/load.R")
+# library(cola)
+# register_top_value_fun(AAC = function(mat) AAC(t(mat), cor_method = "spearman", mc.cores = ncore))
 
 # load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_scRNAseq_gencode19_expression.RData")
 load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_spheroids_gencode19_expression.RData")
@@ -32,7 +32,7 @@ cell_type = gsub("_\\d+$", "", colnames(data))
 
 data = adjust_matrix(data)
 res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 3000), k = 2:6, mc.cores = ncore,
-	known_anno = data.frame(cell_type = cell_type))
+	known_anno = data.frame(cell_type = cell_type), known_col = list(cell_type = c("Invasive" = "red", "Round" = "blue")))
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/scrnaseq_subgroup_p@{p}.rds"))
 

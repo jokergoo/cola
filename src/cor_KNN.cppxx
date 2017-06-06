@@ -1,0 +1,98 @@
+
+cor_KNN_weighted = function(mat, ind1, ind2, k = 5) {
+
+	nx = length(ind1)
+	ny = length(ind2)
+	cm = matrix(nrow = nx, ncol = ny)
+	for(i in seq_along(ind1)) {
+		for(j in seq_along(ind2)) {
+			cm[i, j] = cor_KNN_weighted_with_two_vectors(mat[, c(ind1[i], ind2[j])], k = k)
+		}
+	}
+	
+	return(cm)
+}
+
+# m: 2 column matrix
+cor_KNN_weighted_with_two_vectors = function(m, k = 5) {
+	dist_m = base::as.matrix(dist(m, diag = TRUE, upper = TRUE))
+	wt = apply(dist_m, 1, function(x) {
+		sum(.Internal(qsort(x, FALSE))[1:(k+1)])/k
+	})
+	wt = max(wt) - wt
+	weightedCorr(m[, 1], m[, 2], weights = wt, method = "spearman")
+}
+
+
+float cor_KNN_weighted_with_two_vectors(NumericVector x1, NumericVector x2, int k) {
+	n = x1.size();
+	NumericMatrix dist_m = euclidean_distance_2d(x1, x2);
+
+	NumericVector wt(n);
+	NumericVector v_sort(n);
+	for(int i = 0; i < n; i ++) {
+		NumericVector v_sort(k);
+		gsl_sort_vector_smallest(dist_m(i, _), k, v_sort);
+		wt[i] = 0;
+		for(int j = 0; j <= k; j ++) {
+			wt[i] += v_sort[j];
+		}
+		wt[i] = wt[i]/k;
+	}
+	float max_wt = gsl_rstat_max(wt);
+	fot(int i = 0; i < n; i ++) {
+		wt[i] = max_wt - wt[i];
+	}
+	return(wt);
+}
+
+float weighted_corr(NumericVector x1, NumericVector x2, NumericVector wt, int method) {
+	if(method == 2) {
+		# rank
+	}
+
+	float corr = weighted_cov(x1, x2, wt)/sqrt(weighted_cov(x1, x1, wt) * weighted_cov(x2, x2, wt));
+	return(corr);
+}
+
+float weighted_mean(NumericVector x, NumericVector wt) {
+	int n = x.size();
+	float v1, v2;
+
+	for(int i = 0; i < n; i ++) {
+		v1 += x[i] * wt[i];
+		v2 += wt[i];
+	}
+
+	float m = v1/v2;
+	return(m);
+}
+
+float weighted_cov(NumericVector x1, NumericVector x2, NumericVector wt) {
+	int n = x1.size();
+	float v1, v2;
+	float m1 = weighted_mean(x1, wt);
+	float m2 = weighted_mean(x2, wt);
+
+	for(int i = 0; i < n; i ++) {
+		v1 += wt[i] * (x1[i] - m1) * (x2[i] - m2);
+		v2 += wt[i];
+	}
+	float cov = v1/v2;
+	reutrn(cov);
+}
+
+NumericMatrix euclidean_distance_2d(NumericVector x1, NumericVector x2) {
+	n = x1.size();
+	NumericMatrix m(n, n);
+
+	for(int i = 0; i < n-1; i ++) {
+		for(int j = i+1; j < n, j ++) {
+			m(i, j) = sqrt( (x1[i] - x1[j])**2 + (x2[i] - x2[j])**2 );
+			m(j, i) = m(i, j);
+		}
+		m(i, i) = 0;
+	}
+	m(n-1, n-1) = 0;
+	return(m)
+}

@@ -8,6 +8,9 @@
 # -cor_method pass to `stats::cor`.
 # -min_cor minimal absolute correlation.
 # -mc.cores number of cores.
+# -n_sampling when the number of columns are too many, to get the curmulative
+#           distribution, actually we don't need to use all the columns, e.g. 1000
+#           columns can already give a farely nice estimation for the distribution.
 # 
 # == details 
 # AAC score for a given item is the area above the curve of the curmulative 
@@ -37,9 +40,17 @@
 # mat = rbind(mat1, mat2, mat3)
 # AAC_score = AAC(t(mat))
 # plot(AAC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
-AAC = function(mat, cor_method = "pearson", min_cor = 0.2, mc.cores = 1) {
-	n = ncol(mat)
+AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1, mc.cores = 1, n_sampling = 1000,
+	q_sd = 0) {
+
+	col_sd = colSds(mat)
+	l = col_sd >= quantile(col_sd, q_sd)
+	v2 = numeric(length(col_sd))
+	v2[!l] = -Inf
+
+	mat = mat[, l, drop = FALSE]
 	
+	n = ncol(mat)
 	if(mc.cores > 1) {
 		le = cut(1:n, mc.cores)
 		ind_list = split(1:n, le)
@@ -47,15 +58,30 @@ AAC = function(mat, cor_method = "pearson", min_cor = 0.2, mc.cores = 1) {
 		ind_list = list(1:n)
 	}
 
+	if(cor_method == "KNN_weighted") {
+		mat = scale(mat)
+	}
+
 	v_list = mclapply(ind_list, function(ind) {
 		v = numeric(length(ind))
 		for(i in seq_along(ind)) {
-			suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, -ind[i], drop = FALSE], method = cor_method)))
+			ind2 = seq_len(ncol(mat))[-ind[i]]
+			if(length(ind2) > n_sampling) {
+				ind2 = sample(ind2, n_sampling)
+			}
+			if(cor_method == "KNN_weighted") {
+				cor_v = cor_KNN_weighted(mat, ind[i], ind2)
+			} else {
+				suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], method = cor_method)))
+			}
+
+			cor_v = cor_v[cor_v >= min_cor & cor_v <= max_cor]
+
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
 				v[i] = 1
 			} else {
 				f = ecdf(cor_v)
-				cor_v = seq(min_cor, 1, length = 100)
+				cor_v = seq(min_cor, max_cor, length = 100)
 				n2 = length(cor_v)
 				v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
 			}
@@ -65,8 +91,36 @@ AAC = function(mat, cor_method = "pearson", min_cor = 0.2, mc.cores = 1) {
 
 	v = do.call("c", v_list)
 	v = (1 - min_cor) - v
-	return(v)
+	names(v) = NULL
+
+	v2[l] = v
+	return(v2)
 }
+
+cor_KNN_weighted = function(mat, ind1, ind2, k = 5) {
+
+	nx = length(ind1)
+	ny = length(ind2)
+	cm = matrix(nrow = nx, ncol = ny)
+	for(i in seq_along(ind1)) {
+		for(j in seq_along(ind2)) {
+			cm[i, j] = cor_KNN_weighted_with_two_vectors(mat[, c(ind1[i], ind2[j])], k = k)
+		}
+	}
+	
+	return(cm)
+}
+
+# m: 2 column matrix
+cor_KNN_weighted_with_two_vectors = function(m, k = 5) {
+	dist_m = base::as.matrix(dist(m, diag = TRUE, upper = TRUE))
+	wt = apply(dist_m, 1, function(x) {
+		sum(.Internal(qsort(x, FALSE))[1:(k+1)])/k
+	})
+	wt = max(wt) - wt
+	weightedCorr(m[, 1], m[, 2], weights = wt, method = "pearson")
+}
+
 
 entropy = function(p) {
 	n = length(p)

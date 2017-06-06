@@ -2,30 +2,31 @@ library(methods)
 library(GetoptLong)
 p = 0.8
 ncore = 1
+subtype = c("IDH", "MES", "RTK_I", "RTK_II")
 GetoptLong(
 	"p=f", "0.8",
-	"ncore=i", "mc.cores"
+	"ncore=i", "mc.cores",
+	"subtype=s{2,}", "subtypes"
 )
 
-library(cola)
-# source("/home/guz/project/development/cola/load.R")
-register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
+# library(cola)
+source("/home/guz/project/development/cola/load.R")
 
 ############################################################
 anno_text =
 "id    hipo_id     subtype batch
-# AK015  H016-WFRL   IDH   1
-# AK041   H016-7EN2   IDH  1
-# AK066   H016-DVZSMF IDH  1
-# AK068   H016-1VS79M IDH  1
-# AK076   H016-JGR2   IDH  1
-# AK085   H016-GA6F   IDH  1
-# AK102   H016-D3VY   IDH  1
-# AK103   H016-XEMY   IDH  1
-# AK124   H016-3N2CQY IDH  1
-# AK199   H016-SEMSBV IDH  1
-# AK213   H016-C9EF5G IDH  1
-# AK231   H016-K82Q   IDH  1
+AK015  H016-WFRL   IDH   1
+AK041   H016-7EN2   IDH  1
+AK066   H016-DVZSMF IDH  1
+AK068   H016-1VS79M IDH  1
+AK076   H016-JGR2   IDH  1
+AK085   H016-GA6F   IDH  1
+AK102   H016-D3VY   IDH  1
+AK103   H016-XEMY   IDH  1
+AK124   H016-3N2CQY IDH  1
+AK199   H016-SEMSBV IDH  1
+AK213   H016-C9EF5G IDH  1
+AK231   H016-K82Q   IDH  1
 AK005   H016-6BP868 MES  2
 AK006   H016-RKB4RB MES  2
 AK030   H016-AZH7   MES  1
@@ -79,9 +80,10 @@ AK226   H016-3ZCL2Y RTK_II  2
 "
 
 SAMPLE = read.table(textConnection(anno_text), header = TRUE, stringsAsFactors = FALSE)
+SAMPLE = SAMPLE[SAMPLE$subtype %in% subtype, ]
 rownames(SAMPLE) = SAMPLE$id
 SAMPLE_ID = SAMPLE$id
-SUBTYPE_COLOR = RColorBrewer::brewer.pal(5, "Set1")
+SUBTYPE_COLOR = RColorBrewer::brewer.pal(4, "Set1")
 names(SUBTYPE_COLOR) = c("IDH", "MES", "RTK_I", "RTK_II")
 
 PROJECT_DIR = "/icgc/dkfzlsdf/analysis/hipo/hipo_016/analysis/analysis_with_epik"
@@ -98,9 +100,10 @@ rpkm = rpkm[names(GENE), SAMPLE_ID]
 data = log2(rpkm + 1)
 data = adjust_matrix(data)
 res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, p_sampling = p, 
-	known_anno = data.frame(subtype = SAMPLE$subtype), mc.cores = ncore)
+	known_anno = data.frame(subtype = SAMPLE$subtype), known_col = list(subtype = SUBTYPE_COLOR[unique(SAMPLE$subtype)]), 
+	mc.cores = ncore)
 
-saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo16_rnaseq_subgroup_p@{p}.rds"))
+saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo16_rnaseq_subgroup_p@{p}_@{paste(subtype, collapse = '')}.rds"))
 
 # for(p in c(0.2, 0.4, 0.6, 0.8)) {
 # 	cmd = qq("Rscript-3.1.2 /home/guz/project/development/subgroup/test_hipo16_rnaseq.R --p @{p} --ncore 4")
