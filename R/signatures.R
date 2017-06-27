@@ -212,16 +212,22 @@ setMethod(f = "get_signatures",
 			bottom_anno2 = NULL
 		} else {
 
-			if(is.null(anno_col)) {
-				bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE],
-					show_annotation_name = TRUE, annotation_name_side = "right")
-				for(i in seq_along(bottom_anno2@anno_list)) {
-					bottom_anno2@anno_list[[i]]@color_mapping = bottom_anno1@anno_list[[i]]@color_mapping
+			anno_col = lapply(bottom_anno1@anno_list, function(anno) {
+				if(is.null(anno@color_mapping)) {
+					return(NULL)
+				} else {
+					if(anno@color_mapping@type == "discrete") {
+						anno@color_mapping@colors
+					} else {
+						anno@color_mapping@col_fun
+					}
 				}
-			} else {
-				bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
-					show_annotation_name = TRUE, annotation_name_side = "right")	
-			}
+			})
+			names(anno_col) = names(bottom_anno1@anno_list)
+			anno_col = anno_col[!sapply(anno_col, is.null)]
+
+			bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
+				show_annotation_name = TRUE, annotation_name_side = "right")	
 		}
 	}
 	silhouette_range = range(class_df$silhouette)

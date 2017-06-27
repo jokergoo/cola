@@ -78,6 +78,7 @@ for(type in c("c1", "c2", "c3", "primary_tumor", "xenograft")) {
 	} else {
 		get_signatures(res, k = 2)
 	}
+	dimension_reduction(res, k = 2)
 	dev.off()
 }
 

@@ -15,7 +15,7 @@ source("/home/guz/project/development/cola/load.R")
 load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_spheroids_gencode19_expression.RData")
 
 library(GenomicFeatures)
-TXDB = loadDb(qq("/icgc/dkfzlsdf/analysis/hipo/hipo_016/analysis/analysis_with_epik/txdb/gencode19_protein_coding_txdb.sqlite"))
+TXDB = loadDb(qq("/icgc/dkfzlsdf/analysis/hipo/hipo_016/analysis/WGBS_final_cohort/txdb/gencode19_protein_coding_txdb.sqlite"))
 GENE = genes(TXDB)
 
 rpkm = as.matrix(expression$rpkm)
