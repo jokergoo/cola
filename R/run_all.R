@@ -65,10 +65,10 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 		return(res)
 	}, mc.cores = mc.cores)
 	names(lt) = paste(comb[, 1], comb[, 2], sep = ":")
-browser()
+
 	i_error = which(sapply(lt, inherits, "try-error"))
 	if(length(i_error)) {
-		sapply(lt[[i_error]], cat)
+		sapply(lt[i_error], cat)
 		stop("There are errors when doing mclapply.")
 	}
 	
