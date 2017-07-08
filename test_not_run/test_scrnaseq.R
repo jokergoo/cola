@@ -7,14 +7,15 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-library(cola)
-register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
+source("/home/guz/project/development/cola/load.R")
+# library(cola)
+# register_top_value_fun(AAC = function(mat) AAC(t(mat), cor_method = "spearman", mc.cores = ncore))
 
 # load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_scRNAseq_gencode19_expression.RData")
 load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_spheroids_gencode19_expression.RData")
 
 library(GenomicFeatures)
-TXDB = loadDb(qq("/icgc/dkfzlsdf/analysis/hipo/hipo_016/analysis/analysis_with_epik/txdb/gencode19_protein_coding_txdb.sqlite"))
+TXDB = loadDb(qq("/icgc/dkfzlsdf/analysis/hipo/hipo_016/analysis/WGBS_final_cohort/txdb/gencode19_protein_coding_txdb.sqlite"))
 GENE = genes(TXDB)
 
 rpkm = as.matrix(expression$rpkm)
@@ -29,10 +30,9 @@ data = log10(rpkm[l, ] + 1)
 data = data[, !colnames(data) %in% c("Invasive_1", "Invasive_10", "Invasive_11", "Invasive_14", "Round_13", "Round_3", "Round_bulk", "invasive_bulk")]
 cell_type = gsub("_\\d+$", "", colnames(data))
 
-data = t(apply(data, 1, adjust_outlier))
-
-res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = ncore,
-	known_anno = data.frame(cell_type = cell_type))
+data = adjust_matrix(data)
+res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 3000), k = 2:6, mc.cores = ncore,
+	known_anno = data.frame(cell_type = cell_type), known_col = list(cell_type = c("Invasive" = "red", "Round" = "blue")))
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/scrnaseq_subgroup_p@{p}.rds"))
 

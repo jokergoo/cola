@@ -57,7 +57,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 					try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value})
 				} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Fisher's exact test\n")
-					p.value[i, j] = fisher.test(df[[i]], df[[j]], alternative = "greater")$p.value
+					try({p.value[i, j] = fisher.test(df[[i]], df[[j]], alternative = "greater")$p.value})
 				}
 			}
 		}
@@ -103,10 +103,10 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 					try({p.value[i, j] = oneway.test(df1[[i]] ~ df2[[j]])$p.value})
 				} else if((is.character(df1[[i]]) || is.factor(df1[[i]])) && is.numeric(df2[[j]])) {
 					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: oneway ANOVA test\n")
-					try({p.value[i, j] = oneway.test(df1[[i]] ~ df2[[j]])$p.value})
+					try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value})
 				} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
 					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Fisher's exact test\n")
-					p.value[i, j] = fisher.test(df1[[i]], df2[[j]], alternative = "greater")$p.value
+					try({p.value[i, j] = fisher.test(df1[[i]], df2[[j]], alternative = "greater")$p.value})
 				}
 			}
 		}
@@ -130,9 +130,19 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 #
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartition",
-	definition = function(object, k, known = object@known_anno) {
+	definition = function(object, k, known = object@known_anno, silhouette_cutoff = 0.5) {
 
-	class = as.character(get_class(object, k)$class)
+	class_df = get_class(object, k)
+	l = class_df$silhouette >= silhouette_cutoff
+	class = as.character(class_df$class)[l]
+
+	if(is.data.frame(known)) {
+		known = known[l, , drop = FALSE]
+	} else if(is.matrix(known)) {
+		known = known[l, ,drop = FALSE]
+	} else {
+		known = known[l]
+	}
 
 	m = test_between_factors(class, known, verbose = FALSE)
 	rownames(m) = paste(object@top_method, object@partition_method, sep = ":")

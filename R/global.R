@@ -34,8 +34,11 @@ get_top_value_fun = function(method) {
 # remove_top_value_method(c("AAC_spearman", "AAC_multicore"))
 register_top_value_fun = function(...) {
 	lt = list(...)
-	.ENV$ALL_TOP_VALUE_FUN = c(.ENV$ALL_TOP_VALUE_FUN, lt)
-	.ENV$ALL_TOP_VALUE_METHODS = union(.ENV$ALL_TOP_VALUE_METHODS, names(lt))
+	lt1 = lt[intersect(names(lt), .ENV$ALL_TOP_VALUE_METHODS)]
+	lt2 = lt[setdiff(names(lt), .ENV$ALL_TOP_VALUE_METHODS)]
+	if(length(lt1)) .ENV$ALL_TOP_VALUE_FUN[names(lt1)] = lt1
+	if(length(lt2)) .ENV$ALL_TOP_VALUE_FUN = c(.ENV$ALL_TOP_VALUE_FUN, lt2)
+	.ENV$ALL_TOP_VALUE_METHODS = names(.ENV$ALL_TOP_VALUE_FUN)
 }
 
 # == title
@@ -84,7 +87,7 @@ get_partition_fun = function(method, partition_param = list()) {
 
 		nc = n_of_classes(x)
 		if(nc != k) {
-			cat(red(qq("!!! number of classes (@{nc}) in the partition is not same as @{k} !!!")))
+			cat(red(qq("!!! @{method}: number of classes (@{nc}) in the partition is not same as @{k} !!!\n")))
 		}
 
 		return(x)
@@ -135,8 +138,12 @@ register_partition_fun = function(..., scale_method = c("standardization", "resc
 	for(i in seq_along(lt)) {
 		attr(lt[[i]], "scale_method") = scale_method[i]
 	}
-	.ENV$ALL_PARTITION_FUN = c(.ENV$ALL_PARTITION_FUN, lt)
-	.ENV$ALL_PARTITION_METHODS = union(.ENV$ALL_PARTITION_METHODS, names(lt))
+
+	lt1 = lt[intersect(names(lt), .ENV$ALL_PARTITION_METHODS)]
+	lt2 = lt[setdiff(names(lt), .ENV$ALL_PARTITION_METHODS)]
+	if(length(lt1)) .ENV$ALL_PARTITION_FUN[names(lt1)] = lt1
+	if(length(lt2)) .ENV$ALL_PARTITION_FUN = c(.ENV$ALL_PARTITION_FUN, lt2)
+	.ENV$ALL_PARTITION_METHODS = names(.ENV$ALL_PARTITION_FUN)
 }
 
 # == title

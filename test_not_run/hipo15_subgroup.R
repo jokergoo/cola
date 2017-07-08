@@ -7,7 +7,8 @@ GetoptLong(
 )
 
 library(cola)
-register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
+# source("/home/guz/project/development/cola/load.R")
+register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = 4))
 
 
 setwd("/icgc/dkfzlsdf/analysis/hipo/hipo_015/hipo15_rnaseq_cell_analysis")
@@ -26,23 +27,32 @@ if(grepl("cell", datatype)) {
 	if(datatype == "cell01") {
 		l = anno$type %in% c("cell01") & anno$phenotype == "tumor"
 		data = expr[gene_type[rownames(expr)] == "protein_coding", l]
-		data = t(apply(data, 1, adjust_outlier))
-		res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = 4)
+		count = count[gene_type[rownames(expr)] == "protein_coding", l]
+		l = apply(count, 1, function(x) sum(x == 0)/length(x) < 0.5)
+		data = data[l, ]
+		data = adjust_matrix(data)
+		res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = 4)
 
 		saveRDS(res, file = "hipo15_c1_subgroups.rds")
 	} else if(datatype == "cell02") {
 		l = anno$type %in% c("cell02") & anno$phenotype == "tumor"
 		data = expr[gene_type[rownames(expr)] == "protein_coding", l]
-		data = t(apply(data, 1, adjust_outlier))
-		res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = 4)
+		count = count[gene_type[rownames(expr)] == "protein_coding", l]
+		l = apply(count, 1, function(x) sum(x == 0)/length(x) < 0.5)
+		data = data[l, ]
+		data = adjust_matrix(data)
+		res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = 4)
 
 		saveRDS(res, file = "hipo15_c2_subgroups.rds")
 	} else if(datatype == "cell03") {
 
 		l = anno$type %in% c("cell03") & anno$phenotype == "tumor"
 		data = expr[gene_type[rownames(expr)] == "protein_coding", l]
-		data = t(apply(data, 1, adjust_outlier))
-		res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = 4)
+		count = count[gene_type[rownames(expr)] == "protein_coding", l]
+		l = apply(count, 1, function(x) sum(x == 0)/length(x) < 0.5)
+		data = data[l, ]
+		data = adjust_matrix(data)
+		res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = 4)
 
 		saveRDS(res, file = "hipo15_c3_subgroups.rds")
 	}
@@ -58,9 +68,11 @@ if(grepl("cell", datatype)) {
 
 	gene_type = sapply(gene_annotation$gtf, function(x) x$type)
 	expr = normalize.count(expression$count, method = "deseq2", gene_annotation, param = default_param)
+	l = apply(expression$count, 1, function(x) sum(x == 0)/length(x) < 0.5)
+	expr = expr[l, ]
 	data = expr[gene_type[rownames(expr)] == "protein_coding", rownames(pro_5types_50)]
-	data = t(apply(data, 1, adjust_outlier))
-	res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = 4)
+	data = adjust_matrix(data)
+	res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = 4)
 
 	saveRDS(res, file = "hipo15_primary_tumor_subgroups.rds")
 } else if(datatype == "xenograft") {
@@ -75,15 +87,17 @@ if(grepl("cell", datatype)) {
 	count = expression$count
 	count = count[!grepl("^ENSM", rownames(count)), ]
 	expr = normalize.count(count, method = "deseq2", gene_annotation, param = default_param)
+	l = apply(count, 1, function(x) sum(x == 0)/length(x) < 0.5)
+	expr = expr[l, ]
 	data = expr[gene_type[rownames(expr)] == "protein_coding", ]
-	data = t(apply(data, 1, adjust_outlier))
-	res = run_all_consensus_partition_methods(data, top_n = c(2000, 4000, 6000), k = 2:6, mc.cores = 4, partition_repeat = 10)
+	data = adjust_matrix(data)
+	res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = 4)
 
 	saveRDS(res, file = "hipo15_xenograft_subgroups.rds")
 }
 
 # for(datatype in c("cell01", "cell02", "cell03", "primary_tumor", "xenograft")) {
-# 	cmd = qq("Rscript-3.1.2 /home/guz/project/development/subgroup/hipo15_subgroup.R --datatype @{datatype}")
+# 	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/hipo15_subgroup.R --datatype @{datatype}")
 #  	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=40:00:00,mem=10G,nodes=1:ppn=4 -N hipo15_subgroup_@{datatype}' '@{cmd}'")
 #  	system(cmd)
 # }

@@ -69,3 +69,32 @@ adjust_outlier = function(x, q = 0.05) {
 	x[x > qu[2]] = qu[2]
 	x
 }
+
+# == title
+# Remove rows with low variance
+#
+# == param
+# -m a numeric matrix
+# -sd_quantile cutoff the quantile of standard variation
+#
+# == details
+# The function first uses `adjust_outlier` to adjust outliers and 
+# then removes rows with low standard variation.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+adjust_matrix = function(m, sd_quantile = 0.05) {
+	if(is.data.frame(m)) {
+		m = as.matrix(m)
+	}
+	m = t(apply(m, 1, adjust_outlier))
+	row_sd = rowSds(m)
+	l = row_sd == 0
+	m2 = m[!l, , drop = FALSE]
+	row_sd = row_sd[!l]
+
+	qa = quantile(row_sd, sd_quantile)
+	l = row_sd >= qa
+	m2[l, , drop = FALSE]
+}
