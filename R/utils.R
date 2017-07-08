@@ -90,7 +90,7 @@ adjust_matrix = function(m, sd_quantile = 0.05) {
 	}
 	m = t(apply(m, 1, adjust_outlier))
 	row_sd = rowSds(m)
-	l = row_sd == 0
+	l = abs(row_sd) < 1e-6
 	m2 = m[!l, , drop = FALSE]
 	row_sd = row_sd[!l]
 
