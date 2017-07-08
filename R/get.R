@@ -98,13 +98,13 @@ setMethod(f = "get_membership",
 setMethod(f = "get_stat",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k) {
-	m = matrix(nrow = length(k), ncol = length(object@object_list[[1]]$stat) - 1)
-	rownames(m) = k
+	m = matrix(nrow = length(object@k), ncol = length(object@object_list[[1]]$stat) - 1)
+	rownames(m) = object@k
 	colnames(m) = setdiff(names(object@object_list[[1]]$stat), "ecdf")
-	for(i in seq_along(k)) {
+	for(i in seq_along(object@k)) {
 		m[i, ] = unlist(object@object_list[[i]]$stat[colnames(m)])
 	}
-	return(m)
+	return(m[as.character(k), , drop = FALSE])
 })
 
 

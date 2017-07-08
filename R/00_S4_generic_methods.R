@@ -32,3 +32,4 @@ setGeneric('membership_heatmap', function(object, ...) standardGeneric('membersh
 setGeneric('select_partition_number', function(object, ...) standardGeneric('select_partition_number'))
 
 setGeneric('collect_plots', function(object, ...) standardGeneric('collect_plots'))
+setGeneric('get_best_k', function(object, ...) standardGeneric('get_best_k'))

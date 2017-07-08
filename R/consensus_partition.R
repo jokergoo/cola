@@ -13,6 +13,7 @@
 # -partition_param parameters for the partition method.
 # -known_anno a data frame with known annotation of columns.
 # -known_col a list of colors for the annotations in ``known_anno``.
+# -column_index a subst of columns in the matrix, only for internal use.
 # -.env an environment, internally used.
 #
 # == return
@@ -30,6 +31,7 @@ consensus_partition = function(data,
 	partition_param = list(),
 	known_anno = NULL,
 	known_col = NULL,
+	column_index = seq_len(ncol(data)),
 	.env) {
 
 	if(missing(.env)) {
@@ -38,16 +40,21 @@ consensus_partition = function(data,
 
 		.env = new.env()
 		.env$data = data
+		.env$column_index = column_index
 	} else if(is.null(.env$data)) {
 		if(is.data.frame(data)) data = as.matrix(data)
 		if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
 
 		.env$data = data
+		.env$column_index = column_index
 	} else {
 		data = .env$data
 	}
 
+	data = data[, .env$column_index, drop = FALSE]
+
 	k = sort(k)
+	k = k[k <= ncol(data)]
 	
 	top_n = round(top_n)
 	top_n = top_n[top_n < nrow(data)]
@@ -227,7 +234,7 @@ consensus_partition = function(data,
 	}
 
 	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n),  
-		partition_method = partition_method, top_method = top_method,
+		partition_method = partition_method, top_method = top_method, top_n = top_n,
 		known_anno = known_anno, known_col = known_col, .env = .env)
 	
 	return(res)
@@ -249,8 +256,8 @@ consensus_partition = function(data,
 setMethod(f = "show",
 	signature = "ConsensusPartition",
 	definition = function(object) {
-	qqcat("A 'consensus_partition' object with k = @{paste(object@k, collapse = ', ')}\n")
-	qqcat("  top rows are extracted by '@{object@top_method}' method.\n")
+	qqcat("A 'ConsensusPartition' object with k = @{paste(object@k, collapse = ', ')}.\n")
+	qqcat("  top rows (@{paste(object@top_n, collapse = ', ')}) are extracted by '@{object@top_method}' method.\n")
 	qqcat("  subgroups are detected by '@{object@partition_method}' method.\n")
 })
 
@@ -309,6 +316,34 @@ setMethod(f = "select_partition_number",
 	}
 
 	par(op)
+})
+
+# == title
+# Get the best number of partitions
+#
+# == param
+# -obje# -object a `ConsensusPartition-class` object
+#
+# == value
+# The best k
+#
+# == author
+# Zuguang Gu
+setMethod(f = "get_best_k",
+	signature = "ConsensusPartition",
+	definition = function(object) {
+
+	stat = get_stat(object)
+	dec = c(which.max(stat[, "cophcor"]), 
+		    which.min(stat[, "PAC"]),
+		    which.max(stat[, "mean_silhouette"]))
+	if(length(unique(dec)) == 3) {
+		x = rownames(stat)[dec[1]]
+	} else {
+		tb = table(dec)
+		x = rownames(stat)[as.numeric(names(tb[which.max(tb)]))]
+	}
+	as.numeric(x)
 })
 
 # == title

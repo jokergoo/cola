@@ -54,7 +54,7 @@ setMethod(f = "get_signatures",
 	class_df = get_class(object, k)
 	class_ids = class_df$class
 
-	data = object@.env$data
+	data = object@.env$data[, object@.env$column_index, drop = FALSE]
 
 	l = class_df$silhouette >= silhouette_cutoff
 	data2 = data[, l]
@@ -130,13 +130,16 @@ setMethod(f = "get_signatures",
 		group[i] = max_group
 	}
 
-	mat = data[fdr < fdr_cutoff, ]
+	mat = data[fdr < fdr_cutoff, , drop = FALSE]
 	fdr2 = fdr[fdr < fdr_cutoff]
 	group2 = group[fdr < fdr_cutoff]
 	names(group2) = rownames(mat)
 	mat_return = list(mat = mat, confident_samples = column_used_logical, fdr = fdr2, group = group2, class_col = brewer_pal_set2_col)
 	qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
+	if(nrow(mat) == 0) {
+		return(mat_return)
+	}
 	if(!plot) {
 		return(mat_return)
 	}

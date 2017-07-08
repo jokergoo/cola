@@ -51,6 +51,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	.env$all_value_list = all_value_list
 
 	.env$data = data
+	.env$column_index = seq_len(ncol(data))
 	res_list = ConsensusPartitionList(
 		list = list(), 
 		top_method = top_method, 
