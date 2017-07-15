@@ -5,6 +5,7 @@ strrep = function(x, times) {
 }
 
 
+# change the label of `class` to let `class` fits `ref` more, maximize sum(class ==ref)
 relabel_class = function(class, ref) {
 	class = as.character(class)
 	ref = as.character(ref)
@@ -25,6 +26,7 @@ relabel_class = function(class, ref) {
 	return(map)
 }
 
+# columns only in one same level are clustered
 column_order_by_group = function(factor, mat) {
 	do.call("c", lapply(sort(unique(factor)), function(le) {
 		m = mat[, factor == le, drop = FALSE]

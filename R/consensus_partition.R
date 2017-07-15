@@ -282,7 +282,7 @@ setMethod(f = "plot_ecdf",
 		consensus_mat = get_consensus(object, k = object@k[i])
 		f = ecdf(consensus_mat[lower.tri(consensus_mat)])
 		x = seq(0, 1, length = 100)
-		lines(x, f(x), col = i)
+		lines(x, f(x), col = i, lwd = 4)
 	}
 	legend("bottomright", pch = 15, legend = paste0("k = ", object@k), col = seq_along(object@k))
 })
@@ -355,6 +355,7 @@ setMethod(f = "get_best_k",
 # -show_legend whether show heatmap and annotation legends.
 # -anno a data frame with column annotations
 # -anno_col colors for the annotations
+# -show_row_names whether plot row names on the consensus heatmap
 # -... other arguments
 #
 # == value
@@ -367,7 +368,8 @@ setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, show_legend = TRUE,
 	anno = object@known_anno, 
-	anno_col = if(missing(anno)) object@known_col else NULL, ...) {
+	anno_col = if(missing(anno)) object@known_col else NULL, 
+	show_row_names = FALSE, ...) {
 
 	class_df = get_class(object, k)
 	class_ids = class_df$class
@@ -385,7 +387,7 @@ setMethod(f = "consensus_heatmap",
 	Heatmap(class_ids, name = "class", col = brewer_pal_set2_col, 
 		show_row_names = FALSE, width = unit(5, "mm"))
 	
-	ht_list = ht_list +	Heatmap(consensus_mat, name = "consensus", show_row_names = FALSE, show_row_dend = FALSE,
+	ht_list = ht_list +	Heatmap(consensus_mat, name = "consensus", show_row_names = show_row_names, show_row_dend = FALSE,
 		col = colorRamp2(c(0, 1), c("white", "blue")), row_order = mat_col_od, column_order = mat_col_od,
 		cluster_rows = FALSE, cluster_columns = FALSE, show_column_names = FALSE)
 

@@ -120,3 +120,14 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 }
 
 
+setMethod(f = "get_class",
+	signature = "HierarchicalPartition",
+	definition = function(object) {
+	object@subgroup
+})
+
+setMethod(f = "get_signatures",
+	signature = "HierarchicalPartition",
+	definition = function(object) {
+		
+})
