@@ -165,15 +165,36 @@ setMethod(f = "top_rows_heatmap",
 
 	lt = lapply(all_value_list, function(x) order(x, decreasing = TRUE)[1:top_n])
     
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nr = 1, nc = length(lt))))
+    image_width = 500
+	image_height = 500
     for(i in seq_along(lt)) {
-		if(dev.interactive() && interactive()) {
-			readline(prompt = "press enter to load next plot: ")
-		}
+    	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i))
+		file_name = tempfile()
+        png(file_name, width = image_width, height = image_height)
+       
+		# if(dev.interactive() && interactive()) {
+		# 	readline(prompt = "press enter to load next plot: ")
+		# }
 		mat = object[lt[[i]], ]
-		draw(Heatmap(t(scale(t(mat))), name = "scaled_expr", show_row_names = FALSE, 
-			column_title = qq("top @{top_n} rows of @{top_method[i]}"),
-			show_row_dend = FALSE, show_column_names = FALSE))
+		if(nrow(mat) > 5000) {
+			mat = mat[sample(nrow(mat), 5000), ]
+		}
+		oe = try(
+			draw(Heatmap(t(scale(t(mat))), name = "scaled_expr", show_row_names = FALSE, 
+				column_title = qq("top @{top_n} rows of @{top_method[i]}"),
+				show_row_dend = FALSE, show_column_names = FALSE))
+		)
+		dev.off()
+	    if(!inherits(oe, "try-error")) {
+	    	grid.raster(readPNG(file_name))
+	    }
+	    grid.rect(gp = gpar(fill = "transparent"))
+	    upViewport()
+	    if(file.exists(file_name)) file.remove(file_name)
 	}
+	upViewport()
 })
 
 

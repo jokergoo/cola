@@ -33,3 +33,4 @@ setGeneric('select_partition_number', function(object, ...) standardGeneric('sel
 
 setGeneric('collect_plots', function(object, ...) standardGeneric('collect_plots'))
 setGeneric('get_best_k', function(object, ...) standardGeneric('get_best_k'))
+setGeneric('signature_density', function(object, ...) standardGeneric('signature_density'))

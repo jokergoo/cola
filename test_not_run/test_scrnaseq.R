@@ -9,7 +9,7 @@ GetoptLong(
 
 source("/home/guz/project/development/cola/load.R")
 # library(cola)
-register_top_value_fun(AAC = function(mat) AAC(t(mat), cor_method = "spearman", mc.cores = ncore))
+register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 # load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_scRNAseq_gencode19_expression.RData")
 load("/icgc/dkfzlsdf/analysis/cnag/cnag_MCF10CA_spheroids_gencode19_expression.RData")

@@ -777,4 +777,51 @@ msigdb_catalogue = function(x, category = "H", sub_category, organism = "Homo sa
 	return(x2)
 }
 
+# == title
+# Density for the signatures
+#
+# == param
+# -object A `ConsensusPartition-class` object. 
+# -k number of partitions
+# -... pass to `get_signatures,ConsensusPartition-method`
+#
+# == details
+# The function makes density distributio nf of signatures in all columns.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "signature_density",
+	signature = "ConsensusPartition",
+	definition = function(object, k, ...) {
+
+	cl = get_class(object, k = k)$class
+	data = object@.env$data
+
+	all_den_list = lapply(seq_len(ncol(data)), function(i) density(data[, i]))
+	x_range = range(unlist(lapply(all_den_list, function(x) x$x)))
+	y_range = range(unlist(lapply(all_den_list, function(x) x$y)))
+
+	op = par(no.readonly = TRUE)
+	par(mfrow = c(k + 1, 1), mar = c(3, 4, 4, 1))
+	plot(NULL, type = "n", xlim = x_range, ylim = y_range, main = "all rows", ylab = "density", xlab = NULL)
+	for(i in 1:ncol(data)) {
+		lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = 1)
+	}
+
+	x = get_signatures(object, k = k, plot = FALSE, ...)
+	gp = x$group
+	for(j in 1:k) {
+		gp2 = gp[gp == as.character(j)]
+		all_den_list = lapply(seq_len(ncol(data)), function(i) density(data[names(gp2), i]))
+		# x_range = range(unlist(lapply(all_den_list, function(x) x$x)))
+		y_range = range(unlist(lapply(all_den_list, function(x) x$y)))
+
+		plot(NULL, type = "n", xlim = x_range, ylim = y_range, main = qq("signatures in subgroup @{j}/@{k}"), ylab = "density", xlab = NULL)
+		for(i in 1:ncol(data)) {
+			lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = ifelse(cl[i] == j, 2, 0.5))
+		}
+	}
+	par(op)
+})
 
