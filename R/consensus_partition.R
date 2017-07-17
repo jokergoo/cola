@@ -96,6 +96,10 @@ consensus_partition = function(data,
 		qqcat("get top @{top_n[i]} rows by @{top_method} method\n")
 		ind = order(all_value, decreasing = TRUE)[1:top_n[i]]
 
+		if(length(ind) > 5000) {
+			ind = sample(ind, 5000)
+		}
+
 		for(j in 1:partition_repeat) {
 			ind_sub = sample(ind, round(p_sampling*length(ind)))
 			mat = data[ind_sub, , drop = FALSE]
