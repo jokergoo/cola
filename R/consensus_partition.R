@@ -540,6 +540,8 @@ setMethod(f = "dimension_reduction",
 	}
 
 	data = t(scale(t(data)))
+	l = apply(data, 1, function(x) any(is.na(x)))
+	data = data[!l, ]
 
 	ik = which(object@k == k)
 
