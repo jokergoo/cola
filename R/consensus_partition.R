@@ -530,7 +530,7 @@ setMethod(f = "dimension_reduction",
 	tsne_param = list(), ...) {
 
 	method = match.arg(method)
-	data = object@.env$data
+	data = object@.env$data[, object@.env$column_index, drop = FALSE]
 
 	if(!is.null(top_n)) {
 		top_n = min(c(top_n, nrow(data)))

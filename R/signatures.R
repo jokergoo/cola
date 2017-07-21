@@ -17,6 +17,8 @@
 # -show_legend whether draw the legends on the heatmap.
 # -show_column_names whether show column names on the heatmap.
 # -use_raster internally used
+# -mat_other other matrix you want to attach to the heatmap list. The matrix should have row names so that
+#            rows can be subsetted
 # -plot whether to make the plot
 # -... other arguments
 # 
@@ -48,7 +50,7 @@ setMethod(f = "get_signatures",
 	anno_col = if(missing(anno)) object@known_col else NULL,
 	show_legend = TRUE,
 	show_column_names = TRUE, use_raster = TRUE,
-	plot = TRUE,
+	plot = TRUE, mat_other = NULL,
 	...) {
 
 	class_df = get_class(object, k)
@@ -158,6 +160,10 @@ setMethod(f = "get_signatures",
 	}
 	base_mean = rowMeans(mat1)
 
+	if(!is.null(mat_other)) {
+		mat_other = mat_other[rownames(mat1), , drop = FALSE]
+	}
+
 	if(is.null(anno)) {
 		bottom_anno1 = NULL
 	} else {
@@ -196,6 +202,12 @@ setMethod(f = "get_signatures",
 		mat_range = quantile(abs(scaled_mat1), 0.95)
 		col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
 		heatmap_name = "scaled_expr"
+
+		if(!is.null(mat_other)) {
+			for(i in seq_len(nrow(mat_other))) {
+				mat_other[i, ] = (mat_other[i, ] - scaled_mean[i])/scaled_sd[i]
+			}
+		}
 	} else {
 		use_mat1 = mat1
 		use_mat2 = mat2
@@ -279,7 +291,13 @@ setMethod(f = "get_signatures",
 			cluster_columns = FALSE, column_order = mat_col_od2,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
 			use_raster = use_raster, raster_quality = 2,
-			column_title = "ambiguous samples", bottom_annotation = bottom_anno2, show_column_names = show_column_names)
+			bottom_annotation = bottom_anno2, show_column_names = show_column_names)
+	}
+
+	if(!is.null(mat_other)) {
+		ht_list = ht_list + Heatmap(mat_other, col = col_fun, show_row_names = FALSE, show_column_names = show_column_names,
+			use_raster = use_raster, raster_quality = 2, show_heatmap_legend = FALSE,
+			show_column_dend = FALSE)
 	}
 
 	draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, ', top 5k signatures', '')}"),
@@ -796,7 +814,7 @@ setMethod(f = "signature_density",
 	definition = function(object, k, ...) {
 
 	cl = get_class(object, k = k)$class
-	data = object@.env$data
+	data = object@.env$data[, object@.env$column_index, drop = FALSE]
 
 	all_den_list = lapply(seq_len(ncol(data)), function(i) density(data[, i]))
 	x_range = range(unlist(lapply(all_den_list, function(x) x$x)))
