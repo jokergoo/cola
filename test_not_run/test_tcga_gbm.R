@@ -9,7 +9,7 @@ GetoptLong(
 
 # library(cola)
 source("/home/guz/project/development/cola/load.R")
-# register_top_value_fun(AAC = function(mat) AAC(t(mat), cor_method = "spearman", mc.cores = ncore))
+register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 #############################################
 ### TCGA GBM
@@ -28,7 +28,7 @@ res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k =
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup_p@{p}.rds"))
 
 # for(p in c(0.2, 0.4, 0.6, 0.8)) {
-# 	cmd = qq("Rscript-3.1.2 /home/guz/project/development/cola/test_not_run/test_tcga_gbm.R --p @{p} --ncore 4")
+# 	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_tcga_gbm.R --p @{p} --ncore 4")
 # 	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=40:00:00,mem=20G,nodes=1:ppn=4 -N TCGA_subgroup_p@{p}' '@{cmd}'")
 # 	system(cmd)
 # }
