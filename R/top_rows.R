@@ -6,6 +6,7 @@
 # -object a `ConsensusPartitionList-class` object
 # -top_n number of top rows
 # -type ``venn``: use Venn Euler digram; ``correspondance``: use `correspond_between_rankings`.
+# -... additional arguments passed to `venn_euler` or `correspond_between_rankings`
 #
 # == value
 # No value is returned.
@@ -16,11 +17,11 @@
 setMethod(f = "top_rows_overlap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = round(0.25*length(all_value_list[[1]])), 
-		type = c("venn", "correspondance")) {
+		type = c("venn", "correspondance"), ...) {
 
 	all_value_list = object@.env$all_value_list
 
-	top_rows_overlap(all_value_list, type = type)
+	top_rows_overlap(all_value_list, type = type, ...)
 })
 
 # == title
@@ -31,6 +32,7 @@ setMethod(f = "top_rows_overlap",
 # -top_method methods defined in `all_top_value_methods`.
 # -top_n number of top rows
 # -type ``venn``: use Venn Euler diagram; ``correspondance``: use `correspond_between_rankings`.
+# -... additional arguments passed to `venn_euler` or `correspond_between_rankings`
 #
 # == value
 # No value is returned.
@@ -44,8 +46,8 @@ setMethod(f = "top_rows_overlap",
 # top_rows_overlap(mat, top_n = 25)
 setMethod(f = "top_rows_overlap",
 	signature = "matrix",
-	definition = function(object, top_method = all_top_value_methods(), top_n = round(0.25*nrow(object)),
-		type = c("venn", "correspondance")) {
+	definition = function(object, top_method = all_top_value_methods(), 
+		top_n = round(0.25*nrow(object)), type = c("venn", "correspondance"), ... ) {
 
 	all_value_list = lapply(top_method, function(x) {
 		get_value_fun = get_top_value_fun(x)
@@ -55,7 +57,7 @@ setMethod(f = "top_rows_overlap",
 	})
 	names(all_value_list) = top_method
 
-	top_rows_overlap(all_value_list, top_n = top_n, type = type)
+	top_rows_overlap(all_value_list, top_n = top_n, type = type, ...)
 })
 
 
@@ -66,6 +68,7 @@ setMethod(f = "top_rows_overlap",
 # -object a list which contains rankings from different metrics.
 # -top_n number of top rows
 # -type ``venn``: use Venn Euler digram; ``correspondance``: use `correspond_between_rankings`.
+# -... additional arguments passed to `venn_euler` or `correspond_between_rankings`
 #
 # == value
 # No value is returned.
@@ -82,7 +85,7 @@ setMethod(f = "top_rows_overlap",
 setMethod(f = "top_rows_overlap",
 	signature = "list",
 	definition = function(object, top_n = round(0.25*length(object[[1]])), 
-		type = c("venn", "correspondance")) {
+		type = c("venn", "correspondance"), ...) {
 
 	lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
     
@@ -96,10 +99,10 @@ setMethod(f = "top_rows_overlap",
     		venn(lt)
     		title(qq("top @{top_n} rows"))
     	} else {
-   			venn_euler(lt, main = qq("top @{top_n} rows"))
+   			venn_euler(lt, main = qq("top @{top_n} rows"), ...)
    		}
 	} else if(type == "correspondance") {
-		correspond_between_rankings(object, top_n = top_n)
+		correspond_between_rankings(object, top_n = top_n, ...)
 	}
 })
 
@@ -109,22 +112,26 @@ setMethod(f = "top_rows_overlap",
 # == param
 # -object a `ConsensusPartitionList-class` object
 # -top_n number of top rows
+# -... pass to `top_rows_heatmap,matrix-method`
 #
 # == value
 # No value is returned.
+#
+# == seealso
+# `top_rows_heatmap,matrix-method`
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "top_rows_heatmap",
 	signature = "ConsensusPartitionList",
-	definition = function(object, top_n = round(0.25*length(all_value_list[[1]]))) {
+	definition = function(object, top_n = round(0.25*length(all_value_list[[1]])), ...) {
 
 	all_value_list = object@.env$all_value_list
     
     mat = object@.env$data
 
-    top_rows_heatmap(mat, all_value_list = all_value_list, top_n = top_n)
+    top_rows_heatmap(mat, all_value_list = all_value_list, top_n = top_n, ...)
 })
 
 # == title
@@ -135,6 +142,14 @@ setMethod(f = "top_rows_heatmap",
 # -all_value_list scores that have already been calculated from the matrix
 # -top_method methods defined in `all_top_value_methods`.
 # -top_n number of top rows
+# -layout_nr number of rows in the layout
+#
+# == details
+# The function makes heatmaps where the rows are scaled for the top k rows
+# from different top methods.
+#
+# Top k rows are used to subgroup classification. The heatmaps show which top
+# method gives best candidate rows for the classification.
 #
 # == value
 # No value is returned.
@@ -149,7 +164,7 @@ setMethod(f = "top_rows_heatmap",
 setMethod(f = "top_rows_heatmap",
 	signature = "matrix",
 	definition = function(object, all_value_list = NULL, top_method = all_top_value_methods(), 
-		top_n = round(0.25*nrow(object))) {
+		top_n = round(0.25*nrow(object)), layout_nr = 1) {
 
 	if(is.null(all_value_list)) {
 		all_value_list = lapply(top_method, function(x) {
@@ -166,7 +181,7 @@ setMethod(f = "top_rows_heatmap",
 	lt = lapply(all_value_list, function(x) order(x, decreasing = TRUE)[1:top_n])
     
     grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nr = 1, nc = length(lt))))
+    pushViewport(viewport(layout = grid.layout(nrow = layout_nr, ncol = ceiling(length(lt)/layout_nr))))
     image_width = 500
 	image_height = 500
     for(i in seq_along(lt)) {
@@ -203,10 +218,11 @@ setMethod(f = "top_rows_heatmap",
 #
 # == param
 # -lt a list of items
-# -... other arguments
+# -... other arguments passed to `graphics::plot.default`
 #
 # == details
-# The function calls `venneuler::venneuler` to make the plot.
+# The function calls `gplots::venn` to reformat the data and
+# call `venneuler::venneuler` to make the plot.
 #
 # == value
 # No value is returned.

@@ -1,15 +1,16 @@
 
 # == title
-# Test whether known factors are correlated
+# Test whether a list of factors are correlated
 #
 # == param
 # -x a data frame or a vector which contains discrete or continuous variables.
+#    if ``y`` is omit, pairwise testing for columns in ``x`` is performed.
 # -y a data frame or a vector which contains discrete or continuous variables.
 # -all_factors are all columns in ``x`` and ``y`` are enforced to be factors.
-# -verbose whether print messages.
+# -verbose whether to print messages.
 # 
 # == details
-# Pairwise test is applied to every two columns in the data frame. Methods are:
+# Pairwise test is applied to every two columns in the data frames. Methods are:
 # 
 # - two numeric variables: correlation test by `stats::cor.test` is applied;
 # - two character or factor variables: Chi-squared test by `stats::fisher.test` is applied;
@@ -53,14 +54,16 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
 					try({p.value[i, j] = oneway.test(df[[i]] ~ df[[j]])$p.value})
 				} else if(is.numeric(df[[j]]) && (is.character(df[[i]]) || is.factor(df[[i]]))) {
-					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
+					if(verbose) qqcat("@{nm[j]} ~ @{nm[i]}: oneway ANOVA test\n")
 					try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value})
 				} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Fisher's exact test\n")
 					try({p.value[i, j] = fisher.test(df[[i]], df[[j]], alternative = "greater")$p.value})
 				}
+				p.value[j, i] = p.value[i, j]
 			}
 		}
+		diag(p.value) = 0
 	} else {
 		if(is.matrix(x)) {
 			x = as.data.frame(x)
@@ -102,7 +105,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: oneway ANOVA test\n")
 					try({p.value[i, j] = oneway.test(df1[[i]] ~ df2[[j]])$p.value})
 				} else if((is.character(df1[[i]]) || is.factor(df1[[i]])) && is.numeric(df2[[j]])) {
-					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: oneway ANOVA test\n")
+					if(verbose) qqcat("@{nm2[j]} ~ @{nm1[i]}: oneway ANOVA test\n")
 					try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value})
 				} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
 					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Fisher's exact test\n")
@@ -121,9 +124,14 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 # -object a `ConsensusPartition-class` object
 # -k number of partitions
 # -known a vector or a data frame with known factors
+# -silhouette_cutoff cutoff for sihouette scores
 #
 # == value
-# A matrix of p-values 
+# A matrix of p-values where the first column is the number of data columns
+# to test after filtering by ``silhouette_cutoff``.
+#
+# == seealso
+# `test_between_factors`
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -136,6 +144,10 @@ setMethod(f = "test_to_known_factors",
 	l = class_df$silhouette >= silhouette_cutoff
 	class = as.character(class_df$class)[l]
 
+	if(is.null(known)) {
+		stop("`known` should not be NULL.")
+	}
+
 	if(is.data.frame(known)) {
 		known = known[l, , drop = FALSE]
 	} else if(is.matrix(known)) {
@@ -146,6 +158,7 @@ setMethod(f = "test_to_known_factors",
 
 	m = test_between_factors(class, known, verbose = FALSE)
 	rownames(m) = paste(object@top_method, object@partition_method, sep = ":")
+	m = cbind(n = sum(l), m)
 	return(m)
 })
 
@@ -156,19 +169,29 @@ setMethod(f = "test_to_known_factors",
 # -object a `ConsensusPartitionList-class` object
 # -k number of partitions
 # -known a vector or a data frame with known factors
+# -silhouette_cutoff cutoff for sihouette scores
+#
+# == details
+# The function basically sends each `ConsensusPartition-class` object to
+# `test_to_known_factors,ConsensusPartition-method` and merges afterwards.
 #
 # == value
-# A matrix of p-values 
+# A matrix of p-values where the first column is the number of data columns
+# to test after filtering by ``silhouette_cutoff``.
+#
+# == seealso
+# `test_between_factors`, `test_to_known_factors,ConsensusPartition-method`
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartitionList",
-	definition = function(object, k, known = object@list[[1]]@known_anno) {
+	definition = function(object, k, known = object@list[[1]]@known_anno, 
+		silhouette_cutoff = 0.5) {
 
-	class_df = lapply(object@list, function(x) as.character(get_class(x, k)$class))
-	class_df = as.data.frame(class_df)
-
-	test_between_factors(class_df, known, verbose = FALSE)
+	m_list = lapply(object@list, function(x) {
+		test_to_known_factors(x, k = k, known = known, silhouette_cutoff = silhouette_cutoff)
+	})
+	do.call("rbind", m_list)
 })

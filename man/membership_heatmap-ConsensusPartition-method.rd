@@ -24,6 +24,9 @@ Heatmap of membership of columns in each random sampling
   \item{...}{other arguments}
 
 }
+\details{
+Each row in the heatmap is the membership of items in one randimization.
+}
 \value{
 No value is returned.
 }

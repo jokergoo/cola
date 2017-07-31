@@ -8,7 +8,7 @@ Enrich signature genes to genesets
 }
 \usage{
 enrich_signatures_to_genesets(x, genesets, map = NULL, bg, min_count = 50, max_count = 5000,
-    fdr_cutoff1 = 0.01, fdr_cutoff2 = 0.5)
+    fdr_cutoff1 = 0.05, fdr_cutoff2 = 0.5)
 }
 \arguments{
 

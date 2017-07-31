@@ -16,6 +16,9 @@ Plot the ecdf of the consensus matrix
   \item{...}{other arguments.}
 
 }
+\details{
+This function is mainly used in \code{\link{collect_plots}} function.
+}
 \value{
 No value is returned.
 }

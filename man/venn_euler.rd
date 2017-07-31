@@ -12,11 +12,12 @@ venn_euler(lt, ...)
 \arguments{
 
   \item{lt}{a list of items}
-  \item{...}{other arguments}
+  \item{...}{other arguments passed to \code{\link[graphics]{plot.default}}}
 
 }
 \details{
-The function calls \code{\link[venneuler]{venneuler}} to make the plot.
+The function calls \code{\link[gplots]{venn}} to reformat the data and
+call \code{\link[venneuler]{venneuler}} to make the plot.
 }
 \value{
 No value is returned.

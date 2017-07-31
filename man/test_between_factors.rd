@@ -1,24 +1,24 @@
 \name{test_between_factors}
 \alias{test_between_factors}
 \title{
-Test whether known factors are correlated
+Test whether a list of factors are correlated
 }
 \description{
-Test whether known factors are correlated
+Test whether a list of factors are correlated
 }
 \usage{
 test_between_factors(x, y = NULL, all_factors = FALSE, verbose = TRUE)
 }
 \arguments{
 
-  \item{x}{a data frame or a vector which contains discrete or continuous variables.}
+  \item{x}{a data frame or a vector which contains discrete or continuous variables. if \code{y} is omit, pairwise testing for columns in \code{x} is performed.}
   \item{y}{a data frame or a vector which contains discrete or continuous variables.}
   \item{all_factors}{are all columns in \code{x} and \code{y} are enforced to be factors.}
-  \item{verbose}{whether print messages.}
+  \item{verbose}{whether to print messages.}
 
 }
 \details{
-Pairwise test is applied to every two columns in the data frame. Methods are:
+Pairwise test is applied to every two columns in the data frames. Methods are:
 
 \itemize{
   \item two numeric variables: correlation test by \code{\link[stats]{cor.test}} is applied;

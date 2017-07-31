@@ -8,8 +8,8 @@ Correspond two rankings
 }
 \usage{
 correspond_between_two_rankings(x1, x2, name1 = "", name2 = "",
-    col1 = 1, col2 = 2, top_n = length(x1), transparency = 0.9, newpage = FALSE,
-    ratio = c(1, 1, 1))
+    col1 = 1, col2 = 2, top_n = round(0.25*length(x1)), transparency = 0.9,
+    pt_size = unit(1, "mm"), newpage = FALSE, ratio = c(1, 1, 1))
 }
 \arguments{
 
@@ -21,6 +21,7 @@ correspond_between_two_rankings(x1, x2, name1 = "", name2 = "",
   \item{col2}{color of the lines for the second metric.}
   \item{top_n}{top n elements to visualize}
   \item{transparency}{transparency of the connection lines.}
+  \item{pt_size}{size of the points, must be a \code{\link[grid]{unit}} object}
   \item{newpage}{whether to plot in a new graphic page.}
   \item{ratio}{ratio of width of the left plot, connection lines and right plot.}
 

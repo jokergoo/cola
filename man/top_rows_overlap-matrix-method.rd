@@ -7,8 +7,8 @@ Overlap of top rows from different top methods
 Overlap of top rows from different top methods
 }
 \usage{
-\S4method{top_rows_overlap}{matrix}(object, top_method = all_top_value_methods(), top_n = round(0.25*nrow(object)),
-    type = c("venn", "correspondance"))
+\S4method{top_rows_overlap}{matrix}(object, top_method = all_top_value_methods(),
+    top_n = round(0.25*nrow(object)), type = c("venn", "correspondance"), ...)
 }
 \arguments{
 
@@ -16,6 +16,7 @@ Overlap of top rows from different top methods
   \item{top_method}{methods defined in \code{\link{all_top_value_methods}}.}
   \item{top_n}{number of top rows}
   \item{type}{\code{venn}: use Venn Euler diagram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
+  \item{...}{additional arguments passed to \code{\link{venn_euler}} or \code{\link{correspond_between_rankings}}}
 
 }
 \value{

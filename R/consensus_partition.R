@@ -4,17 +4,26 @@
 #
 # == param
 # -data a numeric matrix where subgroups are found by columns.
-# -top_method a single top method. Avaialble methods are in `all_top_value_methods`.
-# -top_n number of rows with top values.
-# -partition_method a single partition method. Avaialble methods are in `all_partition_methods`.
-# -k number of partitions. The value is a vector.
+# -top_method a single top method. Available methods are in `all_top_value_methods`.
+# -top_n number of rows with top values. When n > 5000, the function only random samples 5000 rows from top n rows.
+# -partition_method a single partition method. Available ialble methods are in `all_partition_methods`.
+# -k a list number of partitions.
 # -p_sampling proportion of the top n rows to sample.
 # -partition_repeat number of repeats for the random sampling.
 # -partition_param parameters for the partition method.
 # -known_anno a data frame with known annotation of columns.
 # -known_col a list of colors for the annotations in ``known_anno``.
+# -scale_rows whether to scale rows.
 # -column_index a subst of columns in the matrix, only for internal use.
+# -verbose whether print messages
 # -.env an environment, internally used.
+#
+# == details
+# The function performs analysis by following procedures:
+#
+# - calculate scores for rows by top method and take top n rows
+# - randomly sample ``p_sampling`` rows and perform partitions for ``partition_repeats`` times
+# - collect partitions from all randomizations can calculate consensus clusters
 #
 # == return
 # A `ConsensusPartition-class` object.
@@ -23,30 +32,35 @@
 # Zuguang Gu <z.gu@dkfz.de>
 #
 consensus_partition = function(data,
-	top_method = all_top_value_methods()[1],
-	top_n = seq(min(2000, round(nrow(data)*0.2)), min(c(6000, round(nrow(data)*0.6))), length.out = 5),
-	partition_method = all_partition_methods()[1],
+	top_method = "MAD",
+	top_n = seq(min(1000, round(nrow(data)*0.1)), 
+		        min(c(5000, round(nrow(data)*0.5))), 
+		        length.out = 5),
+	partition_method = "kmeans",
 	k = 2:6, p_sampling = 0.8,
 	partition_repeat = 50,
 	partition_param = list(),
 	known_anno = NULL,
 	known_col = NULL,
-	column_index = seq_len(ncol(data)),
-	.env) {
+	scale_rows = NULL,
+	verbose = TRUE,
+	.env = NULL) {
 
-	if(missing(.env)) {
+	if(is.null(.env)) {
 		if(is.data.frame(data)) data = as.matrix(data)
 		if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
 
 		.env = new.env()
 		.env$data = data
-		.env$column_index = column_index
+		.env$column_index = seq_len(ncol(data))
 	} else if(is.null(.env$data)) {
 		if(is.data.frame(data)) data = as.matrix(data)
 		if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
 
 		.env$data = data
-		.env$column_index = column_index
+		.env$column_index = seq_len(ncol(data))
+	} else if(is.null(.env$column_index)) {
+		.env$column_index = seq_len(ncol(data))
 	} else {
 		data = .env$data
 	}
@@ -65,7 +79,7 @@ consensus_partition = function(data,
 
 	param = data.frame(top_n = numeric(0), k = numeric(0), n_row = numeric(0))
 	partition_list = list()
-	
+
 	# .env is already defined
 	if(is.null(.env$all_value_list)) {
 		all_value = get_value_fun(data)
@@ -80,20 +94,36 @@ consensus_partition = function(data,
 		all_value = .env$all_value_list[[top_method]]
 	}
 
-	scale_method = attr(partition_fun, "scale_method")
-	if("standardization" %in% scale_method) {
-		cat("rows are scaled before sent to partition: standardization\n")
-		data = t(scale(t(data)))
-	} else if("rescale" %in% scale_method) {
-		cat("rows are scaled before sent to partition: rescale\n")
-		row_min = rowMeans(data)
-		row_max = rowMaxs(data)
-		row_range = row_max - row_min
-		data = apply(data, 2, function(x) (x - row_min)/row_range)
+	if(is.null(scale_rows)) {
+		scale_rows = TRUE
+	} else {
+		scale_rows = FALSE
+	}
+	if(scale_rows) {
+		scale_method = attr(partition_fun, "scale_method")
+		if("standardization" %in% scale_method) {
+			if(verbose) cat("rows are scaled before sent to partition: standardization\n")
+			data = t(scale(t(data)))
+		} else if("rescale" %in% scale_method) {
+			if(verbose) cat("rows are scaled before sent to partition: rescale\n")
+			row_min = rowMeans(data)
+			row_max = rowMaxs(data)
+			row_range = row_max - row_min
+			data = apply(data, 2, function(x) (x - row_min)/row_range)
+		} else {
+			scale_rows = FALSE
+		}
+	}
+
+	l = apply(data, 1, function(x) any(is.na(x)))
+	if(any(l)) {
+		data = data[!l, , drop = FALSE]
+		all_value = all_value[!l]
+		top_n = top_n[top_n < sum(!l)]
 	}
 
 	for(i in seq_along(top_n)) {
-		qqcat("get top @{top_n[i]} rows by @{top_method} method\n")
+		if(verbose) qqcat("get top @{top_n[i]} rows by @{top_method} method\n")
 		ind = order(all_value, decreasing = TRUE)[1:top_n[i]]
 
 		if(length(ind) > 5000) {
@@ -104,13 +134,13 @@ consensus_partition = function(data,
 			ind_sub = sample(ind, round(p_sampling*length(ind)))
 			mat = data[ind_sub, , drop = FALSE]
 			for(y in k) {
-				if(interactive()) cat(strrep("\b", 100))
-				if(interactive()) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}th sampling from top @{top_n[i]} rows.")
+				if(interactive() && verbose) cat(strrep("\b", 100))
+				if(interactive() && verbose) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}th sampling from top @{top_n[i]} rows.")
 				partition_list = c(partition_list, list(list(partition_fun(mat, y))))
 				param = rbind(param, data.frame(top_n = top_n[i], k = y, n_row = nrow(mat)))
 			}
 		}
-		if(interactive()) cat("\n")
+		if(interactive() && verbose) cat("\n")
 	}
 
 	construct_consensus_object = function(param, partition_list, k, prefix = "  ") {
@@ -118,20 +148,42 @@ consensus_partition = function(data,
 		partition_list = do.call("c", partition_list)
 		partition_list = cl_ensemble(list = partition_list)
 
-		qqcat("@{prefix}merging @{length(partition_list)} partitions into a single ensemble object.\n")
+		if(verbose) qqcat("@{prefix}merging @{length(partition_list)} partitions into a single ensemble object.\n")
 		partition_consensus = cl_consensus(partition_list)
 
+		# note: number of class_ids may be less than k
 		class_ids = as.vector(cl_class_ids(partition_consensus))
+		# adjust the class labels according to the tightness of each subgroup
+		mean_dist = tapply(seq_len(ncol(data)), class_ids, function(ind) {
+			n = length(ind)
+			if(n == 1) {
+				return(Inf)
+			}
+			sum(dist(t(data[, ind, drop = FALSE]))^2)/(n*(n-1)/2)
+		})
+		map = structure(names = names(mean_dist)[order(mean_dist)], names(mean_dist))
+		class_ids = as.numeric(map[as.character(class_ids)])
+
+		class_ids_by_top_n = tapply(seq_along(partition_list), param$top_n, function(ind) {
+			partition_consensus = cl_consensus(cl_ensemble(list = partition_list[ind]))
+			ci = as.vector(cl_class_ids(partition_consensus))
+			map = relabel_class(ci, class_ids)
+			as.numeric(map[as.character(ci)])
+		})
 
 		membership_mat = cl_membership(partition_consensus)
-
 		class(membership_mat) = "matrix"
+		membership_mat = membership_mat[, as.numeric(map[as.character(1:k)])]
+
 		colnames(membership_mat) = paste0("p", 1:ncol(membership_mat))
 		attr(membership_mat, "n_of_classes") = NULL
 		attr(membership_mat, "is_cl_hard_partition") = NULL
 
-		qqcat("@{prefix}calculate consensus matrix for samples clustered in a same group.\n")
-		membership_each = do.call("cbind", lapply(partition_list, function(x) {
+		if(verbose) qqcat("@{prefix}calculate consensus matrix for samples clustered in a same group.\n")
+		# adjust class labels in each membership matrix to fit to the consensus class labels
+		membership_each = do.call("cbind", lapply(seq_along(partition_list), function(i) {
+			x = partition_list[[i]]
+			class_ids = class_ids_by_top_n[[as.character(param$top_n[i])]]
 			class = as.vector(cl_class_ids(x))
 			map = relabel_class(class, class_ids)
 			class = as.numeric(map[as.character(class)])
@@ -183,7 +235,7 @@ consensus_partition = function(data,
 
 	object_list = lapply(k, function(y) {
 		l = param$k == y
-		qqcat("wrapping results for k = @{y}\n")
+		if(verbose) qqcat("wrapping results for k = @{y}\n")
 		construct_consensus_object(param[l, ], partition_list[l], y)
 	})
 	names(object_list) = as.character(k)
@@ -191,7 +243,7 @@ consensus_partition = function(data,
 	rm(partition_list)
 	gc(verbose = FALSE)
 
-	## adjust class labels
+	## adjust class labels for each k
 	reference_class = object_list[[1]]$class_df$class
 	for(i in seq_along(k)[-1]) {
 		class_df = object_list[[i]]$class_df
@@ -235,11 +287,29 @@ consensus_partition = function(data,
 				names(known_col) = known_nm
 			}
 		}
+		known_anno = known_anno[.env$column_index, , drop = FALSE]
+	}
+
+	if(is.null(known_col)) {
+		known_col = lapply(known_anno, ComplexHeatmap:::default_col)
+	} else {
+		if(is.null(names(known_col))) {
+			if(length(known_col) == ncol(known_anno)) {
+				names(known_col) = colnames(known_anno)
+			} else {
+				known_col = lapply(known_anno, ComplexHeatmap:::default_col)
+			}
+		}
+		for(nm in names(known_anno)) {
+			if(is.null(known_col[[nm]])) {
+				known_col[[nm]] = ComplexHeatmap:::default_col(known_anno[[nm]])
+			}
+		}
 	}
 
 	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n),  
 		partition_method = partition_method, top_method = top_method, top_n = top_n,
-		known_anno = known_anno, known_col = known_col, .env = .env)
+		known_anno = known_anno, known_col = known_col, scale_rows = scale_rows, column_index = .env$column_index, .env = .env)
 	
 	return(res)
 }
@@ -263,6 +333,13 @@ setMethod(f = "show",
 	qqcat("A 'ConsensusPartition' object with k = @{paste(object@k, collapse = ', ')}.\n")
 	qqcat("  top rows (@{paste(object@top_n, collapse = ', ')}) are extracted by '@{object@top_method}' method.\n")
 	qqcat("  subgroups are detected by '@{object@partition_method}' method.\n")
+	qqcat("  best k for subgroups seems to be @{get_best_k(object)}.\n")
+	qqcat("\n")
+	qqcat("Following methods can be applied to this 'ConsensusPartition' object:\n")
+	txt = showMethods(classes = "ConsensusPartition", where = topenv(), printTo = FALSE)
+	txt = grep("Function", txt, value = TRUE)
+	fname = gsub("Function: (.*?) \\(package.*$", "\\1", txt)
+	print(fname)
 })
 
 # == title
@@ -270,7 +347,11 @@ setMethod(f = "show",
 #
 # == param
 # -object a `ConsensusPartition-class` object.
+# -lwd line width
 # -... other arguments.
+#
+# == details
+# This function is mainly used in `collect_plots` function.
 #
 # == value
 # No value is returned.
@@ -280,22 +361,32 @@ setMethod(f = "show",
 #
 setMethod(f = "plot_ecdf",
 	signature = "ConsensusPartition",
-	definition = function(object, ...) {
+	definition = function(object, lwd = 4, ...) {
 	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x", ylab = "P(X >= x)")
 	for(i in seq_along(object@k)) {
 		consensus_mat = get_consensus(object, k = object@k[i])
 		f = ecdf(consensus_mat[lower.tri(consensus_mat)])
 		x = seq(0, 1, length = 100)
-		lines(x, f(x), col = i, lwd = 4)
+		lines(x, f(x), col = i, lwd = lwd)
 	}
 	legend("bottomright", pch = 15, legend = paste0("k = ", object@k), col = seq_along(object@k))
 })
 
 # == title
-# Several plots for determine the optimized number of partitions
+# Several plots for determining the optimized number of partitions
 #
 # == param
 # -object a `ConsensusPartition-class` object
+#
+# == details
+# There are six plots made:
+#
+# - cdf of the consensus matrix under each k
+# - the cophenetic correlation coefficient
+# - PAC score
+# - mean sihouette score
+# - the sum of intra-partition distance
+# - area increase of the area under the cdf of consensus matrix with increasing k
 #
 # == value
 # No value is returned.
@@ -313,7 +404,7 @@ setMethod(f = "select_partition_number",
 
 	par(mfrow = c(2, 3), mar = c(4, 4, 1, 1))
 
-	plot_ecdf(object)
+	plot_ecdf(object, lwd = 1)
 
 	for(i in seq_len(ncol(m))) {
 		plot(object@k, m[, i], type = "b", xlab = "k", ylab = nm[i])
@@ -326,13 +417,18 @@ setMethod(f = "select_partition_number",
 # Get the best number of partitions
 #
 # == param
-# -obje# -object a `ConsensusPartition-class` object
+# -object a `ConsensusPartition-class` object
+#
+# == details
+# It looks for the best k with highest cophenetic correlation coefficient
+# or lowest PAC score or highest mean silhouette value.
 #
 # == value
 # The best k
 #
 # == author
-# Zuguang Gu
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "get_best_k",
 	signature = "ConsensusPartition",
 	definition = function(object) {
@@ -361,6 +457,15 @@ setMethod(f = "get_best_k",
 # -anno_col colors for the annotations
 # -show_row_names whether plot row names on the consensus heatmap
 # -... other arguments
+#
+# == details
+# There are following heatmaps from left to right:
+#
+# - probability of the column to stay in the subgroup
+# - silhouette values which measure the distance for an item to the second closest subgroups
+# - predicted classes
+# - consensus matrix
+# - more annotations if provided as ``anno``
 #
 # == value
 # No value is returned.
@@ -428,6 +533,9 @@ setMethod(f = "consensus_heatmap",
 # -anno_col colors for the annotations
 # -show_column_names whether show column names in the heatmap
 # -... other arguments
+#
+# == details
+# Each row in the heatmap is the membership of items in one randimization.
 #
 # == value
 # No value is returned.

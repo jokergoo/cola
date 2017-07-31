@@ -7,7 +7,7 @@ Word cloud for the enriched functions
 Word cloud for the enriched functions
 }
 \usage{
-enriched_functions_word_cloud(x, genesets, stopwords = GS_STOPWORDS)
+enriched_functions_word_cloud(x, stopwords = GS_STOPWORDS)
 }
 \arguments{
 

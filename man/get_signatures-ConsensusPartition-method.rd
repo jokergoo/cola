@@ -11,13 +11,13 @@ Get signature rows
 \S4method{get_signatures}{ConsensusPartition}(object, k,
     silhouette_cutoff = 0.5,
     fdr_cutoff = ifelse(row_diff_by == "samr", 0.1, 0.05),
-    scale_rows = TRUE,
+    scale_rows = object@scale_rows,
     row_diff_by = c("compare_to_highest_subgroup", "Ftest", "samr"),
     anno = object@known_anno,
     anno_col = if(missing(anno)) object@known_col else NULL,
     show_legend = TRUE,
     show_column_names = TRUE, use_raster = TRUE,
-    plot = TRUE,
+    plot = TRUE, mat_other = NULL,
     ...)
 }
 \arguments{
@@ -33,6 +33,7 @@ Get signature rows
   \item{show_legend}{whether draw the legends on the heatmap.}
   \item{show_column_names}{whether show column names on the heatmap.}
   \item{use_raster}{internally used}
+  \item{mat_other}{other matrix you want to attach to the heatmap list. The matrix should have row names so that rows can be subsetted and matched to the main heatmap}
   \item{plot}{whether to make the plot}
   \item{...}{other arguments}
 

@@ -7,14 +7,17 @@ AAC score
 AAC score
 }
 \usage{
-AAC(mat, cor_method = "pearson", min_cor = 0.2, mc.cores = 1)
+AAC(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
+    mc.cores = 1, n_sampling = 1000)
 }
 \arguments{
 
   \item{mat}{a numeric matrix. AAC score is calculated by columns.}
   \item{cor_method}{pass to \code{\link[stats]{cor}}.}
   \item{min_cor}{minimal absolute correlation.}
+  \item{max_cor}{maximal absolute correlation.}
   \item{mc.cores}{number of cores.}
+  \item{n_sampling}{when the number of columns are too high, to get the curmulative distribution, actually we don't need to use all the columns, e.g. 1000 columns can already give a farely nice estimation for the distribution.}
 
 }
 \details{

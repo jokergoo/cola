@@ -18,8 +18,10 @@
 # -show_column_names whether show column names on the heatmap.
 # -use_raster internally used
 # -mat_other other matrix you want to attach to the heatmap list. The matrix should have row names so that
-#            rows can be subsetted
+#            rows can be subsetted and matched to the main heatmap
 # -plot whether to make the plot
+# -other matrix added to the right side of the heatmap. Note row names are used to match to the main matrix.
+# -verbose whether to print messages
 # -... other arguments
 # 
 # == details 
@@ -44,19 +46,19 @@ setMethod(f = "get_signatures",
 	definition = function(object, k,
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = ifelse(row_diff_by == "samr", 0.1, 0.05), 
-	scale_rows = TRUE,
+	scale_rows = object@scale_rows,
 	row_diff_by = c("compare_to_highest_subgroup", "Ftest", "samr"),
 	anno = object@known_anno, 
 	anno_col = if(missing(anno)) object@known_col else NULL,
 	show_legend = TRUE,
 	show_column_names = TRUE, use_raster = TRUE,
-	plot = TRUE, mat_other = NULL,
+	plot = TRUE, mat_other = NULL, verbose = TRUE,
 	...) {
 
 	class_df = get_class(object, k)
 	class_ids = class_df$class
 
-	data = object@.env$data[, object@.env$column_index, drop = FALSE]
+	data = object@.env$data[, object@column_index, drop = FALSE]
 
 	l = class_df$silhouette >= silhouette_cutoff
 	data2 = data[, l]
@@ -72,7 +74,7 @@ setMethod(f = "get_signatures",
 	has_ambiguous = sum(!column_used_logical)
 	n_sample_used = length(class)
 
-	qqcat("@{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
+	if(verbose) qqcat("@{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
 
 	if(sum(tb > 1) <= 1) {
 		stop("not enough samples.")
@@ -82,7 +84,7 @@ setMethod(f = "get_signatures",
 	}
 
 	if(inherits(row_diff_by, "function")) {
-		qqcat("calculate row difference between subgroups by user-defined function\n")
+		if(verbose) qqcat("calculate row difference between subgroups by user-defined function\n")
 		fdr = row_diff_by(data2, class)
 	} else {
 		row_diff_by = match.arg(row_diff_by)
@@ -108,7 +110,7 @@ setMethod(f = "get_signatures",
 		}
 
 		if(find_signature) {
-			qqcat("calculate row difference between subgroups by @{row_diff_by}\n")
+			if(verbose) qqcat("calculate row difference between subgroups by @{row_diff_by}\n")
 			if(row_diff_by == "compare_to_highest_subgroup") {
 				fdr = compare_to_highest_subgroup(data2, class)
 			} else if(row_diff_by == "samr") {
@@ -136,8 +138,10 @@ setMethod(f = "get_signatures",
 	fdr2 = fdr[fdr < fdr_cutoff]
 	group2 = group[fdr < fdr_cutoff]
 	names(group2) = rownames(mat)
-	mat_return = list(mat = mat, confident_samples = column_used_logical, fdr = fdr2, group = group2, class_col = brewer_pal_set2_col)
-	qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
+	mat_return = list(mat = mat, confident_samples = column_used_logical, fdr = fdr2, 
+		group = structure(as.numeric(group2), names = names(group2)), 
+		class_col = brewer_pal_set2_col)
+	if(verbose) qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
 	if(nrow(mat) == 0) {
 		return(mat_return)
@@ -152,7 +156,7 @@ setMethod(f = "get_signatures",
 		mat1 = mat[order(fdr2)[1:5000], column_used_logical, drop = FALSE]
 		mat2 = mat[order(fdr2)[1:5000], !column_used_logical, drop = FALSE]
 		group2 = group2[order(fdr2)[1:5000]]
-		cat("Only take top 5000 signatures with highest fdr\n")
+		if(verbose) cat("Only take top 5000 signatures with highest fdr\n")
 	} else {
 		mat1 = mat[, column_used_logical, drop = FALSE]
 		mat2 = mat[, !column_used_logical, drop = FALSE]
@@ -331,6 +335,12 @@ compare_to_highest_subgroup = function(mat, class) {
 		which.max(group_mean)
 	})
 
+	if(requireNamespace("genefilter")) {
+		rowttests = getFromNamespace("rowttests", "genefilter")
+	} else {
+		stop("Cannot find 'genefilter' package.")
+	}
+
 	# class and subgroup_index are all numeric
 	compare_to_one_subgroup = function(mat, class, subgroup_index) {
 		
@@ -391,10 +401,14 @@ samr = function(mat, class, ...) {
 }
 
 Ftest = function(mat, class) {
-	p = rowFtests(mat, factor(class))[, "p.value"]
-	fdr = p.adjust(p, "BH")
-	fdr[is.na(fdr)] = Inf
-	return(fdr)
+	if(requireNamespace("genefilter")) {
+		p = getFromNamespace("rowFtests", "genefilter")(mat, factor(class))[, "p.value"]
+		fdr = p.adjust(p, "BH")
+		fdr[is.na(fdr)] = Inf
+		return(fdr)
+	} else {
+		stop("Cannot find 'genefilter' package.")
+	}
 }
 
 test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {

@@ -21,6 +21,8 @@ try_and_trace = function(expr) {
 #        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_fun`.
 # -mc.cores number of cores to use`.
+# -known_anno a data frame with known annotation of columns.
+# -known_col a list of colors for the annotations in ``known_anno``.
 # -... other arguments passed to `consensus_partition`.
 #
 # == details
@@ -34,7 +36,7 @@ try_and_trace = function(expr) {
 #
 run_all_consensus_partition_methods = function(data, top_method = all_top_value_methods(), 
 	partition_method = all_partition_methods(), 
-	mc.cores = 1, ...) {
+	mc.cores = 1, known_anno = NULL, known_col = NULL, ...) {
 		
 	.env = new.env()
 	
@@ -51,19 +53,52 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	.env$all_value_list = all_value_list
 
 	.env$data = data
-	.env$column_index = seq_len(ncol(data))
 	res_list = ConsensusPartitionList(
 		list = list(), 
 		top_method = top_method, 
 		partition_method = partition_method, 
-		.env = .env)
+		.env = .env
+	)
+
+	if(!is.null(known_anno)) {
+		if(is.atomic(known_anno)) {
+			known_nm = deparse(substitute(known_anno))
+			known_anno = data.frame(known_anno)
+			colnames(known_anno) = known_nm
+			if(!is.null(known_col)) {
+				known_col = list(known_col)
+				names(known_col) = known_nm
+			}
+		}
+	}
+
+	if(is.null(known_col)) {
+		known_col = lapply(known_anno, ComplexHeatmap:::default_col)
+	} else {
+		if(is.null(names(known_col))) {
+			if(length(known_col) == ncol(known_anno)) {
+				names(known_col) = colnames(known_anno)
+			} else {
+				known_col = lapply(known_anno, ComplexHeatmap:::default_col)
+			}
+		}
+		for(nm in names(known_anno)) {
+			if(is.null(known_col[[nm]])) {
+				known_col[[nm]] = ComplexHeatmap:::default_col(known_anno[[nm]])
+			}
+		}
+	}
+
 	comb = expand.grid(top_method, partition_method, stringsAsFactors = FALSE)
-	comb = comb[sample(nrow(comb), nrow(comb)), ]
+	# comb = comb[sample(nrow(comb), nrow(comb)), ]
+	od = order(rep(sapply(partition_method, function(x) attr(get_partition_fun(x), "execution_scale")), times = length(top_method)))
+	comb = comb[od, ]
 	lt = mclapply(seq_len(nrow(comb)), function(i) {
 		tm = comb[i, 1]
 		pm = comb[i, 2]
 		qqcat("running classification for @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
-		x = try_and_trace(res <- consensus_partition(top_method = tm, partition_method = pm, .env = .env, ...))
+		x = try_and_trace(res <- consensus_partition(top_method = tm, partition_method = pm, 
+			known_anno = known_anno, known_col = known_col, .env = .env, ...))
 		
 		if(inherits(x, "pairlist")) {
 			print(x)
@@ -84,10 +119,21 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	}
 	
 	res_list@list = lt
-	# cat("adjust class labels according to the consensus classification\n")
+	cat("adjust class labels according to the consensus classification from all methods.\n")
 	reference_class = lapply(lt[[1]]@k, function(k) {
-		get_class(res_list, k)$class
+		class_ids = get_class(res_list, k)$class
+		mean_dist = tapply(seq_len(ncol(data)), class_ids, function(ind) {
+			n = length(ind)
+			if(n == 1) {
+				return(Inf)
+			}
+			sum(dist(t(data[, ind, drop = FALSE]))^2)/(n*(n-1)/2)
+		})
+		map = structure(names = names(mean_dist)[order(mean_dist)], names(mean_dist))
+		class_ids = as.numeric(map[as.character(class_ids)])
+		return(class_ids)
 	})
+
 	for(i in seq_along(lt)) {
 		res = lt[[i]]
 		for(k in res@k) {
@@ -137,6 +183,12 @@ setMethod(f = "show",
 	qqcat("Top rows are extracted by '@{paste(object@top_method, collapse = ', ')}' methods.\n")
 	qqcat("Subgroups are detected by '@{paste(object@partition_method, collapse = ', ')}' method.\n")
 	qqcat("Number of partitions are tried for k = @{paste(object@list[[1]]@k, collapse = ', ')}\n")
+	qqcat("\n")
+	qqcat("Following methods can be applied to this 'ConsensusPartitionList' object:\n")
+	txt = showMethods(classes = "ConsensusPartitionList", where = topenv(), printTo = FALSE)
+	txt = grep("Function", txt, value = TRUE)
+	fname = gsub("Function: (.*?) \\(package.*$", "\\1", txt)
+	print(fname)
 })
 
 # == title

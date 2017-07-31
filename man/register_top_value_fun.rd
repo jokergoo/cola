@@ -18,6 +18,8 @@ register_top_value_fun(...)
 The user-defined function should only accept one argument which is the data
 matrix and the scores are calculated by rows.
 
+The registered top method will be used in \code{\link{run_all_consensus_partition_methods}}.
+
 To remove a top method, use \code{\link{remove_top_value_method}}.
 }
 \value{

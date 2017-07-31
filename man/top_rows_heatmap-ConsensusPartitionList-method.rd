@@ -7,16 +7,20 @@ Heatmap of top rows from different top methods
 Heatmap of top rows from different top methods
 }
 \usage{
-\S4method{top_rows_heatmap}{ConsensusPartitionList}(object, top_n = round(0.25*length(all_value_list[[1]])))
+\S4method{top_rows_heatmap}{ConsensusPartitionList}(object, top_n = round(0.25*length(all_value_list[[1]])), ...)
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartitionList-class}} object}
   \item{top_n}{number of top rows}
+  \item{...}{pass to \code{\link{top_rows_heatmap,matrix-method}}}
 
 }
 \value{
 No value is returned.
+}
+\seealso{
+\code{\link{top_rows_heatmap,matrix-method}}
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

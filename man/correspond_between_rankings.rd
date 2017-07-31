@@ -14,7 +14,7 @@ correspond_between_rankings(lt, top_n = length(lt[[1]]),
 
   \item{lt}{a list of scores under different metrics.}
   \item{top_n}{top n elements to visualize.}
-  \item{col}{colors for \code{lt}.}
+  \item{col}{a vector of colors for \code{lt}.}
   \item{...}{pass to \code{\link{correspond_between_two_rankings}}.}
 
 }

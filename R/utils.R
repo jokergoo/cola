@@ -6,6 +6,8 @@ strrep = function(x, times) {
 
 
 # change the label of `class` to let `class` fits `ref` more, maximize sum(class ==ref)
+# class = c(rep("a", 10), rep("b", 3))
+# ref = c(rep("b", 4), rep("a", 9))
 relabel_class = function(class, ref) {
 	class = as.character(class)
 	ref = as.character(ref)
@@ -22,13 +24,18 @@ relabel_class = function(class, ref) {
 
 	imap = solve_LSAP(m, maximum = TRUE)
 	map = structure(rownames(m)[imap], names = rownames(m))
-	
+
+	df = data.frame(class = class, adjusted = map[class], ref = ref)
+	attr(map, "df") = df
 	return(map)
 }
 
 # columns only in one same level are clustered
 column_order_by_group = function(factor, mat) {
-	do.call("c", lapply(sort(unique(factor)), function(le) {
+	if(!is.factor(factor)) {
+		factor = factor(factor, levels = unique(factor))
+	}
+	do.call("c", lapply(sort(levels(factor)), function(le) {
 		m = mat[, factor == le, drop = FALSE]
 		if(ncol(m) == 1) {
 			which(factor == le)
@@ -66,7 +73,7 @@ column_order_by_group = function(factor, mat) {
 # x[1] = 100
 # adjust_outlier(x)
 adjust_outlier = function(x, q = 0.05) {
-	qu = quantile(x, c(q, 1 - q))
+	qu = quantile(x, c(q, 1 - q), na.rm = TRUE)
 	x[x < qu[1]] = qu[1]
 	x[x > qu[2]] = qu[2]
 	x
@@ -91,12 +98,14 @@ adjust_matrix = function(m, sd_quantile = 0.05) {
 		m = as.matrix(m)
 	}
 	m = t(apply(m, 1, adjust_outlier))
-	row_sd = rowSds(m)
+	row_sd = rowSds(m, na.rm = TRUE)
 	l = abs(row_sd) < 1e-6
 	m2 = m[!l, , drop = FALSE]
 	row_sd = row_sd[!l]
+	qqcat("@{sum(l)} rows have been removed for zero variance (sd < 1e-6).\n")
 
-	qa = quantile(row_sd, sd_quantile)
+	qa = quantile(row_sd, sd_quantile, na.rm = TRUE)
 	l = row_sd >= qa
+	qqcat("@{sum(!l)} rows have been removed for too low variance (sd < @{sd_quantile} quantile)\n")
 	m2[l, , drop = FALSE]
 }

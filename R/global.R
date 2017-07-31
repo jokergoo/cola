@@ -17,6 +17,8 @@ get_top_value_fun = function(method) {
 # == details 
 # The user-defined function should only accept one argument which is the data
 # matrix and the scores are calculated by rows.
+#
+# The registered top method will be used in `run_all_consensus_partition_methods`.
 # 
 # To remove a top method, use `remove_top_value_method`.
 #
@@ -93,6 +95,7 @@ get_partition_fun = function(method, partition_param = list()) {
 		return(x)
 	}
 	attr(fun2, "scale_method") = attr(fun, "scale_method")
+	attr(fun2, "execution_scale") = attr(fun, "execution_scale")
 	return(fun2)
 }
 
@@ -101,19 +104,24 @@ get_partition_fun = function(method, partition_param = list()) {
 #
 # == param
 # -... a named list of functions
-# -scale_method normally, data matrix are scaled by rows before sent to
+# -scale_method in some circumstances, data matrix are scaled by rows before sent to
 #        the partition function. The default scaling is apply by `base::scale`.
-#        However, some partition function may not accept negative values which may
-#        be produced by `base::scale`. Here ``scale_method`` can be set to ``rescale``
-#        which scale rows by ``(x - min)/(max - min)``.
+#        However, some partition function may not accept negative values which 
+#        are produced by `base::scale`. Here ``scale_method`` can be set to ``rescale``
+#        which scale rows by ``(x - min)/(max - min)``. Here ``scale_method`` only means
+#        how to scale rows when ``scale_rows`` is set to ``TRUE`` in `consensus_partition`
+#        or `run_all_consensus_partition_methods`. The value for ``scale_method`` can be a vector.
 # 
 # == details 
 # The user-defined function should only accept three arguments. The first two arguments are the data
 # matrix and the number of partitions. The third argument should always be `...` so that parameters
 # for the partition function can be passed by ``partition_param`` from `consensus_partition` or `run_all_consensus_partition_methods`.
+#
 # The function should return a vector of partitions (or group classes).
 # 
 # The partition function is applied on rows.
+#
+# The registered partition method will be used in `run_all_consensus_partition_methods`.
 # 
 # To remove a partition method, use `remove_partition_method`.
 #
@@ -137,6 +145,12 @@ register_partition_fun = function(..., scale_method = c("standardization", "resc
 	}
 	for(i in seq_along(lt)) {
 		attr(lt[[i]], "scale_method") = scale_method[i]
+	}
+
+	m = matrix(rnorm(100), 10)
+	for(i in seq_along(lt)) {
+		t = microbenchmark(lt[[i]](m, 2), times = 10)
+		attr(lt[[i]], "execution_scale") = mean(t$time)
 	}
 
 	lt1 = lt[intersect(names(lt), .ENV$ALL_PARTITION_METHODS)]
@@ -194,7 +208,7 @@ register_partition_fun(
 	# },
 	mclust = function(mat, k, ...) {
 		pca = prcomp(t(mat))
-		Mclust(pca$x[, 1:3], G = k, ...)$classification
+		Mclust(pca$x[, 1:3], G = k, verbose = FALSE, ...)$classification
 	},
 	som = function(mat, k, ...) {
 		kr = floor(sqrt(ncol(mat)))

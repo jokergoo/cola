@@ -15,6 +15,7 @@ add_transparency = function (col, transparency = 0) {
 # -col2 color of the lines for the second metric.
 # -top_n top n elements to visualize
 # -transparency transparency of the connection lines.
+# -pt_size size of the points, must be a `grid::unit` object
 # -newpage whether to plot in a new graphic page.
 # -ratio ratio of width of the left plot, connection lines and right plot.
 # 
@@ -40,8 +41,8 @@ add_transparency = function (col, transparency = 0) {
 # x2 = rowMads(mat)
 # correspond_between_two_rankings(x1, x2, name1 = "sd", name2 = "mad", top_n = 20)
 correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "", 
-	col1 = 1, col2 = 2, top_n = length(x1), transparency = 0.9, newpage = FALSE,
-	ratio = c(1, 1, 1)) {
+	col1 = 1, col2 = 2, top_n = round(0.25*length(x1)), transparency = 0.9, 
+	pt_size = unit(1, "mm"), newpage = FALSE, ratio = c(1, 1, 1)) {
 	
 	if(newpage) {
 		grid.newpage()
@@ -64,7 +65,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 		xscale = c(0, max_x1), yscale = c(0, n + 1)))
 	grid.segments(max_x1 - x1, r1, max_x1, r1, default.units = "native", gp = gpar(col = "#EFEFEF"))
 	l = r2 >= n - top_n
-	grid.points(unit(runif(sum(l)), "npc"), r1[l], default.units = "native", pch = 16, size = unit(1, "mm"), gp = gpar(col = add_transparency(col2, 0.8)))
+	grid.points(unit(runif(sum(l)), "npc"), r1[l], default.units = "native", pch = 16, size = pt_size, gp = gpar(col = add_transparency(col2, 0.8)))
 	grid.text(name1, x = 1, y = unit(n + 1, "native") + unit(1, "mm"), default.units = "npc", just = c("right", "bottom"))
 	upViewport()
 
@@ -73,7 +74,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 		xscale = c(0, max_x2), yscale = c(0, n + 1)))
 	grid.segments(0, r2, x2, r2, default.units = "native", gp = gpar(col = "#EFEFEF"))
 	l = r1 >= n - top_n
-	grid.points(unit(runif(sum(l)), "npc"), r2[l], default.units = "native", pch = 16, size = unit(1, "mm"), gp = gpar(col = add_transparency(col1, 0.8)))
+	grid.points(unit(runif(sum(l)), "npc"), r2[l], default.units = "native", pch = 16, size = pt_size, gp = gpar(col = add_transparency(col1, 0.8)))
 	grid.text(name2, x = 0, y = unit(n + 1, "native") + unit(1, "mm"), default.units = "native", just = c("left", "bottom"))
 	upViewport()
 
@@ -104,7 +105,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 # == param
 # -lt a list of scores under different metrics.
 # -top_n top n elements to visualize.
-# -col colors for ``lt``.
+# -col a vector of colors for ``lt``.
 # -... pass to `correspond_between_two_rankings`.
 # 
 # == details

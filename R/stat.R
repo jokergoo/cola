@@ -7,10 +7,12 @@
 # -mat a numeric matrix. AAC score is calculated by columns.
 # -cor_method pass to `stats::cor`.
 # -min_cor minimal absolute correlation.
+# -max_cor maximal absolute correlation.
 # -mc.cores number of cores.
-# -n_sampling when the number of columns are too many, to get the curmulative
+# -n_sampling when the number of columns are too high, to get the curmulative
 #           distribution, actually we don't need to use all the columns, e.g. 1000
 #           columns can already give a farely nice estimation for the distribution.
+# -q_sd percential of the sd to ignore
 # 
 # == details 
 # AAC score for a given item is the area above the curve of the curmulative 
@@ -40,8 +42,8 @@
 # mat = rbind(mat1, mat2, mat3)
 # AAC_score = AAC(t(mat))
 # plot(AAC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
-AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1, mc.cores = 1, n_sampling = 1000,
-	q_sd = 0) {
+AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1, 
+	mc.cores = 1, n_sampling = 1000, q_sd = 0) {
 
 	col_sd = colSds(mat)
 	l = col_sd >= quantile(col_sd, q_sd)

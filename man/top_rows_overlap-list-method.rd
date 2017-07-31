@@ -8,13 +8,14 @@ Overlap of top rows from different top methods
 }
 \usage{
 \S4method{top_rows_overlap}{list}(object, top_n = round(0.25*length(object[[1]])),
-    type = c("venn", "correspondance"))
+    type = c("venn", "correspondance"), ...)
 }
 \arguments{
 
   \item{object}{a list which contains rankings from different metrics.}
   \item{top_n}{number of top rows}
   \item{type}{\code{venn}: use Venn Euler digram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
+  \item{...}{additional arguments passed to \code{\link{venn_euler}} or \code{\link{correspond_between_rankings}}}
 
 }
 \value{

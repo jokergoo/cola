@@ -67,5 +67,7 @@ ConsensusPartition = setClass("ConsensusPartition",
 		top_n = "numeric",
 		known_anno = "ANY", 
 		known_col = "ANY", 
+		scale_rows = "logical",
+		column_index = "numeric",
 		.env = "environment"
 ))
