@@ -1,6 +1,5 @@
 \name{get_single_run-ConsensusPartitionList-method}
 \alias{get_single_run,ConsensusPartitionList-method}
-\alias{get_single_run}
 \title{
 Get result for a single top method and partition method
 }

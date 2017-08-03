@@ -17,7 +17,7 @@ Collect plots from ConsensusPartition object
 }
 \details{
 Plots by \code{\link{plot_ecdf,ConsensusPartition-method}}, \code{\link{collect_classes,ConsensusPartition-method}}, \code{\link{consensus_heatmap,ConsensusPartition-method}}, \code{\link{membership_heatmap,ConsensusPartition-method}} 
-and \code{\link{get_signatures,ConsensusPartition-method}} are arranged in one single page.
+and \code{\link{get_signatures,ConsensusPartition-method}} are arranged in one single page, for all avaialble k.
 }
 \value{
 No value is returned.

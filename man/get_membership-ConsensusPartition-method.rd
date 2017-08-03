@@ -14,16 +14,16 @@ Get membership matrix
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object}
   \item{k}{number of partitions}
-  \item{each}{whether return the percentage membership matrix or the membership in every random round}
+  \item{each}{whether return the percentage membership matrix or the membership in every random sampling}
 
 }
 \details{
 If \code{each == TRUE}, the value in the membership matrix is the probability
 to be in one subgroup, while if \code{each == FALSE}, the membership matrix contains the 
-class labels for the partitions in all randomizations.
+class labels for the partitions in all resamplings.
 }
 \value{
-A membership matrix where rows correspond to the columns in the original matrix.
+A membership matrix where rows correspond to the samples in the original matrix.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

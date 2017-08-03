@@ -21,5 +21,5 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-cola()
+for(i in 1:10) cola()
 }

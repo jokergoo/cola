@@ -1,6 +1,5 @@
 \name{get_signatures-ConsensusPartition-method}
 \alias{get_signatures,ConsensusPartition-method}
-\alias{get_signatures}
 \title{
 Get signature rows
 }
@@ -17,30 +16,39 @@ Get signature rows
     anno_col = if(missing(anno)) object@known_col else NULL,
     show_legend = TRUE,
     show_column_names = TRUE, use_raster = TRUE,
-    plot = TRUE, mat_other = NULL,
+    plot = TRUE, mat_other = NULL, verbose = TRUE,
     ...)
 }
 \arguments{
 
-  \item{object}{A \code{\link{ConsensusPartition-class}} object. The object can be returned from \code{\link{get_single_run}}.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object. The object can be returned from \code{\link{get_single_run}} or directly from \code{\link{consensus_partition}}.}
   \item{k}{number of partitions}
   \item{silhouette_cutoff}{cutoff for silhouette values. Columns with values  less than it are not used for finding signature rows. For selecting a  proper silhouette value, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
   \item{fdr_cutoff}{cutoff for FDR of the difference between subgroups.}
   \item{scale_rows}{whether apply row scaling when making the heatmap.}
-  \item{row_diff_by}{methods to get rows which are significantly different between subgroups.}
-  \item{anno}{a data frame with known annotation of columns.}
+  \item{row_diff_by}{methods to get rows which are significantly different between subgroups, see 'Details' section.}
+  \item{anno}{a data frame with known annotation of samples.}
   \item{anno_col}{a list of colors for the annotations in \code{anno}.}
   \item{show_legend}{whether draw the legends on the heatmap.}
   \item{show_column_names}{whether show column names on the heatmap.}
   \item{use_raster}{internally used}
   \item{mat_other}{other matrix you want to attach to the heatmap list. The matrix should have row names so that rows can be subsetted and matched to the main heatmap}
   \item{plot}{whether to make the plot}
+  \item{verbose}{whether to print messages}
   \item{...}{other arguments}
 
 }
 \details{
-Basically the function apply test for the difference of subgroups in every
-row. Also, to call it a signature for a given subgroup, the values in the
+Basically the function applies test for the difference of subgroups for every
+row. There are three methods which test significance of the difference:
+
+\describe{
+  \item{compare_to_highest_subgroup}{it first extracts the subgroup with higest value, then use t-test to test to  all the other subgroups. }
+  \item{samr}{use SAM method to find significantly different rows between subgroups}
+  \item{Ftest}{use F-test to find significantly different rows between subgroups}
+}
+
+Also, to call it a signature for a given subgroup, the values in the
 corresponding subgroup should have the highest mean value compared to all
 other subgroups. The minimal p-value compared to all other subgroups is taken
 as the p-value of the row and used for FDR calculation.
@@ -50,7 +58,6 @@ A list of three elements:
 
 \describe{
   \item{\code{mat}}{the matrix for the signatures}
-  \item{\code{fdr}}{FDR for rows}
   \item{\code{group}}{subgroups that the rows are significantly high}
 }
 }

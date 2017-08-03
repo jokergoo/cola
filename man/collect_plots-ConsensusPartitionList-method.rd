@@ -21,7 +21,7 @@ Collect plots from ConsensusPartitionList object
 
 }
 \details{
-Plots for all combination of top methods and parittion methods are arranged in one page.
+Plots for all combinations of top methods and parittion methods are arranged in one page.
 }
 \value{
 No value is returned.

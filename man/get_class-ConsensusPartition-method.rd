@@ -17,7 +17,7 @@ Get class from the ConsensusPartition object
 }
 \value{
 A data frame with class IDs and other columns which are entropy of the membership matrix
-and the silhouette scores which measure the stability of an item to stay in its subgroup.
+and the silhouette scores which measure the stability of a sample to stay in its subgroup.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

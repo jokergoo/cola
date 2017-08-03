@@ -1,10 +1,10 @@
 \name{show-ConsensusPartition-method}
 \alias{show,ConsensusPartition-method}
 \title{
-Print the consensus_partition object
+Print the ConsensusPartition object
 }
 \description{
-Print the consensus_partition object
+Print the ConsensusPartition object
 }
 \usage{
 \S4method{show}{ConsensusPartition}(object)
@@ -12,7 +12,6 @@ Print the consensus_partition object
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object}
-  \item{...}{other arguments}
 
 }
 \value{

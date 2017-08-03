@@ -21,6 +21,9 @@ Overlap of top rows from different top methods
 \value{
 No value is returned.
 }
+\seealso{
+\code{\link{top_rows_overlap,list-method}}
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

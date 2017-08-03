@@ -3,7 +3,7 @@
 # Consensus partition
 #
 # == param
-# -data a numeric matrix where subgroups are found by columns.
+# -data a numeric matrix where subgroups are found by samples.
 # -top_method a single top method. Available methods are in `all_top_value_methods`.
 # -top_n number of rows with top values. When n > 5000, the function only random samples 5000 rows from top n rows.
 # -partition_method a single partition method. Available ialble methods are in `all_partition_methods`.
@@ -11,10 +11,9 @@
 # -p_sampling proportion of the top n rows to sample.
 # -partition_repeat number of repeats for the random sampling.
 # -partition_param parameters for the partition method.
-# -known_anno a data frame with known annotation of columns.
+# -known_anno a data frame with known annotation of samples.
 # -known_col a list of colors for the annotations in ``known_anno``.
-# -scale_rows whether to scale rows.
-# -column_index a subst of columns in the matrix, only for internal use.
+# -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_fun` is used.
 # -verbose whether print messages
 # -.env an environment, internally used.
 #
@@ -23,7 +22,7 @@
 #
 # - calculate scores for rows by top method and take top n rows
 # - randomly sample ``p_sampling`` rows and perform partitions for ``partition_repeats`` times
-# - collect partitions from all randomizations can calculate consensus clusters
+# - collect partitions from all resamplings and calculate consensus partitions
 #
 # == return
 # A `ConsensusPartition-class` object.
@@ -315,11 +314,10 @@ consensus_partition = function(data,
 }
 
 # == title
-# Print the consensus_partition object
+# Print the ConsensusPartition object
 #
 # == param
 # -object a `ConsensusPartition-class` object
-# -... other arguments
 #
 # == value
 # No value is returned.

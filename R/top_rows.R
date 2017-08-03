@@ -11,6 +11,9 @@
 # == value
 # No value is returned.
 #
+# == seealso
+# `top_rows_overlap,list-method`
+#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
@@ -39,6 +42,9 @@ setMethod(f = "top_rows_overlap",
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
+#
+# == seealso
+# `top_rows_overlap,list-method`
 #
 # == example
 # set.seed(123)

@@ -11,25 +11,25 @@ try_and_trace = function(expr) {
 
 
 # == title
-# Run subgroup classification for all methods
+# Run subgroup classification from all methods
 #
 # == param
-# -data a numeric matrix where subgroups are found by columns.
+# -data a numeric matrix where subgroups are found by samples
 # -top_method method which are used to extract top n rows. Allowed methods
 #        are in `all_top_value_methods` and can be self-added by `register_top_value_fun`.
-# -partition_method method which are used to do partition on data columns. 
+# -partition_method method which are used to do partition on samples. 
 #        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_fun`.
-# -mc.cores number of cores to use`.
-# -known_anno a data frame with known annotation of columns.
+# -mc.cores number of cores to use.
+# -known_anno a data frame with known annotation of samples
 # -known_col a list of colors for the annotations in ``known_anno``.
 # -... other arguments passed to `consensus_partition`.
 #
 # == details
-# The function run consensus partitions for all combination of top methods and parittion methods.
+# The function run consensus partitions for all combinations of top methods and parittion methods.
 #
 # == return 
-# a `ConsensusPartitionList-class` object. 
+# A `ConsensusPartitionList-class` object. 
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -169,7 +169,6 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 #
 # == param
 # -object a `ConsensusPartitionList-class` object
-# -... other arguments
 #
 # == value
 # No value is returned.

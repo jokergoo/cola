@@ -19,6 +19,9 @@ Collect classes from ConsensusPartitionList object
   \item{...}{other arguments.}
 
 }
+\details{
+The function plots class IDs for all methods and the similarity between methods.
+}
 \value{
 No value is returned
 }

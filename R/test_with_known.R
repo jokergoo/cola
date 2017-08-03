@@ -54,7 +54,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
 					try({p.value[i, j] = oneway.test(df[[i]] ~ df[[j]])$p.value})
 				} else if(is.numeric(df[[j]]) && (is.character(df[[i]]) || is.factor(df[[i]]))) {
-					if(verbose) qqcat("@{nm[j]} ~ @{nm[i]}: oneway ANOVA test\n")
+					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
 					try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value})
 				} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Fisher's exact test\n")

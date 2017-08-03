@@ -93,6 +93,12 @@ adjust_outlier = function(x, q = 0.05) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# m = matrix(rnorm(200), 10)
+# m[1, 1] = 1000
+# range(m)
+# m2 = adjust_matrix(m)
+# range(m2)
 adjust_matrix = function(m, sd_quantile = 0.05) {
 	if(is.data.frame(m)) {
 		m = as.matrix(m)

@@ -23,7 +23,9 @@ then removes rows with low standard variation.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+m = matrix(rnorm(200), 10)
+m[1, 1] = 1000
+range(m)
+m2 = adjust_matrix(m)
+range(m2)
 }

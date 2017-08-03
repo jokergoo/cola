@@ -6,8 +6,8 @@ GetoptLong(
 	"datatype=s", "cell01"
 )
 
-library(cola)
-# source("/home/guz/project/development/cola/load.R")
+# library(cola)
+source(qq("@{dirname(get_scriptname())}/../load.R"))
 register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = 4))
 
 

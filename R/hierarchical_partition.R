@@ -1,4 +1,22 @@
 
+# == title
+# The HierarchicalPartition class
+#
+# == alias
+# HierarchicalPartition
+#
+# == methods
+# The `HierarchicalPartition-class` has following methods:
+#
+# -`collect_classes,HierarchicalPartition-method`: plot the hierarchy of subgroups predicted.
+# -`get_class,HierarchicalPartition-method`: get the class IDs of subgroups.
+# -`get_signatures,HierarchicalPartition-method`: get the signatures for each subgroup.
+# -`get_single_run,HierarchicalPartition-method`: get a `ConsensusPartition-class` object at a specified hierarchy level.
+# -`test_to_known_factors,HierarchicalPartition-method`: test correlation between predicted subgrouping and known annotations, if available.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 HierarchicalPartition = setClass("HierarchicalPartition",
     slots = list(
         list = "list",
@@ -7,18 +25,41 @@ HierarchicalPartition = setClass("HierarchicalPartition",
     )
 )
 
-hierarchical_partition = function(data, column_index = seq_len(ncol(data)), 
-	top_method = "MAD", partition_method = "kmeans",
+# == title
+# Hierarchical detection of subgroups
+#
+# == param
+# -data a numeric matrix where subgroups are found by samples.
+# -top_method a single top method. Available methods are in `all_top_value_methods`.
+# -partition_method a single partition method. Available ialble methods are in `all_partition_methods`.
+# -PAC_cutoff the cutoff of PAC scores to determine whether to continuou looking to subgroups.
+# -min_samples the cutoff of number of samples to determine whether to continuou looking to subgroups.
+# -k a list number of partitions.
+# -... pass to `consensus_partition`
+#
+# == details
+# The function looks for subgroups in a hierarchical way.
+#
+# == return
+# A `HierarchicalPartition-class` object
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+hierarchical_partition = function(data, top_method = "MAD", partition_method = "kmeans",
 	PAC_cutoff = 0.2, min_samples = 6, k = 2:4, ...) {
 	
 	.h_obj = new.env()
 	.h_obj$hierarchy = matrix(nrow = 0, ncol = 2)
 	.h_obj$list = list()
-	.h_obj$subgroup = rep("", length(column_index))
+	.h_obj$subgroup = rep("", ncol(data))
 
-	.hierarchical_partition = function(.env, column_index, PAC_cutoff = 0.2, node_id = '0', min_samples = 6, k = 2:4, ...) {
+	.hierarchical_partition = function(.env, column_index, PAC_cutoff = 0.2, node_id = '0', parent = NULL, min_samples = 6, k = 2:4, ...) {
 
-		if(node_id != "0") cat("\n")
+		if(node_id != "0") {
+			cat("\n")
+			.h_obj$hierarchy = rbind(.h_obj$hierarchy, c(parent, node_id))
+		}
 		qqcat("submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
 	   	.env$all_value_list = NULL
 	   	.env$column_index = column_index
@@ -71,18 +112,16 @@ hierarchical_partition = function(data, column_index = seq_len(ncol(data)),
 	    	sub_node_1 = paste0(node_id, s)
 	    	sub_node_2 = paste0(node_id, "0")
 
-	    	.h_obj$hierarchy = rbind(.h_obj$hierarchy, c(node_id, sub_node_1))
-	    	.h_obj$hierarchy = rbind(.h_obj$hierarchy, c(node_id, sub_node_2))
-
 	    	if(length(set1) > min_samples) {
-	    		.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1, 
+	    		.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1, parent = node_id,
 	    			PAC_cutoff = PAC_cutoff, min_samples = min_samples, k = k, ...)
 	    	}
 
 	    	if(length(set2) > min_samples) {
-	    		.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2,
+	    		.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2, parent = node_id,
 	    			PAC_cutoff = PAC_cutoff, min_samples = min_samples, k = k, ...)
 	    	}
+	    	
 	    # }
 
 	    return(NULL)
@@ -90,13 +129,13 @@ hierarchical_partition = function(data, column_index = seq_len(ncol(data)),
 
 	.env = new.env()
 	.env$data = data
-	.hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), PAC_cutoff = PAC_cutoff, min_samples = min_samples, node_id = "0", k = k, ...)
+	.hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), PAC_cutoff = PAC_cutoff, min_samples = min_samples, node_id = "0", parent = NULL, k = k, ...)
 
 	hp = new("HierarchicalPartition")
 	hp@hierarchy = .h_obj$hierarchy
 	hp@list = .h_obj$list
 	hp@subgroup = .h_obj$subgroup
-	names(hp@subgroup) = colnames(data)[column_index]
+	names(hp@subgroup) = colnames(data)
 
 	return(hp)
 }
@@ -129,21 +168,91 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 	(global_mean_dist - mean_dist)/global_mean_dist
 }
 
-setMethod("get_class",
+# == title
+# Get class from the HierarchicalPartition object
+#
+# == param
+# -object a `HierarchicalPartition-class` object
+#
+# == return
+# A vector of predicted classes.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_class",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 
 	object@subgroup
 })
 
-setMethod("show",
+
+# == title
+# Print the HierarchicalPartition object
+#
+# == param
+# -object a `HierarchicalPartition-class` object
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "show",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 
 	qqcat("A 'HierarchicalPartition' object with '@{object@list[[1]]@top_method}:@{object@list[[1]]@partition_method}' method.\n")
+	cat("\n")
+
+	hierarchy = object@hierarchy
+	nodes = hierarchy[, 2]
+	nc = nchar(nodes)
+	names(nc) = nodes
+	n = length(nc)
+
+	parent = structure(hierarchy[, 1], names = hierarchy[, 2])
+
+	lines = character(n)
+	for(i in seq_len(n)) {
+		lines[i] = paste0(strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "+-", "|-") ,"- ", nodes[i], qq(", @{length(object@list[[nodes[i]]]@column_index)} cols"))
+		p = nodes[i]
+		while(p != "0") {
+			p = parent[p]
+			if(!grepl("0$", p)) {
+				substr(lines[i], (nc[p] - 2)*4+1, (nc[p] - 2)*4+1) = "|"
+			}
+		}
+	}
+	substr(lines[1], 1, 1) = "+"
+	cat(lines, sep = "\n")
+	qqcat("\n")
+	qqcat("Following methods can be applied to this 'HierarchicalPartition' object:\n")
+	txt = showMethods(classes = "HierarchicalPartition", where = topenv(), printTo = FALSE)
+	txt = grep("Function", txt, value = TRUE)
+	fname = gsub("Function: (.*?) \\(package.*$", "\\1", txt)
+	print(fname)
 })
 
-setMethod("get_signatures",
+# == title
+# Get signatures rows
+#
+# == param
+# -object a `HierarchicalPartition-class` object.
+# 
+# == details
+# The function called `get_signatures,ConsensusPartition-method` to find signatures at
+# each level of the partition hierarchy.
+#
+# == value
+# A list of signature names (row names of the original data matrix)
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 
@@ -170,15 +279,34 @@ setMethod("get_signatures",
 	sig_lt
 })
 
+# == title
+# Collect classes from hierarchical_partition object
+#
+# == param
+# -object a `HierarchicalPartition-class` object.
+# -anno a data frame with known annotation of samples.
+# -anno_col a list of colors for the annotations in ``anno``.
+# -... other arguments.
+#
+# == details
+# The function plots the hierarchy of the subgroups.
+#
+# == value
+# No value is returned
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
 	definition = function(object, anno = object@list[[1]]@known_anno, 
-	anno_col = if(missing(anno)) object@list[[1]]ject@known_col else NULL,
+	anno_col = if(missing(anno)) object@list[[1]]@known_col else NULL,
 	...) {
 
 	data = object@list[[1]]@.env$data
 	cl = get_class(object)
 
+	data = t(scale(t(data)))
 	rm = do.call("cbind", tapply(1:ncol(data), cl, function(ind) rowMeans(data[, ind])))
 	fake_mat = matrix(nrow = nrow(data), ncol = ncol(data))
 	colnames(fake_mat) = colnames(data)
@@ -215,3 +343,44 @@ setMethod(f = "collect_classes",
 	draw(ht_list)
 })
 
+# == title
+# Get result for a specified level in the partition hierarchy
+#
+# == param
+# -object a `HierarchicalPartition-class` object
+# -node node labal, see `hierarchical_partition` for explaination.
+#
+# == return 
+# A `ConsensusPartition-class` object.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_single_run",
+	signature = "HierarchicalPartition",
+	definition = function(object, node = "0") {
+	object@list[[node]]
+})
+
+# == title
+# Test correspondance between predicted and known classes
+#
+# == param
+# -object a `HierarchicalPartition-class` object
+# -known a vector or a data frame with known factors
+#
+# == value
+# A matrix of p-values.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "test_to_known_factors",
+	signature = "HierarchicalPartition",
+	definition = function(object, known = object@list[[1]]@known_anno) {
+
+	class = get_class(object)
+	m = test_between_factors(class, known, verbose = FALSE)
+	rownames(m) = paste(object@list[[1]]@top_method, object@list[[1]]@partition_method, sep = ":")
+	return(m)
+})

@@ -8,7 +8,7 @@ AAC score
 }
 \usage{
 AAC(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
-    mc.cores = 1, n_sampling = 1000)
+    mc.cores = 1, n_sampling = 1000, q_sd = 0)
 }
 \arguments{
 
@@ -18,6 +18,7 @@ AAC(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
   \item{max_cor}{maximal absolute correlation.}
   \item{mc.cores}{number of cores.}
   \item{n_sampling}{when the number of columns are too high, to get the curmulative distribution, actually we don't need to use all the columns, e.g. 1000 columns can already give a farely nice estimation for the distribution.}
+  \item{q_sd}{percential of the sd to ignore}
 
 }
 \details{

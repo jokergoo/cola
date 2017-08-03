@@ -30,7 +30,7 @@ cola_logo =
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# cola()
+# for(i in 1:10) cola()
 cola = function() {
 
     bg_color = sample(c("bgRed", "bgGreen", "bgYellow", "bgBlue", "bgMagenta", "bgCyan", "bgWhite"), 1)

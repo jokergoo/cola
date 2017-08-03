@@ -51,15 +51,15 @@ setMethod(f = "get_consensus",
 # -object a `ConsensusPartition-class` object
 # -k number of partitions
 # -each whether return the percentage membership matrix or the membership
-#       in every random round
+#       in every random sampling
 #
 # == details
 # If ``each == TRUE``, the value in the membership matrix is the probability
 # to be in one subgroup, while if ``each == FALSE``, the membership matrix contains the 
-# class labels for the partitions in all randomizations.
+# class labels for the partitions in all resamplings.
 #
 # == value
-# A membership matrix where rows correspond to the columns in the original matrix.
+# A membership matrix where rows correspond to the samples in the original matrix.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -117,7 +117,7 @@ setMethod(f = "get_stat",
 #
 # == value
 # A matrix of partition statistics for a selected k. Rows in the 
-# matrix correspond to all combination of top methods and partition methods.
+# matrix correspond to all combinations of top methods and partition methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -145,7 +145,7 @@ setMethod(f = "get_stat",
 #
 # == return
 # A data frame with class IDs and other columns which are entropy of the membership matrix
-# and the silhouette scores which measure the stability of an item to stay in its subgroup.
+# and the silhouette scores which measure the stability of a sample to stay in its subgroup.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>

@@ -13,7 +13,7 @@
 # -... other arguments passed to corresponding ``fun``.
 #
 # == details
-# Plots for all combination of top methods and parittion methods are arranged in one page.
+# Plots for all combinations of top methods and parittion methods are arranged in one page.
 #
 # == value
 # No value is returned.
@@ -80,7 +80,7 @@ setMethod(f = "collect_plots",
 # 
 # == details
 # Plots by `plot_ecdf,ConsensusPartition-method`, `collect_classes,ConsensusPartition-method`, `consensus_heatmap,ConsensusPartition-method`, `membership_heatmap,ConsensusPartition-method` 
-# and `get_signatures,ConsensusPartition-method` are arranged in one single page.
+# and `get_signatures,ConsensusPartition-method` are arranged in one single page, for all avaialble k.
 #
 # == value
 # No value is returned.
@@ -179,6 +179,9 @@ setMethod(f = "collect_plots",
 # -partition_method a vector of partition methods
 # -... other arguments.
 #
+# == details
+# The function plots class IDs for all methods and the similarity between methods.
+#
 # == value
 # No value is returned
 #
@@ -224,7 +227,11 @@ setMethod(f = "collect_classes",
 		cell_fun = function(j, i, x, y, w, h, fill) {
 			col = adjust_by_transparency(fill, 1 - silhouette_mat[j, i])
 			grid.rect(x, y, w, h, gp = gpar(fill = col, col = col))
-		}) + 
+		}, top_annotation = HeatmapAnnotation(consensus_class = get_class(object, k = k)$class, 
+			col = list(consensus_class = brewer_pal_set2_col),
+			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE)) + 
+		rowAnnotation(mean_silhouette = row_anno_barplot(get_stat(object, k = k)$mean_silhouette, baseline = 0),
+			width = unit(2, "cm"), axis = TRUE, show_annotation_name = TRUE) +
 		Heatmap((pac < 0.1) + 0, name = "PAC < 0.1", col = c("1" = "orange", "0" = "white"),
 			show_row_names = FALSE, width = unit(2, "mm")) +
 		rowAnnotation(top_method = top_method_vec, 
@@ -240,7 +247,8 @@ setMethod(f = "collect_classes",
 	m_diss = as.matrix(m_diss)
 
 	ht = ht + Heatmap(m_diss, name = "dissimilarity", show_row_names = FALSE, show_column_names = FALSE,
-		show_row_dend = FALSE, show_column_dend = FALSE, width = unit(8, "cm"))
+		show_row_dend = FALSE, show_column_dend = FALSE, width = unit(8, "cm"),
+		col = colorRamp2(quantile(m_diss, c(0, 0.5, 1)), c("red", "white", "blue")))
 
 	draw(ht, main_heatmap = "dissimilarity", column_title = qq("classification from all methods, k = @{k}"))
 

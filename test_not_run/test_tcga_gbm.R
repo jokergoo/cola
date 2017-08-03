@@ -8,7 +8,7 @@ GetoptLong(
 )
 
 # library(cola)
-source("/home/guz/project/development/cola/load.R")
+source(qq("@{dirname(get_scriptname())}/../load.R"))
 register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 #############################################

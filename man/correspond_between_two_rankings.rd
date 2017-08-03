@@ -19,7 +19,7 @@ correspond_between_two_rankings(x1, x2, name1 = "", name2 = "",
   \item{name2}{name of the second metric.}
   \item{col1}{color of the lines for the first metric.}
   \item{col2}{color of the lines for the second metric.}
-  \item{top_n}{top n elements to visualize}
+  \item{top_n}{top n elements to show correspondance.}
   \item{transparency}{transparency of the connection lines.}
   \item{pt_size}{size of the points, must be a \code{\link[grid]{unit}} object}
   \item{newpage}{whether to plot in a new graphic page.}

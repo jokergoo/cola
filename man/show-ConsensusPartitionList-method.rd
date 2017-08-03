@@ -12,7 +12,6 @@ Print the ConsensusPartitionList object
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartitionList-class}} object}
-  \item{...}{other arguments}
 
 }
 \value{

@@ -13,7 +13,7 @@ add_transparency = function (col, transparency = 0) {
 # -name2 name of the second metric.
 # -col1 color of the lines for the first metric.
 # -col2 color of the lines for the second metric.
-# -top_n top n elements to visualize
+# -top_n top n elements to show correspondance.
 # -transparency transparency of the connection lines.
 # -pt_size size of the points, must be a `grid::unit` object
 # -newpage whether to plot in a new graphic page.
@@ -104,7 +104,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 #
 # == param
 # -lt a list of scores under different metrics.
-# -top_n top n elements to visualize.
+# -top_n top n elements to show correspondance.
 # -col a vector of colors for ``lt``.
 # -... pass to `correspond_between_two_rankings`.
 # 

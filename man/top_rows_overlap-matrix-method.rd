@@ -25,6 +25,9 @@ No value is returned.
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
+\seealso{
+\code{\link{top_rows_overlap,list-method}}
+}
 \examples{
 set.seed(123)
 mat = matrix(rnorm(1000), nrow = 100)

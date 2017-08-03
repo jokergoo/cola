@@ -17,7 +17,7 @@ Get statistics
 }
 \value{
 A matrix of partition statistics for a selected k. Rows in the 
-matrix correspond to all combination of top methods and partition methods.
+matrix correspond to all combinations of top methods and partition methods.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
