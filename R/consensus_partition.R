@@ -306,6 +306,9 @@ consensus_partition = function(data,
 			}
 		}
 	}
+	if(is.null(known_anno)) {
+		known_col = NULL
+	}
 
 	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n),  
 		partition_method = partition_method, top_method = top_method, top_n = top_n,

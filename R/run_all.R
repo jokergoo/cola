@@ -89,6 +89,9 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 			}
 		}
 	}
+	if(is.null(known_anno)) {
+		known_col = NULL
+	}
 
 	comb = expand.grid(top_method, partition_method, stringsAsFactors = FALSE)
 	# comb = comb[sample(nrow(comb), nrow(comb)), ]
@@ -99,14 +102,14 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 		pm = comb[i, 2]
 		qqcat("running classification for @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
 		x = try_and_trace(res <- consensus_partition(top_method = tm, partition_method = pm, k = k,
-			known_anno = known_anno, known_col = known_col, .env = .env, ...))
+			known_anno = known_anno, known_col = known_col, .env = .env, verbose = FALSE, ...))
 		
 		if(inherits(x, "pairlist")) {
 			print(x)
 			stop(qq("You have an error when doing partition for @{tm}:@{pm}."))
 		}
 		for(k in res@k) {
-			try(get_signatures(res, k = k, plot = FALSE))
+			try(get_signatures(res, k = k, plot = FALSE, verbose = FALSE))
 		}
 		return(res)
 	}, mc.cores = mc.cores)
