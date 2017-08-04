@@ -100,10 +100,17 @@ rpkm = rpkm[names(GENE), SAMPLE_ID]
 data = log2(rpkm + 1)
 data = adjust_matrix(data)
 res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, p_sampling = p, 
-	known_anno = data.frame(subtype = SAMPLE$subtype), known_col = list(subtype = SUBTYPE_COLOR[unique(SAMPLE$subtype)]), 
+	known_anno = data.frame(subtype = SAMPLE$subtype), 
+	known_col = list(subtype = SUBTYPE_COLOR[unique(SAMPLE$subtype)]), 
 	mc.cores = ncore)
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo16_rnaseq_subgroup_p@{p}_@{paste(subtype, collapse = '')}.rds"))
+
+res = hierarchical_partition(data, top_n = c(1000, 2000, 4000), 
+	known_anno = data.frame(subtype = SAMPLE$subtype), 
+	known_col = list(subtype = SUBTYPE_COLOR[unique(SAMPLE$subtype)]))
+
+saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/hipo16_rnaseq_subgroup_hierarchical_partition_@{paste(subtype, collapse = '')}.rds"))
 
 # for(p in c(0.2, 0.4, 0.6, 0.8)) {
 # 	cmd = qq("Rscript-3.1.2 /home/guz/project/development/subgroup/test_hipo16_rnaseq.R --p @{p} --ncore 4")
