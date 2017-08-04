@@ -23,9 +23,15 @@ data = data[, names(subtype)]
 
 data = adjust_matrix(data)
 res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = ncore,
-	known_anno = data.frame(subtype = subtype), known_col = list(subtype = structure(seq_len(4), names = unique(subtype))))
+	known_anno = data.frame(subtype = subtype), 
+	known_col = list(subtype = structure(seq_len(4), names = unique(subtype))))
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup_p@{p}.rds"))
+
+res = hierarchical_partition(data, top_n = c(1000, 2000, 4000), 
+	known_anno = data.frame(subtype = subtype), 
+	known_col = list(subtype = structure(seq_len(4), names = unique(subtype))))
+saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup_hierarchical_partition.rds"))
 
 # for(p in c(0.2, 0.4, 0.6, 0.8)) {
 # 	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_tcga_gbm.R --p @{p} --ncore 4")
