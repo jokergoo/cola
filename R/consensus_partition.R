@@ -59,6 +59,7 @@ consensus_partition = function(data,
 		.env$data = data
 		.env$column_index = seq_len(ncol(data))
 	} else if(is.null(.env$column_index)) {
+		data = .env$data
 		.env$column_index = seq_len(ncol(data))
 	} else {
 		data = .env$data

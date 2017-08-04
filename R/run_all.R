@@ -92,7 +92,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 
 	comb = expand.grid(top_method, partition_method, stringsAsFactors = FALSE)
 	# comb = comb[sample(nrow(comb), nrow(comb)), ]
-	od = order(rep(sapply(partition_method, function(x) attr(get_partition_fun(x), "execution_scale")), times = length(top_method)))
+	od = order(rep(sapply(partition_method, function(x) attr(get_partition_fun(x), "execution_scale")), each = length(top_method)), decreasing = TRUE)
 	comb = comb[od, ]
 	lt = mclapply(seq_len(nrow(comb)), function(i) {
 		tm = comb[i, 1]
@@ -103,6 +103,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 		
 		if(inherits(x, "pairlist")) {
 			print(x)
+			stop(qq("You have an error when doing partition for @{tm}:@{pm}."))
 		}
 		for(k in res@k) {
 			try(get_signatures(res, k = k, plot = FALSE))
