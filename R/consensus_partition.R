@@ -173,7 +173,8 @@ consensus_partition = function(data,
 
 		membership_mat = cl_membership(partition_consensus)
 		class(membership_mat) = "matrix"
-		membership_mat = membership_mat[, as.numeric(map[as.character(1:k)])]
+		map2 = structure(names(map), names = map)
+		membership_mat = membership_mat[, as.numeric(map2[as.character(1:k)])]
 
 		colnames(membership_mat) = paste0("p", 1:ncol(membership_mat))
 		attr(membership_mat, "n_of_classes") = NULL
