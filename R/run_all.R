@@ -20,6 +20,7 @@ try_and_trace = function(expr) {
 # -partition_method method which are used to do partition on samples. 
 #        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_fun`.
+# -k a list number of partitions.
 # -mc.cores number of cores to use.
 # -known_anno a data frame with known annotation of samples
 # -known_col a list of colors for the annotations in ``known_anno``.
@@ -35,7 +36,7 @@ try_and_trace = function(expr) {
 # Zuguang Gu <z.gu@dkfz.de>
 #
 run_all_consensus_partition_methods = function(data, top_method = all_top_value_methods(), 
-	partition_method = all_partition_methods(), 
+	partition_method = all_partition_methods(), k = 2:6,
 	mc.cores = 1, known_anno = NULL, known_col = NULL, ...) {
 		
 	.env = new.env()
@@ -97,7 +98,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 		tm = comb[i, 1]
 		pm = comb[i, 2]
 		qqcat("running classification for @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
-		x = try_and_trace(res <- consensus_partition(top_method = tm, partition_method = pm, 
+		x = try_and_trace(res <- consensus_partition(top_method = tm, partition_method = pm, k = k,
 			known_anno = known_anno, known_col = known_col, .env = .env, ...))
 		
 		if(inherits(x, "pairlist")) {
