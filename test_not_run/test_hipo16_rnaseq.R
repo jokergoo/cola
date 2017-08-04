@@ -86,7 +86,7 @@ SAMPLE_ID = SAMPLE$id
 SUBTYPE_COLOR = RColorBrewer::brewer.pal(4, "Set1")
 names(SUBTYPE_COLOR) = c("IDH", "MES", "RTK_I", "RTK_II")
 
-PROJECT_DIR = "/icgc/dkfzlsdf/analysis/hipo/hipo_016/analysis/analysis_with_epik"
+PROJECT_DIR = "/icgc/dkfzlsdf/analysis/hipo/hipo_016/analysis/WGBS_final_cohort"
 library(GenomicFeatures)
 TXDB = loadDb(qq("@{PROJECT_DIR}/txdb/gencode19_protein_coding_txdb.sqlite"))
 GENE = genes(TXDB)
