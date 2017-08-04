@@ -37,3 +37,8 @@ for(datatype in c("cell01", "cell02", "cell03", "primary_tumor", "xenograft")) {
  	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=40:00:00,mem=10G,nodes=1:ppn=4 -N hipo15_subgroup_@{datatype}' '@{cmd}'")
  	system(cmd)
 }
+
+cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_gbm_methylation.R --ncore 4")
+cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=40:00:00,mem=25G,nodes=1:ppn=4 -N gbm_methylation_subgroup' '@{cmd}'")
+system(cmd)
+

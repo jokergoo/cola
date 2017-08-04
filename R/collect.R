@@ -230,8 +230,8 @@ setMethod(f = "collect_classes",
 		}, top_annotation = HeatmapAnnotation(consensus_class = get_class(object, k = k)$class, 
 			col = list(consensus_class = brewer_pal_set2_col),
 			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE)) + 
-		rowAnnotation(mean_silhouette = row_anno_barplot(get_stat(object, k = k)$mean_silhouette, baseline = 0),
-			width = unit(2, "cm"), axis = TRUE, show_annotation_name = TRUE) +
+		rowAnnotation(mean_silhouette = row_anno_barplot(get_stat(object, k = k)[, "mean_silhouette"], baseline = 0, axis = TRUE),
+			width = unit(2, "cm")) +
 		Heatmap((pac < 0.1) + 0, name = "PAC < 0.1", col = c("1" = "orange", "0" = "white"),
 			show_row_names = FALSE, width = unit(2, "mm")) +
 		rowAnnotation(top_method = top_method_vec, 
@@ -247,11 +247,13 @@ setMethod(f = "collect_classes",
 	m_diss = as.matrix(m_diss)
 
 	ht = ht + Heatmap(m_diss, name = "dissimilarity", show_row_names = FALSE, show_column_names = FALSE,
-		show_row_dend = FALSE, show_column_dend = FALSE, width = unit(8, "cm"),
+		show_row_dend = FALSE, show_column_dend = FALSE,
 		col = colorRamp2(quantile(m_diss, c(0, 0.5, 1)), c("red", "white", "blue")))
 
 	draw(ht, main_heatmap = "dissimilarity", column_title = qq("classification from all methods, k = @{k}"))
-
+	decorate_annotation("mean_silhouette", {
+		grid.text("mean_silhouette", y = unit(-1, "cm"))
+	})
 })
 
 
