@@ -65,6 +65,10 @@ consensus_partition = function(data,
 		data = .env$data
 	}
 
+	# qqcat("env @{top_method}:@{partition_method} = ")
+	# print(.env)
+	# cat("\n")
+
 	data = data[, .env$column_index, drop = FALSE]
 
 	k = sort(k)
