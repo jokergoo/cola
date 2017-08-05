@@ -222,3 +222,32 @@ setMethod(f = "get_single_run",
 	nm = paste0(top_method, ":", partition_method)
 	object@list[[nm]]
 })
+
+
+
+# == title
+# Get the best number of partitions
+#
+# == param
+# -object a `ConsensusPartitionList-class` object
+#
+# == value
+# A data frame with best k for each combination of methods
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_best_k",
+	signature = "ConsensusPartitionList",
+	definition = function(object) {
+
+	best_k = NULL
+	for(tm in object@top_method) {
+		for(pm in object@partition_method) {
+			nm = paste0(tm, ":", pm)
+			obj = object@list[[nm]]
+			best_k[nm] = get_best_k(obj)
+		}
+	}
+	return(data.frame(best_k = best_k))
+})

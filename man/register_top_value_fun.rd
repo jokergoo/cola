@@ -25,6 +25,9 @@ To remove a top method, use \code{\link{remove_top_value_method}}.
 \value{
 No value is returned.
 }
+\seealso{
+\code{\link{all_top_value_methods}} lists all registered top methods.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

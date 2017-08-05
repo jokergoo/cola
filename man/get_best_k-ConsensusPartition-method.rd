@@ -1,6 +1,5 @@
 \name{get_best_k-ConsensusPartition-method}
 \alias{get_best_k,ConsensusPartition-method}
-\alias{get_best_k}
 \title{
 Get the best number of partitions
 }

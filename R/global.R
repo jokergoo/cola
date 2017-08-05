@@ -25,6 +25,9 @@ get_top_value_fun = function(method) {
 # == return
 # No value is returned.
 #
+# == seealso
+# `all_top_value_methods` lists all registered top methods.
+#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 # 
@@ -76,7 +79,7 @@ register_top_value_fun(
 
 get_partition_fun = function(method, partition_param = list()) {
 	if(!method %in% .ENV$ALL_PARTITION_METHODS) {
-		stop(qq("partition method @{method} has not been defined yet."))
+		stop(qq("partition method '@{method}' has not been defined yet."))
 	}
 	fun = .ENV$ALL_PARTITION_FUN[[method]]
 	fun2 = function(mat, k) {
@@ -104,11 +107,11 @@ get_partition_fun = function(method, partition_param = list()) {
 #
 # == param
 # -... a named list of functions
-# -scale_method in some circumstances, data matrix are scaled by rows before sent to
+# -scale_method normally, data matrix are scaled by rows before sent to
 #        the partition function. The default scaling is apply by `base::scale`.
 #        However, some partition function may not accept negative values which 
 #        are produced by `base::scale`. Here ``scale_method`` can be set to ``rescale``
-#        which scale rows by ``(x - min)/(max - min)``. Here ``scale_method`` only means
+#        which scales rows by ``(x - min)/(max - min)``. Note here ``scale_method`` only means
 #        how to scale rows when ``scale_rows`` is set to ``TRUE`` in `consensus_partition`
 #        or `run_all_consensus_partition_methods`. The value for ``scale_method`` can be a vector.
 # 
@@ -117,7 +120,7 @@ get_partition_fun = function(method, partition_param = list()) {
 # matrix and the number of partitions. The third argument should always be `...` so that parameters
 # for the partition function can be passed by ``partition_param`` from `consensus_partition` or `run_all_consensus_partition_methods`.
 #
-# The function should return a vector of partitions (or group classes).
+# The function should return a vector of partitions (or class labels).
 # 
 # The partition function is applied on rows.
 #
@@ -127,6 +130,9 @@ get_partition_fun = function(method, partition_param = list()) {
 #
 # == value
 # No value is returned.
+#
+# == seealso
+# `all_partition_methods` lists all registered partition methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -263,6 +269,8 @@ remove_partition_method = function(method) {
 
 
 brewer_pal_set1_col =  brewer.pal(9, "Set1")
-names(brewer_pal_set1_col) = 1:9
+brewer_pal_set1_col = c(brewer_pal_set1_col, brewer_pal_set1_col)
+names(brewer_pal_set1_col) = 1:18
 brewer_pal_set2_col =  brewer.pal(8, "Set2")
-names(brewer_pal_set2_col) = 1:8
+brewer_pal_set2_col = c(brewer_pal_set2_col, brewer_pal_set2_col)
+names(brewer_pal_set2_col) = 1:16

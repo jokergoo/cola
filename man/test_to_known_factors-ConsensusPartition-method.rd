@@ -14,11 +14,11 @@ Test correspondance between predicted and known classes
   \item{object}{a \code{\link{ConsensusPartition-class}} object}
   \item{k}{number of partitions}
   \item{known}{a vector or a data frame with known factors}
-  \item{silhouette_cutoff}{cutoff for sihouette scores}
+  \item{silhouette_cutoff}{cutoff for sihouette scores. Samples with value less than this are omit.}
 
 }
 \value{
-A matrix of p-values where the first column is the number of data columns
+A matrix of p-values where the first column is the number of samples
 to test after filtering by \code{silhouette_cutoff}.
 }
 \seealso{

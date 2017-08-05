@@ -63,7 +63,7 @@ column_order_by_group = function(factor, mat) {
 # values smaller than percential ``q`` are adjusted to ``q``.
 #
 # == value
-# a numeric vector with same length as the original one.
+# A numeric vector with same length as the original one.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -89,6 +89,9 @@ adjust_outlier = function(x, q = 0.05) {
 # == details
 # The function first uses `adjust_outlier` to adjust outliers and 
 # then removes rows with low standard variation.
+#
+# == value
+# A numeric matrix.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>

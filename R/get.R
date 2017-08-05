@@ -56,7 +56,7 @@ setMethod(f = "get_consensus",
 # == details
 # If ``each == TRUE``, the value in the membership matrix is the probability
 # to be in one subgroup, while if ``each == FALSE``, the membership matrix contains the 
-# class labels for the partitions in all resamplings.
+# class labels for the partitions in all random samplings.
 #
 # == value
 # A membership matrix where rows correspond to the samples in the original matrix.
@@ -85,9 +85,9 @@ setMethod(f = "get_membership",
 # == details
 # The statistics are:
 #
-# -cophcor cophenetic correlation coefficient
-# -PAC proportion of ambiguous clustering, calculated by `PAC`
-# -mean_silhouette the mean silhouette score
+# -cophcor cophenetic correlation coefficient.
+# -PAC proportion of ambiguous clustering, calculated by `PAC`.
+# -mean_silhouette the mean silhouette score.
 #
 # == value
 # A matrix of partition statistics for all k.

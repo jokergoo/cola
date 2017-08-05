@@ -12,6 +12,7 @@ The HierarchicalPartition class
 The \code{\link{HierarchicalPartition-class}} has following methods:
 
 \describe{
+  \item{\code{\link{hierarchical_partition}}:}{constructor method.}
   \item{\code{\link{collect_classes,HierarchicalPartition-method}}:}{plot the hierarchy of subgroups predicted.}
   \item{\code{\link{get_class,HierarchicalPartition-method}}:}{get the class IDs of subgroups.}
   \item{\code{\link{get_signatures,HierarchicalPartition-method}}:}{get the signatures for each subgroup.}

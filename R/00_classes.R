@@ -48,16 +48,16 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 # The `ConsensusPartition-class` has following methods:
 #
 # -`consensus_partition`: constructor method, run consensus partition with a specified top method and a partition method.
-# -`select_partition_number,ConsensusPartition-method`: a list of plots used to pick optimized number of partitions.
+# -`select_partition_number,ConsensusPartition-method`: make a list of plots used to select optimized number of partitions.
 # -`consensus_heatmap,ConsensusPartition-method`: Heatmap of the consensus matrix.
-# -`membership_heatmap,ConsensusPartition-method`: Heatmap of the membership in each randomization.
+# -`membership_heatmap,ConsensusPartition-method`: Heatmap of the membership in each random sampling.
 # -`get_signatures,ConsensusPartition-method`: get the signature rows and make heatmaps.
 # -`dimension_reduction,ConsensusPartition-method`: dimension reduction plots.
 # -`collect_plots,ConsensusPartition-method`: Heatmaps for consensus matrix and membership matrix with different number of partitions.
 # -`collect_classes,ConsensusPartition-method`: Heatmap of classes with different number of partitions.
 # -`get_param,ConsensusPartition-method`: get parameters for the consensus clustering.
 # -`get_consensus,ConsensusPartition-method`: get the consensus matrix.
-# -`get_membership,ConsensusPartition-method`: get the membership in randomizations.
+# -`get_membership,ConsensusPartition-method`: get the membership in random samplings.
 # -`get_stat,ConsensusPartition-method`: get statistics for the consensus clustering.
 # -`get_class,ConsensusPartition-method`: get the consensus class IDs and other columns.
 # -`get_best_k,ConsensusPartition-method`: guess the best number of partitions.

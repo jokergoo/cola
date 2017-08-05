@@ -6,15 +6,15 @@
 # -x a data frame or a vector which contains discrete or continuous variables.
 #    if ``y`` is omit, pairwise testing for columns in ``x`` is performed.
 # -y a data frame or a vector which contains discrete or continuous variables.
-# -all_factors are all columns in ``x`` and ``y`` are enforced to be factors.
+# -all_factors are all columns in ``x`` and ``y`` are enforced to be factors?
 # -verbose whether to print messages.
 # 
 # == details
 # Pairwise test is applied to every two columns in the data frames. Methods are:
 # 
 # - two numeric variables: correlation test by `stats::cor.test` is applied;
-# - two character or factor variables: Chi-squared test by `stats::fisher.test` is applied;
-# - one numeric variable and one character/factor variable: oneway ANOVA test by `stats::fisher.test` is applied.
+# - two character or factor variables: `stats::fisher.test` is applied;
+# - one numeric variable and one character/factor variable: oneway ANOVA test by `stats::oneway.test` is applied.
 # 
 # This function can be used to test the correlation between the predicted classes and other known factors.
 # 
@@ -124,10 +124,10 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 # -object a `ConsensusPartition-class` object
 # -k number of partitions
 # -known a vector or a data frame with known factors
-# -silhouette_cutoff cutoff for sihouette scores
+# -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
 #
 # == value
-# A matrix of p-values where the first column is the number of data columns
+# A matrix of p-values where the first column is the number of samples
 # to test after filtering by ``silhouette_cutoff``.
 #
 # == seealso
@@ -169,14 +169,14 @@ setMethod(f = "test_to_known_factors",
 # -object a `ConsensusPartitionList-class` object
 # -k number of partitions
 # -known a vector or a data frame with known factors
-# -silhouette_cutoff cutoff for sihouette scores
+# -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
 #
 # == details
 # The function basically sends each `ConsensusPartition-class` object to
 # `test_to_known_factors,ConsensusPartition-method` and merges afterwards.
 #
 # == value
-# A matrix of p-values where the first column is the number of data columns
+# A matrix of p-values where the first column is the number of samples
 # to test after filtering by ``silhouette_cutoff``.
 #
 # == seealso
