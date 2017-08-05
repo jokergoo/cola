@@ -17,7 +17,7 @@ venn_euler(lt, ...)
 }
 \details{
 The function calls \code{\link[gplots]{venn}} to reformat the data and
-call \code{\link[venneuler]{venneuler}} to make the plot.
+then calls \code{\link[venneuler]{venneuler}} to make the plot.
 }
 \value{
 No value is returned.

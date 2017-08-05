@@ -7,7 +7,7 @@ Overlap of top rows from different top methods
 Overlap of top rows from different top methods
 }
 \usage{
-\S4method{top_rows_overlap}{ConsensusPartitionList}(object, top_n = round(0.25*length(all_value_list[[1]])),
+\S4method{top_rows_overlap}{ConsensusPartitionList}(object, top_n = object@list[[1]]@top_n[1],
     type = c("venn", "correspondance"), ...)
 }
 \arguments{

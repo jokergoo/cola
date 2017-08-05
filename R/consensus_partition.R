@@ -619,7 +619,7 @@ setMethod(f = "membership_heatmap",
 # -k number of partitions
 # -top_n top n rows to use.
 # -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
-#         ``pca`` uses ``stats::prcomp`` and ``tsne`` uses `Rtsne::Rtsne`.
+#         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
 # -silhouette_cutoff cutoff of silhouette. Data points with values less
 #        than it will be mapped to small points.
 # -remove whether to remove columns which have less silhouette values than

@@ -19,6 +19,9 @@ adjust_matrix(m, sd_quantile = 0.05)
 The function first uses \code{\link{adjust_outlier}} to adjust outliers and 
 then removes rows with low standard variation.
 }
+\value{
+A numeric matrix.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

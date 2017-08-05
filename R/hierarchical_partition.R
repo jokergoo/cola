@@ -8,6 +8,7 @@
 # == methods
 # The `HierarchicalPartition-class` has following methods:
 #
+# -`hierarchical_partition`: constructor method.
 # -`collect_classes,HierarchicalPartition-method`: plot the hierarchy of subgroups predicted.
 # -`get_class,HierarchicalPartition-method`: get the class IDs of subgroups.
 # -`get_signatures,HierarchicalPartition-method`: get the signatures for each subgroup.
@@ -320,7 +321,9 @@ setMethod(f = "collect_classes",
 	hc = as.dendrogram(hclust(dist(t(fake_mat))))
 	hc = reorder(hc, colMeans(fake_mat))
 
-	ht_list = Heatmap(cl, name = "subgroups", width = unit(1, "cm"), 
+	cl_level = sort(unique(cl))
+	cl_col = structure(brewer_pal_set2_col[seq_along(cl_level)], names = cl_level)
+	ht_list = Heatmap(cl, name = "subgroups", width = unit(1, "cm"), col = cl_col,
 		row_title_rot = 0, cluster_rows = hc, row_dend_width = unit(2, "cm"))
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
@@ -369,6 +372,9 @@ setMethod(f = "get_single_run",
 # -object a `HierarchicalPartition-class` object
 # -known a vector or a data frame with known factors
 #
+# == details
+# The function test correlation between classes and known annotations at each node in the hierarchy.
+#
 # == value
 # A matrix of p-values.
 #
@@ -379,8 +385,36 @@ setMethod(f = "test_to_known_factors",
 	signature = "HierarchicalPartition",
 	definition = function(object, known = object@list[[1]]@known_anno) {
 
+	if(!is.null(known)) {
+		if(is.atomic(known)) {
+			df = data.frame(known)
+			colnames(df) = deparse(substitute(known))
+			knwon = df
+		}
+	}
+
+	all_nodes = sort(unique(object@hierarchy))
+	all_nodes = all_nodes[all_nodes != "0"]
+
+	p = NULL
+	for(nm in all_nodes) {
+		nc = nchar(nm)
+		which_group = as.numeric(substr(nm, nc, nc))
+		parent = substr(nm, 1, nc - 1)
+		obj = object@list[[parent]]
+		best_k = get_best_k(obj)
+		
+		cl = get_class(obj, k = best_k)$class
+		cl[cl != which_group] = 0
+
+		column_index = obj@column_index
+
+		p = rbind(p, test_between_factors(factor(cl), known[column_index, , drop = FALSE]))
+	}
+	rownames(p) = all_nodes
+
 	class = get_class(object)
 	m = test_between_factors(class, known, verbose = FALSE)
-	rownames(m) = paste(object@list[[1]]@top_method, object@list[[1]]@partition_method, sep = ":")
-	return(m)
+	p = rbind(p, overall = m)
+	return(p)
 })

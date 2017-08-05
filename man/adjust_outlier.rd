@@ -20,7 +20,7 @@ Vaules larger than percential \code{1 - q} are adjusted to \code{1 - q} and
 values smaller than percential \code{q} are adjusted to \code{q}.
 }
 \value{
-a numeric vector with same length as the original one.
+A numeric vector with same length as the original one.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

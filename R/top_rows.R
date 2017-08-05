@@ -19,7 +19,7 @@
 #
 setMethod(f = "top_rows_overlap",
 	signature = "ConsensusPartitionList",
-	definition = function(object, top_n = round(0.25*length(all_value_list[[1]])), 
+	definition = function(object, top_n = object@list[[1]]@top_n[1], 
 		type = c("venn", "correspondance"), ...) {
 
 	all_value_list = object@.env$all_value_list
@@ -131,7 +131,7 @@ setMethod(f = "top_rows_overlap",
 #
 setMethod(f = "top_rows_heatmap",
 	signature = "ConsensusPartitionList",
-	definition = function(object, top_n = round(0.25*length(all_value_list[[1]])), ...) {
+	definition = function(object, top_n = object@list[[1]]@top_n[1], ...) {
 
 	all_value_list = object@.env$all_value_list
     
@@ -145,7 +145,8 @@ setMethod(f = "top_rows_heatmap",
 #
 # == param
 # -object a numeric matrix
-# -all_value_list scores that have already been calculated from the matrix
+# -all_value_list scores that have already been calculated from the matrix. If it is ``NULL``
+#              the values are calculated by methods in ``top_method``.
 # -top_method methods defined in `all_top_value_methods`.
 # -top_n number of top rows
 # -layout_nr number of rows in the layout
@@ -228,7 +229,7 @@ setMethod(f = "top_rows_heatmap",
 #
 # == details
 # The function calls `gplots::venn` to reformat the data and
-# call `venneuler::venneuler` to make the plot.
+# then calls `venneuler::venneuler` to make the plot.
 #
 # == value
 # No value is returned.

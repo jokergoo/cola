@@ -20,7 +20,7 @@ Get membership matrix
 \details{
 If \code{each == TRUE}, the value in the membership matrix is the probability
 to be in one subgroup, while if \code{each == FALSE}, the membership matrix contains the 
-class labels for the partitions in all resamplings.
+class labels for the partitions in all random samplings.
 }
 \value{
 A membership matrix where rows correspond to the samples in the original matrix.

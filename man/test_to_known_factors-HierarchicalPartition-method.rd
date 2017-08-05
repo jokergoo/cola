@@ -15,6 +15,9 @@ Test correspondance between predicted and known classes
   \item{known}{a vector or a data frame with known factors}
 
 }
+\details{
+The function test correlation between classes and known annotations at each node in the hierarchy.
+}
 \value{
 A matrix of p-values.
 }

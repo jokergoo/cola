@@ -19,9 +19,9 @@ Get statistics
 The statistics are:
 
 \describe{
-  \item{cophcor}{cophenetic correlation coefficient}
-  \item{PAC}{proportion of ambiguous clustering, calculated by \code{\link{PAC}}}
-  \item{mean_silhouette}{the mean silhouette score}
+  \item{cophcor}{cophenetic correlation coefficient.}
+  \item{PAC}{proportion of ambiguous clustering, calculated by \code{\link{PAC}}.}
+  \item{mean_silhouette}{the mean silhouette score.}
 }
 }
 \value{
