@@ -174,6 +174,7 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 #
 # == param
 # -object a `HierarchicalPartition-class` object
+# -depth minimal depth of the hierarchy
 #
 # == return
 # A vector of predicted classes.
@@ -183,9 +184,14 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 #
 setMethod(f = "get_class",
 	signature = "HierarchicalPartition",
-	definition = function(object) {
+	definition = function(object, depth = NULL) {
 
-	object@subgroup
+	subgroup = object@subgroup
+	if(!is.null(depth)) {
+		l = nchar(subgroup) > depth
+		subgroup[l] = substr(subgroup[l], 1, depth)
+	}
+	subgroup
 })
 
 
@@ -242,6 +248,7 @@ setMethod(f = "show",
 #
 # == param
 # -object a `HierarchicalPartition-class` object.
+# -depth minimal depth of the hierarchy
 # 
 # == details
 # The function called `get_signatures,ConsensusPartition-method` to find signatures at
@@ -255,9 +262,13 @@ setMethod(f = "show",
 #
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object) {
+	definition = function(object, depth = NULL) {
 
 	all_subgroup_labels = unique(object@subgroup)
+	if(!is.null(depth)) {
+		all_subgroup_labels = all_subgroup_labels[nchar(all_subgroup_labels) <= depth]
+	}
+
 	sig_lt = list()
 	for(nm in all_subgroup_labels) {
 		nc = nchar(nm)
@@ -285,6 +296,7 @@ setMethod(f = "get_signatures",
 #
 # == param
 # -object a `HierarchicalPartition-class` object.
+# -depth minimal depth of the hierarchy
 # -anno a data frame with known annotation of samples.
 # -anno_col a list of colors for the annotations in ``anno``.
 # -... other arguments.
@@ -300,12 +312,12 @@ setMethod(f = "get_signatures",
 #
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
-	definition = function(object, anno = object@list[[1]]@known_anno, 
+	definition = function(object, depth = NULL, anno = object@list[[1]]@known_anno, 
 	anno_col = if(missing(anno)) object@list[[1]]@known_col else NULL,
 	...) {
 
 	data = object@list[[1]]@.env$data
-	cl = get_class(object)
+	cl = get_class(object, depth = depth)
 
 	data = t(scale(t(data)))
 	rm = do.call("cbind", tapply(1:ncol(data), cl, function(ind) rowMeans(data[, ind])))
@@ -370,6 +382,7 @@ setMethod(f = "get_single_run",
 #
 # == param
 # -object a `HierarchicalPartition-class` object
+# -depth minimal depth of the hierarchy
 # -known a vector or a data frame with known factors
 #
 # == details
@@ -383,7 +396,7 @@ setMethod(f = "get_single_run",
 #
 setMethod(f = "test_to_known_factors",
 	signature = "HierarchicalPartition",
-	definition = function(object, known = object@list[[1]]@known_anno) {
+	definition = function(object, depth = NULL, known = object@list[[1]]@known_anno) {
 
 	if(!is.null(known)) {
 		if(is.atomic(known)) {
@@ -393,8 +406,11 @@ setMethod(f = "test_to_known_factors",
 		}
 	}
 
-	all_nodes = sort(unique(object@hierarchy))
+	all_nodes = sort(unique(as.vector(object@hierarchy)))
 	all_nodes = all_nodes[all_nodes != "0"]
+	if(!is.null(depth)) {
+		all_nodes = all_nodes[nchar(all_nodes) <= depth]
+	}
 
 	p = NULL
 	for(nm in all_nodes) {

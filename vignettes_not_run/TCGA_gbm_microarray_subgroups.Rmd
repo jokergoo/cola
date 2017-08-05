@@ -1,4 +1,10 @@
+---
+title: "cola"
 
+output:
+  html_document:
+    css: "style.css"
+---
 
 ```{r}
 library(cola)
@@ -7,11 +13,11 @@ library(cola)
 Data is from https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/.
 
 ```{r}
-data = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/unifiedScaled.txt", 
+data = read.table("~/analysis/unifiedScaled.txt", 
 	header = TRUE, row.names = 1, check.names = FALSE)
 data = as.matrix(data)
 
-subtype = read.table("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_unified_CORE_ClaNC840.txt", 
+subtype = read.table("~/analysis/TCGA_unified_CORE_ClaNC840.txt", 
 	sep = "\t", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE)
 subtype = structure(unlist(subtype[1, -(1:2)]), names = colnames(subtype)[-(1:2)])
 
@@ -40,7 +46,7 @@ res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k =
 ```
 
 ```{r}
-res_list = readRDS("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup_p0.8.rds")
+res_list = readRDS("~/analysis/TCGA_subgroup_p0.8.rds")
 res_list
 ```
 
@@ -51,18 +57,18 @@ get_best_k(res_list)
 Collect all plots for a k:
 
 ```{r, fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()), results = "hide"}
-collect_plots(res_list, k = 3, fun = plot_ecdf)
-collect_plots(res_list, k = 3, fun = consensus_heatmap)
-collect_plots(res_list, k = 3, fun = membership_heatmap)
-collect_plots(res_list, k = 3, fun = get_signatures)
+collect_plots(res_list, k = 4, fun = plot_ecdf)
+collect_plots(res_list, k = 4, fun = consensus_heatmap)
+collect_plots(res_list, k = 4, fun = membership_heatmap)
+# collect_plots(res_list, k = 3, fun = get_signatures)
 ```
 
 ```{r}
-get_stat(res_list, k = 3)
+get_stat(res_list, k = 4)
 ```
 
 ```{r}
-collect_classes(res_list, k = 3)
+collect_classes(res_list, k = 4)
 ```
 
 Overlap of top rows in different top methods:
@@ -82,7 +88,7 @@ top_rows_overlap(res_list, top_n = 1000, type = "correspondance")
 
 Heatmaps for the top rows:
 
-```{r}
+```{r, fig.width = 14, fig.height = 14/4}
 top_rows_heatmap(res_list, top_n = 1000)
 ```
 
@@ -101,42 +107,45 @@ collect_plots(res)
 
 plots:
 
-```{r, results = "hide"}
+```{r, results = "hide", fig.width = 10}
 select_partition_number(res)
-consensus_heatmap(res, k = 3)
-membership_heatmap(res, k = 3)
-get_signatures(res, k = 3)
+```
+
+```{r}
+get_best_k(res)
+consensus_heatmap(res, k = 4)
+membership_heatmap(res, k = 4)
+# get_signatures(res, k = 4)
 ```
 
 Get classifications
 
 ```{r}
-class_df = get_class(res, k = 3)
-head(class_df)
+get_class(res, k = 4)
 ```
 
 MDS or T-sne plots:
 
 ```{r}
-dimension_reduction(res, k = 3)
-dimension_reduction(res, k = 3, method = "tsne")
+dimension_reduction(res, k = 4)
+dimension_reduction(res, k = 4, method = "tsne")
 ```
 
 Consistency of classes.
 
 ```{r}
-collect_classes(res_list, k = 3)
+collect_classes(res_list, k = 4)
 collect_classes(res)
 ```
 
-```{r}
+```{r, eval = FALSE}
 res = hierarchical_partition(data, top_n = c(1000, 2000, 4000), 
 	known_anno = data.frame(subtype = subtype), 
 	known_col = list(subtype = structure(seq_len(4), names = unique(subtype))))
 ```
 
 ```{r}
-res = readRDS("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup_hierarchical_partition.rds")
+res = readRDS("~/analysis/TCGA_subgroup_hierarchical_partition.rds")
 res
 ```
 
