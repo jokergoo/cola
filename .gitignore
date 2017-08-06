@@ -5,4 +5,5 @@
 *.o
 *.so
 bk
+vignettes_not_run/figure
 
