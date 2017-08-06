@@ -7,11 +7,12 @@ Get class from the HierarchicalPartition object
 Get class from the HierarchicalPartition object
 }
 \usage{
-\S4method{get_class}{HierarchicalPartition}(object)
+\S4method{get_class}{HierarchicalPartition}(object, depth = NULL)
 }
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object}
+  \item{depth}{minimal depth of the hierarchy}
 
 }
 \value{

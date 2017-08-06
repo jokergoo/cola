@@ -115,6 +115,12 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	}, mc.cores = mc.cores)
 	names(lt) = paste(comb[, 1], comb[, 2], sep = ":")
 
+	for(i in seq_along(lt)) {
+		if(!identical(.env, lt[[i]]@.env)) {
+			lt[[i]]@.env = .env
+		}
+	}
+
 	i_error = which(sapply(lt, inherits, "try-error"))
 	if(length(i_error)) {
 		for(i in i_error) {
@@ -124,15 +130,16 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	}
 	
 	res_list@list = lt
+	data2 = t(scale(t(data)))
 	cat("adjust class labels according to the consensus classification from all methods.\n")
 	reference_class = lapply(lt[[1]]@k, function(k) {
 		class_ids = get_class(res_list, k)$class
-		mean_dist = tapply(seq_len(ncol(data)), class_ids, function(ind) {
+		mean_dist = tapply(seq_len(ncol(data2)), class_ids, function(ind) {
 			n = length(ind)
 			if(n == 1) {
 				return(Inf)
 			}
-			sum(dist(t(data[, ind, drop = FALSE]))^2)/(n*(n-1)/2)
+			sum(dist(t(data2[, ind, drop = FALSE]))^2)/(n*(n-1)/2)
 		})
 		map = structure(names = names(mean_dist)[order(mean_dist)], names(mean_dist))
 		class_ids = as.numeric(map[as.character(class_ids)])
@@ -154,7 +161,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
         	map = relabel_class(class, reference_class[[ik]])
         	map2 = structure(names(map), names = map)
         	res@object_list[[ik]]$class_df$class = as.numeric(map[as.character(class)])
-        	
+
         	res@object_list[[ik]]$membership = res@object_list[[ik]]$membership[, as.numeric(map2[as.character(1:k)]) ]
 			colnames(res@object_list[[ik]]$membership) = paste0("p", 1:k)
 			
@@ -165,6 +172,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	    }
 	    lt[[i]] = res
 	}
+	res_list@list = lt
 
 	return(res_list)
 }
@@ -242,12 +250,22 @@ setMethod(f = "get_best_k",
 	definition = function(object) {
 
 	best_k = NULL
+	cophcor = NULL
+	PAC = NULL
+	mean_silhouette = NULL
 	for(tm in object@top_method) {
 		for(pm in object@partition_method) {
 			nm = paste0(tm, ":", pm)
 			obj = object@list[[nm]]
 			best_k[nm] = get_best_k(obj)
+			stat = get_stat(obj, k = best_k[nm])
+			cophcor[nm] = stat[1, "cophcor"]
+			PAC[nm] = stat[1, "PAC"]
+			mean_silhouette[nm] = stat[1, "mean_silhouette"]
 		}
 	}
-	return(data.frame(best_k = best_k))
+	return(data.frame(best_k = best_k,
+		cophcor = cophcor,
+		PAC = PAC,
+		mean_silhouette = mean_silhouette))
 })

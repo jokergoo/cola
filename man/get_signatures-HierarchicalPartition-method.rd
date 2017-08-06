@@ -7,11 +7,12 @@ Get signatures rows
 Get signatures rows
 }
 \usage{
-\S4method{get_signatures}{HierarchicalPartition}(object)
+\S4method{get_signatures}{HierarchicalPartition}(object, depth = NULL)
 }
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
+  \item{depth}{minimal depth of the hierarchy}
 
 }
 \details{

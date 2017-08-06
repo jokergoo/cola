@@ -24,7 +24,7 @@ setMethod(f = "top_rows_overlap",
 
 	all_value_list = object@.env$all_value_list
 
-	top_rows_overlap(all_value_list, type = type, ...)
+	top_rows_overlap(all_value_list, top_n = top_n, type = type, ...)
 })
 
 # == title
