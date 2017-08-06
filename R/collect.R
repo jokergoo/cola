@@ -229,13 +229,14 @@ setMethod(f = "collect_classes",
 	}
 
 	pac = get_stat(object, k)[, "PAC"][colnames(class_mat)]
-	ht = Heatmap(t(class_mat), name = "class", col = brewer_pal_set2_col, 
+	consensus_class = get_class(object, k = k)$class
+	ht = Heatmap(t(class_mat), name = "class", col = brewer_pal_set2_col, column_order = order(consensus_class),
 		row_names_side = "left", show_row_dend = FALSE, cluster_columns = TRUE,
 		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
 		cell_fun = function(j, i, x, y, w, h, fill) {
 			col = adjust_by_transparency(fill, 1 - silhouette_mat[j, i])
 			grid.rect(x, y, w, h, gp = gpar(fill = col, col = col))
-		}, top_annotation = HeatmapAnnotation(consensus_class = get_class(object, k = k)$class, 
+		}, top_annotation = HeatmapAnnotation(consensus_class = consensus_class, 
 			col = list(consensus_class = brewer_pal_set2_col),
 			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE)) + 
 		rowAnnotation(mean_silhouette = row_anno_barplot(get_stat(object, k = k)[, "mean_silhouette"], baseline = 0, axis = TRUE),

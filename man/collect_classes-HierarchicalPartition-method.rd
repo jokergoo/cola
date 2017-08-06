@@ -7,13 +7,14 @@ Collect classes from hierarchical_partition object
 Collect classes from hierarchical_partition object
 }
 \usage{
-\S4method{collect_classes}{HierarchicalPartition}(object, anno = object@list[[1]]@known_anno,
+\S4method{collect_classes}{HierarchicalPartition}(object, depth = NULL, anno = object@list[[1]]@known_anno,
     anno_col = if(missing(anno)) object@list[[1]]@known_col else NULL,
     ...)
 }
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
+  \item{depth}{minimal depth of the hierarchy}
   \item{anno}{a data frame with known annotation of samples.}
   \item{anno_col}{a list of colors for the annotations in \code{anno}.}
   \item{...}{other arguments.}
