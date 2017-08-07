@@ -179,7 +179,7 @@ setMethod(f = "get_class",
 	definition = function(object, k) {
 
 	if(!is.null(object@consensus_class)) {
-		return(object@consensus_class)
+		return(object@consensus_class[[as.character(k)]])
 	}
 
 	res = object

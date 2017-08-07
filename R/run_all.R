@@ -134,7 +134,8 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	data2 = t(scale(t(data)))
 	cat("adjust class labels according to the consensus classification from all methods.\n")
 	reference_class = lapply(lt[[1]]@k, function(k) {
-		class_ids = get_class(res_list, k)$class
+		cl_df = get_class(res_list, k)
+		class_ids = cl_df$class
 		mean_dist = tapply(seq_len(ncol(data2)), class_ids, function(ind) {
 			n = length(ind)
 			if(n == 1) {
@@ -144,7 +145,8 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 		})
 		map = structure(names = names(mean_dist)[order(mean_dist)], names(mean_dist))
 		class_ids = as.numeric(map[as.character(class_ids)])
-		return(class_ids)
+		cl_df$class = class_ids
+		return(cl_df)
 	})
 	names(reference_class) = as.character(lt[[1]]@k)
 	res_list@consensus_class = reference_class
@@ -161,7 +163,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
         	# - res$object_list[[ik]]$membership_each
         	class_df = get_class(res, k)
         	class = class_df[, "class"]
-        	map = relabel_class(class, reference_class[[ik]])
+        	map = relabel_class(class, reference_class[[ik]]$class)
         	map2 = structure(names(map), names = map)
         	res@object_list[[ik]]$class_df$class = as.numeric(map[as.character(class)])
 
