@@ -58,6 +58,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 		list = list(), 
 		top_method = top_method, 
 		partition_method = partition_method, 
+		consensus_class = NULL,
 		.env = .env
 	)
 
@@ -145,6 +146,8 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 		class_ids = as.numeric(map[as.character(class_ids)])
 		return(class_ids)
 	})
+	names(reference_class) = as.character(lt[[1]]@k)
+	res_list@consensus_class = reference_class
 
 	for(i in seq_along(lt)) {
 		res = lt[[i]]

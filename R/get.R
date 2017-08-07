@@ -177,6 +177,11 @@ setMethod(f = "get_class",
 setMethod(f = "get_class",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
+
+	if(!is.null(object@consensus_class)) {
+		return(object@consensus_class)
+	}
+
 	res = object
 	partition_list = NULL
 	mean_cophcor = NULL
