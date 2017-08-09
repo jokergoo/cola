@@ -22,7 +22,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
     slots = list(
         list = "list",
         hierarchy = "matrix",
-        subgroup = "character"
+        subgroup = "character",
+        subgroup_col = "character"
     )
 )
 
@@ -137,6 +138,9 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 	hp@list = .h_obj$list
 	hp@subgroup = .h_obj$subgroup
 	names(hp@subgroup) = colnames(data)
+
+	le = unique(as.vector(hp@hierarchy))
+	hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
 
 	return(hp)
 }
@@ -280,6 +284,8 @@ setMethod(f = "get_signatures",
 		sig = get_signatures(obj, k = best_k, verbose = FALSE, plot = FALSE)$group
 		if(which_group != 0) {
 			sig_lt[[nm]] = names(sig[sig == which_group])
+		} else if(nm == strrep("0", nchar(parent) + 1)) {
+			sig_lt[[nm]] = names(sig[sig != which_group])
 		} else {
 			l = grepl(qq("^@{parent}[1-9]$"), all_subgroup_labels)
 			if(any(l)) {
@@ -288,7 +294,39 @@ setMethod(f = "get_signatures",
 			}
 		}
 	}
-	sig_lt
+	all_sig = unique(unlist(sig_lt))
+
+	data = object@list[[1]]@.env$data
+	data = t(scale(t(data)))
+	m = data[all_sig, , drop = FALSE]
+	if(nrow(m) > 5000) {
+		qqcat("randomly sample 5000 rows from @{nrow(m)} total rows.\n")
+		ind = sample(nrow(m), 5000)
+	} else {
+		ind = seq_len(nrow(m))
+	}
+	subgroup = get_class(object, depth = depth)
+	col_order = column_order_by_group(subgroup, m)
+	mat_range = quantile(abs(m[ind, ]), 0.95)
+	col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
+		browser()
+	ht_list = Heatmap(m[ind, ], top_annotation = HeatmapAnnotation(subgroup = subgroup, col = list(subgroup = object@subgroup_col), show_annotation_name = TRUE),
+		name = "scaled_expr", show_row_names = FALSE, cluster_columns = FALSE, column_order = col_order, col = col_fun,
+		show_row_dend = FALSE)
+	m_sig = matrix(0, nrow = length(all_sig), ncol = length(sig_lt))
+	rownames(m_sig) = all_sig
+	colnames(m_sig) = names(sig_lt)
+	for(i in seq_along(sig_lt)) {
+		m_sig[sig_lt[[i]], i] = 1
+	}
+	ht_list = ht_list + rowAnnotation(df = m_sig[ind, , drop = FALSE], col = do.call("c", lapply(seq_along(names(sig_lt)), function(x) {
+		foo = list(c("1" = object@subgroup_col[x], "0" = "white"))
+		names(foo) = x
+		foo
+	})), width = unit(0.5*length(sig_lt), "cm"), show_legend = FALSE)
+	draw(ht_list)
+
+	return(invisible(sig_lt))
 })
 
 # == title
@@ -333,9 +371,7 @@ setMethod(f = "collect_classes",
 	hc = as.dendrogram(hclust(dist(t(fake_mat))))
 	hc = reorder(hc, colMeans(fake_mat))
 
-	cl_level = sort(unique(cl))
-	cl_col = structure(brewer_pal_set2_col[seq_along(cl_level)], names = cl_level)
-	ht_list = Heatmap(cl, name = "subgroups", width = unit(1, "cm"), col = cl_col,
+	ht_list = Heatmap(cl, name = "subgroups", width = unit(1, "cm"), col = object@subgroup_col,
 		row_title_rot = 0, cluster_rows = hc, row_dend_width = unit(2, "cm"))
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {

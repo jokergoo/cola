@@ -1,10 +1,3 @@
----
-title: "cola"
-
-output:
-  html_document:
-    css: "style.css"
----
 
 ```{r}
 library(cola)
@@ -13,8 +6,8 @@ library(cola)
 Data is from https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/.
 
 ```{r}
-data = read.table("~/analysis/unifiedScaled.txt", 
-	header = TRUE, row.names = 1, check.names = FALSE)
+data = read.table("~/analysis/unifiedScaled.txt", header = TRUE, row.names = 1, 
+	check.names = FALSE)
 data = as.matrix(data)
 
 subtype = read.table("~/analysis/TCGA_unified_CORE_ClaNC840.txt", 
@@ -39,14 +32,11 @@ register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = 4))
 
 Run clustering for all combination of methods in batch:
 
-```{r, eval = FALSE}
-res = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = 4,
+```{r, eval = FALSE, eval = 1, echo = -1}
+res_list = readRDS("~/analysis/TCGA_subgroup_p0.8.rds")
+res_list = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 4000), k = 2:6, mc.cores = 4,
 	known_anno = data.frame(subtype = subtype), 
 	known_col = list(subtype = structure(seq_len(4), names = unique(subtype))))
-```
-
-```{r}
-res_list = readRDS("~/analysis/TCGA_subgroup_p0.8.rds")
 res_list
 ```
 
@@ -67,7 +57,7 @@ collect_plots(res_list, k = 4, fun = membership_heatmap)
 get_stat(res_list, k = 4)
 ```
 
-```{r}
+```{r, fig.width = 12}
 collect_classes(res_list, k = 4)
 ```
 
@@ -157,3 +147,11 @@ collect_classes(res)
 get_class(res)
 ```
 
+```{r}
+collect_classes(res, depth = 4)
+```
+
+```{r}
+sig = get_signatures(res, depth = 4)
+venn_euler(sig)
+```

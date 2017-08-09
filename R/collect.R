@@ -49,14 +49,14 @@ setMethod(f = "collect_plots",
 	    	res = get_single_run(object, top_method = top_method[i], partition_method = partition_method[j])
 	    	if(get_stat(res, k = k)[, "PAC"] < 0.1) {
 	    		highlight_row = c(highlight_row, i + 1)
-	    		highlight_col = c(highlight_row, j + 1)
+	    		highlight_col = c(highlight_col, j + 1)
 	    	}
 	    	pushViewport(viewport(layout.pos.row = i + 1, layout.pos.col = j + 1))
 	    	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
     		# image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
     		image_width = 800
     		image_height = 800
-	        file_name = tempfile()
+	        file_name = tempfile(fileext = ".png")
 	        png(file_name, width = image_width, height = image_height)
 	        oe = try(fun(res, k = k, show_legend = FALSE, show_column_names = FALSE, use_raster = FALSE, ...))
 	        dev.off()
@@ -230,8 +230,10 @@ setMethod(f = "collect_classes",
 
 	pac = get_stat(object, k)[, "PAC"][colnames(class_mat)]
 	consensus_class = get_class(object, k = k)$class
-	ht = Heatmap(t(class_mat), name = "class", col = brewer_pal_set2_col, column_order = order(consensus_class),
-		row_names_side = "left", show_row_dend = FALSE, cluster_columns = TRUE,
+	m = t(class_mat)
+	column_order = column_order_by_group(consensus_class, m)
+	ht = Heatmap(m, name = "class", col = brewer_pal_set2_col, column_order = column_order,
+		row_names_side = "left", show_row_dend = FALSE, cluster_columns = FALSE,
 		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
 		cell_fun = function(j, i, x, y, w, h, fill) {
 			col = adjust_by_transparency(fill, 1 - silhouette_mat[j, i])
