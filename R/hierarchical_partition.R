@@ -309,7 +309,7 @@ setMethod(f = "get_signatures",
 	col_order = column_order_by_group(subgroup, m)
 	mat_range = quantile(abs(m[ind, ]), 0.95)
 	col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
-		browser()
+
 	ht_list = Heatmap(m[ind, ], top_annotation = HeatmapAnnotation(subgroup = subgroup, col = list(subgroup = object@subgroup_col), show_annotation_name = TRUE),
 		name = "scaled_expr", show_row_names = FALSE, cluster_columns = FALSE, column_order = col_order, col = col_fun,
 		show_row_dend = FALSE)
