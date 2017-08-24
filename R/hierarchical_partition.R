@@ -280,12 +280,16 @@ setMethod(f = "get_signatures",
 		parent = substr(nm, 1, nc - 1)
 		obj = object@list[[parent]]
 		best_k = get_best_k(obj)
-		qqcat("get signatures at node @{parent} with @{best_k} subgroups.\n")
+		qqcat("get signatures at node @{parent} for @{nm} with @{best_k} subgroups.\n")
 		sig = get_signatures(obj, k = best_k, verbose = FALSE, plot = FALSE)$group
 		if(which_group != 0) {
 			sig_lt[[nm]] = names(sig[sig == which_group])
 		} else if(nm == strrep("0", nchar(parent) + 1)) {
-			sig_lt[[nm]] = names(sig[sig != which_group])
+			l = grepl(qq("^@{parent}\\d$"), all_subgroup_labels)
+			same_level = all_subgroup_labels[l]
+			other_group = setdiff(seq_len(best_k), substr(same_level, nc, nc))
+			qqcat("  use subgroup @{paste(other_group, collapse = ', ')}\n")
+			sig_lt[[nm]] = names(sig[sig %in% other_group])
 		} else {
 			l = grepl(qq("^@{parent}[1-9]$"), all_subgroup_labels)
 			if(any(l)) {
@@ -319,11 +323,13 @@ setMethod(f = "get_signatures",
 	for(i in seq_along(sig_lt)) {
 		m_sig[sig_lt[[i]], i] = 1
 	}
-	ht_list = ht_list + rowAnnotation(df = m_sig[ind, , drop = FALSE], col = do.call("c", lapply(seq_along(names(sig_lt)), function(x) {
-		foo = list(c("1" = object@subgroup_col[x], "0" = "white"))
-		names(foo) = x
+	col2 = lapply(names(sig_lt), function(x) {
+		foo = c("1" = object@subgroup_col[x], "0" = "white")
+		names(foo) = c("1", "0")
 		foo
-	})), width = unit(0.5*length(sig_lt), "cm"), show_legend = FALSE)
+	})
+	names(col2) = colnames(m_sig)
+	ht_list = ht_list + rowAnnotation(df = m_sig[ind, , drop = FALSE], col = col2, width = unit(0.5*length(sig_lt), "cm"), show_legend = FALSE)
 	draw(ht_list)
 
 	return(invisible(sig_lt))

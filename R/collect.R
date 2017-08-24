@@ -232,6 +232,13 @@ setMethod(f = "collect_classes",
 	consensus_class = get_class(object, k = k)$class
 	m = t(class_mat)
 	column_order = column_order_by_group(consensus_class, m)
+	if(is.null(object@list[[1]]@known_anno)) {
+		bottom_annotation = NULL
+	} else {
+		bottom_annotation = HeatmapAnnotation(df = object@list[[1]]@known_anno, 
+			col = object@list[[1]]@known_col, show_annotation_name = TRUE,
+			annotation_name_side = "left")
+	}
 	ht = Heatmap(m, name = "class", col = brewer_pal_set2_col, column_order = column_order,
 		row_names_side = "left", show_row_dend = FALSE, cluster_columns = FALSE,
 		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
@@ -240,7 +247,8 @@ setMethod(f = "collect_classes",
 			grid.rect(x, y, w, h, gp = gpar(fill = col, col = col))
 		}, top_annotation = HeatmapAnnotation(consensus_class = consensus_class, 
 			col = list(consensus_class = brewer_pal_set2_col),
-			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE)) + 
+			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE),
+		bottom_annotation = bottom_annotation) + 
 		rowAnnotation(mean_silhouette = row_anno_barplot(get_stat(object, k = k)[, "mean_silhouette"], baseline = 0, axis = TRUE),
 			width = unit(2, "cm")) +
 		Heatmap((pac < 0.1) + 0, name = "PAC < 0.1", col = c("1" = "orange", "0" = "white"),

@@ -137,7 +137,8 @@ setMethod(f = "top_rows_heatmap",
     
     mat = object@.env$data
 
-    top_rows_heatmap(mat, all_value_list = all_value_list, top_n = top_n, ...)
+    top_rows_heatmap(mat, all_value_list = all_value_list, top_n = top_n, 
+    	scale_rows = res_list@list[[1]]@scale_rows, ...)
 })
 
 # == title
@@ -150,6 +151,7 @@ setMethod(f = "top_rows_heatmap",
 # -top_method methods defined in `all_top_value_methods`.
 # -top_n number of top rows
 # -layout_nr number of rows in the layout
+# -scale_rows whether scale rows
 #
 # == details
 # The function makes heatmaps where the rows are scaled for the top k rows
@@ -171,7 +173,7 @@ setMethod(f = "top_rows_heatmap",
 setMethod(f = "top_rows_heatmap",
 	signature = "matrix",
 	definition = function(object, all_value_list = NULL, top_method = all_top_value_methods(), 
-		top_n = round(0.25*nrow(object)), layout_nr = 1) {
+		top_n = round(0.25*nrow(object)), layout_nr = 1, scale_rows = TRUE) {
 
 	if(is.null(all_value_list)) {
 		all_value_list = lapply(top_method, function(x) {
@@ -203,8 +205,11 @@ setMethod(f = "top_rows_heatmap",
 		if(nrow(mat) > 5000) {
 			mat = mat[sample(nrow(mat), 5000), ]
 		}
+		if(scale_rows) {
+			mat = t(scale(t(mat)))
+		}
 		oe = try(
-			draw(Heatmap(t(scale(t(mat))), name = "scaled_expr", show_row_names = FALSE, 
+			draw(Heatmap(mat, name = "matrix", show_row_names = FALSE,
 				column_title = qq("top @{top_n} rows of @{top_method[i]}"),
 				show_row_dend = FALSE, show_column_names = FALSE))
 		)
