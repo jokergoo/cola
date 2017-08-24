@@ -61,11 +61,12 @@ saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/GBM_450K_subg
 
 res = hierarchical_partition(data, top_n = c(5000, 10000, 15000, 20000),
 	scale_rows = FALSE, known_anno = phenotype, 
+	top_method = "sd", partition_method = "kmeans",
 	known_col = list(dkfz_subtype = structure(names = c("IDH", "K27", "G34", "RTK I PDGFRA", "Mesenchymal", "RTK II Classic"), brewer.pal(6, "Set1")),
         tcga_subtype = structure(names = c("G-CIMP+", "Cluster #2", "Cluster #3"), brewer.pal(3, "Set1"))), 
 )
 
-saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/GBM_450K_subgroup_hierarchical_partition.rds"))
+saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/GBM_450K_subgroup_hierarchical_partition_sd_kmeans.rds"))
 
 
 # cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_gbm_methylation.R --ncore 4")
