@@ -361,6 +361,9 @@ setMethod(f = "collect_classes",
 	...) {
 
 	data = object@list[[1]]@.env$data
+	if(nrow(data) > 5000) {
+		data = data[sample(nrow(data), 5000), ]
+	}
 	cl = get_class(object, depth = depth)
 
 	data = t(scale(t(data)))
