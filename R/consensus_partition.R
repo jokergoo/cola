@@ -629,7 +629,6 @@ setMethod(f = "membership_heatmap",
 # -remove whether to remove columns which have less silhouette values than
 #        the cutoff.
 # -tsne_param parameters pass to `Rtsne::Rtsne`
-# -... other arguments
 #
 # == value
 # No value is returned.
@@ -642,7 +641,7 @@ setMethod(f = "dimension_reduction",
 	definition = function(object, k, top_n = NULL,
 	method = c("mds", "pca", "tsne"),
 	silhouette_cutoff = 0.5, remove = FALSE,
-	tsne_param = list(), ...) {
+	tsne_param = list()) {
 
 	method = match.arg(method)
 	data = object@.env$data[, object@column_index, drop = FALSE]
@@ -654,16 +653,54 @@ setMethod(f = "dimension_reduction",
 		data = data[ind, , drop = FALSE]
 	}
 
+	class_df = get_class(object, k)
+
+	l = class_df$silhouette >= silhouette_cutoff
+	
+	if(remove) {
+		dimension_reduction(data[, l], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
+			cex = 1, main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
+			method = method, tsne_param = tsne_param)
+	} else {
+		dimension_reduction(data[, l], pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
+			cex = ifelse(l, 1, 0.7), main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
+			method = method, tsne_param = tsne_param)
+	}
+})
+
+
+# == title
+# Visualize columns after dimension reduction
+#
+# == param
+# -object a numeric matrix
+# -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
+#         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
+# -pch shape of points
+# -col color of points
+# -cex size of points
+# -main title of the plot
+# -tsne_param parameters pass to `Rtsne::Rtsne`
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "dimension_reduction",
+	signature = "matrix",
+	definition = function(object, 
+	pch = 16, col = "black", cex = 1, main = "",
+	method = c("mds", "pca", "tsne"),
+	tsne_param = list()) {
+
+	data = object
+	method = match.arg(method)
 	data = t(scale(t(data)))
 	l = apply(data, 1, function(x) any(is.na(x)))
 	data = data[!l, ]
 
-	ik = which(object@k == k)
-
-	class_df = get_class(object, k)
-	class_ids = class_df$class
-
-	l = class_df$silhouette >= silhouette_cutoff
 	if(method == "mds") {
 		loc = cmdscale(dist(t(data)))
 	} else if(method == "pca") {
@@ -675,12 +712,5 @@ setMethod(f = "dimension_reduction",
 	colnames(loc) = c("P1", "P2")
 	loc = as.data.frame(loc)
 
-	if(remove) {
-		plot(loc[l, ], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
-			cex = 1)
-	} else {
-		plot(loc, pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
-			cex = ifelse(l, 1, 0.7))
-	}
-	title(qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"))
+	plot(loc, pch = pch, col = col, cex = cex, main = main)
 })

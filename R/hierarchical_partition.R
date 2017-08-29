@@ -479,3 +479,41 @@ setMethod(f = "test_to_known_factors",
 	p = rbind(p, overall = m)
 	return(p)
 })
+
+
+setMethod(f = "dimension_reduction",
+	signature = "HierarchicalPartition",
+	definition = function(object, merge = FALSE, depth = NULL,
+	top_n = NULL, method = c("mds", "pca", "tsne"),
+	silhouette_cutoff = 0.5, tsne_param = list()) {
+
+	method = match.arg(method)
+	data = data = object@list[[1]]@.env$data
+
+	if(!is.null(top_n)) {
+		top_n = min(c(top_n, nrow(data)))
+		all_value = object@list[["0"]]@.env$all_value_list[[object@list[["0"]]@top_method]]
+		ind = order(all_value)[1:top_n]
+		data = data[ind, , drop = FALSE]
+	}
+
+	class = get_class(object, depth = depth)
+	if(merge) {
+		dimension_reduction(data, pch = 16, col = object@subgroup_col[class],
+			cex = 1, main = qq("Dimension reduction by @{method}, @{ncol(data)} samples"),
+			method = method, tsne_param = tsne_param)
+	} else {
+		all_nodes = sort(unique(as.vector(object@hierarchy)))
+		all_nodes = all_nodes[all_nodes != "0"]
+		if(!is.null(depth)) {
+			all_nodes = all_nodes[nchar(all_nodes) <= depth]
+		}
+		all_parents = all_nodes[nchar(all_nodes) < max(nchar(all_nodes))]
+		for(p in all_parents) {
+			obj = get_single_run(object, node = p)
+			dimension_reduction(obj, k = get_best_k(obj), top_n = top_n, method = method,
+				silhouette_cutoff = silhouette_cutoff, tsne_param = tsne_param)
+			legend("topleft", legend = qq("node @{p}"))
+		}
+	}
+})
