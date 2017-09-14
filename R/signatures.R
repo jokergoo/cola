@@ -357,7 +357,7 @@ compare_to_highest_subgroup = function(mat, class) {
 			fa = factor(class[l])
 			pmat[, i] = rowttests(m2, fa)[, "p.value"]
 		}
-		rowMins(pmat, na.rm = TRUE)
+		rowMaxs(pmat, na.rm = TRUE)
 	}
 
 	p = tapply(seq_len(nrow(mat)), group, function(ind) {

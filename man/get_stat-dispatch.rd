@@ -10,8 +10,8 @@ Method dispatch page for \code{get_stat}.
 \code{get_stat} can be dispatched on following classes:
 
 \itemize{
-\item \code{\link{get_stat,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{get_stat,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
+\item \code{\link{get_stat,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 }
 }
 \examples{

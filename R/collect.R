@@ -56,7 +56,7 @@ setMethod(f = "collect_plots",
     		# image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
     		image_width = 800
     		image_height = 800
-	        file_name = tempfile(fileext = ".png")
+	        file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height)
 	        oe = try(fun(res, k = k, show_legend = FALSE, show_column_names = FALSE, use_raster = FALSE, ...))
 	        dev.off()
@@ -138,7 +138,7 @@ setMethod(f = "collect_plots",
 
 	for(i in seq_along(all_k)) {
 		pushViewport(viewport(layout.pos.row = 2, layout.pos.col = i))
-		file_name = tempfile()
+		file_name = tempfile(tmpdir = ".")
         png(file_name, width = image_width*2, height = image_height*2)
         oe = try(consensus_heatmap(object, k = all_k[i], show_legend = FALSE, ...))
         dev.off()

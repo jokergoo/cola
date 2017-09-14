@@ -480,7 +480,25 @@ setMethod(f = "test_to_known_factors",
 	return(p)
 })
 
-
+# == title
+# Visualize columns after dimension reduction
+#
+# == param
+# -object a numeric matrix
+# -merge whether merge all samples into one single plot or make plots for every hierarchy
+# -depth depth of the hierarchy
+# -top_n top n genes to use
+# -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
+#         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
+# -silhouette_cutoff silhouette cutoff
+# -tsne_param parameters pass to `Rtsne::Rtsne`
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
 	definition = function(object, merge = FALSE, depth = NULL,

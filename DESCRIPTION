@@ -9,7 +9,7 @@ Depends: R (>= 3.3.0)
 Imports: ComplexHeatmap, matrixStats, GetoptLong, circlize, clue, parallel, 
   RColorBrewer, cluster, skmeans, png, gplots, mclust, wCorr,
   crayon, NMF, Rtsne, samr, methods, kohonen, tm, wordcloud, xml2,
-  microbenchmark
+  microbenchmark, httr
 Suggests: venneuler, mvtnorm, genefilter
 Description: Parallel compare methods for subgroup classification.
 URL: https://github.com/jokergoo/cola

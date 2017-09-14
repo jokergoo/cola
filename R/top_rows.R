@@ -138,7 +138,7 @@ setMethod(f = "top_rows_heatmap",
     mat = object@.env$data
 
     top_rows_heatmap(mat, all_value_list = all_value_list, top_n = top_n, 
-    	scale_rows = res_list@list[[1]]@scale_rows, ...)
+    	scale_rows = object@list[[1]]@scale_rows, ...)
 })
 
 # == title

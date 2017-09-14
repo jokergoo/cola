@@ -8,7 +8,7 @@ Heatmap of top rows from different top methods
 }
 \usage{
 \S4method{top_rows_heatmap}{matrix}(object, all_value_list = NULL, top_method = all_top_value_methods(),
-    top_n = round(0.25*nrow(object)), layout_nr = 1)
+    top_n = round(0.25*nrow(object)), layout_nr = 1, scale_rows = TRUE)
 }
 \arguments{
 
@@ -17,6 +17,7 @@ Heatmap of top rows from different top methods
   \item{top_method}{methods defined in \code{\link{all_top_value_methods}}.}
   \item{top_n}{number of top rows}
   \item{layout_nr}{number of rows in the layout}
+  \item{scale_rows}{whether scale rows}
 
 }
 \details{
