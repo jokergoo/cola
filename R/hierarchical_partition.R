@@ -228,7 +228,7 @@ setMethod(f = "show",
 
 	lines = character(n)
 	for(i in seq_len(n)) {
-		lines[i] = paste0(strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "+-", "|-") ,"- ", nodes[i], qq(", @{length(object@list[[nodes[i]]]@column_index)} cols"))
+		lines[i] = paste0(strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{length(object@list[[nodes[i]]]@column_index)} cols"))
 		p = nodes[i]
 		while(p != "0") {
 			p = parent[p]
