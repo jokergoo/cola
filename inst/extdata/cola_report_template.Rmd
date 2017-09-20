@@ -273,95 +273,44 @@ collect_classes(res_list, k = 4)
 
 Overlap of top rows in different top methods:
 
+[% 
+n_top = res_list@list[[1]]@top_n
+n_top_nc = min(c(3, length(n_top)))
+n_top_nr = ceiling(length(n_top)/n_top_nc)
+"" %]
+
 ```{r, fig.width = 14, fig.height = 14/3}
-par(mfrow = c(1, 3))
-top_rows_overlap(res_list, top_n = 1000)
-top_rows_overlap(res_list, top_n = 2000)
-top_rows_overlap(res_list, top_n = 4000)
+par(mfrow = c([% n_top_nr %], [% n_top_nc %]))
+[% paste("top_rows_overlap(res_list, top_n = ", n_top, ")", sep = "", collapse = "\n") %]
 ```
 
 Also visualize the correspondance of rankings between different scoreing methods:
 
 ```{r, fig.width = 14, fig.height = 8}
-top_rows_overlap(res_list, top_n = 1000, type = "correspondance")
+top_rows_overlap(res_list, top_n = [% min(n_top) %], type = "correspondance")
 ```
 
 Heatmaps for the top rows:
 
 ```{r, fig.width = 14, fig.height = 14/4}
-top_rows_heatmap(res_list, top_n = 1000)
+top_rows_heatmap(res_list, top_n = [% min(n_top) %])
 ```
 
-Get clustering in a specified combination of top method and partition method:
+
+[% 
+section_template = paste(readLines("~/project/cola/inst/extdata/section_template.Rmd"), collapse = "\n")
+section = NULL
+for(top_method in res_list@top_method) {
+    for(partition_method in res_list@partition_method) {
+        section = c(section, qq(section_template))
+    }
+}
+section = c(section, "\n")
+paste(section, collapse = "\n\n") %]
+
+
+## Session info
 
 ```{r}
-res = get_single_run(res_list, top_method = "MAD", partition_method = "kmeans")
-res
-```
-
-Collect all plots
-
-```{r, fig.width = 14, fig.height = 14*4/5, results = "hide"}
-collect_plots(res)
-```
-
-plots:
-
-```{r, results = "hide", fig.width = 10}
-select_partition_number(res)
-```
-
-```{r}
-get_best_k(res)
-consensus_heatmap(res, k = 4)
-membership_heatmap(res, k = 4)
-# get_signatures(res, k = 4)
-```
-
-Get classifications
-
-```{r}
-get_class(res, k = 4)
-```
-
-MDS or T-sne plots:
-
-```{r}
-dimension_reduction(res, k = 4)
-dimension_reduction(res, k = 4, method = "tsne")
-```
-
-Consistency of classes.
-
-```{r}
-collect_classes(res_list, k = 4)
-collect_classes(res)
-```
-
-```{r, eval = FALSE}
-res = hierarchical_partition(data, top_n = c(1000, 2000, 4000), 
-	known_anno = data.frame(subtype = subtype), 
-	known_col = list(subtype = structure(seq_len(4), names = unique(subtype))))
-```
-
-```{r}
-res = readRDS("~/analysis/TCGA_subgroup_hierarchical_partition.rds")
-res
-```
-
-```{r}
-collect_classes(res)
-```
-
-```{r}
-get_class(res)
-```
-
-```{r}
-collect_classes(res, depth = 4)
-```
-
-```{r}
-sig = get_signatures(res, depth = 4)
-venn_euler(sig)
+sessionInfo()
 ```

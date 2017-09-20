@@ -6,12 +6,42 @@ Date: 2017-4-14
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.3.0)
-Imports: ComplexHeatmap, matrixStats, GetoptLong, circlize, clue, parallel, 
-  RColorBrewer, cluster, skmeans, png, gplots, mclust, wCorr,
-  crayon, NMF, Rtsne, samr, methods, kohonen, tm, wordcloud, xml2,
-  microbenchmark, httr
-Suggests: venneuler, mvtnorm, genefilter
-Description: Parallel compare methods for subgroup classification.
+Imports: ComplexHeatmap, 
+         matrixStats, 
+         GetoptLong, 
+         circlize (>= 0.4.0), 
+         clue, 
+         parallel, 
+         RColorBrewer, 
+         cluster, 
+         skmeans, 
+         png, 
+         gplots, 
+         mclust, 
+         wCorr,
+         crayon, 
+         NMF, 
+         Rtsne, 
+         samr, 
+         methods, 
+         kohonen, 
+         tm, 
+         wordcloud, 
+         xml2,
+         microbenchmark, 
+         httr
+Suggests: venneuler, 
+          mvtnorm, 
+          genefilter
+Description: Subgroup classification is a basic task in genomic data analysis, 
+  especially for gene expression data and methylation data. It can predict novel 
+  subgroups when there is nothing known about the data or it can test consistency 
+  between predicted subgrups with known annotations. The cola package provides 
+  a general framework for subgroup classification by consensus clustering. 
+  It has following functionalities: 1. it tests multiple methods simultaneously; 
+  2. it provides rich visualizations for the stability of subgrouping; 3. it 
+  finds subgroups even the difference between subgroups are subtile; 4. it can 
+  find subgroups in a hierarchical manner.
 URL: https://github.com/jokergoo/cola
 License: GPL (>= 2)
 Packaged: 2017-4-14 00:00:00 UTC; Administrator

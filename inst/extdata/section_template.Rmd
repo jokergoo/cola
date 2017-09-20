@@ -1,0 +1,44 @@
+
+## @{top_method}:@{partition_method}
+
+```{r}
+res = get_single_run(res_list, top_method = "@{top_method}", partition_method = "@{partition_method}")
+res
+```
+
+Collect all plots
+
+```{r, fig.width = 14, fig.height = 14*4/5, results = "hide"}
+collect_plots(res)
+```
+
+plots:
+
+```{r, results = "hide", fig.width = 10}
+select_partition_number(res)
+```
+
+```{r}
+get_best_k(res)
+consensus_heatmap(res, k = 4)
+membership_heatmap(res, k = 4)
+# get_signatures(res, k = 4)
+```
+
+Get classifications
+
+```{r}
+get_class(res, k = 4)
+```
+
+MDS or T-sne plots:
+
+```{r}
+dimension_reduction(res, k = 4)
+```
+
+Consistency of classes.
+
+```{r}
+collect_classes(res)
+```
