@@ -178,75 +178,14 @@ hr {
 
 ```{r, echo = FALSE, message = FALSE}
 library(markdown)
-options(markdown.HTML.options = c(options('markdown.HTML.options')[[1]], "toc"))
+options(markdown.HTML.options = unique(c(options('markdown.HTML.options')[[1]], "toc")))
 options(width = 100)
+opts_chunk$set(comment = "#>")
 ```
-
-```{r, echo = FALSE}
-library(GetoptLong)
-KNITR_TAB_ENV = environment()
-KNITR_TAB_ENV$current_tab_index = 0
-KNITR_TAB_ENV$header = NULL
-KNITR_TAB_ENV$current_html = ""
-KNITR_TAB_ENV$random_str = runif(1, min = 1, max = 1e8)
-KNITR_TAB_ENV$css_added = FALSE
-knitr_add_tab_item = function(code, header, desc ="") {
-	KNITR_TAB_ENV$current_tab_index = KNITR_TAB_ENV$current_tab_index + 1
-	tab = qq("tab-@{KNITR_TAB_ENV$random_str}-@{KNITR_TAB_ENV$current_tab_index}")
-	knitr_text = qq(
-"@{strrep('`', 3)}{r @{tab}}
-@{code}
-@{strrep('`', 3)}
-
-@{desc}
-")	
-	md = knit(text = knitr_text, quiet = TRUE)
-	html = markdownToHTML(text = md, fragment.only = TRUE)
-	html = qq("<div id='@{tab}'>\n@{html}\n</div>\n")
-	
-	KNITR_TAB_ENV$header = c(KNITR_TAB_ENV$header, header)
-	KNITR_TAB_ENV$current_html = paste0(KNITR_TAB_ENV$current_html, html)
-	return(invisible(NULL))
-}
-
-knitr_insert_tabs = function() {
-	if(!KNITR_TAB_ENV$css_added) {
-		css = readLines("https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css")
-		cat("<style type='text/css'>\n")
-		cat(css, sep = "\n")
-		cat("</style>\n")
-	}
-	cat("
-<script src='https://code.jquery.com/jquery-1.12.4.js'></script>
-<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>
-<script>
-$( function() {
-	$( '#tabs' ).tabs();
-} );
-</script>
-")
-	cat("<div id='tabs'>\n")
-	cat("<ul>\n")
-	qqcat("<li><a href='#tab-@{KNITR_TAB_ENV$random_str}-@{seq_len(KNITR_TAB_ENV$current_tab_index)}'>@{KNITR_TAB_ENV$header}</a></li>\n")
-	cat("</ul>\n")
-	cat(KNITR_TAB_ENV$current_html)
-	cat("</div>\n")
-
-	KNITR_TAB_ENV$current_tab_index = 1
-	KNITR_TAB_ENV$header = NULL
-	KNITR_TAB_ENV$current_html = ""
-	KNITR_TAB_ENV$random_str = runif(1, min = 1, max = 1e8)
-	KNITR_TAB_ENV$css_added = TRUE
-	
-	return(invisible(NULL))
-}
-```
-
-
 
 All available functions which can be applied to `res_list` object.
 
-```
+```{r}
 res_list
 ```
 
@@ -256,7 +195,7 @@ get_best_k(res_list)
 
 Collect all plots for a k:
 
-```{r, fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()), results = "hide"}
+```{r consensus-partition-list-collect-plots, fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()), results = "hide"}
 collect_plots(res_list, k = 4, fun = plot_ecdf)
 collect_plots(res_list, k = 4, fun = consensus_heatmap)
 collect_plots(res_list, k = 4, fun = membership_heatmap)
@@ -267,7 +206,7 @@ collect_plots(res_list, k = 4, fun = membership_heatmap)
 get_stat(res_list, k = 4)
 ```
 
-```{r, fig.width = 12}
+```{r consensus-partition-list-collect-classes, fig.width = 12}
 collect_classes(res_list, k = 4)
 ```
 
@@ -279,26 +218,26 @@ n_top_nc = min(c(3, length(n_top)))
 n_top_nr = ceiling(length(n_top)/n_top_nc)
 "" %]
 
-```{r, fig.width = 14, fig.height = 14/3}
+```{r top-row-overlap, fig.width = 14, fig.height = 14/3}
 par(mfrow = c([% n_top_nr %], [% n_top_nc %]))
 [% paste("top_rows_overlap(res_list, top_n = ", n_top, ")", sep = "", collapse = "\n") %]
 ```
 
 Also visualize the correspondance of rankings between different scoreing methods:
 
-```{r, fig.width = 14, fig.height = 8}
+```{r top-row-overlap-by-correspondance, fig.width = 14, fig.height = 8}
 top_rows_overlap(res_list, top_n = [% min(n_top) %], type = "correspondance")
 ```
 
 Heatmaps for the top rows:
 
-```{r, fig.width = 14, fig.height = 14/4}
+```{r top-row-heatmap, fig.width = 14, fig.height = 14/4}
 top_rows_heatmap(res_list, top_n = [% min(n_top) %])
 ```
 
 
 [% 
-section_template = paste(readLines("~/project/cola/inst/extdata/section_template.Rmd"), collapse = "\n")
+section_template = paste(readLines("~/project/development/cola/inst/extdata/section_template.Rmd"), collapse = "\n")
 section = NULL
 for(top_method in res_list@top_method) {
     for(partition_method in res_list@partition_method) {

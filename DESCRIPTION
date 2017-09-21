@@ -29,7 +29,9 @@ Imports: ComplexHeatmap,
          wordcloud, 
          xml2,
          microbenchmark, 
-         httr
+         httr,
+         knitr,
+         markdown
 Suggests: venneuler, 
           mvtnorm, 
           genefilter

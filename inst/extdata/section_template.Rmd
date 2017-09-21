@@ -8,30 +8,40 @@ res
 
 Collect all plots
 
-```{r, fig.width = 14, fig.height = 14*4/5, results = "hide"}
+```{r @{top_method}-@{partition_method}-collect-plots, fig.width = 14, fig.height = 14*4/5, results = "hide", eval = FALSE}
 collect_plots(res)
 ```
 
 plots:
 
-```{r, results = "hide", fig.width = 10}
+```{r @{top_method}-@{partition_method}-select-partition-number, results = "hide", fig.width = 10}
 select_partition_number(res)
 ```
 
 ```{r}
 get_best_k(res)
-consensus_heatmap(res, k = 4)
+```
+
+```{r @{top_method}-@{partition_method}-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
+@{ k = res_list@list[[1]]@k
+qq("knitr_add_tab_item(\"consensus_heatmap(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+knitr_insert_tabs()
+```
+
+```{r @{top_method}-@{partition_method}-membership-heatmap}
 membership_heatmap(res, k = 4)
 # get_signatures(res, k = 4)
 ```
 
 Get classifications
 
-```{r}
-get_class(res, k = 4)
+```{r, results = "asis", echo = FALSE, include = TRUE}
+@{ k = res_list@list[[1]]@k
+qq("knitr_add_tab_item(\"get_class(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+knitr_insert_tabs()
 ```
 
-MDS or T-sne plots:
+MDS plots:
 
 ```{r}
 dimension_reduction(res, k = 4)
@@ -39,6 +49,6 @@ dimension_reduction(res, k = 4)
 
 Consistency of classes.
 
-```{r}
+```{r @{top_method}-@{partition_method}-collect-classes}
 collect_classes(res)
 ```
