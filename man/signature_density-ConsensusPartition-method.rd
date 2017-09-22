@@ -1,6 +1,5 @@
 \name{signature_density-ConsensusPartition-method}
 \alias{signature_density,ConsensusPartition-method}
-\alias{signature_density}
 \title{
 Density for the signatures
 }
@@ -23,8 +22,8 @@ The function makes density distributio nf of signatures in all columns.
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
+\alias{signature_density}
 \examples{
 # There is no example
 NULL
-
 }

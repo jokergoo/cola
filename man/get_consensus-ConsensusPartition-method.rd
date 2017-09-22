@@ -1,6 +1,5 @@
 \name{get_consensus-ConsensusPartition-method}
 \alias{get_consensus,ConsensusPartition-method}
-\alias{get_consensus}
 \title{
 Get consensus matrix
 }
@@ -22,8 +21,8 @@ A consensus matrix corresponding to the current k.
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
+\alias{get_consensus}
 \examples{
 # There is no example
 NULL
-
 }

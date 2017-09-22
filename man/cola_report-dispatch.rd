@@ -10,8 +10,8 @@ Method dispatch page for \code{cola_report}.
 \code{cola_report} can be dispatched on following classes:
 
 \itemize{
-\item \code{\link{cola_report,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 \item \code{\link{cola_report,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
+\item \code{\link{cola_report,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 }
 }
 \examples{

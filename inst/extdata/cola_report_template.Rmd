@@ -29,7 +29,8 @@ Global distribution for each sample:
 
 ```{r, echo = FALSE}
 library(ComplexHeatmap)
-densityHeatmap(res_list@.env$data, top_annotation = HeatmapAnnotation(df = res_list@list[[1]]@known, col = res_list@list[[1]]@known_col))
+densityHeatmap(res_list@.env$data, anno = HeatmapAnnotation(df = res_list@list[[1]]@known_anno, col = res_list@list[[1]]@known_col),
+	ylab = "value")
 ```
 
 Best `k` (number of partitions) for each combination of top methods and partition methods.
@@ -51,7 +52,7 @@ kable(tb)
 
 CDF of consensus matrix for all methods:
 
-```{r, fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()), results = "hide"}
+```{r, fig.width = 14, fig.height = 14*length(res_list@top_method)/length(res_list@partition_method)}
 collect_plots(res_list, fun = plot_ecdf)
 ```
 
@@ -59,7 +60,8 @@ Consensus heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 [% k = res_list@list[[1]]@k
-qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = consensus_heatmap)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()')\n", code.pattern = "@<CODE>") %]
+ratio = length(res_list@top_method)/length(res_list@partition_method)
+qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = consensus_heatmap)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*@<ratio>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
@@ -67,7 +69,8 @@ Membership heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 [% k = res_list@list[[1]]@k
-qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = membership_heatmap)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()')\n", code.pattern = "@<CODE>") %]
+ratio = length(res_list@top_method)/length(res_list@partition_method)
+qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = membership_heatmap)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*@<ratio>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
@@ -75,7 +78,8 @@ Signature heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 [% k = res_list@list[[1]]@k
-qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = get_signatures)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()')\n", code.pattern = "@<CODE>") %]
+ratio = length(res_list@top_method)/length(res_list@partition_method)
+qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = get_signatures)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*@<ratio>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
@@ -97,7 +101,7 @@ knitr_insert_tabs()
 
 Overlap of top rows in different top methods:
 
-```{r top-row-overlap}
+```{r, results = "asis", echo = FALSE, include = TRUE}
 [% top_n = res_list@list[[1]]@top_n
 qq("knitr_add_tab_item('top_rows_overlap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
@@ -105,15 +109,15 @@ knitr_insert_tabs()
 
 Also visualize the correspondance of rankings between different top methods:
 
-```{r top-row-overlap-by-correspondance, fig.width = 14, fig.height = 8}
-top_rows_overlap(res_list, top_n = [% min(n_top) %], type = "correspondance")
+```{r, fig.width = 14, fig.height = 8}
+top_rows_overlap(res_list, top_n = [% min(res_list@list[[1]]@top_n) %], type = "correspondance")
 ```
 
 Heatmaps for the top rows:
 
-```{r top-row-overlap}
+```{r, results = "asis", echo = FALSE, include = TRUE}
 [% top_n = res_list@list[[1]]@top_n
-qq("knitr_add_tab_item('top_rows_heatmap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>', opt = ', fig.width = 14, fig.height = 14/@<length(res_list@list[[1]]@top_n)>')\n", code.pattern = "@<CODE>") %]
+qq("knitr_add_tab_item('top_rows_heatmap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>', opt = 'fig.width = 14, fig.height = 14/@<length(res_list@list[[1]]@top_n)>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 

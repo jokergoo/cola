@@ -29,8 +29,12 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL) {
 
 @{desc}
 ")	
+
+	while(dev.cur() > 1) dev.off()
+
 	op = getOption("markdown.HTML.options")
 	options(markdown.HTML.options = setdiff(op, c("base64_images", "toc")))
+
 	md = knit(text = knitr_text, quiet = TRUE, envir = parent.frame())
 	html = markdownToHTML(text = md, fragment.only = TRUE)
 	html = qq("<div id='@{tab}'>\n@{html}\n</div>\n")
@@ -110,7 +114,7 @@ setMethod(f = "cola_report",
 	md_file = gsub("Rmd$", "md", tempfile)
 	knit(tempfile, md_file)
 	markdownToHTML(md_file, paste0(output_dir, "/", "cola_report.html"))
-	file.remove(c(tempfile, md_file))
+	# file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
 	qqcat("report is at @{output_dir}/cola_report.html\n")
 	return(invisible(NULL))

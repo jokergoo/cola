@@ -1,6 +1,5 @@
 \name{select_partition_number-ConsensusPartition-method}
 \alias{select_partition_number,ConsensusPartition-method}
-\alias{select_partition_number}
 \title{
 Several plots for determining the optimized number of partitions
 }
@@ -33,8 +32,8 @@ No value is returned.
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
+\alias{select_partition_number}
 \examples{
 # There is no example
 NULL
-
 }

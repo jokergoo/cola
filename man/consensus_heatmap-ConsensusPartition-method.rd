@@ -1,6 +1,5 @@
 \name{consensus_heatmap-ConsensusPartition-method}
 \alias{consensus_heatmap,ConsensusPartition-method}
-\alias{consensus_heatmap}
 \title{
 Heatmap for the consensus matrix
 }
@@ -41,8 +40,8 @@ No value is returned.
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
+\alias{consensus_heatmap}
 \examples{
 # There is no example
 NULL
-
 }

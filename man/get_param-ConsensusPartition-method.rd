@@ -1,6 +1,5 @@
 \name{get_param-ConsensusPartition-method}
 \alias{get_param,ConsensusPartition-method}
-\alias{get_param}
 \title{
 Get parameters
 }
@@ -23,8 +22,8 @@ A data frame of parameters corresponding to the current k.
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
+\alias{get_param}
 \examples{
 # There is no example
 NULL
-
 }

@@ -28,5 +28,4 @@ A data frame with functional enrichment results
 \examples{
 # There is no example
 NULL
-
 }
