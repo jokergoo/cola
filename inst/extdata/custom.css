@@ -22,7 +22,7 @@
   margin-left: 15px;
   list-style-type: circle;
 }
-body, td {
+body, td, th {
    font-family: Arial,Helvetica,sans-serif;
    background-color: white;
    font-size: 13px;

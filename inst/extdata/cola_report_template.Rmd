@@ -5,230 +5,105 @@ Cola report
 
 ----------------------------------------------------------------
 
-
 <style type='text/css'>
-#toc {
-  position: fixed;
-  left: 0;
-  top: 20px;
-  width: 200px;
-  height: 100%;
-  overflow:auto;
-  padding: 0px 10px 0px 10px;
-}
-#toc_header {
-  display: none;
-}
-#toc ul {
-  margin: 0px;
-  padding: 0px;
-}
-#toc ul li {
-  list-style-type: none;
-}
-
-#toc ul li ul li {
-  margin-left: 15px;
-  list-style-type: circle;
-}
-body, td {
-   font-family: Arial,Helvetica,sans-serif;
-   background-color: white;
-   font-size: 13px;
-  max-width: 800px;
-  margin: auto;
-  margin-left:210px;
-  padding: 0px 10px 0px 10px;
-  border-left: 1px solid #EEEEEE;
-  line-height: 150%;
-}
-
-tt, code, pre {
-   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, 
-
-monospace;
-}
-
-h1 {
-   font-size:2.2em;
-}
-
-h2 {
-   font-size:1.8em;
-}
-
-h3 {
-   font-size:1.4em;
-}
-
-h4 {
-   font-size:1.0em;
-}
-
-h5 {
-   font-size:0.9em;
-}
-
-h6 {
-   font-size:0.8em;
-}
-
-a {
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-a:visited {
-   color: rgb(50%, 0%, 50%);
-}
-
-pre, img {
-  max-width: 100%;
-}
-pre {
-  overflow-x: auto;
-}
-pre code {
-   display: block; padding: 0.5em;
-}
-
-code {
-  font-size: 92%;
-  border: 1px solid #ccc;
-}
-
-code[class] {
-  background-color: #F8F8F8;
-}
-
-table, td, th {
-  border: none;
-}
-
-blockquote {
-   color:#666666;
-   margin:0;
-   padding-left: 1em;
-   border-left: 0.5em #EEE solid;
-}
-
-hr {
-   height: 0px;
-   border-bottom: none;
-   border-top-width: thin;
-   border-top-style: dotted;
-   border-top-color: #999999;
-}
-
-@media print {
-   * {
-      background: transparent !important;
-      color: black !important;
-      filter:none !important;
-      -ms-filter: none !important;
-   }
-
-   body {
-      font-size:12pt;
-      max-width:100%;
-   }
-
-   a, a:visited {
-      text-decoration: underline;
-   }
-
-   hr {
-      visibility: hidden;
-      page-break-before: always;
-   }
-
-   pre, blockquote {
-      padding-right: 1em;
-      page-break-inside: avoid;
-   }
-
-   tr, img {
-      page-break-inside: avoid;
-   }
-
-   img {
-      max-width: 100% !important;
-   }
-
-   @page :left {
-      margin: 15mm 20mm 15mm 10mm;
-   }
-
-   @page :right {
-      margin: 15mm 10mm 15mm 20mm;
-   }
-
-   p, h2, h3 {
-      orphans: 3; widows: 3;
-   }
-
-   h2, h3 {
-      page-break-after: avoid;
-   }
-}
+[% paste(readLines("~/project/development/cola/inst/extdata/custom.css"), collapse = "\n") %]
 </style>
 
 ```{r, echo = FALSE, message = FALSE}
 library(markdown)
-options(markdown.HTML.options = unique(c(options('markdown.HTML.options')[[1]], "toc")))
-options(markdown.HTML.options = setdiff(op, "base64_images"))
-options(width = 100)
+options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "toc"), "base64_images"))
+options(width = 140)
 opts_chunk$set(comment = "#>")
 ```
+
+## Summary
 
 All available functions which can be applied to `res_list` object.
 
 ```{r}
+[% if(var_name != "res_list") paste("res_list =", var_name) %]
 res_list
 ```
 
-```{r}
+Global distribution for each sample:
+
+```{r, echo = FALSE}
+library(ComplexHeatmap)
+densityHeatmap(res_list@.env$data, top_annotation = HeatmapAnnotation(df = res_list@list[[1]]@known, col = res_list@list[[1]]@known_col))
+```
+
+Best `k` (number of partitions) for each combination of top methods and partition methods.
+
+```{r, eval = FALSE}
 get_best_k(res_list)
 ```
 
-Collect all plots for a k:
-
-```{r consensus-partition-list-collect-plots, fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()), results = "hide"}
-collect_plots(res_list, k = 2, fun = plot_ecdf)
-collect_plots(res_list, k = 2, fun = consensus_heatmap)
-collect_plots(res_list, k = 2, fun = membership_heatmap)
-# collect_plots(res_list, k = 3, fun = get_signatures)
+```{r, echo = FALSE}
+tb = get_best_k(res_list)
+rntb = rownames(tb)
+l = tb$PAC < 0.05 & tb$mean_silhouette > 0.95
+rownames(tb) = ifelse(l, qq("[@{rntb}](?@{rntb})", collapse = FALSE), rntb)
+tb = cbind(tb, ifelse(l, ifelse(tb$PAC < 0.01, "**", "*"), ""))
+colnames(tb)[ncol(tb)] = ""
+kable(tb)
 ```
+
+
+CDF of consensus matrix for all methods:
+
+```{r, fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()), results = "hide"}
+collect_plots(res_list, fun = plot_ecdf)
+```
+
+Consensus heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 [% k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"get_stat(res_list, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") %]
+qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = consensus_heatmap)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
-```{r consensus-partition-list-collect-classes, results = "asis", echo = FALSE, include = TRUE}
+Membership heatmaps for all methods:
+
+```{r, results = "asis", echo = FALSE, include = TRUE}
 [% k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"collect_classes(res_list, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") %]
+qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = membership_heatmap)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()')\n", code.pattern = "@<CODE>") %]
+knitr_insert_tabs()
+```
+
+Signature heatmaps for all methods:
+
+```{r, results = "asis", echo = FALSE, include = TRUE}
+[% k = res_list@list[[1]]@k
+qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = get_signatures)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()')\n", code.pattern = "@<CODE>") %]
+knitr_insert_tabs()
+```
+
+Get statistics for all methods:
+
+```{r, results = "asis", echo = FALSE, include = TRUE}
+[% k = res_list@list[[1]]@k
+qq("knitr_add_tab_item('get_stat(res_list, k = @<k>)', 'k = @<k>')\n", code.pattern = "@<CODE>") %]
+knitr_insert_tabs()
+```
+
+Collect partitions from all methods:
+
+```{r, results = "asis", echo = FALSE, include = TRUE}
+[% k = res_list@list[[1]]@k
+qq("knitr_add_tab_item('collect_classes(res_list, k = @<k>)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 8')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
 Overlap of top rows in different top methods:
 
-[% 
-n_top = res_list@list[[1]]@top_n
-n_top_nc = min(c(3, length(n_top)))
-n_top_nr = ceiling(length(n_top)/n_top_nc)
-"" %]
-
-```{r top-row-overlap, fig.width = 14, fig.height = 14/3}
-par(mfrow = c([% n_top_nr %], [% n_top_nc %]))
-[% paste("top_rows_overlap(res_list, top_n = ", n_top, ")", sep = "", collapse = "\n") %]
+```{r top-row-overlap}
+[% top_n = res_list@list[[1]]@top_n
+qq("knitr_add_tab_item('top_rows_overlap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>')\n", code.pattern = "@<CODE>") %]
+knitr_insert_tabs()
 ```
 
-Also visualize the correspondance of rankings between different scoreing methods:
+Also visualize the correspondance of rankings between different top methods:
 
 ```{r top-row-overlap-by-correspondance, fig.width = 14, fig.height = 8}
 top_rows_overlap(res_list, top_n = [% min(n_top) %], type = "correspondance")
@@ -236,13 +111,14 @@ top_rows_overlap(res_list, top_n = [% min(n_top) %], type = "correspondance")
 
 Heatmaps for the top rows:
 
-```{r top-row-heatmap, fig.width = 14, fig.height = 14/4}
-top_rows_heatmap(res_list, top_n = [% min(n_top) %])
+```{r top-row-overlap}
+[% top_n = res_list@list[[1]]@top_n
+qq("knitr_add_tab_item('top_rows_heatmap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>', opt = ', fig.width = 14, fig.height = 14/@<length(res_list@list[[1]]@top_n)>')\n", code.pattern = "@<CODE>") %]
+knitr_insert_tabs()
 ```
 
-
 [% 
-section_template = paste(readLines("~/project/cola/inst/extdata/section_template.Rmd"), collapse = "\n")
+section_template = paste(readLines("~/project/development/cola/inst/extdata/section_template.Rmd"), collapse = "\n")
 section = NULL
 for(top_method in res_list@top_method) {
     for(partition_method in res_list@partition_method) {

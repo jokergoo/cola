@@ -47,10 +47,12 @@ setMethod(f = "collect_plots",
 	for(i in seq_along(top_method)) {
 	    for(j in seq_along(partition_method)) {  
 	    	res = get_single_run(object, top_method = top_method[i], partition_method = partition_method[j])
-	    	if(get_stat(res, k = k)[, "PAC"] < 0.1) {
-	    		highlight_row = c(highlight_row, i + 1)
-	    		highlight_col = c(highlight_col, j + 1)
-	    	}
+	    	if(!missing(k)) {
+		    	if(get_stat(res, k = k)[, "PAC"] < 0.05) {
+		    		highlight_row = c(highlight_row, i + 1)
+		    		highlight_col = c(highlight_col, j + 1)
+		    	}
+		    }
 	    	pushViewport(viewport(layout.pos.row = i + 1, layout.pos.col = j + 1))
 	    	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
     		# image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
@@ -70,10 +72,12 @@ setMethod(f = "collect_plots",
 			if(file.exists(file_name)) file.remove(file_name)
 	    }
 	}
-	for(i in seq_along(highlight_row)) {
-		pushViewport(viewport(layout.pos.row = highlight_row[i], layout.pos.col = highlight_col[i]))
-		grid.rect(gp = gpar(fill = "transparent", col = "red", lwd = 2))
-		upViewport()
+	if(!missing(k)) {
+		for(i in seq_along(highlight_row)) {
+			pushViewport(viewport(layout.pos.row = highlight_row[i], layout.pos.col = highlight_col[i]))
+			grid.rect(gp = gpar(fill = "transparent", col = "red", lwd = 2))
+			upViewport()
+		}
 	}
 
 	upViewport()

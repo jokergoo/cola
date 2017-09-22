@@ -1,33 +1,42 @@
 
+---------------------------------------------------
+
 ## @{top_method}:@{partition_method}
+
+The object which only contains results for a single top method and a single partition method,
+and the functions that can be applied to.
 
 ```{r}
 res = get_single_run(res_list, top_method = "@{top_method}", partition_method = "@{partition_method}")
 res
 ```
 
-Collect all plots
+Major plots made from `res` for different `k` (number of partitions). Individual plots can be found
+later in this section.
 
-```{r @{top_method}-@{partition_method}-collect-plots, fig.width = 14, fig.height = 14*4/5, results = "hide", eval = FALSE}
+```{r @{top_method}-@{partition_method}-collect-plots, fig.width = 14, fig.height = 14*4/5, results = "hide"}
 collect_plots(res)
 ```
 
-plots:
+Plots showing different statistics for choosing optimized `k`:
 
 ```{r @{top_method}-@{partition_method}-select-partition-number, results = "hide", fig.width = 10}
 select_partition_number(res)
 ```
 
+The values for different statistics for different `k`:
+
 ```{r}
 get_stat(res)
 ```
 
+Guess the best `k`:
 
 ```{r}
 get_best_k(res)
 ```
 
-Get classifications
+The partitions:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
@@ -35,11 +44,15 @@ qq("knitr_add_tab_item(\"get_class(res, k = @<k>)\", \"k = @<k>\")\n", code.patt
 knitr_insert_tabs()
 ```
 
+Heatmaps for the consensus matrix:
+
 ```{r @{top_method}-@{partition_method}-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
 qq("knitr_add_tab_item(\"consensus_heatmap(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
 knitr_insert_tabs()
 ```
+
+Heatmaps for the membership of samples in each random sampling:
 
 ```{r @{top_method}-@{partition_method}-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
@@ -47,6 +60,7 @@ qq("knitr_add_tab_item(\"membership_heatmap(res, k = @<k>)\", \"k = @<k>\")\n", 
 knitr_insert_tabs()
 ```
 
+Heatmaps for signatures:
 
 ```{r @{top_method}-@{partition_method}-signature, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
@@ -54,9 +68,11 @@ qq("knitr_add_tab_item(\"get_signatures(res, k = @<k>)\", \"k = @<k>\")\n", code
 knitr_insert_tabs()
 ```
 
+Distribution of signatures in differnet subgroups:
+
 ```{r @{top_method}-@{partition_method}-signature-density, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"signature_desity(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+qq("knitr_add_tab_item(\"signature_density(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
 knitr_insert_tabs()
 ```
 
@@ -68,11 +84,10 @@ qq("knitr_add_tab_item(\"dimension_reduction(res, k = @<k>)\", \"k = @<k>\")\n",
 knitr_insert_tabs()
 ```
 
-Consistency of classes.
+How subgroups split when increasing `k`:
 
 ```{r @{top_method}-@{partition_method}-collect-classes}
 collect_classes(res)
 ```
 
-
-
+Consider to use `submit_to_david()` to do function enrichment for each signature list.
