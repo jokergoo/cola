@@ -179,6 +179,7 @@ hr {
 ```{r, echo = FALSE, message = FALSE}
 library(markdown)
 options(markdown.HTML.options = unique(c(options('markdown.HTML.options')[[1]], "toc")))
+options(markdown.HTML.options = setdiff(op, "base64_images"))
 options(width = 100)
 opts_chunk$set(comment = "#>")
 ```
@@ -196,18 +197,22 @@ get_best_k(res_list)
 Collect all plots for a k:
 
 ```{r consensus-partition-list-collect-plots, fig.width = 14, fig.height = 14*length(all_top_value_methods())/length(all_partition_methods()), results = "hide"}
-collect_plots(res_list, k = 4, fun = plot_ecdf)
-collect_plots(res_list, k = 4, fun = consensus_heatmap)
-collect_plots(res_list, k = 4, fun = membership_heatmap)
+collect_plots(res_list, k = 2, fun = plot_ecdf)
+collect_plots(res_list, k = 2, fun = consensus_heatmap)
+collect_plots(res_list, k = 2, fun = membership_heatmap)
 # collect_plots(res_list, k = 3, fun = get_signatures)
 ```
 
-```{r}
-get_stat(res_list, k = 4)
+```{r, results = "asis", echo = FALSE, include = TRUE}
+[% k = res_list@list[[1]]@k
+qq("knitr_add_tab_item(\"get_stat(res_list, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") %]
+knitr_insert_tabs()
 ```
 
-```{r consensus-partition-list-collect-classes, fig.width = 12}
-collect_classes(res_list, k = 4)
+```{r consensus-partition-list-collect-classes, results = "asis", echo = FALSE, include = TRUE}
+[% k = res_list@list[[1]]@k
+qq("knitr_add_tab_item(\"collect_classes(res_list, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") %]
+knitr_insert_tabs()
 ```
 
 Overlap of top rows in different top methods:
@@ -237,7 +242,7 @@ top_rows_heatmap(res_list, top_n = [% min(n_top) %])
 
 
 [% 
-section_template = paste(readLines("~/project/development/cola/inst/extdata/section_template.Rmd"), collapse = "\n")
+section_template = paste(readLines("~/project/cola/inst/extdata/section_template.Rmd"), collapse = "\n")
 section = NULL
 for(top_method in res_list@top_method) {
     for(partition_method in res_list@partition_method) {

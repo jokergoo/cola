@@ -8,11 +8,11 @@ KNITR_TAB_ENV$current_html = ""
 KNITR_TAB_ENV$random_str = round(runif(1, min = 1, max = 1e8))
 KNITR_TAB_ENV$css_added = FALSE
 
-knitr_add_tab_item = function(code, header, desc = "") {
+knitr_add_tab_item = function(code, header, desc = "", opt = NULL) {
 	KNITR_TAB_ENV$current_tab_index = KNITR_TAB_ENV$current_tab_index + 1
 	tab = qq("tab-@{KNITR_TAB_ENV$random_str}-@{KNITR_TAB_ENV$current_tab_index}")
 	knitr_text = qq(
-"@{strrep('`', 3)}{r @{tab}}
+"@{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', ', ')}@{opt}}
 @{code}
 @{strrep('`', 3)}
 
@@ -61,14 +61,19 @@ $( function() {
 	return(invisible(NULL))
 }
 
-cola_report = function(object, output) {
+cola_report = function(object, output_dir) {
 
-	txt = readLines("~/project/development/cola/inst/extdata/cola_report_template.Rmd")
+	txt = readLines("~/project/cola/inst/extdata/cola_report_template.Rmd")
 	txt = paste(txt, collapse = "\n")
 	txt = qq(txt, code.pattern = "\\[%CODE%\\]")
 
-	tempfile = tempfile(tmpdir = getwd(), fileext = ".Rmd")
+	tempfile = tempfile(tmpdir = output_dir, fileext = ".Rmd")
 	writeLines(txt, tempfile)
-	knit2html(tempfile, output)
+	op = getOption("markdown.HTML.options")
+	options(markdown.HTML.options = setdiff(op, "base64_images"))
+	knit2html(tempfile, paste0(output_dir, "/", "cola_report.html"))
 	#file.remove(tempfile)
+	options(markdown.HTML.options = op)
+	qqcat("report is at @{output_dir}/cola_report.html\n")
+	return(invisible(NULL))
 }

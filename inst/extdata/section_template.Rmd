@@ -19,18 +19,12 @@ select_partition_number(res)
 ```
 
 ```{r}
+get_stat(res)
+```
+
+
+```{r}
 get_best_k(res)
-```
-
-```{r @{top_method}-@{partition_method}-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
-@{ k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"consensus_heatmap(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
-knitr_insert_tabs()
-```
-
-```{r @{top_method}-@{partition_method}-membership-heatmap}
-membership_heatmap(res, k = 4)
-# get_signatures(res, k = 4)
 ```
 
 Get classifications
@@ -41,10 +35,37 @@ qq("knitr_add_tab_item(\"get_class(res, k = @<k>)\", \"k = @<k>\")\n", code.patt
 knitr_insert_tabs()
 ```
 
+```{r @{top_method}-@{partition_method}-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
+@{ k = res_list@list[[1]]@k
+qq("knitr_add_tab_item(\"consensus_heatmap(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+knitr_insert_tabs()
+```
+
+```{r @{top_method}-@{partition_method}-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
+@{ k = res_list@list[[1]]@k
+qq("knitr_add_tab_item(\"membership_heatmap(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+knitr_insert_tabs()
+```
+
+
+```{r @{top_method}-@{partition_method}-signature, results = "asis", echo = FALSE, include = TRUE}
+@{ k = res_list@list[[1]]@k
+qq("knitr_add_tab_item(\"get_signatures(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+knitr_insert_tabs()
+```
+
+```{r @{top_method}-@{partition_method}-signature-density, results = "asis", echo = FALSE, include = TRUE}
+@{ k = res_list@list[[1]]@k
+qq("knitr_add_tab_item(\"signature_desity(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+knitr_insert_tabs()
+```
+
 MDS plots:
 
-```{r}
-dimension_reduction(res, k = 4)
+```{r @{top_method}-@{partition_method}-mds, results = "asis", echo = FALSE, include = TRUE}
+@{ k = res_list@list[[1]]@k
+qq("knitr_add_tab_item(\"dimension_reduction(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+knitr_insert_tabs()
 ```
 
 Consistency of classes.
@@ -52,3 +73,6 @@ Consistency of classes.
 ```{r @{top_method}-@{partition_method}-collect-classes}
 collect_classes(res)
 ```
+
+
+
