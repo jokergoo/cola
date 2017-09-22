@@ -117,6 +117,14 @@ setMethod(f = "cola_report",
 	# file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
 	qqcat("report is at @{output_dir}/cola_report.html\n")
+
+	KNITR_TAB_ENV$current_tab_index = 0
+	KNITR_TAB_ENV$current_div_index = 0
+	KNITR_TAB_ENV$header = NULL
+	KNITR_TAB_ENV$current_html = ""
+	KNITR_TAB_ENV$random_str = round(runif(1, min = 1, max = 1e8))
+	KNITR_TAB_ENV$css_added = FALSE
+
 	return(invisible(NULL))
 })
 
