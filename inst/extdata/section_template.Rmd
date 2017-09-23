@@ -1,7 +1,7 @@
 
 ---------------------------------------------------
 
-## @{top_method}:@{partition_method}
+### @{top_method}:@{partition_method}
 
 The object which only contains results for a single top method and a single partition method,
 and the functions that can be applied to.
@@ -14,7 +14,13 @@ res
 Major plots made from `res` for different `k` (number of partitions). Individual plots can be found
 later in this section.
 
-```{r @{top_method}-@{partition_method}-collect-plots, fig.width = 14, fig.height = 14*4/5, results = "hide"}
+@{
+k = res_list@list[[1]]@k
+nk = length(k)
+fs = min(c(3*nk, 14))/nk
+}
+
+```{r @{top_method}-@{partition_method}-collect-plots, fig.width = @{fs*nk}, fig.height = @{fs*4}, results = "hide"}
 collect_plots(res)
 ```
 
@@ -40,7 +46,7 @@ The partitions:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"get_class(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+qq("knitr_add_tab_item('get_class(res, k = @<k>)', 'k = @<k>')\n", code.pattern = "@<CODE>") }
 knitr_insert_tabs()
 ```
 
@@ -48,7 +54,7 @@ Heatmaps for the consensus matrix:
 
 ```{r @{top_method}-@{partition_method}-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"consensus_heatmap(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+qq("knitr_add_tab_item('consensus_heatmap(res, k = @<k>)', 'k = @<k>')\n", code.pattern = "@<CODE>") }
 knitr_insert_tabs()
 ```
 
@@ -56,7 +62,7 @@ Heatmaps for the membership of samples in each random sampling:
 
 ```{r @{top_method}-@{partition_method}-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"membership_heatmap(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+qq("knitr_add_tab_item('membership_heatmap(res, k = @<k>)', 'k = @<k>')\n", code.pattern = "@<CODE>") }
 knitr_insert_tabs()
 ```
 
@@ -64,7 +70,13 @@ Heatmaps for signatures:
 
 ```{r @{top_method}-@{partition_method}-signature, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"get_signatures(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+qq("knitr_add_tab_item('get_signatures(res, k = @<k>)', 'k = @<k>', opt = 'results = \"hide\"')\n", code.pattern = "@<CODE>") }
+knitr_insert_tabs()
+```
+
+```{r @{top_method}-@{partition_method}-signature-no-scale, results = "asis", echo = FALSE, include = TRUE}
+@{ k = res_list@list[[1]]@k
+qq("knitr_add_tab_item('get_signatures(res, k = @<k>, scale_rows = FALSE)', 'k = @<k>')\n", code.pattern = "@<CODE>") }
 knitr_insert_tabs()
 ```
 
@@ -72,7 +84,7 @@ Distribution of signatures in differnet subgroups:
 
 ```{r @{top_method}-@{partition_method}-signature-density, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"signature_density(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+qq("knitr_add_tab_item('signature_density(res, k = @<k>)', 'k = @<k>')\n", code.pattern = "@<CODE>") }
 knitr_insert_tabs()
 ```
 
@@ -80,7 +92,7 @@ MDS plots:
 
 ```{r @{top_method}-@{partition_method}-mds, results = "asis", echo = FALSE, include = TRUE}
 @{ k = res_list@list[[1]]@k
-qq("knitr_add_tab_item(\"dimension_reduction(res, k = @<k>)\", \"k = @<k>\")\n", code.pattern = "@<CODE>") }
+qq("knitr_add_tab_item('dimension_reduction(res, k = @<k>)', 'k = @<k>')\n", code.pattern = "@<CODE>") }
 knitr_insert_tabs()
 ```
 
@@ -89,5 +101,12 @@ How subgroups split when increasing `k`:
 ```{r @{top_method}-@{partition_method}-collect-classes}
 collect_classes(res)
 ```
+
+@{if(!is.null(res@known_anno)) "Test to known annotations:\n" else ""}
+
+```{r, eval = !is.null(res@known_anno), echo = !is.null(res@known_anno)}
+test_to_known_factors(res)
+```
+
 
 Consider to use `submit_to_david()` to do function enrichment for each signature list.

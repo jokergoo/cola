@@ -165,6 +165,10 @@ consensus_partition = function(data,
 			}
 			sum(dist(t(data[, ind, drop = FALSE]))^2)/(n*(n-1)/2)
 		})
+		if(length(mean_dist) < k) {
+			mean_dist_foo = structure(rep(Inf, k - length(mean_dist)), names = setdiff(seq_len(k), class_ids))
+			mean_dist = c(mean_dist, mean_dist_foo)
+		}
 		map = structure(names = names(mean_dist)[order(mean_dist)], names(mean_dist))
 		class_ids = as.numeric(map[as.character(class_ids)])
 

@@ -61,7 +61,7 @@ setMethod(f = "collect_plots",
 	        file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height)
 	        oe = try(fun(res, k = k, show_legend = FALSE, show_column_names = FALSE, use_raster = FALSE, ...))
-	        dev.off()
+	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
 		        grid.raster(readPNG(file_name))
 		    } else {
@@ -117,7 +117,7 @@ setMethod(f = "collect_plots",
 	image_height = 800
     png(file_name, width = image_width*2, height = image_height*2)
     oe = try(plot_ecdf(object))
-    dev.off()
+    dev.off2()
     if(!inherits(oe, "try-error")) {
     	grid.raster(readPNG(file_name))
     }
@@ -129,7 +129,7 @@ setMethod(f = "collect_plots",
 	file_name = tempfile()
     png(file_name, width = image_width*2, height = image_height*2)
     oe = try(collect_classes(object, show_legend = FALSE))
-    dev.off()
+    dev.off2()
     if(!inherits(oe, "try-error")) {
         grid.raster(readPNG(file_name))
     }
@@ -145,7 +145,7 @@ setMethod(f = "collect_plots",
 		file_name = tempfile(tmpdir = ".")
         png(file_name, width = image_width*2, height = image_height*2)
         oe = try(consensus_heatmap(object, k = all_k[i], show_legend = FALSE, ...))
-        dev.off()
+        dev.off2()
         if(!inherits(oe, "try-error")) {
 	        grid.raster(readPNG(file_name))  
 	    }
@@ -157,7 +157,7 @@ setMethod(f = "collect_plots",
 	    file_name = tempfile()
         png(file_name, width = image_width*2, height=  image_height*2)
         oe = try(membership_heatmap(object, k = all_k[i], show_legend = FALSE, show_column_names = FALSE, ...))
-        dev.off()
+        dev.off2()
         if(!inherits(oe, "try-error")) {
 	        grid.raster(readPNG(file_name))
 	    }
@@ -169,7 +169,7 @@ setMethod(f = "collect_plots",
 	    file_name = tempfile()
         png(file_name, width = image_width*2, height=  image_height*2)
         oe = try(get_signatures(object, k = all_k[i], show_legend = FALSE, show_column_names = FALSE, use_raster = FALSE, ...))
-        dev.off()
+        dev.off2()
         if(!inherits(oe, "try-error")) {
 	        grid.raster(readPNG(file_name))  
 	    }

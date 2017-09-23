@@ -96,7 +96,7 @@ code[class] {
 }
 
 table, td, th {
-  border: none;
+  border: 1px solid #ccc;
 }
 
 blockquote {

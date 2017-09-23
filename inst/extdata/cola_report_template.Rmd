@@ -25,12 +25,18 @@ All available functions which can be applied to `res_list` object.
 res_list
 ```
 
+Dimension of the input matrix:
+
+```{r}
+dim(res_list@.env$data)
+```
+
 Global distribution for each sample:
 
-```{r, echo = FALSE}
+```{r}
 library(ComplexHeatmap)
-densityHeatmap(res_list@.env$data, anno = HeatmapAnnotation(df = res_list@list[[1]]@known_anno, col = res_list@list[[1]]@known_col),
-	ylab = "value")
+densityHeatmap(res_list@.env$data, anno = HeatmapAnnotation(df = res_list@list[[1]]@known_anno, 
+	col = res_list@list[[1]]@known_col), ylab = "value")
 ```
 
 Best `k` (number of partitions) for each combination of top methods and partition methods.
@@ -49,10 +55,16 @@ colnames(tb)[ncol(tb)] = ""
 kable(tb)
 ```
 
+```{r, echo = FALSE}
+fs = min(c(3*length(res_list@top_method), 14))/length(res_list@top_method)
+n_top_method = length(res_list@top_method)
+n_partition_method = length(res_list@partition_method)
+```
+
 
 CDF of consensus matrix for all methods:
 
-```{r, fig.width = 14, fig.height = 14*length(res_list@top_method)/length(res_list@partition_method)}
+```{r, fig.width = fs*n_top_method, fig.height = fs*n_partition_method}
 collect_plots(res_list, fun = plot_ecdf)
 ```
 
@@ -60,26 +72,26 @@ Consensus heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 [% k = res_list@list[[1]]@k
-ratio = length(res_list@top_method)/length(res_list@partition_method)
-qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = consensus_heatmap)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*@<ratio>')\n", code.pattern = "@<CODE>") %]
+fs = min(c(3*length(res_list@top_method), 14))/length(res_list@top_method)
+n_top_method = length(res_list@top_method)
+n_partition_method = length(res_list@partition_method)
+qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = consensus_heatmap)', 'k = @<k>', opt = 'fig.width = @<fs*n_top_method>, fig.height = @<fs*n_partition_method>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
 Membership heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-[% k = res_list@list[[1]]@k
-ratio = length(res_list@top_method)/length(res_list@partition_method)
-qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = membership_heatmap)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*@<ratio>')\n", code.pattern = "@<CODE>") %]
+[% 
+qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = membership_heatmap)', 'k = @<k>', opt = 'fig.width =@<fs*n_top_method>, fig.height = @<fs*n_partition_method>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
 Signature heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-[% k = res_list@list[[1]]@k
-ratio = length(res_list@top_method)/length(res_list@partition_method)
-qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = get_signatures)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 14*@<ratio>')\n", code.pattern = "@<CODE>") %]
+[% 
+qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = get_signatures)', 'k = @<k>', opt = 'fig.width = @<fs*n_top_method>, fig.height = @<fs*n_partition_method>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
@@ -103,7 +115,7 @@ Overlap of top rows in different top methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 [% top_n = res_list@list[[1]]@top_n
-qq("knitr_add_tab_item('top_rows_overlap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>')\n", code.pattern = "@<CODE>") %]
+qq("knitr_add_tab_item('top_rows_overlap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>', opt = 'fig.width = 5, fig.height = 5')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
@@ -117,9 +129,23 @@ Heatmaps for the top rows:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 [% top_n = res_list@list[[1]]@top_n
-qq("knitr_add_tab_item('top_rows_heatmap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>', opt = 'fig.width = 14, fig.height = 14/@<length(res_list@list[[1]]@top_n)>')\n", code.pattern = "@<CODE>") %]
+qq("knitr_add_tab_item('top_rows_heatmap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>', opt = 'fig.width = 14, fig.height = 14/@<n_top_method>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
+
+[% if(!is.null(res_list@list[[1]]@known_anno)) {
+	k = res_list@list[[1]]@k
+	txt = "Test correlation between subgroups and known annotations:\n\n"
+	txt = c(txt, "```{r, results = 'asis', echo = FALSE, include = TRUE}\n")
+	txt = c(txt, qq("knitr_add_tab_item('test_to_known_factors(res_list, k = @<k>)', 'k = @<k>')\n", code.pattern = '@<CODE>'))
+	txt = c(txt, "knitr_insert_tabs()\n")
+	txt = c(txt, "```\n")
+	paste(txt, collapse = "\n")
+} else {
+	""
+} %]
+
+## Results for each method
 
 [% 
 section_template = paste(readLines("~/project/development/cola/inst/extdata/section_template.Rmd"), collapse = "\n")

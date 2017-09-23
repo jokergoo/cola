@@ -140,6 +140,12 @@ setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartition",
 	definition = function(object, k, known = object@known_anno, silhouette_cutoff = 0.5) {
 
+	if(missing(k)) {
+		all_k = object@k
+		m = do.call("rbind", lapply(all_k, function(k) test_to_known_factors(object, k, known = known, silhouette_cutoff = silhouette_cutoff)))
+		return(m)
+	}
+
 	class_df = get_class(object, k)
 	l = class_df$silhouette >= silhouette_cutoff
 	class = as.character(class_df$class)[l]
@@ -158,7 +164,7 @@ setMethod(f = "test_to_known_factors",
 
 	m = test_between_factors(class, known, verbose = FALSE)
 	rownames(m) = paste(object@top_method, object@partition_method, sep = ":")
-	m = cbind(n = sum(l), m)
+	m = cbind(n = sum(l), m, k = k)
 	return(m)
 })
 
@@ -190,8 +196,14 @@ setMethod(f = "test_to_known_factors",
 	definition = function(object, k, known = object@list[[1]]@known_anno, 
 		silhouette_cutoff = 0.5) {
 
-	m_list = lapply(object@list, function(x) {
-		test_to_known_factors(x, k = k, known = known, silhouette_cutoff = silhouette_cutoff)
-	})
+	if(missing(k)) {
+		m_list = lapply(object@list, function(x) {
+			test_to_known_factors(x, known = known, silhouette_cutoff = silhouette_cutoff)
+		})
+	} else {
+		m_list = lapply(object@list, function(x) {
+			test_to_known_factors(x, k = k, known = known, silhouette_cutoff = silhouette_cutoff)
+		})
+	}
 	do.call("rbind", m_list)
 })

@@ -133,7 +133,7 @@ setMethod(f = "top_rows_heatmap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = object@list[[1]]@top_n[1], ...) {
 
-	all_value_list = object@.env$all_value_list
+	all_value_list = object@.env$all_value_list[object@top_method]
     
     mat = object@.env$data
 
@@ -197,7 +197,6 @@ setMethod(f = "top_rows_heatmap",
     	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i))
 		file_name = tempfile()
         png(file_name, width = image_width, height = image_height)
-       
 		# if(dev.interactive() && interactive()) {
 		# 	readline(prompt = "press enter to load next plot: ")
 		# }
@@ -213,7 +212,7 @@ setMethod(f = "top_rows_heatmap",
 				column_title = qq("top @{top_n} rows of @{top_method[i]}"),
 				show_row_dend = FALSE, show_column_names = FALSE))
 		)
-		dev.off()
+		dev.off2()
 	    if(!inherits(oe, "try-error")) {
 	    	grid.raster(readPNG(file_name))
 	    }

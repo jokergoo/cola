@@ -30,15 +30,16 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL) {
 @{desc}
 ")	
 
-	while(dev.cur() > 1) dev.off()
+	# while(dev.cur() > 1) dev.off()
 
-	op = getOption("markdown.HTML.options")
-	options(markdown.HTML.options = setdiff(op, c("base64_images", "toc")))
-
+	op1 = getOption("markdown.HTML.options")
+	op2 = getOption("width")
+	options(markdown.HTML.options = setdiff(op1, c("base64_images", "toc")))
+	options(width = 140)
 	md = knit(text = knitr_text, quiet = TRUE, envir = parent.frame())
 	html = markdownToHTML(text = md, fragment.only = TRUE)
 	html = qq("<div id='@{tab}'>\n@{html}\n</div>\n")
-	options(markdown.HTML.options = op)
+	options(markdown.HTML.options = op1, width = op2)
 	KNITR_TAB_ENV$header = c(KNITR_TAB_ENV$header, header)
 	KNITR_TAB_ENV$current_html = paste0(KNITR_TAB_ENV$current_html, html)
 	return(invisible(NULL))
@@ -53,12 +54,12 @@ knitr_insert_tabs = function() {
 	KNITR_TAB_ENV$current_div_index = KNITR_TAB_ENV$current_div_index + 1
 
 	if(!KNITR_TAB_ENV$css_added) {
-		css = readLines("https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css")
+		css = readLines("~/project/development/cola/inst/extdata/jquery-ui.css")
 		cat("<style type='text/css'>\n")
 		cat(css, sep = "\n")
 		cat("</style>\n")
-		cat("<script src='https://code.jquery.com/jquery-1.12.4.js'></script>\n")
-		cat("<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>\n")
+		cat("<script src='js/jquery-1.12.4.js'></script>\n")
+		cat("<script src='js/jquery-ui.js'></script>\n")
 	}
 	qqcat("
 <script>
@@ -107,6 +108,14 @@ setMethod(f = "cola_report",
 	txt = paste(txt, collapse = "\n")
 	txt = qq(txt, code.pattern = "\\[%CODE%\\]")
 
+	fileinfo = file.info(output_dir)
+	if(!fileinfo$isdir) {
+		output_dir = dirname(output_dir)
+	}
+
+	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+	
+
 	tempfile = tempfile(tmpdir = output_dir, fileext = ".Rmd")
 	writeLines(txt, tempfile)
 	op = getOption("markdown.HTML.options")
@@ -116,6 +125,11 @@ setMethod(f = "cola_report",
 	markdownToHTML(md_file, paste0(output_dir, "/", "cola_report.html"))
 	# file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
+
+	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
+	file.copy("~/project/development/cola/inst/extdata/jquery-ui.js", paste0(output_dir, "/js/"))
+	file.copy("~/project/development/cola/inst/extdata/jquery-1.12.4.js", paste0(output_dir, "/js/"))
+
 	qqcat("report is at @{output_dir}/cola_report.html\n")
 
 	KNITR_TAB_ENV$current_tab_index = 0

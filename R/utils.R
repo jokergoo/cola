@@ -118,3 +118,10 @@ adjust_matrix = function(m, sd_quantile = 0.05) {
 	qqcat("@{sum(!l)} rows have been removed for too low variance (sd < @{sd_quantile} quantile)\n")
 	m2[l, , drop = FALSE]
 }
+
+dev.off2 = function() {
+	i1 = dev.prev()
+	i2 = dev.cur()
+	if(i1 > 1) dev.set(i1)
+	dev.off(i2)
+}

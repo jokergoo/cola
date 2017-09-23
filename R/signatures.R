@@ -57,7 +57,7 @@ setMethod(f = "get_signatures",
 	anno_col = if(missing(anno)) object@known_col else NULL,
 	show_legend = TRUE,
 	show_column_names = TRUE, use_raster = TRUE,
-	plot = TRUE, mat_other = NULL, verbose = TRUE,
+	plot = TRUE, mat_other = NULL, verbose = dev.interactive(),
 	...) {
 
 	class_df = get_class(object, k)
@@ -149,10 +149,11 @@ setMethod(f = "get_signatures",
 	if(verbose) qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
 	if(nrow(mat) == 0) {
-		return(mat_return)
+		grid.text("no sigatures")
+		return(invisible(mat_return))
 	}
 	if(!plot) {
-		return(mat_return)
+		return(invisible(mat_return))
 	}
 
 	more_than_5k = FALSE
