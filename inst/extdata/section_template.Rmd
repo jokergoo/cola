@@ -1,7 +1,9 @@
 
 ---------------------------------------------------
 
-### @{top_method}:@{partition_method}
+### @{top_method}:@{partition_method} @{tb = get_best_k(res_list)[paste(top_method, partition_method, sep = ":"), ];
+ifelse(tb[1, "mean_silhouette"] > 0.95, ifelse(tb[1, "PAC"] < 0.01, "**", ifelse(tb[1, "PAC"] < 0.05, "*", "")), "")}
+
 
 The object which only contains results for a single top method and a single partition method,
 and the functions that can be applied to.
@@ -18,6 +20,7 @@ later in this section.
 k = res_list@list[[1]]@k
 nk = length(k)
 fs = min(c(3*nk, 14))/nk
+""
 }
 
 ```{r @{top_method}-@{partition_method}-collect-plots, fig.width = @{fs*nk}, fig.height = @{fs*4}, results = "hide"}
@@ -102,7 +105,7 @@ How subgroups split when increasing `k`:
 collect_classes(res)
 ```
 
-@{if(!is.null(res@known_anno)) "Test to known annotations:\n" else ""}
+@{if(!is.null(res_list@list[[1]]@known_anno)) "Test to known annotations:\n" else ""}
 
 ```{r, eval = !is.null(res@known_anno), echo = !is.null(res@known_anno)}
 test_to_known_factors(res)

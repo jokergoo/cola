@@ -1,5 +1,6 @@
 \name{plot_ecdf-ConsensusPartition-method}
 \alias{plot_ecdf,ConsensusPartition-method}
+\alias{plot_ecdf}
 \title{
 Plot the ecdf of the consensus matrix
 }
@@ -25,8 +26,8 @@ No value is returned.
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
-\alias{plot_ecdf}
 \examples{
 # There is no example
 NULL
+
 }

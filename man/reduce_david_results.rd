@@ -26,4 +26,5 @@ A subset of rows in \code{tb}.
 \examples{
 # There is no example
 NULL
+
 }

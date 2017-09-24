@@ -23,7 +23,11 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL) {
 	KNITR_TAB_ENV$current_tab_index = KNITR_TAB_ENV$current_tab_index + 1
 	tab = qq("tab-@{KNITR_TAB_ENV$random_str}-@{KNITR_TAB_ENV$current_tab_index}")
 	knitr_text = qq(
-"@{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', paste(', ', opt))}}
+"@{strrep('`', 3)}{r @{tab}-opt, echo = FALSE}
+options(width = 100)
+@{strrep('`', 3)}
+
+@{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', paste(', ', opt))}}
 @{code}
 @{strrep('`', 3)}
 
@@ -35,7 +39,6 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL) {
 	op1 = getOption("markdown.HTML.options")
 	op2 = getOption("width")
 	options(markdown.HTML.options = setdiff(op1, c("base64_images", "toc")))
-	options(width = 140)
 	md = knit(text = knitr_text, quiet = TRUE, envir = parent.frame())
 	html = markdownToHTML(text = md, fragment.only = TRUE)
 	html = qq("<div id='@{tab}'>\n@{html}\n</div>\n")

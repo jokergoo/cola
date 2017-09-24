@@ -209,7 +209,7 @@ setMethod(f = "get_signatures",
 
 		use_mat1 = scaled_mat1
 		use_mat2 = scaled_mat2
-		mat_range = quantile(abs(scaled_mat1), 0.95)
+		mat_range = quantile(abs(scaled_mat1), 0.95, na.rm = TRUE)
 		col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
 		heatmap_name = "scaled_expr"
 
@@ -458,29 +458,39 @@ setMethod(f = "signature_density",
 	cl = get_class(object, k = k)$class
 	data = object@.env$data[, object@column_index, drop = FALSE]
 
-	all_den_list = lapply(seq_len(ncol(data)), function(i) density(data[, i]))
+	all_den_list = lapply(seq_len(ncol(data)), function(i) {
+		x = data[, i]
+		density(x)
+	})
 	x_range = range(unlist(lapply(all_den_list, function(x) x$x)))
 	y_range = range(unlist(lapply(all_den_list, function(x) x$y)))
 
+	x = get_signatures(object, k = k, plot = FALSE, verbose = FALSE, ...)
+	gp_tb = table(x$group)
+	n_gp = sum(gp_tb > 5)
+	gp_tb = gp_tb[gp_tb > 5]
+
 	op = par(no.readonly = TRUE)
-	par(mfrow = c(k + 1, 1), mar = c(3, 4, 4, 1))
-	plot(NULL, type = "n", xlim = x_range, ylim = y_range, main = "all rows", ylab = "density", xlab = NULL)
+	par(mfrow = c(n_gp + 1, 1), mar = c(2, 4, 1, 3))
+	plot(NULL, type = "n", xlim = x_range, ylim = y_range, ylab = "density", xlab = NULL)
 	for(i in 1:ncol(data)) {
 		lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = 1)
 	}
+	mtext("all rows", side = 4, line = 1)
 
-	x = get_signatures(object, k = k, plot = FALSE, ...)
+
 	gp = x$group
-	for(j in 1:k) {
+	for(j in as.numeric(names(gp_tb))) {
 		gp2 = gp[gp == as.character(j)]
 		all_den_list = lapply(seq_len(ncol(data)), function(i) density(data[names(gp2), i]))
 		# x_range = range(unlist(lapply(all_den_list, function(x) x$x)))
 		y_range = range(unlist(lapply(all_den_list, function(x) x$y)))
 
-		plot(NULL, type = "n", xlim = x_range, ylim = y_range, main = qq("signatures in subgroup @{j}/@{k}"), ylab = "density", xlab = NULL)
+		plot(NULL, type = "n", xlim = x_range, ylim = y_range, ylab = "density", xlab = NULL)
 		for(i in 1:ncol(data)) {
 			lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = ifelse(cl[i] == j, 2, 0.5))
 		}
+		mtext(qq("subgroup @{j}/@{k}"), side = 4, line = 1)
 	}
 	par(op)
 })

@@ -12,7 +12,7 @@ Cola report
 ```{r, echo = FALSE, message = FALSE}
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "toc"), "base64_images"))
-options(width = 140)
+options(width = 100)
 opts_chunk$set(comment = "#>")
 ```
 
@@ -49,7 +49,7 @@ get_best_k(res_list)
 tb = get_best_k(res_list)
 rntb = rownames(tb)
 l = tb$PAC < 0.05 & tb$mean_silhouette > 0.95
-rownames(tb) = ifelse(l, qq("[@{rntb}](?@{rntb})", collapse = FALSE), rntb)
+rownames(tb) = ifelse(l, qq("[@{rntb}](?#toc_@{2+seq_along(l)})", collapse = FALSE), rntb)
 tb = cbind(tb, ifelse(l, ifelse(tb$PAC < 0.01, "**", "*"), ""))
 colnames(tb)[ncol(tb)] = ""
 kable(tb)

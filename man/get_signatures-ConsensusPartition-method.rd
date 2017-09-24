@@ -16,7 +16,7 @@ Get signature rows
     anno_col = if(missing(anno)) object@known_col else NULL,
     show_legend = TRUE,
     show_column_names = TRUE, use_raster = TRUE,
-    plot = TRUE, mat_other = NULL, verbose = TRUE,
+    plot = TRUE, mat_other = NULL, verbose = dev.interactive(),
     ...)
 }
 \arguments{
@@ -67,4 +67,5 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
+
 }

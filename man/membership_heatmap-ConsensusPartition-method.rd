@@ -1,5 +1,6 @@
 \name{membership_heatmap-ConsensusPartition-method}
 \alias{membership_heatmap,ConsensusPartition-method}
+\alias{membership_heatmap}
 \title{
 Heatmap of membership of columns in each random sampling
 }
@@ -33,8 +34,8 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 `
 }
-\alias{membership_heatmap}
 \examples{
 # There is no example
 NULL
+
 }

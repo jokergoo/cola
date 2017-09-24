@@ -1,5 +1,6 @@
 \name{get_membership-ConsensusPartition-method}
 \alias{get_membership,ConsensusPartition-method}
+\alias{get_membership}
 \title{
 Get membership matrix
 }
@@ -27,8 +28,8 @@ A membership matrix where rows correspond to the samples in the original matrix.
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
-\alias{get_membership}
 \examples{
 # There is no example
 NULL
+
 }
