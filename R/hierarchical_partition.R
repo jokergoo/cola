@@ -142,48 +142,131 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 	le = unique(as.vector(hp@hierarchy))
 	hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
 
+	hp@dendrogram = calc_dend(hp)
+
 	return(hp)
 }
 
 calc_dend = function(object) {
+
 	hierarchy = object@hierarchy
 	lt = list()
 	lt[["0"]] = Node$new("all samples")
-	hierarchy = res@hierarchy
+	hierarchy = object@hierarchy
 	cn = colnames(object@list[["0"]]@.env$data)
+	max_depth = max(nchar(hierarchy))
+	lt[["0"]]$node_height = max_depth + 1
 	for(i in seq_len(nrow(hierarchy))) {
-		lt[[ hierarchy[i, 2] ]] = lt[[ hierarchy[i, 1] ]]$AddChild(hierarchy[i, 2])
+		lt[[ hierarchy[i, 2] ]] = lt[[ hierarchy[i, 1] ]]$AddChildNode({
+			node = Node$new(hierarchy[i, 2])
+			node$node_height = max_depth - nchar(hierarchy[i, 2]) + 1
+			node
+		})
 		l = hierarchy[, 1] == hierarchy[i, 2]
 		if(sum(l) == 0) {
-			for(nm in cn[object@list[[ hierarchy[i, 2] ]]@column_index]) {
-				lt[[ hierarchy[i, 2] ]]$AddChild(nm)
+			cn2 = cn[object@list[[ hierarchy[i, 2] ]]@column_index]
+
+			sample_node = lt[[ hierarchy[i, 2] ]]
+			sample_node$node_height = 0
+			
+			sample_node$AddChildNode({
+				node = Node$new(cn2[1])
+				node$node_height = 0
+				node
+			})
+			if(length(cn2) == 2) {
+				sample_node$AddSiblingNode({
+					node = Node$new(cn2[2])
+					node$node_height = 0
+					node
+				})
+			} else {
+
+				foo = sample_node$AddChildNode({
+					node = Node$new(paste0(cn2[1], "_node"))
+					node$node_height = 0
+					node
+				})
+				for(k in seq_along(cn2)[-1]) {
+					nm = cn2[k]
+					if(k < length(cn2) - 1) {
+						foo$AddChildNode({
+							node = Node$new(nm)
+							node$node_height = 0
+							node
+						})
+						foo = foo$AddChildNode({
+							node = Node$new(paste0(nm, "_node"))
+							node$node_height = 0
+							node
+						})
+						
+					} else if(k == length(cn2) - 1) {
+						foo$AddChildNode({
+							node = Node$new(cn2[k])
+							node$node_height = 0
+							node
+						})$AddSiblingNode({
+							node = Node$new(cn2[k+1])
+							node$node_height = 0
+							node
+						})
+					}
+				}
 			}
+
 		}
 	}
-	dend = as.dendrogram(lt[["0"]])
-	od = structure(1:62, names = cn)
+	dend = as.dendrogram(lt[["0"]], heightAttribute = "node_height")
+	od = structure(seq_along(cn), names = cn)
 	order.dendrogram(dend) = od[labels(dend)]
-}
 
-get_leaves_attr(dend, at)
-od = structure(1:nnode(dend), names = labels(dend))
-dend_env = new.env()
-dend_env$dend = dend
-update_midpoint = function(dend) {
-	if(is.leaf(dend)) {
-		attr(dend, "midpoint") = od[attr(dend, "label")]
-	} else {
-		midpoint = NULL
-		for(i in seq_len(length(dend))) {
-			if(is.null(attr(dend[[i]], "midpoint"))) {
-				update_midpoint(dend[[i]])
+	od = structure(1:nleaves(dend), names = labels(dend))
+	dend_env = new.env()
+	dend_env$dend = dend
+	update_midpoint = function(index = NULL) {
+		if(is.null(index)) {
+			if(is.leaf(dend_env$dend)) {
+				pos = od[attr(dend_env$dend, "label")]
+				midpoint = 0
+			} else {
+				x = NULL
+				for(i in seq_len(length(dend_env$dend))) {
+					if(is.null(attr(dend_env$dend[[i]], "x"))) {
+						update_midpoint(i)
+					}
+					x[i] = attr(dend_env$dend[[i]], "x")
+				}
+				pos = (max(x) + min(x))/2
+				midpoint = (max(x) - min(x))/2
 			}
-			midpoint[i] = attr(dend[[i]], "midpoint")
+		} else {
+			if(is.leaf(dend_env$dend[[index]])) {
+				pos = od[attr(dend_env$dend[[index]], "label")]
+				midpoint = 0
+			} else {
+				x = NULL
+				for(i in seq_len(length(dend_env$dend[[index]]))) {
+					if(is.null(attr(dend_env$dend[[c(index, i)]], "x"))) {
+						update_midpoint(c(index, i))
+					}
+					x[i] = attr(dend_env$dend[[c(index, i)]], "x")
+				}
+				pos = (max(x) + min(x))/2
+				midpoint = (max(x) - min(x))/2
+			}
 		}
-		attr(dend, "midpoint") = (max(midpoint) - min(midpoint))/2 + min(midpoint)
+		if(is.null(index)) {
+			attr(dend_env$dend, "x") = pos
+		} else {
+			attr(dend_env$dend[[index]], "x") = pos
+			attr(dend_env$dend[[index]], "midpoint") = midpoint
+		}
 	}
-}
+	update_midpoint()
 
+	dend_env$dend
+}
 
 most_tight_subgroup = function(mat, subgroup) {
 	
