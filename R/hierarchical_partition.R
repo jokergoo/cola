@@ -142,17 +142,13 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 	le = unique(as.vector(hp@hierarchy))
 	hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
 
-	hp@dendrogram = calc_dend(hp)
-
 	return(hp)
 }
 
-calc_dend = function(object) {
+calc_dend = function(object, hierarchy = object@hierarchy) {
 
-	hierarchy = object@hierarchy
 	lt = list()
 	lt[["0"]] = Node$new("all samples")
-	hierarchy = object@hierarchy
 	cn = colnames(object@list[["0"]]@.env$data)
 	max_depth = max(nchar(hierarchy))
 	lt[["0"]]$node_height = max_depth + 1
@@ -320,13 +316,6 @@ setMethod(f = "get_class",
 	}
 	subgroup
 })
-
-setMethod(f = "max_depth",
-	signature = "HierarchicalPartition",
-	definition = function(object) {
-	max(nchar(object@hierarchy))
-})
-
 
 # == title
 # Print the HierarchicalPartition object
@@ -496,22 +485,14 @@ setMethod(f = "collect_classes",
 	}
 	cl = get_class(object, depth = depth)
 
-	data = t(scale(t(data)))
-	rm = do.call("cbind", tapply(1:ncol(data), cl, function(ind) rowMeans(data[, ind])))
-	fake_mat = matrix(nrow = nrow(data), ncol = ncol(data))
-	colnames(fake_mat) = colnames(data)
-	rownames(fake_mat) = rownames(data)
-	for(nm in colnames(rm)) {
-		l = cl == nm
-		fake_mat[, l] = rm[, nm]
+	hierarchy = object@hierarchy
+	if(!is.null(depth)) {
+		hierarchy = hierarchy[nchar(hierarchy[, 2]) <= depth , , drop = FALSE]
 	}
-	# signature_pool = unique(unlist(signature_list))
-	# fake_mat = fake_mat[signature_pool, ]
-	hc = as.dendrogram(hclust(dist(t(fake_mat))))
-	hc = reorder(hc, colMeans(fake_mat))
+	dend = calc_dend(object, hierarchy)
 
 	ht_list = Heatmap(cl, name = "subgroups", width = unit(1, "cm"), col = object@subgroup_col,
-		row_title_rot = 0, cluster_rows = hc, row_dend_width = unit(2, "cm"))
+		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"))
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
 			anno_nm = deparse(substitute(anno))

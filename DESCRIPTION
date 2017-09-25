@@ -18,7 +18,6 @@ Imports: ComplexHeatmap,
          png, 
          gplots, 
          mclust, 
-         wCorr,
          crayon, 
          NMF, 
          Rtsne, 
@@ -29,7 +28,9 @@ Imports: ComplexHeatmap,
          microbenchmark, 
          httr,
          knitr,
-         markdown
+         markdown,
+         data.tree,
+         dendextend
 Suggests: venneuler, 
           mvtnorm, 
           genefilter
@@ -47,4 +48,3 @@ License: GPL (>= 2)
 Packaged: 2017-4-14 00:00:00 UTC; Administrator
 Repository: CRAN
 Date/Publication: 2017-4-14 00:00:00
-LinkingTo: Rcpp

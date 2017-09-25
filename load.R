@@ -20,9 +20,6 @@ library(samr)
 library(genefilter)
 library(kohonen)
 library(crayon)
-library(HDclassif)
-library(tm)
-library(wordcloud)
 library(xml2)
 library(Rcpp)
 library(wCorr)
@@ -30,6 +27,9 @@ library(microbenchmark)
 
 library(knitr)
 library(markdown)
+
+library(data.tree)
+library(dendextend)
 
 if(grepl("tbi", Sys.info()["nodename"]) & Sys.info()["user"] == "guz") {
 	Rfiles = list.files("~/project/development/cola/R", full.names = TRUE)

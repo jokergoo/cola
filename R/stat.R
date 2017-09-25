@@ -71,11 +71,11 @@ AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
 			if(length(ind2) > n_sampling) {
 				ind2 = sample(ind2, n_sampling)
 			}
-			if(cor_method == "KNN_weighted") {
-				cor_v = cor_KNN_weighted(mat, ind[i], ind2)
-			} else {
+			# if(cor_method == "KNN_weighted") {
+			# 	cor_v = cor_KNN_weighted(mat, ind[i], ind2)
+			# } else {
 				suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], method = cor_method)))
-			}
+			# }
 
 			cor_v = cor_v[cor_v >= min_cor & cor_v <= max_cor]
 
@@ -99,29 +99,29 @@ AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
 	return(v2)
 }
 
-cor_KNN_weighted = function(mat, ind1, ind2, k = 5) {
+# cor_KNN_weighted = function(mat, ind1, ind2, k = 5) {
 
-	nx = length(ind1)
-	ny = length(ind2)
-	cm = matrix(nrow = nx, ncol = ny)
-	for(i in seq_along(ind1)) {
-		for(j in seq_along(ind2)) {
-			cm[i, j] = cor_KNN_weighted_with_two_vectors(mat[, c(ind1[i], ind2[j])], k = k)
-		}
-	}
+# 	nx = length(ind1)
+# 	ny = length(ind2)
+# 	cm = matrix(nrow = nx, ncol = ny)
+# 	for(i in seq_along(ind1)) {
+# 		for(j in seq_along(ind2)) {
+# 			cm[i, j] = cor_KNN_weighted_with_two_vectors(mat[, c(ind1[i], ind2[j])], k = k)
+# 		}
+# 	}
 	
-	return(cm)
-}
+# 	return(cm)
+# }
 
-# m: 2 column matrix
-cor_KNN_weighted_with_two_vectors = function(m, k = 5) {
-	dist_m = base::as.matrix(dist(m, diag = TRUE, upper = TRUE))
-	wt = apply(dist_m, 1, function(x) {
-		sum(.Internal(qsort(x, FALSE))[1:(k+1)])/k
-	})
-	wt = max(wt) - wt
-	weightedCorr(m[, 1], m[, 2], weights = wt, method = "pearson")
-}
+# # m: 2 column matrix
+# cor_KNN_weighted_with_two_vectors = function(m, k = 5) {
+# 	dist_m = base::as.matrix(dist(m, diag = TRUE, upper = TRUE))
+# 	wt = apply(dist_m, 1, function(x) {
+# 		sum(.Internal(qsort(x, FALSE))[1:(k+1)])/k
+# 	})
+# 	wt = max(wt) - wt
+# 	weightedCorr(m[, 1], m[, 2], weights = wt, method = "pearson")
+# }
 
 
 entropy = function(p) {
