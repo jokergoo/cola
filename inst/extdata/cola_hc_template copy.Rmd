@@ -1,4 +1,4 @@
-Cola report
+Cola report for hierarchical partitioning
 ==================
 
 **Date**: `r Sys.Date()`
@@ -19,25 +19,25 @@ opts_chunk$set(fig.path = "figure_cola/")
 
 ## Summary
 
-All available functions which can be applied to `res_list` object.
+All available functions which can be applied to `res` object.
 
 ```{r}
-[% if(var_name != "res_list") paste("res_list =", var_name) %]
-res_list
+[% if(var_name != "res") paste("res =", var_name) %]
+res
 ```
 
 Dimension of the input matrix:
 
 ```{r}
-dim(res_list@.env$data)
+dim(res@.env$data)
 ```
 
 Global distribution for each sample:
 
 ```{r}
 library(ComplexHeatmap)
-densityHeatmap(res_list@.env$data, anno = HeatmapAnnotation(df = res_list@list[[1]]@known_anno, 
-	col = res_list@list[[1]]@known_col), ylab = "value")
+densityHeatmap(res@.env$data, anno = HeatmapAnnotation(df = res@list[[1]]@known_anno, 
+	col = res@list[[1]]@known_col), ylab = "value")
 ```
 
 Best `k` (number of partitions) for each combination of top methods and partition methods.

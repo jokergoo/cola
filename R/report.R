@@ -25,6 +25,7 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL) {
 	knitr_text = qq(
 "@{strrep('`', 3)}{r @{tab}-opt, echo = FALSE}
 options(width = 100)
+opts_chunk$set(fig.path = 'figure_cola/')
 @{strrep('`', 3)}
 
 @{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', paste(', ', opt))}}
@@ -126,7 +127,7 @@ setMethod(f = "cola_report",
 	md_file = gsub("Rmd$", "md", tempfile)
 	knit(tempfile, md_file)
 	markdownToHTML(md_file, paste0(output_dir, "/", "cola_report.html"))
-	# file.remove(c(tempfile, md_file))
+	file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
 
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)

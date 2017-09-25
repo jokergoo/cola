@@ -145,6 +145,46 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 	return(hp)
 }
 
+calc_dend = function(object) {
+	hierarchy = object@hierarchy
+	lt = list()
+	lt[["0"]] = Node$new("all samples")
+	hierarchy = res@hierarchy
+	cn = colnames(object@list[["0"]]@.env$data)
+	for(i in seq_len(nrow(hierarchy))) {
+		lt[[ hierarchy[i, 2] ]] = lt[[ hierarchy[i, 1] ]]$AddChild(hierarchy[i, 2])
+		l = hierarchy[, 1] == hierarchy[i, 2]
+		if(sum(l) == 0) {
+			for(nm in cn[object@list[[ hierarchy[i, 2] ]]@column_index]) {
+				lt[[ hierarchy[i, 2] ]]$AddChild(nm)
+			}
+		}
+	}
+	dend = as.dendrogram(lt[["0"]])
+	od = structure(1:62, names = cn)
+	order.dendrogram(dend) = od[labels(dend)]
+}
+
+get_leaves_attr(dend, at)
+od = structure(1:nnode(dend), names = labels(dend))
+dend_env = new.env()
+dend_env$dend = dend
+update_midpoint = function(dend) {
+	if(is.leaf(dend)) {
+		attr(dend, "midpoint") = od[attr(dend, "label")]
+	} else {
+		midpoint = NULL
+		for(i in seq_len(length(dend))) {
+			if(is.null(attr(dend[[i]], "midpoint"))) {
+				update_midpoint(dend[[i]])
+			}
+			midpoint[i] = attr(dend[[i]], "midpoint")
+		}
+		attr(dend, "midpoint") = (max(midpoint) - min(midpoint))/2 + min(midpoint)
+	}
+}
+
+
 most_tight_subgroup = function(mat, subgroup) {
 	
 	mean_dist = tapply(seq_len(ncol(mat)), subgroup, function(ind) {
@@ -198,6 +238,12 @@ setMethod(f = "get_class",
 	subgroup
 })
 
+setMethod(f = "max_depth",
+	signature = "HierarchicalPartition",
+	definition = function(object) {
+	max(nchar(object@hierarchy))
+})
+
 
 # == title
 # Print the HierarchicalPartition object
@@ -237,7 +283,8 @@ setMethod(f = "show",
 			}
 		}
 	}
-	substr(lines[1], 1, 1) = "+"
+	# substr(lines[1], 1, 1) = "+"
+	lines = c(qq("0, @{length(object@list[['0']]@column_index)} cols"), lines)
 	cat(lines, sep = "\n")
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'HierarchicalPartition' object:\n")
