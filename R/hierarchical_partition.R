@@ -646,3 +646,19 @@ setMethod(f = "dimension_reduction",
 		}
 	}
 })
+
+setMethod(f = "max_depth",
+	signature = "HierarchicalPartition",
+	definition = function(object) {
+
+	max(nchar(object@hierarchy[, 2]))
+})
+
+
+setMethod(f = "all_nodes",
+	signature = "HierarchicalPartition",
+	definition = function(object) {
+
+	unique(object@hierarchy)
+})
+

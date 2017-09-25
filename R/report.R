@@ -167,3 +167,12 @@ setMethod(f = "cola_report",
 	qqcat("Please call `cola_report()` on `ConsensusPartitionList` object directly.\n")
 	return(invisible(NULL))
 })
+
+
+
+setMethod(f = "cola_report",
+	signature = "HierarchicalPartition",
+	definition = function(object, output_dir, env = parent.frame()) {
+
+
+})
