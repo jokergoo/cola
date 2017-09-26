@@ -14,7 +14,7 @@ library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "toc"), "base64_images"))
 options(width = 100)
 opts_chunk$set(comment = "#>")
-opts_chunk$set(fig.path = "figure_cola/")
+opts_chunk$set(fig.path = "figure_hc/")
 ```
 
 ## Summary
@@ -22,52 +22,63 @@ opts_chunk$set(fig.path = "figure_cola/")
 All available functions which can be applied to `res` object.
 
 ```{r}
-[% if(var_name != "res") paste("res =", var_name) %]
+[% if(var_name != "res_hc") {expr = paste("res_hc =", var_name); eval(parse(text =expr)); expr} %]
 res
 ```
 
 Dimension of the input matrix:
 
 ```{r}
-dim(res@list[["0"]]@.env$data)
+dim(res_hc@list[["0"]]@.env$data)
 ```
 
 Global distribution for each sample:
 
 ```{r}
 library(ComplexHeatmap)
-densityHeatmap(res@list[["0"]]@.env$data, anno = HeatmapAnnotation(df = res@list[["0"]]@known_anno, 
+densityHeatmap(res_hc@list[["0"]]@.env$data, anno = HeatmapAnnotation(df = res_hc@list[["0"]]@known_anno, 
 	col = rres@list[["0"]]@known_col), ylab = "value")
 ```
 
 
 ```{r}
-max_depth = max_depth(res)
+max_depth = max_depth(res_hc)
 max_depth
-all_nodes = all_nodes(res)
+all_nodes = all_nodes(res_hc)
 all_nodes
+all_leaves = all_leaves(res_hc)
+all_leaves
+```
+
+```{r, results = "asis", echo = FALSE, include = TRUE}
+@{max_depth = max_depth(res_hc);
+depth = 2:max_depth
+qq("knitr_add_tab_item('get_class(res, depth = @<depth>)\ncollect_classes(res, depth = @<depth>)', 'depth = @<depth>')\n", code.pattern = "@<CODE>") }
+knitr_insert_tabs()
+```
+
+```{r, echo = c(1, 6)}
+dimension_reduction(res, merge = TRUE)
+n_plots = setdiff(all_nodes(res), all_leaves(res))
+nc = 4
+nr = ceiling(n_plots/nc)
+par(mfrow = c(nr, nc))
+dimension_reduction(res, merge = FALSE)
+par(mfrow = c(1, 1))
+```
+
+```{r, echo = max_depth > 2, eval = max_depth > 2}
+lt_sig = get_signatures(res)
+venn_euler(lt_sig)
 ```
 
 
-```{r}
-get_class(res, depth = )
-collect_classes(res, depth = )
-```
-
-```{r}
-dimension_reduction(res, depth)
-```
-
-```{r}
-get_signature(res, depth = )
-```
-
-
-[% if(!is.null(res_list@list[[1]]@known_anno)) {
-	k = res_list@list[[1]]@k
+[% if(!is.null(res_hc@list[['0']]@known_anno)) {
+	max_depth = max_depth(res_hc);
+	depth = 2:max_depth
 	txt = "Test correlation between subgroups and known annotations:\n\n"
 	txt = c(txt, "```{r, results = 'asis', echo = FALSE, include = TRUE}\n")
-	txt = c(txt, qq("knitr_add_tab_item('test_to_known_factors(res_list, k = @<k>)', 'k = @<k>')\n", code.pattern = '@<CODE>'))
+	txt = c(txt, qq("knitr_add_tab_item('test_to_known_factors(res_hc, depth = @<depth>)', 'depth = @<depth>')\n", code.pattern = '@<CODE>'))
 	txt = c(txt, "knitr_insert_tabs()\n")
 	txt = c(txt, "```\n")
 	paste(txt, collapse = "\n")
@@ -78,12 +89,10 @@ get_signature(res, depth = )
 ## Results for each node
 
 [% 
-section_template = paste(readLines("~/project/development/cola/inst/extdata/section_template.Rmd"), collapse = "\n")
+section_template = paste(readLines("~/project/development/cola/inst/extdata/section_hc_node_template.Rmd"), collapse = "\n")
 section = NULL
-for(top_method in res_list@top_method) {
-    for(partition_method in res_list@partition_method) {
-        section = c(section, qq(section_template))
-    }
+for(node in setdiff(all_nodes(res_hc), all_leaves(res_hc))) {
+    section = c(section, qq(section_template))
 }
 section = c(section, "\n")
 paste(section, collapse = "\n\n") %]

@@ -647,6 +647,12 @@ setMethod(f = "dimension_reduction",
 	}
 })
 
+# == title
+# max depth of the hierarchy
+#
+# == param
+# -object the object
+#
 setMethod(f = "max_depth",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
@@ -654,11 +660,41 @@ setMethod(f = "max_depth",
 	max(nchar(object@hierarchy[, 2]))
 })
 
-
+# == title
+# all nodes in the hierarchy
+#
+# == param
+# -object the object
+# -depth depth
+#
 setMethod(f = "all_nodes",
 	signature = "HierarchicalPartition",
-	definition = function(object) {
+	definition = function(object, depth = NULL) {
 
-	unique(object@hierarchy)
+	all_nodes = unique(as.vector(object@hierarchy))
+	if(!is.null(depth)) {
+		all_nodes = all_nodes[nchar(all_nodes) <= depth]
+	}
+	return(all_nodes)
 })
 
+# == title
+# all leaves in the hierarchy
+#
+# == param
+# -object the object
+# -depth depth
+#
+setMethod(f = "all_leaves",
+	signature = "HierarchicalPartition",
+	definition = function(object, depth = NULL) {
+
+	hierarchy = unique(object@hierarchy)
+	if(!is.null(depth)) {
+		hierarchy = hierarchy[nchar(hierarchy[, 2]) <= depth, , drop = FALSE]
+	}
+	
+	tb = table(hierarchy)
+	tb = tb[tb <= 1]
+	names(tb)	
+})

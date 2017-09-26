@@ -25,7 +25,6 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL) {
 	knitr_text = qq(
 "@{strrep('`', 3)}{r @{tab}-opt, echo = FALSE}
 options(width = 100)
-opts_chunk$set(fig.path = 'figure_cola/')
 @{strrep('`', 3)}
 
 @{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', paste(', ', opt))}}
@@ -119,7 +118,6 @@ setMethod(f = "cola_report",
 
 	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 	
-
 	tempfile = tempfile(tmpdir = output_dir, fileext = ".Rmd")
 	writeLines(txt, tempfile)
 	op = getOption("markdown.HTML.options")
@@ -169,10 +167,59 @@ setMethod(f = "cola_report",
 })
 
 
-
+# == title
+# Make report for the HierarchicalPartition object
+#
+# == param
+# -object a `HierarchicalPartition-class` object
+# -output_dir the path for the output html file
+# -env where object is found, internally used
+#
+# == details
+# A html report which contains all plots
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "cola_report",
 	signature = "HierarchicalPartition",
 	definition = function(object, output_dir, env = parent.frame()) {
 
+	var_name = deparse(substitute(object, env = env))
 
+	txt = readLines("~/project/development/cola/inst/extdata/cola_hc_template.Rmd")
+	txt = paste(txt, collapse = "\n")
+	txt = qq(txt, code.pattern = "\\[%CODE%\\]")
+
+	fileinfo = file.info(output_dir)
+	if(!fileinfo$isdir) {
+		output_dir = dirname(output_dir)
+	}
+
+	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+	
+	tempfile = tempfile(tmpdir = output_dir, fileext = ".Rmd")
+	writeLines(txt, tempfile)
+	op = getOption("markdown.HTML.options")
+	options(markdown.HTML.options = setdiff(op, "base64_images"))
+	md_file = gsub("Rmd$", "md", tempfile)
+	knit(tempfile, md_file)
+	markdownToHTML(md_file, paste0(output_dir, "/", "cola_hc_report.html"))
+	file.remove(c(tempfile, md_file))
+	options(markdown.HTML.options = op)
+
+	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
+	file.copy("~/project/development/cola/inst/extdata/jquery-ui.js", paste0(output_dir, "/js/"))
+	file.copy("~/project/development/cola/inst/extdata/jquery-1.12.4.js", paste0(output_dir, "/js/"))
+
+	qqcat("report is at @{output_dir}/cola_hc_report.html\n")
+
+	KNITR_TAB_ENV$current_tab_index = 0
+	KNITR_TAB_ENV$current_div_index = 0
+	KNITR_TAB_ENV$header = NULL
+	KNITR_TAB_ENV$current_html = ""
+	KNITR_TAB_ENV$random_str = round(runif(1, min = 1, max = 1e8))
+	KNITR_TAB_ENV$css_added = FALSE
+
+	return(invisible(NULL))
 })

@@ -11,8 +11,8 @@ Method dispatch page for \code{top_rows_overlap}.
 
 \itemize{
 \item \code{\link{top_rows_overlap,matrix-method}}, \code{\link{matrix-class}} class method
-\item \code{\link{top_rows_overlap,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{top_rows_overlap,list-method}}, \code{\link{list-class}} class method
+\item \code{\link{top_rows_overlap,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 }
 }
 \examples{

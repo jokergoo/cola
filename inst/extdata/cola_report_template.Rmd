@@ -22,7 +22,7 @@ opts_chunk$set(fig.path = "figure_cola/")
 All available functions which can be applied to `res_list` object.
 
 ```{r}
-[% if(var_name != "res_list") paste("res_list =", var_name) %]
+[% if(var_name != "res_list") {expr = paste("res_list =", var_name); eval(parse(text = expr)); expr} %]
 res_list
 ```
 
