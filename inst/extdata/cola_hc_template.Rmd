@@ -23,7 +23,7 @@ All available functions which can be applied to `res` object.
 
 ```{r}
 [% if(var_name != "res_hc") {expr = paste("res_hc =", var_name); eval(parse(text =expr)); expr} %]
-res
+res_hc
 ```
 
 Dimension of the input matrix:
@@ -37,8 +37,10 @@ Global distribution for each sample:
 ```{r}
 library(ComplexHeatmap)
 densityHeatmap(res_hc@list[["0"]]@.env$data, anno = HeatmapAnnotation(df = res_hc@list[["0"]]@known_anno, 
-	col = rres@list[["0"]]@known_col), ylab = "value")
+	col = res_hc@list[["0"]]@known_col), ylab = "value")
 ```
+
+About the hierarchy:
 
 
 ```{r}
@@ -50,25 +52,40 @@ all_leaves = all_leaves(res_hc)
 all_leaves
 ```
 
+
+Partitions for different depth:
+
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-@{max_depth = max_depth(res_hc);
+[% max_depth = max_depth(res_hc);
 depth = 2:max_depth
-qq("knitr_add_tab_item('get_class(res, depth = @<depth>)\ncollect_classes(res, depth = @<depth>)', 'depth = @<depth>')\n", code.pattern = "@<CODE>") }
+qq("knitr_add_tab_item('collect_classes(res_hc, depth = @<depth>)\nget_class(res_hc, depth = @<depth>)', 'depth = @<depth>')\n", code.pattern = "@<CODE>") %]
 knitr_insert_tabs()
 ```
 
-```{r, echo = c(1, 6)}
-dimension_reduction(res, merge = TRUE)
-n_plots = setdiff(all_nodes(res), all_leaves(res))
-nc = 4
+MDS plot:
+
+```{r}
+dimension_reduction(res_hc, merge = TRUE)
+```
+
+Or MDS plot at each node
+
+[% 
+n_plots = length(setdiff(all_nodes(res_hc), all_leaves(res_hc)))
+nc = min(c(4, n_plots))
 nr = ceiling(n_plots/nc)
+""
+ %]
+```{r, fig.width = [% nc*14/3 %], fig.height = [% nr*14/3 %], echo = 2}
 par(mfrow = c(nr, nc))
-dimension_reduction(res, merge = FALSE)
+dimension_reduction(res_hc, merge = FALSE)
 par(mfrow = c(1, 1))
 ```
 
+Signature genes and the overlap:
+
 ```{r, echo = max_depth > 2, eval = max_depth > 2}
-lt_sig = get_signatures(res)
+lt_sig = get_signatures(res_hc)
 venn_euler(lt_sig)
 ```
 
@@ -88,15 +105,15 @@ venn_euler(lt_sig)
 
 ## Results for each node
 
-[% 
+[%
 section_template = paste(readLines("~/project/development/cola/inst/extdata/section_hc_node_template.Rmd"), collapse = "\n")
 section = NULL
 for(node in setdiff(all_nodes(res_hc), all_leaves(res_hc))) {
     section = c(section, qq(section_template))
 }
 section = c(section, "\n")
-paste(section, collapse = "\n\n") %]
-
+paste(section, collapse = "\n\n")
+%]
 
 ## Session info
 

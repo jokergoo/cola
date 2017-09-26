@@ -1,5 +1,6 @@
 \name{all_nodes-HierarchicalPartition-method}
 \alias{all_nodes,HierarchicalPartition-method}
+\alias{all_nodes}
 \title{
 all nodes in the hierarchy
 }
@@ -15,8 +16,8 @@ all nodes in the hierarchy
   \item{depth}{depth}
 
 }
-\alias{all_nodes}
 \examples{
 # There is no example
 NULL
+
 }

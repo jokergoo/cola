@@ -1,5 +1,6 @@
 \name{max_depth-HierarchicalPartition-method}
 \alias{max_depth,HierarchicalPartition-method}
+\alias{max_depth}
 \title{
 max depth of the hierarchy
 }
@@ -14,8 +15,8 @@ max depth of the hierarchy
   \item{object}{the object}
 
 }
-\alias{max_depth}
 \examples{
 # There is no example
 NULL
+
 }

@@ -94,7 +94,13 @@ setMethod(f = "get_signatures",
 	} else {
 		row_diff_by = match.arg(row_diff_by)
 
-		nm = paste0("signature_fdr_", object@top_method, "_", object@partition_method, "_", k, "groups")
+		hash = digest(list(top_method = object@top_method, 
+			               partition_method = object@partition_method, 
+			               n_group = k, 
+			               row_diff_by = row_diff_by,
+			               column_index = object@column_index),
+					algo = "md5")
+		nm = paste0("signature_fdr_", hash)
 
 		find_signature = TRUE
 		if(!is.null(object@.env[[nm]])) {
@@ -130,6 +136,8 @@ setMethod(f = "get_signatures",
 		object@.env[[nm]]$fdr = fdr
 		object@.env[[nm]]$n_sample_used = n_sample_used
 	}
+
+	fdr[is.na(fdr)] = 1
 
 	group = character(nrow(data2))
 	for(i in seq_len(nrow(data2))) {

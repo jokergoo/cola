@@ -30,7 +30,8 @@ Imports: ComplexHeatmap,
          knitr,
          markdown,
          data.tree,
-         dendextend
+         dendextend,
+         digest
 Suggests: venneuler, 
           mvtnorm, 
           genefilter

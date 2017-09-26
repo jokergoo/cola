@@ -8,7 +8,7 @@ The object which only contains results for a single top method and a single part
 and the functions that can be applied to.
 
 ```{r}
-res = get_single_run(res, node = "@{node}")
+res = get_single_run(res_hc, node = "@{node}")
 res
 ```
 
