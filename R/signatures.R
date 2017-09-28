@@ -157,7 +157,9 @@ setMethod(f = "get_signatures",
 	if(verbose) qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
 	if(nrow(mat) == 0) {
-		grid.text("no sigatures")
+		if(plot) {
+			grid.text("no sigatures")
+		}
 		return(invisible(mat_return))
 	}
 	if(!plot) {

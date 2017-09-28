@@ -1,10 +1,10 @@
 \name{adjust_matrix}
 \alias{adjust_matrix}
 \title{
-Remove rows with low variance
+Remove rows with low variance and impute missing data
 }
 \description{
-Remove rows with low variance
+Remove rows with low variance and impute missing data
 }
 \usage{
 adjust_matrix(m, sd_quantile = 0.05)
@@ -16,8 +16,9 @@ adjust_matrix(m, sd_quantile = 0.05)
 
 }
 \details{
-The function first uses \code{\link{adjust_outlier}} to adjust outliers and 
-then removes rows with low standard variation.
+The function uses \code{\link[impute]{impute.knn}} to impute missing data, then
+uses \code{\link{adjust_outlier}} to adjust outliers and 
+removes rows with low standard variation.
 }
 \value{
 A numeric matrix.

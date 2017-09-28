@@ -53,7 +53,7 @@ setMethod(f = "top_rows_overlap",
 setMethod(f = "top_rows_overlap",
 	signature = "matrix",
 	definition = function(object, top_method = all_top_value_methods(), 
-		top_n = round(0.25*nrow(object)), type = c("venn", "correspondance"), ... ) {
+		top_n = round(0.25*nrow(object)), type = c("venn", "correspondance"), ...) {
 
 	all_value_list = lapply(top_method, function(x) {
 		get_value_fun = get_top_value_fun(x)
@@ -146,7 +146,7 @@ setMethod(f = "top_rows_heatmap",
 #
 # == param
 # -object a numeric matrix
-# -all_value_list scores that have already been calculated from the matrix. If it is ``NULL``
+# -all_value_list top values that have already been calculated from the matrix. If it is ``NULL``
 #              the values are calculated by methods in ``top_method``.
 # -top_method methods defined in `all_top_value_methods`.
 # -top_n number of top rows
@@ -197,9 +197,7 @@ setMethod(f = "top_rows_heatmap",
     	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i))
 		file_name = tempfile()
         png(file_name, width = image_width, height = image_height)
-		# if(dev.interactive() && interactive()) {
-		# 	readline(prompt = "press enter to load next plot: ")
-		# }
+		
 		mat = object[lt[[i]], ]
 		if(nrow(mat) > 5000) {
 			mat = mat[sample(nrow(mat), 5000), ]

@@ -112,8 +112,9 @@ get_partition_fun = function(method, partition_param = list()) {
 #        However, some partition function may not accept negative values which 
 #        are produced by `base::scale`. Here ``scale_method`` can be set to ``rescale``
 #        which scales rows by ``(x - min)/(max - min)``. Note here ``scale_method`` only means
-#        how to scale rows when ``scale_rows`` is set to ``TRUE`` in `consensus_partition`
-#        or `run_all_consensus_partition_methods`. The value for ``scale_method`` can be a vector.
+#        the method to scale rows. When ``scale_rows`` is set to ``FALSE`` in `consensus_partition`
+#        or `run_all_consensus_partition_methods`, there wil be no row scaling before doing partition.
+#        The value for ``scale_method`` can be a vector if user specifies more than one partition function.
 # 
 # == details 
 # The user-defined function should only accept three arguments. The first two arguments are the data
@@ -122,7 +123,7 @@ get_partition_fun = function(method, partition_param = list()) {
 #
 # The function should return a vector of partitions (or class labels).
 # 
-# The partition function is applied on rows.
+# The partition function should be applied on columns.
 #
 # The registered partition method will be used in `run_all_consensus_partition_methods`.
 # 
@@ -139,7 +140,7 @@ get_partition_fun = function(method, partition_param = list()) {
 #
 # == examples
 # all_partition_methods()
-# register_partition_fun(random = function(mat, k) sample(k, nrow(mat), replace = TRUE))
+# register_partition_fun(random = function(mat, k) sample(k, ncol(mat), replace = TRUE))
 # all_partition_methods()
 # remove_partition_method("random")
 register_partition_fun = function(..., scale_method = c("standardization", "rescale", "none")) {
@@ -268,9 +269,7 @@ remove_partition_method = function(method) {
 }
 
 
-brewer_pal_set1_col =  brewer.pal(9, "Set1")
-brewer_pal_set1_col = c(brewer_pal_set1_col, brewer_pal_set1_col)
-names(brewer_pal_set1_col) = 1:18
-brewer_pal_set2_col =  brewer.pal(8, "Set2")
-brewer_pal_set2_col = c(brewer_pal_set2_col, brewer_pal_set2_col)
+brewer_pal_set1_col = c(brewer.pal(9, "Set1"), brewer.pal(8, "Dark2"))
+names(brewer_pal_set1_col) = 1:17
+brewer_pal_set2_col = c(brewer.pal(8, "Set2"), brewer.pal(8, "Accent"))
 names(brewer_pal_set2_col) = 1:16

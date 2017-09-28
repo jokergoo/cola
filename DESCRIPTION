@@ -6,7 +6,7 @@ Date: 2017-4-14
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.3.0)
-Imports: ComplexHeatmap, 
+Imports: ComplexHeatmap (>= 1.15.1), 
          matrixStats, 
          GetoptLong, 
          circlize (>= 0.4.0), 
@@ -31,7 +31,8 @@ Imports: ComplexHeatmap,
          markdown,
          data.tree,
          dendextend,
-         digest
+         digest,
+         impute
 Suggests: venneuler, 
           mvtnorm, 
           genefilter
@@ -45,6 +46,7 @@ Description: Subgroup classification is a basic task in genomic data analysis,
   finds subgroups even the difference between subgroups are subtile; 4. it can 
   find subgroups in a hierarchical manner.
 URL: https://github.com/jokergoo/cola
+VignetteBuilder: knitr
 License: GPL (>= 2)
 Packaged: 2017-4-14 00:00:00 UTC; Administrator
 Repository: CRAN

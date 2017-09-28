@@ -23,7 +23,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
         list = "list",
         hierarchy = "matrix",
         subgroup = "character",
-        subgroup_col = "character"
+        subgroup_col = "character",
+        call = "ANY"
     )
 )
 
@@ -50,6 +51,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 #
 hierarchical_partition = function(data, top_method = "MAD", partition_method = "kmeans",
 	PAC_cutoff = 0.2, min_samples = 6, k = 2:4, ...) {
+
+	cl = match.call()
 	
 	.h_obj = new.env()
 	.h_obj$hierarchy = matrix(nrow = 0, ncol = 2)
@@ -141,6 +144,7 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 
 	le = unique(as.vector(hp@hierarchy))
 	hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
+	hp@call = cl
 
 	return(hp)
 }
@@ -220,6 +224,7 @@ calc_dend = function(object, hierarchy = object@hierarchy) {
 	od = structure(1:nleaves(dend), names = labels(dend))
 	dend_env = new.env()
 	dend_env$dend = dend
+
 	update_midpoint = function(index = NULL) {
 		if(is.null(index)) {
 			if(is.leaf(dend_env$dend)) {

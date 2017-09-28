@@ -1,13 +1,16 @@
 \name{knitr_insert_tabs}
 \alias{knitr_insert_tabs}
 \title{
-Indert the HTML tabs
+Generate the HTML code for the JavaScript tabs.
 }
 \description{
-Indert the HTML tabs
+Generate the HTML code for the JavaScript tabs.
 }
 \usage{
 knitr_insert_tabs()
+}
+\details{
+This function is only for internal use.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

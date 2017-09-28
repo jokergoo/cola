@@ -18,8 +18,10 @@ Test correspondance between predicted and known classes
 
 }
 \value{
-A matrix of p-values where the first column is the number of samples
-to test after filtering by \code{silhouette_cutoff}.
+A data frame with columns:
+- the number of samples used to test after filtering by \code{silhouette_cutoff}
+- p-values from the tests
+- number of partitions
 }
 \seealso{
 \code{\link{test_between_factors}}

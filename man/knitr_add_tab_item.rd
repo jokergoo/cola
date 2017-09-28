@@ -1,21 +1,24 @@
 \name{knitr_add_tab_item}
 \alias{knitr_add_tab_item}
 \title{
-Add one tab item
+Add one JavaScript tab in the report
 }
 \description{
-Add one tab item
+Add one JavaScript tab in the report
 }
 \usage{
 knitr_add_tab_item(code, header, desc = "", opt = NULL)
 }
 \arguments{
 
-  \item{code}{R code}
-  \item{header}{header for the tab}
-  \item{desc}{decription}
-  \item{opt}{options for knitr}
+  \item{code}{R code to execute}
+  \item{header}{header or the title for the tab}
+  \item{desc}{decription in the tab}
+  \item{opt}{options for knitr chunk}
 
+}
+\details{
+This function in only for internal use.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

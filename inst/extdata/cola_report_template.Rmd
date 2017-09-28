@@ -6,7 +6,8 @@ Cola report
 ----------------------------------------------------------------
 
 <style type='text/css'>
-[% paste(readLines("~/project/development/cola/inst/extdata/custom.css"), collapse = "\n") %]
+[% extdata_dir = system.file("extdata", package = "cola")
+paste(readLines(paste0(extdata_dir, "/custom.css")), collapse = "\n") %]
 </style>
 
 ```{r, echo = FALSE, message = FALSE}
@@ -24,6 +25,12 @@ All available functions which can be applied to `res_list` object.
 ```{r}
 [% if(var_name != "res_list") {expr = paste("res_list =", var_name); eval(parse(text = expr)); expr} %]
 res_list
+```
+
+The call for `run_all_consensus_partition_methods()`:
+
+```{r, echo = FALSE}
+print(res_list@call)
 ```
 
 Dimension of the input matrix:
@@ -149,7 +156,7 @@ knitr_insert_tabs()
 ## Results for each method
 
 [% 
-section_template = paste(readLines("~/project/development/cola/inst/extdata/section_template.Rmd"), collapse = "\n")
+section_template = paste(readLines(paste0(extdata_dir, "/section_template.Rmd")), collapse = "\n")
 section = NULL
 for(top_method in res_list@top_method) {
     for(partition_method in res_list@partition_method) {

@@ -12,12 +12,13 @@ Make report for the HierarchicalPartition object
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object}
-  \item{output_dir}{the path for the output html file}
-  \item{env}{where object is found, internally used}
+  \item{output_dir}{the output directory where put the report}
+  \item{env}{where the objects in the report are found, internally used}
 
 }
 \details{
-A html report which contains all plots
+This function generates a HTML report which contains all plots for all nodes
+in the partition hierarchy.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
@@ -25,4 +26,5 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
+
 }

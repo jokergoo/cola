@@ -12,11 +12,11 @@ Make report for the ConsensusPartition object
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object}
-  \item{output_dir}{the path for the output html file}
+  \item{output_dir}{the output directory where put the report}
 
 }
 \details{
-A html report which contains all plots
+Please generate report on the \code{\link{ConsensusPartitionList-class}} object directly.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

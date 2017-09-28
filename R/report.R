@@ -9,13 +9,16 @@ KNITR_TAB_ENV$random_str = round(runif(1, min = 1, max = 1e8))
 KNITR_TAB_ENV$css_added = FALSE
 
 # == title
-# Add one tab item
+# Add one JavaScript tab in the report
 #
 # == param
-# -code R code
-# -header header for the tab
-# -desc decription
-# -opt options for knitr
+# -code R code to execute
+# -header header or the title for the tab
+# -desc decription in the tab
+# -opt options for knitr chunk
+#
+# == details
+# This function in only for internal use.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -49,15 +52,20 @@ options(width = 100)
 }
 
 # == title
-# Indert the HTML tabs
+# Generate the HTML code for the JavaScript tabs.
+#
+# == details
+# This function is only for internal use.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 knitr_insert_tabs = function() {
 	KNITR_TAB_ENV$current_div_index = KNITR_TAB_ENV$current_div_index + 1
 
+	extdata_dir = system.file("extdata", package = "cola")
+
 	if(!KNITR_TAB_ENV$css_added) {
-		css = readLines("~/project/development/cola/inst/extdata/jquery-ui.css")
+		css = readLines(paste0(extdata_dir, "/jquery-ui.css"))
 		cat("<style type='text/css'>\n")
 		cat(css, sep = "\n")
 		cat("</style>\n")
@@ -92,22 +100,26 @@ $( function() {
 #
 # == param
 # -object a `ConsensusPartitionList-class` object
-# -output_dir the path for the output html file
-# -env where object is found, internally used
+# -output_dir the output directory where put the report
+# -env where the objects in the report are found, internally used
 #
 # == details
-# A html report which contains all plots
+# The `ConsensusPartitionList-class` object contains results for all top methods and all partition methods.
+# This function generates a HTML report which contains all plots for every combination
+# of top method and partition method.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
-	definition = function(object, output_dir, env = parent.frame()) {
+	definition = function(object, output_dir = getwd(), env = parent.frame()) {
 
 	var_name = deparse(substitute(object, env = env))
 
-	txt = readLines("~/project/development/cola/inst/extdata/cola_report_template.Rmd")
+	extdata_dir = system.file("extdata", package = "cola")
+
+	txt = readLines(paste0(extdata_dir, "/cola_report_template.Rmd"))
 	txt = paste(txt, collapse = "\n")
 	txt = qq(txt, code.pattern = "\\[%CODE%\\]")
 
@@ -132,8 +144,8 @@ setMethod(f = "cola_report",
 	options(markdown.HTML.options = op)
 
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
-	file.copy("~/project/development/cola/inst/extdata/jquery-ui.js", paste0(output_dir, "/js/"))
-	file.copy("~/project/development/cola/inst/extdata/jquery-1.12.4.js", paste0(output_dir, "/js/"))
+	file.copy(paste0(extdata_dir, "/jquery-ui.js"), paste0(output_dir, "/js/"))
+	file.copy(paste0(extdata_dir, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
 
 	qqcat("report is at @{output_dir}/cola_report.html\n")
 
@@ -153,10 +165,10 @@ setMethod(f = "cola_report",
 #
 # == param
 # -object a `ConsensusPartition-class` object
-# -output_dir the path for the output html file
+# -output_dir the output directory where put the report
 #
 # == details
-# A html report which contains all plots
+# Please generate report on the `ConsensusPartitionList-class` object directly.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -175,11 +187,12 @@ setMethod(f = "cola_report",
 #
 # == param
 # -object a `HierarchicalPartition-class` object
-# -output_dir the path for the output html file
-# -env where object is found, internally used
+# -output_dir the output directory where put the report
+# -env where the objects in the report are found, internally used
 #
 # == details
-# A html report which contains all plots
+# This function generates a HTML report which contains all plots for all nodes
+# in the partition hierarchy.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -190,7 +203,9 @@ setMethod(f = "cola_report",
 
 	var_name = deparse(substitute(object, env = env))
 
-	txt = readLines("~/project/development/cola/inst/extdata/cola_hc_template.Rmd")
+	extdata_dir = system.file("extdata", package = "cola")
+
+	txt = readLines(paste0(extdata_dir, "/cola_hc_template.Rmd"))
 	txt = paste(txt, collapse = "\n")
 	txt = qq(txt, code.pattern = "\\[%CODE%\\]")
 
@@ -215,8 +230,8 @@ setMethod(f = "cola_report",
 	options(markdown.HTML.options = op)
 
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
-	file.copy("~/project/development/cola/inst/extdata/jquery-ui.js", paste0(output_dir, "/js/"))
-	file.copy("~/project/development/cola/inst/extdata/jquery-1.12.4.js", paste0(output_dir, "/js/"))
+	file.copy(paste0(extdata_dir, "/jquery-ui.js"), paste0(output_dir, "/js/"))
+	file.copy(paste0(extdata_dir, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
 
 	qqcat("report is at @{output_dir}/cola_hc_report.html\n")
 

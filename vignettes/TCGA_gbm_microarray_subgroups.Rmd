@@ -1,0 +1,129 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Consensus and Hierarchical Partitioning}
+-->
+
+Consensus and Hierarchical Partitioning
+========================================
+
+**Author**: Zuguang Gu ( z.gu@dkfz.de )
+
+**Date**: `r Sys.Date()`
+
+**Package version**: `r installed.packages()["cola", "Version"]`
+
+-------------------------------------------------------------
+
+```{r, echo = FALSE, message = FALSE}
+library(markdown)
+options(markdown.HTML.options = c(options('markdown.HTML.options')[[1]], "toc"))
+
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    fig.align = "center")
+options(markdown.HTML.stylesheet = "custom.css")
+
+options(width = 100)
+library(ComplexHeatmap)
+```
+
+
+```{r}
+library(cola)
+```
+
+Data is from https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/.
+
+```{r}
+load(system.file("extdata", "TCGA_GBM_rnaseq_subset.RData", package = "cola"))
+dim(mat)
+head(anno)
+anno_col
+```
+
+Get all supported top methods and partition methods:
+
+```{r}
+all_top_value_methods()
+all_partition_methods()
+```
+
+```{r}
+register_top_value_fun(max = function(mat) rowMaxs(mat))
+```
+
+```{r}
+remove_top_value_method("max")
+```
+
+## Consensus partition
+
+Run clustering for all combination of methods in batch:
+
+```{r}
+res_list = run_all_consensus_partition_methods(mat, top_n = c(1000, 2000), k = 2:6,
+	top_method = c("MAD", "vc"), partition_method = c("hclust", "kmeans"), 
+	known_anno = anno, known_col = anno_col)
+res_list
+```
+
+Collect all plots for a k:
+
+```{r, fig.width = 10, fig.height = 10, results = "hide"}
+collect_plots(res_list, k = 4, fun = consensus_heatmap)
+```
+
+Get clustering in a specified combination of top method and partition method:
+
+```{r}
+res = get_single_run(res_list, top_method = "MAD", partition_method = "kmeans")
+res
+```
+
+plots:
+
+```{r, fig.width = 12, fig.height = 8}
+select_partition_number(res)
+```
+
+```{r}
+consensus_heatmap(res, k = 4)
+```
+
+```{r}
+get_signatures(res, k = 4)
+```
+
+Get classifications
+
+```{r}
+get_class(res, k = 4)
+```
+
+## Hierarchical partition
+
+```{r}
+res_hc = hierarchical_partition(mat, top_n = c(1000, 2000), 
+	known_anno = anno, known_col = anno_col)
+```
+
+```{r}
+collect_classes(res_hc)
+```
+
+```{r}
+sig = get_signatures(res_hc)
+```
+
+```{r}
+venn_euler(sig)
+```
+
+## Session info
+
+```{r}
+sessionInfo()
+```

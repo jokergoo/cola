@@ -1,5 +1,6 @@
  
 
+
 DAVID_ALL_ID_TYPES = "AFFYMETRIX_3PRIME_IVT_ID,AFFYMETRIX_EXON_GENE_ID,AFFYMETRIX_SNP_ID,AGILENT_CHIP_ID,AGILENT_ID,AGILENT_OLIGO_ID,ENSEMBL_GENE_ID,ENSEMBL_TRANSCRIPT_ID,ENTREZ_GENE_ID,FLYBASE_GENE_ID,FLYBASE_TRANSCRIPT_ID,GENBANK_ACCESSION,GENOMIC_GI_ACCESSION,GENPEPT_ACCESSION,ILLUMINA_ID,IPI_ID,MGI_ID,PFAM_ID,PIR_ID,PROTEIN_GI_ACCESSION,REFSEQ_GENOMIC,REFSEQ_MRNA,REFSEQ_PROTEIN,REFSEQ_RNA,RGD_ID,SGD_ID,TAIR_ID,UCSC_GENE_ID,UNIGENE,UNIPROT_ACCESSION,UNIPROT_ID,UNIREF100_ID,WORMBASE_GENE_ID,WORMPEP_ID,ZFIN_ID"
 DAVID_ALL_ID_TYPES = strsplit(DAVID_ALL_ID_TYPES, ",")[[1]]
 DAVID_ALL_CATALOGS = "BBID,BIND,BIOCARTA,BLOCKS,CGAP_EST_QUARTILE,CGAP_SAGE_QUARTILE,CHROMOSOME,COG_NAME,COG_ONTOLOGY,CYTOBAND,DIP,EC_NUMBER,ENSEMBL_GENE_ID,ENTREZ_GENE_ID,ENTREZ_GENE_SUMMARY,GENETIC_ASSOCIATION_DB_DISEASE,GENERIF_SUMMARY,GNF_U133A_QUARTILE,GENETIC_ASSOCIATION_DB_DISEASE_CLASS,GOTERM_BP_2,GOTERM_BP_1,GOTERM_BP_4,GOTERM_BP_3,GOTERM_BP_FAT,GOTERM_BP_5,GOTERM_CC_1,GOTERM_BP_ALL,GOTERM_CC_3,GOTERM_CC_2,GOTERM_CC_5,GOTERM_CC_4,GOTERM_MF_1,GOTERM_MF_2,GOTERM_CC_FAT,GOTERM_CC_ALL,GOTERM_MF_5,GOTERM_MF_FAT,GOTERM_MF_3,GOTERM_MF_4,HIV_INTERACTION_CATEGORY,HOMOLOGOUS_GENE,GOTERM_MF_ALL,HIV_INTERACTION,MINT,NCICB_CAPATHWAY_INTERACTION,INTERPRO,KEGG_PATHWAY,PANTHER_FAMILY,PANTHER_BP_ALL,OMIM_DISEASE,OFFICIAL_GENE_SYMBOL,PANTHER_SUBFAMILY,PANTHER_PATHWAY,PANTHER_MF_ALL,PIR_SUMMARY,PIR_SEQ_FEATURE,PFAM,PRODOM,PRINTS,PIR_TISSUE_SPECIFICITY,PIR_SUPERFAMILY,SMART,SP_COMMENT,SP_COMMENT_TYPE,SP_PIR_KEYWORDS,PROSITE,PUBMED_ID,REACTOME_INTERACTION,REACTOME_PATHWAY,UNIGENE_EST_QUARTILE,UP_SEQ_FEATURE,UP_TISSUE,ZFIN_ANATOMY,SSF,TIGRFAMS,UCSC_TFBS"
@@ -9,19 +10,26 @@ DAVID_ALL_CATALOGS = strsplit(DAVID_ALL_CATALOGS, ",")[[1]]
 # Doing DAVID analysis
 #
 # == param
-# -genes a vector of genes
+# -genes a vector of gene identifiers
 # -email the email that user registered on DAVID web service (https://david.ncifcrf.gov/content.jsp?file=WS.html )
-# -catalog a vector of functional catalogs. Valid values are in ``cola:::DAVID_ALL_ID_TYPES``.
-# -idtype id types for the input gene list. Valid  vaules are in ``cola:::DAVID_ALL_CATALOGS``.
-# -species full species name if the id type is not unique to the species
+# -catalog a vector of function catalogs. Valid values are in ``cola:::DAVID_ALL_CATALOGS``.
+# -idtype id types for the input gene list. Valid values are in ``cola:::DAVID_ALL_ID_TYPES``.
+# -species full species name if the id type is not uniquely mapped to one single species
 #
 # == details
-# If you want to run this function multiple times, please set time intervals.
+# If you want to run this function multiple times, please set time intervals between runs.
 # 
 # == value
 # A data frame with functional enrichment results
 #
-submit_to_david = function(genes, email, catalog = c("GOTERM_CC_FAT", "GOTERM_BP_FAT", "GOTERM_MF_FAT", "KEGG_PATHWAY"),
+# == seealso
+# https://david.ncifcrf.gov
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+submit_to_david = function(genes, email, 
+	catalog = c("GOTERM_CC_FAT", "GOTERM_BP_FAT", "GOTERM_MF_FAT", "KEGG_PATHWAY"),
 	idtype = "ENSEMBL_GENE_ID", species = "Homo sapiens") {
 
 	if(missing(email)) {
@@ -31,18 +39,21 @@ submit_to_david = function(genes, email, catalog = c("GOTERM_CC_FAT", "GOTERM_BP
 	if(!idtype %in% DAVID_ALL_ID_TYPES) {
 		cat("idtype is wrong, it should be in:\n")
 		print(DAVID_ALL_ID_TYPES)
-		stop("You have an error")
+		stop("You have an error.")
 	}
 	if(!all(catalog %in% DAVID_ALL_CATALOGS)) {
 		cat("catalog is wrong, it should be in:\n")
 		print(DAVID_ALL_CATALOGS)
-		stop("You have an error")
+		stop("You have an error.")
 	}
 
 	if(grepl("ENSEMBL", idtype)) {
 		map = structure(genes, names = gsub("\\.\\d+$", "", genes))
 		genes = names(map)
 	}
+
+	message(qq("Idtype: @{idtype}"))
+	message(qq("Catalog: @{paste(catalog, collapse = ' ')}"))
 	
 	DAVID_DWS = "https://david-d.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap11Endpoint"
 
@@ -59,6 +70,7 @@ submit_to_david = function(genes, email, catalog = c("GOTERM_CC_FAT", "GOTERM_BP
 	message(qq("add gene list (@{length(genes)} genes)"))
 	if(length(genes) > 2500) {
 		genes = sample(genes, 2500)
+		message("There are more than 2500 genes, only randomly sample 2500 from them.")
 	}
 	response = POST(qq("@{DAVID_DWS}/addList"),
 		body = list("args0" = paste(genes, collapse = ","),  # inputIds
@@ -66,7 +78,6 @@ submit_to_david = function(genes, email, catalog = c("GOTERM_CC_FAT", "GOTERM_BP
 			         "args2" = Sys.time(),                    # listName
 			         "args3" = 0))                           # listType
 
-	message("set species")
 	response = GET(qq("@{DAVID_DWS}/getSpecies"))
 	all_species = sapply(xml_children(httr::content(response)), xml_text)
 	if(length(all_species) > 1) {
@@ -78,6 +89,8 @@ submit_to_david = function(genes, email, catalog = c("GOTERM_CC_FAT", "GOTERM_BP
 		}
 		GET(qq("@{DAVID_DWS}/getSpecies"),
 			query = list("arg0" = i))
+	} else {
+		message(qq("There is one unique species (@{all_species}) mapped, no need to check species."))
 	}
 
 	message("set catalogs")
@@ -129,7 +142,7 @@ submit_to_david = function(genes, email, catalog = c("GOTERM_CC_FAT", "GOTERM_BP
 #
 # == param
 # -tb object from `submit_to_david`
-# -fdr_cutoff cutoff for fdr
+# -fdr_cutoff cutoff for fdr (the ``benjamini`` column)
 # -hit_cutoff cutoff for number of genes in a term
 #
 # == details
@@ -139,8 +152,11 @@ submit_to_david = function(genes, email, catalog = c("GOTERM_CC_FAT", "GOTERM_BP
 # == value
 # A subset of rows in ``tb``.
 #
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 reduce_david_results = function(tb, fdr_cutoff = 0.05, hit_cutoff = 5) {
-	l = tb$benjamini <= fdr_cutoff & tb$listHits >= hit_cutoff
+	l = tb$benjamini <= fdr_cutoff & tb$listHits >= hit_cutoff & !duplicated(tb$termName)
 	if(sum(l) < 1) {
 		cat("No record left.\n")
 		return(NULL)
@@ -153,8 +169,8 @@ reduce_david_results = function(tb, fdr_cutoff = 0.05, hit_cutoff = 5) {
 			y[i, , drop = FALSE]
 		}))
 	}))
+	rownames(tb_reduced) = NULL
 
-	tb_reduced = tb_reduced[, names(tb_reduced) != "cluster"]
 	attr(tb_reduced, "reduced") = TRUE
 	return(unique(tb_reduced))
 }

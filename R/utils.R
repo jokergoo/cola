@@ -80,15 +80,16 @@ adjust_outlier = function(x, q = 0.05) {
 }
 
 # == title
-# Remove rows with low variance
+# Remove rows with low variance and impute missing data
 #
 # == param
 # -m a numeric matrix
 # -sd_quantile cutoff the quantile of standard variation
 #
 # == details
-# The function first uses `adjust_outlier` to adjust outliers and 
-# then removes rows with low standard variation.
+# The function uses `impute::impute.knn` to impute missing data, then
+# uses `adjust_outlier` to adjust outliers and 
+# removes rows with low standard variation.
 #
 # == value
 # A numeric matrix.
@@ -105,6 +106,12 @@ adjust_outlier = function(x, q = 0.05) {
 adjust_matrix = function(m, sd_quantile = 0.05) {
 	if(is.data.frame(m)) {
 		m = as.matrix(m)
+	}
+
+	n_na = sum(is.na(m))
+	if(n_na > 0) {
+		qqcat("There are NA values in the data, now impute missing data.\n")
+		m = impute.knn(m)$data
 	}
 	m = t(apply(m, 1, adjust_outlier))
 	row_sd = rowSds(m, na.rm = TRUE)

@@ -23,8 +23,10 @@ The function basically sends each \code{\link{ConsensusPartition-class}} object 
 \code{\link{test_to_known_factors,ConsensusPartition-method}} and merges afterwards.
 }
 \value{
-A matrix of p-values where the first column is the number of samples
-to test after filtering by \code{silhouette_cutoff}.
+A data frame with columns:
+- the number of samples used to test after filtering by \code{silhouette_cutoff}
+- p-values from the tests
+- number of partitions
 }
 \seealso{
 \code{\link{test_between_factors}}, \code{\link{test_to_known_factors,ConsensusPartition-method}}

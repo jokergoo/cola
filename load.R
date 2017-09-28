@@ -31,6 +31,8 @@ library(markdown)
 library(data.tree)
 library(dendextend)
 library(digest)
+library(impute)
+library(httr)
 
 if(grepl("tbi", Sys.info()["nodename"]) & Sys.info()["user"] == "guz") {
 	Rfiles = list.files("~/project/development/cola/R", full.names = TRUE)

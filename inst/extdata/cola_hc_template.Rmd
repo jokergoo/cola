@@ -6,7 +6,8 @@ Cola report for hierarchical partitioning
 ----------------------------------------------------------------
 
 <style type='text/css'>
-[% paste(readLines("~/project/development/cola/inst/extdata/custom.css"), collapse = "\n") %]
+[% extdata_dir = system.file("extdata", package = "cola")
+paste(readLines(paste0(extdata_dir, "/custom.css")), collapse = "\n") %]
 </style>
 
 ```{r, echo = FALSE, message = FALSE}
@@ -25,6 +26,13 @@ All available functions which can be applied to `res` object.
 [% if(var_name != "res_hc") {expr = paste("res_hc =", var_name); eval(parse(text =expr)); expr} %]
 res_hc
 ```
+
+The call for `hierarchical_partition()`:
+
+```{r, echo = FALSE}
+print(res_hc@call)
+```
+
 
 Dimension of the input matrix:
 
@@ -106,7 +114,7 @@ venn_euler(lt_sig)
 ## Results for each node
 
 [%
-section_template = paste(readLines("~/project/development/cola/inst/extdata/section_hc_node_template.Rmd"), collapse = "\n")
+section_template = paste(readLines(paste0(extdata_dir, "/section_hc_node_template.Rmd")), collapse = "\n")
 section = NULL
 for(node in setdiff(all_nodes(res_hc), all_leaves(res_hc))) {
     section = c(section, qq(section_template))

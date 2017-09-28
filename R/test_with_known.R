@@ -15,6 +15,8 @@
 # - two numeric variables: correlation test by `stats::cor.test` is applied;
 # - two character or factor variables: `stats::fisher.test` is applied;
 # - one numeric variable and one character/factor variable: oneway ANOVA test by `stats::oneway.test` is applied.
+#
+# If there are NA values, basically it means there are no efficient data points to perform the test.
 # 
 # This function can be used to test the correlation between the predicted classes and other known factors.
 # 
@@ -52,13 +54,13 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 					p.value[i, j] = cor.test(df[[i]], df[[j]])$p.value
 				} else if(is.numeric(df[[i]]) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
-					try({p.value[i, j] = oneway.test(df[[i]] ~ df[[j]])$p.value})
+					try({p.value[i, j] = oneway.test(df[[i]] ~ df[[j]])$p.value}, silent = TRUE)
 				} else if(is.numeric(df[[j]]) && (is.character(df[[i]]) || is.factor(df[[i]]))) {
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
-					try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value})
+					try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value}, silent = TRUE)
 				} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Fisher's exact test\n")
-					try({p.value[i, j] = fisher.test(df[[i]], df[[j]], alternative = "greater")$p.value})
+					try({p.value[i, j] = fisher.test(df[[i]], df[[j]], alternative = "greater")$p.value}, silent = TRUE)
 				}
 				p.value[j, i] = p.value[i, j]
 			}
@@ -103,13 +105,13 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 					p.value[i, j] = cor.test(df1[[i]], df2[[j]])$p.value
 				} else if(is.numeric(df1[[i]]) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
 					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: oneway ANOVA test\n")
-					try({p.value[i, j] = oneway.test(df1[[i]] ~ df2[[j]])$p.value})
+					try({p.value[i, j] = oneway.test(df1[[i]] ~ df2[[j]])$p.value}, silent = TRUE)
 				} else if((is.character(df1[[i]]) || is.factor(df1[[i]])) && is.numeric(df2[[j]])) {
 					if(verbose) qqcat("@{nm2[j]} ~ @{nm1[i]}: oneway ANOVA test\n")
-					try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value})
+					try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value}, silent = TRUE)
 				} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
 					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Fisher's exact test\n")
-					try({p.value[i, j] = fisher.test(df1[[i]], df2[[j]], alternative = "greater")$p.value})
+					try({p.value[i, j] = fisher.test(df1[[i]], df2[[j]], alternative = "greater")$p.value}, silent = TRUE)
 				}
 			}
 		}
@@ -127,8 +129,10 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 # -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
 #
 # == value
-# A matrix of p-values where the first column is the number of samples
-# to test after filtering by ``silhouette_cutoff``.
+# A data frame with columns:
+# - the number of samples used to test after filtering by ``silhouette_cutoff``
+# - p-values from the tests
+# - number of partitions
 #
 # == seealso
 # `test_between_factors`
@@ -182,8 +186,10 @@ setMethod(f = "test_to_known_factors",
 # `test_to_known_factors,ConsensusPartition-method` and merges afterwards.
 #
 # == value
-# A matrix of p-values where the first column is the number of samples
-# to test after filtering by ``silhouette_cutoff``.
+# A data frame with columns:
+# - the number of samples used to test after filtering by ``silhouette_cutoff``
+# - p-values from the tests
+# - number of partitions
 #
 # == seealso
 # `test_between_factors`, `test_to_known_factors,ConsensusPartition-method`

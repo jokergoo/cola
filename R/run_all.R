@@ -38,7 +38,9 @@ try_and_trace = function(expr) {
 run_all_consensus_partition_methods = function(data, top_method = all_top_value_methods(), 
 	partition_method = all_partition_methods(), k = 2:6,
 	mc.cores = 1, known_anno = NULL, known_col = NULL, ...) {
-		
+	
+	cl = match.call()
+
 	.env = new.env()
 	
 	if(is.data.frame(data)) data = as.matrix(data)
@@ -109,9 +111,9 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 			print(x)
 			stop(qq("You have an error when doing partition for @{tm}:@{pm}."))
 		}
-		for(k in res@k) {
-			try(get_signatures(res, k = k, plot = FALSE, verbose = FALSE))
-		}
+		# for(k in res@k) {
+		# 	try(get_signatures(res, k = k, plot = FALSE, verbose = FALSE))
+		# }
 		return(res)
 	}, mc.cores = mc.cores)
 	names(lt) = paste(comb[, 1], comb[, 2], sep = ":")
@@ -178,6 +180,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	    lt[[i]] = res
 	}
 	res_list@list = lt
+	res_list@call = cl
 
 	return(res_list)
 }

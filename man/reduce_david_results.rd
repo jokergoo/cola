@@ -12,7 +12,7 @@ reduce_david_results(tb, fdr_cutoff = 0.05, hit_cutoff = 5)
 \arguments{
 
   \item{tb}{object from \code{\link{submit_to_david}}}
-  \item{fdr_cutoff}{cutoff for fdr}
+  \item{fdr_cutoff}{cutoff for fdr (the \code{benjamini} column)}
   \item{hit_cutoff}{cutoff for number of genes in a term}
 
 }
@@ -22,6 +22,9 @@ significant term.
 }
 \value{
 A subset of rows in \code{tb}.
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 # There is no example

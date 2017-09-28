@@ -13,7 +13,7 @@ Heatmap of top rows from different top methods
 \arguments{
 
   \item{object}{a numeric matrix}
-  \item{all_value_list}{scores that have already been calculated from the matrix. If it is \code{NULL} the values are calculated by methods in \code{top_method}.}
+  \item{all_value_list}{top values that have already been calculated from the matrix. If it is \code{NULL} the values are calculated by methods in \code{top_method}.}
   \item{top_method}{methods defined in \code{\link{all_top_value_methods}}.}
   \item{top_n}{number of top rows}
   \item{layout_nr}{number of rows in the layout}
