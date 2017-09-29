@@ -17,7 +17,7 @@ Make report for the ConsensusPartitionList object
 
 }
 \details{
-The \code{\link{ConsensusPartitionListclass}} object contains results for all top methods and all partition methods.
+The \code{\link{ConsensusPartitionList-class}} object contains results for all top methods and all partition methods.
 This function generates a HTML report which contains all plots for every combination
 of top method and partition method.
 }

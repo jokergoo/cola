@@ -8,8 +8,8 @@ GetoptLong(
 	"ncore=i", "mc.cores"
 )
 
-# library(cola)
-source(qq("@{dirname(get_scriptname())}/../load.R"))
+library(cola)
+# source(qq("@{dirname(get_scriptname())}/../load.R"))
 register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 x = readRDS(qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA/@{file}.rds"))
@@ -25,13 +25,17 @@ if(is_rnaseq) {
 
 if(is_methylation) {
 	q(save = "no")
-	res = run_all_consensus_partition_methods(data, k = 2:6, top_n = c(10000, 20000, 30000), mc.cores = ncore,
+	res_list = run_all_consensus_partition_methods(data, k = 2:6, top_n = c(10000, 20000, 30000), mc.cores = ncore,
 		scale_rows = FALSE)
 } else {
 	data = adjust_matrix(data)
-	res = run_all_consensus_partition_methods(data, k = 2:6, top_n = c(2000, 4000, 6000), mc.cores = ncore)
+	res_list = run_all_consensus_partition_methods(data, k = 2:6, top_n = c(2000, 4000, 6000), mc.cores = ncore)
 }
-saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_subgroups.rds"))
+saveRDS(res_list, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_subgroups.rds"))
+
+dir.create(qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_subgroups_report"))
+cola_report(res_list, qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_subgroups_report"))
+
 
 # for(f in dir("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA")) {
 # 	f = gsub("\\.rds$", "", f)

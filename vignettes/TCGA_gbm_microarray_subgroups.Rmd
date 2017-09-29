@@ -3,8 +3,8 @@
 %\VignetteIndexEntry{Consensus and Hierarchical Partitioning}
 -->
 
-Consensus and Hierarchical Partitioning
-========================================
+cola: a general Framework for Consensus and Hierarchical Partitioning
+=============================================================
 
 **Author**: Zuguang Gu ( z.gu@dkfz.de )
 
@@ -30,19 +30,14 @@ options(width = 100)
 library(ComplexHeatmap)
 ```
 
+Introduction of consensus clustering
 
 ```{r}
 library(cola)
 ```
 
-Data is from https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/.
 
-```{r}
-load(system.file("extdata", "TCGA_GBM_rnaseq_subset.RData", package = "cola"))
-dim(mat)
-head(anno)
-anno_col
-```
+## Top and partition methods
 
 Get all supported top methods and partition methods:
 
@@ -58,6 +53,19 @@ register_top_value_fun(max = function(mat) rowMaxs(mat))
 ```{r}
 remove_top_value_method("max")
 ```
+
+
+## Test dataset
+
+Data is from https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/.
+
+```{r}
+load(system.file("extdata", "TCGA_GBM_rnaseq_subset.RData", package = "cola"))
+dim(mat)
+head(anno)
+anno_col
+```
+
 
 ## Consensus partition
 
