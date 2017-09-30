@@ -390,7 +390,7 @@ setMethod(f = "show",
 #
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL) {
+	definition = function(object, depth = NULL, force_specific = FALSE, ...) {
 
 	all_subgroup_labels = unique(object@subgroup)
 	if(!is.null(depth)) {
@@ -405,7 +405,7 @@ setMethod(f = "get_signatures",
 		obj = object@list[[parent]]
 		best_k = get_best_k(obj)
 		qqcat("get signatures at node @{parent} for @{nm} with @{best_k} subgroups.\n")
-		sig = get_signatures(obj, k = best_k, verbose = FALSE, plot = FALSE)$group
+		sig = get_signatures(obj, k = best_k, verbose = FALSE, plot = FALSE, ...)$group
 		if(which_group != 0) {
 			sig_lt[[nm]] = names(sig[sig == which_group])
 		} else if(nm == strrep("0", nchar(parent) + 1)) {
@@ -427,6 +427,26 @@ setMethod(f = "get_signatures",
 	data = object@list[[1]]@.env$data
 	data = t(scale(t(data)))
 	m = data[all_sig, , drop = FALSE]
+	
+	m_sig = matrix(0, nrow = length(all_sig), ncol = length(sig_lt))
+	rownames(m_sig) = all_sig
+	colnames(m_sig) = names(sig_lt)
+	for(i in seq_along(sig_lt)) {
+		m_sig[sig_lt[[i]], i] = 1
+	}
+	col2 = lapply(names(sig_lt), function(x) {
+		foo = c("1" = object@subgroup_col[x], "0" = "white")
+		names(foo) = c("1", "0")
+		foo
+	})
+	names(col2) = colnames(m_sig)
+
+	if(force_specific) {
+		l = rowSums(m_sig) == 1
+		m = m[l, ]
+		m_sig = m_sig[l, ]
+	}
+
 	if(nrow(m) > 5000) {
 		qqcat("randomly sample 5000 rows from @{nrow(m)} total rows.\n")
 		ind = sample(nrow(m), 5000)
@@ -441,22 +461,20 @@ setMethod(f = "get_signatures",
 	ht_list = Heatmap(m[ind, ], top_annotation = HeatmapAnnotation(subgroup = subgroup, col = list(subgroup = object@subgroup_col), show_annotation_name = TRUE),
 		name = "scaled_expr", show_row_names = FALSE, cluster_columns = FALSE, column_order = col_order, col = col_fun,
 		show_row_dend = FALSE)
-	m_sig = matrix(0, nrow = length(all_sig), ncol = length(sig_lt))
-	rownames(m_sig) = all_sig
-	colnames(m_sig) = names(sig_lt)
-	for(i in seq_along(sig_lt)) {
-		m_sig[sig_lt[[i]], i] = 1
-	}
-	col2 = lapply(names(sig_lt), function(x) {
-		foo = c("1" = object@subgroup_col[x], "0" = "white")
-		names(foo) = c("1", "0")
-		foo
-	})
-	names(col2) = colnames(m_sig)
+	
 	ht_list = ht_list + rowAnnotation(df = m_sig[ind, , drop = FALSE], col = col2, width = unit(0.5*length(sig_lt), "cm"), show_legend = FALSE)
-	draw(ht_list)
-
-	return(invisible(sig_lt))
+	
+	if(force_specific) {
+		group = character(nrow(m_sig))
+		for(i in seq_len(ncol(m_sig))) {
+			group[as.logical(m_sig[, i])] = colnames(m_sig)[i]
+		}
+		draw(ht_list, split = group[ind])
+		return(invisible(list(mat = m, group = group)))
+	} else {
+		draw(ht_list)
+		return(invisible(sig_lt))
+	}
 })
 
 # == title

@@ -30,40 +30,129 @@ options(width = 100)
 library(ComplexHeatmap)
 ```
 
-Introduction of consensus clustering
+## Introduction
 
-```{r}
-library(cola)
-```
+Subgroup classification is a basic task in genomic data analysis, especially for
+gene expression and methylation data analysis. It is based on unsupervised clustering
+and it can predict new subgroups when there is no information for the samples or can 
+be used to test the consistency with known clinical annotations.
 
+To get a stable classification of subgroups, consensus clustering is always used that
+it repetitively clusters samples with a randomly sampled subset of data and checks the robustness of the
+clustering, finally it gives a consensus classification of all samples.
+
+Here cola package provides a general framework for consensus partitioning. 
+
+## Important terms in consensus clustering
+
+### consensus matrix
+
+### determine best k
 
 ## Top and partition methods
 
-Get all supported top methods and partition methods:
+Top methods are used to assign scores to rows in the matrix, later the scores
+are ordered and only top n rows with highest scores are used for consensus partitioning.
+The default top methods provided in the package are:
+
 
 ```{r}
+library(cola)
 all_top_value_methods()
+```
+
+These top methods are:
+
+- `sd` standard deviation
+- `cv` [coefficient of variance](https://en.wikipedia.org/wiki/Coefficient_of_variation), defined as `sd/(mean + s0)` where
+       `s0` is a penalty term which is the 10th percentile of all row means to avoid small values dividing small values giving large values.
+- `MAD` [median absolute deviation](https://en.wikipedia.org/wiki/Median_absolute_deviation)
+- `AAC`
+
+These methods can be used in consensus partitioning by providing the names.
+
+You can register a new top method by `register_top_value_fun()`. The value is one or more functions
+with only one argument which is the matrix for analysis and the function returns a vector
+with scores for rows. In following example, the "max" method uses the row maximum as the row scores
+and the "QCD" ((quartile coefficient of dispersion)[https://en.wikipedia.org/wiki/Quartile_coefficient_of_dispersion])
+method is a robust version of "MAD".
+
+```{r}
+register_top_value_fun(
+	max = function(mat) rowMaxs(mat),
+	QCD = function(mat) {
+		qa = matrixStats::rowQuantile(mat, probs = c(0.25, 0.75))
+		(qa[, 1] - qa[, 2])/qa[, 1] + qa[, 2])
+	})
+```
+
+By default the consensus partition functions use all registered top methods, but still you
+can explicitly specify a subset of top method names. To remove registered top methods, simply
+use `remove_top_value_method()` by providing a vector of names.
+
+```{r}
+remove_top_value_method(c("max", "QCD"))
+```
+
+Partition methods are used to look for subgroups from columns in the matrix. The default partition
+methods are:
+
+```{r}
 all_partition_methods()
 ```
 
-```{r}
-register_top_value_fun(max = function(mat) rowMaxs(mat))
-```
+These partition methods are:
+
+- `hclust` hierarchical clustering + cutree, 
+- `kmeans`
+- `skmeans`
+- `pam`
+- `mclust`
+- `som`
+
+Similarly, you can register a new partition method by `register_partition_fun()`. The value
+is one or more function with two arguments plus `...`. The first two arguments are the input matrix
+and number of partitions (internally when the partition function is used, the matrix passed
+to the function actually only contains top n rows after filtering by top methods). `...` is used for passing
+more arguments from the main partition functions. The function should only return a vector of
+class labels. **Please note the partition is applied on columns of the matrix.**
+
+Following example registers a partition method which randomly assign class labels to columns:
 
 ```{r}
-remove_top_value_method("max")
+register_partition_fun(random = function(mat, k, ...) {
+	sample(1:k, ncol(mat), replace = TRUE)
+})
 ```
 
+Here the class labels can be any type of scale values (numbers, characters). They only need to be
+different for different classes.
+
+To remove a partition method, use `remove_partition_method()`:
+
+```{r}
+remove_partition_method("random")
+```
 
 ## Test dataset
 
-Data is from https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/.
+In this vignette, we use a small dataset from TCGA Glioblastoma microarray dataset.
+The original dataset is available from https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/.
+Only 4000 genes and 50 samples are randomly sampled. In [the original paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818769/),
+it shows there are four subtypes of the GBM samples which is provided as `anno` object in following.
 
 ```{r}
-load(system.file("extdata", "TCGA_GBM_rnaseq_subset.RData", package = "cola"))
+load(system.file("extdata", "TCGA_GBM_microarray_subset.RData", package = "cola"))
 dim(mat)
 head(anno)
 anno_col
+```
+
+Before doing partitioning, the matrix needs to be checked and adjusted to 1. impute the missing
+values and 2. adjust the outlier data points.
+
+```{r}
+mat = adjust_matrix(mat)
 ```
 
 

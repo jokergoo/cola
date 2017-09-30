@@ -65,7 +65,7 @@ register_top_value_fun(
 	sd = function(mat) {
 		rowSds(mat)
 	},
-	vc = function(mat) {
+	cv = function(mat) {
 		s = rowMeans(mat)
 		rowSds(mat)/(s + quantile(s, 0.1))
 	},
