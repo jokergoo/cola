@@ -22,7 +22,7 @@ par(mfrow = c(2, 2))
 par(mar = c(3, 5, 1, 1), cex = 0.8)
 v = NULL
 min_cor = 0
-plot(NULL, xlim = c(0, 1), ylim = c(0, 1), ylab = "P(X >= x)", xlab = "")
+plot(NULL, xlim = c(0, 1), ylim = c(0, 1), ylab = "P(X <= x)", xlab = "")
 for(i in 1:ncol(mat)) {
     cor_v <- abs(cor(mat[, i, drop = FALSE], mat[, -i, drop = FALSE]))
     cor_v = sort(cor_v)
@@ -70,7 +70,7 @@ f = ecdf(cor_v)
 x = seq(0, 1, length = 100)
 y = f(x)
 
-plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x", ylab = "P(X > x)")
+plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x", ylab = "P(X < x)")
 x2 = seq(0, 1, length = 100)
 polygon(c(x2, rev(x2)), c(f(x2), rep(1, length(x2))), col = "#FF000040", border = NA)
 polygon(c(x2, rev(x2)), c(f(x2), rep(0, length(x2))), col = "#00FF0040", border = NA)
