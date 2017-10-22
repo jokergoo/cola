@@ -117,11 +117,7 @@ setMethod(f = "cola_report",
 
 	var_name = deparse(substitute(object, env = env))
 
-	extdata_dir = system.file("extdata", package = "cola")
-
-	txt = readLines(paste0(extdata_dir, "/cola_report_template.Rmd"))
-	txt = paste(txt, collapse = "\n")
-	txt = qq(txt, code.pattern = "\\[%CODE%\\]")
+	report_template = system.file("extdata", "cola_report_template.Rmd", package = "cola")
 
 	fileinfo = file.info(output_dir)
 	if(!fileinfo$isdir) {
@@ -130,22 +126,19 @@ setMethod(f = "cola_report",
 
 	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 	
-	tempfile = tempfile(tmpdir = output_dir, fileext = ".Rmd")
-	writeLines(txt, tempfile)
+	tempfile = tempfile(tmpdir = output_dir, pattern = "cola_", fileext = ".Rmd")
+	brew(report_template, output = tempfile)
 	op = getOption("markdown.HTML.options")
 	options(markdown.HTML.options = setdiff(op, "base64_images"))
 	md_file = gsub("Rmd$", "md", tempfile)
-	owd = getwd()
-	setwd(output_dir)
 	knit(tempfile, md_file)
-	setwd(owd)
 	markdownToHTML(md_file, paste0(output_dir, "/", "cola_report.html"))
 	file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
 
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
-	file.copy(paste0(extdata_dir, "/jquery-ui.js"), paste0(output_dir, "/js/"))
-	file.copy(paste0(extdata_dir, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
+	file.copy(system.file("extdata", "jquery-ui.js", package = "cola"), paste0(output_dir, "/js/"))
+	file.copy(system.file("extdata", "jquery-1.12.4.js", package = "cola"), paste0(output_dir, "/js/"))
 
 	qqcat("report is at @{output_dir}/cola_report.html\n")
 
@@ -203,11 +196,7 @@ setMethod(f = "cola_report",
 
 	var_name = deparse(substitute(object, env = env))
 
-	extdata_dir = system.file("extdata", package = "cola")
-
-	txt = readLines(paste0(extdata_dir, "/cola_hc_template.Rmd"))
-	txt = paste(txt, collapse = "\n")
-	txt = qq(txt, code.pattern = "\\[%CODE%\\]")
+	report_template = system.file("extdata", "cola_hc_template.Rmd", package = "cola")
 
 	fileinfo = file.info(output_dir)
 	if(!fileinfo$isdir) {
@@ -216,24 +205,21 @@ setMethod(f = "cola_report",
 
 	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 	
-	tempfile = tempfile(tmpdir = output_dir, fileext = ".Rmd")
-	writeLines(txt, tempfile)
+	tempfile = tempfile(tmpdir = output_dir, pattern = "cola_", fileext = ".Rmd")
+	brew(report_template, output = tempfile)
 	op = getOption("markdown.HTML.options")
 	options(markdown.HTML.options = setdiff(op, "base64_images"))
 	md_file = gsub("Rmd$", "md", tempfile)
-	owd = getwd()
-	setwd(output_dir)
 	knit(tempfile, md_file)
-	setwd(owd)
-	markdownToHTML(md_file, paste0(output_dir, "/", "cola_hc_report.html"))
+	markdownToHTML(md_file, paste0(output_dir, "/", "cola_hc.html"))
 	file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
 
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
-	file.copy(paste0(extdata_dir, "/jquery-ui.js"), paste0(output_dir, "/js/"))
-	file.copy(paste0(extdata_dir, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
+	file.copy(system.file("extdata", "jquery-ui.js", package = "cola"), paste0(output_dir, "/js/"))
+	file.copy(system.file("extdata", "jquery-1.12.4.js", package = "cola"), paste0(output_dir, "/js/"))
 
-	qqcat("report is at @{output_dir}/cola_hc_report.html\n")
+	qqcat("report is at @{output_dir}/cola_hc.html\n")
 
 	KNITR_TAB_ENV$current_tab_index = 0
 	KNITR_TAB_ENV$current_div_index = 0
