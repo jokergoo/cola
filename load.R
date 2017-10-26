@@ -33,6 +33,7 @@ library(dendextend)
 library(digest)
 library(impute)
 library(httr)
+library(brew)
 
 if(grepl("tbi", Sys.info()["nodename"]) & Sys.info()["user"] == "guz") {
 	Rfiles = list.files("~/project/development/cola/R", full.names = TRUE)

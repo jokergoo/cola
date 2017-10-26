@@ -116,40 +116,8 @@ setMethod(f = "cola_report",
 	definition = function(object, output_dir = getwd(), env = parent.frame()) {
 
 	var_name = deparse(substitute(object, env = env))
+	make_report(var_name, object, output_dir, class = "ConsensusPartitionList")
 
-	report_template = system.file("extdata", "cola_report_template.Rmd", package = "cola")
-
-	fileinfo = file.info(output_dir)
-	if(!fileinfo$isdir) {
-		output_dir = dirname(output_dir)
-	}
-
-	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
-	
-	tempfile = tempfile(tmpdir = output_dir, pattern = "cola_", fileext = ".Rmd")
-	brew(report_template, output = tempfile)
-	op = getOption("markdown.HTML.options")
-	options(markdown.HTML.options = setdiff(op, "base64_images"))
-	md_file = gsub("Rmd$", "md", tempfile)
-	knit(tempfile, md_file)
-	markdownToHTML(md_file, paste0(output_dir, "/", "cola_report.html"))
-	file.remove(c(tempfile, md_file))
-	options(markdown.HTML.options = op)
-
-	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
-	file.copy(system.file("extdata", "jquery-ui.js", package = "cola"), paste0(output_dir, "/js/"))
-	file.copy(system.file("extdata", "jquery-1.12.4.js", package = "cola"), paste0(output_dir, "/js/"))
-
-	qqcat("report is at @{output_dir}/cola_report.html\n")
-
-	KNITR_TAB_ENV$current_tab_index = 0
-	KNITR_TAB_ENV$current_div_index = 0
-	KNITR_TAB_ENV$header = NULL
-	KNITR_TAB_ENV$current_html = ""
-	KNITR_TAB_ENV$random_str = round(runif(1, min = 1, max = 1e8))
-	KNITR_TAB_ENV$css_added = FALSE
-
-	return(invisible(NULL))
 })
 
 
@@ -195,31 +163,45 @@ setMethod(f = "cola_report",
 	definition = function(object, output_dir, env = parent.frame()) {
 
 	var_name = deparse(substitute(object, env = env))
+	make_report(var_name, object, output_dir, class = "HierarchicalPartition")
 
-	report_template = system.file("extdata", "cola_hc_template.Rmd", package = "cola")
+})
 
-	fileinfo = file.info(output_dir)
-	if(!fileinfo$isdir) {
-		output_dir = dirname(output_dir)
+
+make_report = function(var_name, object, output_dir, class) {
+
+	template_file = c("HierarchicalPartition" = "cola_hc_template.Rmd",
+		              "ConsensusPartitionList" = "cola_report_template.Rmd")
+	html_file = c("HierarchicalPartition" = "cola_hc.html",
+		          "ConsensusPartitionList" = "cola_report.html")
+
+	# report_template = system.file("extdata", template_file[class], package = "cola")
+	report_template = paste0("~/project/cola/inst/extdata/", template_file[class])
+
+	if(file.exists(output_dir)) {
+		fileinfo = file.info(output_dir)
+		if(!fileinfo$isdir) {
+			output_dir = dirname(output_dir)
+		}
 	}
 
 	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
-	
+
 	tempfile = tempfile(tmpdir = output_dir, pattern = "cola_", fileext = ".Rmd")
 	brew(report_template, output = tempfile)
 	op = getOption("markdown.HTML.options")
 	options(markdown.HTML.options = setdiff(op, "base64_images"))
 	md_file = gsub("Rmd$", "md", tempfile)
 	knit(tempfile, md_file)
-	markdownToHTML(md_file, paste0(output_dir, "/", "cola_hc.html"))
-	file.remove(c(tempfile, md_file))
+	markdownToHTML(md_file, paste0(output_dir, "/", html_file[class]))
+	# file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
 
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
 	file.copy(system.file("extdata", "jquery-ui.js", package = "cola"), paste0(output_dir, "/js/"))
 	file.copy(system.file("extdata", "jquery-1.12.4.js", package = "cola"), paste0(output_dir, "/js/"))
 
-	qqcat("report is at @{output_dir}/cola_hc.html\n")
+	qqcat("report is at @{output_dir}/@{html_file[class]}\n")
 
 	KNITR_TAB_ENV$current_tab_index = 0
 	KNITR_TAB_ENV$current_div_index = 0
@@ -229,4 +211,4 @@ setMethod(f = "cola_report",
 	KNITR_TAB_ENV$css_added = FALSE
 
 	return(invisible(NULL))
-})
+}

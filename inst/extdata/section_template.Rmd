@@ -6,8 +6,9 @@ if(is_hc) {
 	mark = ""
 	chunk_prefix = paste("node", node, sep = "-")
 } else {
+	tb = get_best_k(res_list)
 	nm = paste(top_method, partition_method, sep = ":")
-	mark = tb[nm, 4]
+	mark = tb[nm, 5]
 	chunk_prefix = paste(top_method, partition_method, sep = "-")
 } -%>
 
