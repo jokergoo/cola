@@ -32,7 +32,8 @@ Imports: ComplexHeatmap (>= 1.15.1),
          data.tree,
          dendextend,
          digest,
-         impute
+         impute,
+         brew
 Suggests: venneuler, 
           mvtnorm, 
           genefilter

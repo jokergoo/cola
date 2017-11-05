@@ -272,8 +272,14 @@ setMethod(f = "get_best_k",
 			mean_silhouette[nm] = stat[1, "mean_silhouette"]
 		}
 	}
-	return(data.frame(best_k = best_k,
+	tb = data.frame(best_k = best_k,
 		cophcor = cophcor,
 		PAC = PAC,
-		mean_silhouette = mean_silhouette))
+		mean_silhouette = mean_silhouette)
+
+	rntb = rownames(tb)
+	l = tb$PAC < 0.05 & tb$mean_silhouette > 0.95
+	tb = cbind(tb, ifelse(l, ifelse(tb$PAC < 0.01, "**", "*"), ""))
+	colnames(tb)[ncol(tb)] = ""
+	return(tb)
 })

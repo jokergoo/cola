@@ -49,6 +49,10 @@ Here cola package provides a general framework for consensus partitioning.
 
 ### determine best k
 
+```{r}
+source("silhouette.R")
+```
+
 ## Top and partition methods
 
 Top methods are used to assign scores to rows in the matrix, later the scores

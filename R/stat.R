@@ -92,7 +92,7 @@ AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
 	}, mc.cores = mc.cores)
 
 	v = do.call("c", v_list)
-	v = (1 - min_cor) - v
+	v = (max_cor - min_cor) - v
 	names(v) = NULL
 
 	v2[l] = v

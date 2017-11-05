@@ -85,6 +85,7 @@ adjust_outlier = function(x, q = 0.05) {
 # == param
 # -m a numeric matrix
 # -sd_quantile cutoff the quantile of standard variation
+# -max_na maximum NA rate for rows
 #
 # == details
 # The function uses `impute::impute.knn` to impute missing data, then
@@ -103,10 +104,14 @@ adjust_outlier = function(x, q = 0.05) {
 # range(m)
 # m2 = adjust_matrix(m)
 # range(m2)
-adjust_matrix = function(m, sd_quantile = 0.05) {
+adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	if(is.data.frame(m)) {
 		m = as.matrix(m)
 	}
+
+	l = apply(m, function(x) sum(is.na(x))/length(x)) < max_na
+	qqcat("removed @{sum(!l)} rows where more than 50% of samples have NA values.\n")
+	m = m[l, , drop = FALSE]
 
 	n_na = sum(is.na(m))
 	if(n_na > 0) {

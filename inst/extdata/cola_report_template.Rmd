@@ -6,8 +6,10 @@ Cola report
 ----------------------------------------------------------------
 
 <style type='text/css'>
-[% extdata_dir = system.file("extdata", package = "cola")
-paste(readLines(paste0(extdata_dir, "/custom.css")), collapse = "\n") %]
+<%
+extdata_dir = "~/project/cola/inst/extdata";
+css = paste(readLines(paste0(extdata_dir, "/custom.css")), collapse = "\n") -%>
+<%= css %>
 </style>
 
 ```{r, echo = FALSE, message = FALSE}
@@ -22,8 +24,13 @@ opts_chunk$set(fig.path = "figure_cola/")
 
 All available functions which can be applied to `res_list` object.
 
-```{r}
-[% if(var_name != "res_list") {expr = paste("res_list =", var_name); eval(parse(text = expr)); expr} %]
+<% same_var_name = var_name == "res_list" -%>
+
+```{r, eval = <%= ifelse(same_var_name, '1:2','2:3')%>, echo = <%= ifelse(same_var_name, '2', 'c(1, 3)')%>}
+<% if(!same_var_name) { -%>
+res_list = <%=var_name%>
+<% } -%>
+res_list = object
 res_list
 ```
 
@@ -55,11 +62,6 @@ get_best_k(res_list)
 
 ```{r, echo = FALSE}
 tb = get_best_k(res_list)
-rntb = rownames(tb)
-l = tb$PAC < 0.05 & tb$mean_silhouette > 0.95
-rownames(tb) = ifelse(l, qq("[@{rntb}](?#toc_@{2+seq_along(l)})", collapse = FALSE), rntb)
-tb = cbind(tb, ifelse(l, ifelse(tb$PAC < 0.01, "**", "*"), ""))
-colnames(tb)[ncol(tb)] = ""
 kable(tb)
 ```
 
@@ -79,93 +81,100 @@ collect_plots(res_list, fun = plot_ecdf)
 Consensus heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-[% k = res_list@list[[1]]@k
+<% all_k = res_list@list[[1]]@k
 fs = min(c(3*length(res_list@top_method), 14))/length(res_list@top_method)
 n_top_method = length(res_list@top_method)
 n_partition_method = length(res_list@partition_method)
-qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = consensus_heatmap)', 'k = @<k>', opt = 'fig.width = @<fs*n_top_method>, fig.height = @<fs*n_partition_method>')\n", code.pattern = "@<CODE>") %]
+for(k in all_k) { -%>
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = consensus_heatmap)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_top_method%>, fig.height = <%=fs*n_partition_method%>')
+<% } -%>
 knitr_insert_tabs()
 ```
+
 
 Membership heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-[% 
-qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = membership_heatmap)', 'k = @<k>', opt = 'fig.width =@<fs*n_top_method>, fig.height = @<fs*n_partition_method>')\n", code.pattern = "@<CODE>") %]
+<% for(k in all_k) { -%>
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = membership_heatmap)', 'k = <%=k%>', opt = 'fig.width =<%=fs*n_top_method%>, fig.height = <%=fs*n_partition_method%>')
+<%}-%>
 knitr_insert_tabs()
 ```
 
 Signature heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-[% 
-qq("knitr_add_tab_item('collect_plots(res_list, k = @<k>, fun = get_signatures)', 'k = @<k>', opt = 'fig.width = @<fs*n_top_method>, fig.height = @<fs*n_partition_method>')\n", code.pattern = "@<CODE>") %]
+<% for(k in all_k) { -%>
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = get_signatures)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_top_method%>, fig.height = <%=fs*n_partition_method%>')
+<%}-%>
 knitr_insert_tabs()
 ```
 
 Get statistics for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-[% k = res_list@list[[1]]@k
-qq("knitr_add_tab_item('get_stat(res_list, k = @<k>)', 'k = @<k>')\n", code.pattern = "@<CODE>") %]
+<% for(k in all_k) { -%>
+knitr_add_tab_item('get_stat(res_list, k = <%=k%>)', 'k = <%=k%>')
+<%}-%>
 knitr_insert_tabs()
 ```
 
 Collect partitions from all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-[% k = res_list@list[[1]]@k
-qq("knitr_add_tab_item('collect_classes(res_list, k = @<k>)', 'k = @<k>', opt = 'fig.width = 14, fig.height = 8')\n", code.pattern = "@<CODE>") %]
+<% for(k in all_k) { -%>
+knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 14, fig.height = 8')
+<%}-%>
 knitr_insert_tabs()
 ```
 
 Overlap of top rows in different top methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-[% top_n = res_list@list[[1]]@top_n
-qq("knitr_add_tab_item('top_rows_overlap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>', opt = 'fig.width = 5, fig.height = 5')\n", code.pattern = "@<CODE>") %]
+<% for(top_n in res_list@list[[1]]@top_n) { -%>
+knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>)', 'top_n = <%=top_n%>', opt = 'fig.width = 5, fig.height = 5')
+<%}-%>
 knitr_insert_tabs()
 ```
 
 Also visualize the correspondance of rankings between different top methods:
 
 ```{r, fig.width = 14, fig.height = 8}
-top_rows_overlap(res_list, top_n = [% min(res_list@list[[1]]@top_n) %], type = "correspondance")
+top_rows_overlap(res_list, top_n = <%= min(res_list@list[[1]]@top_n) %>, type = "correspondance")
 ```
 
 Heatmaps for the top rows:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-[% top_n = res_list@list[[1]]@top_n
-qq("knitr_add_tab_item('top_rows_heatmap(res_list, top_n = @<top_n>)', 'top_n = @<top_n>', opt = 'fig.width = 14, fig.height = 14/@<n_top_method>')\n", code.pattern = "@<CODE>") %]
+<% for(top_n in res_list@list[[1]]@top_n) { -%>
+knitr_add_tab_item('top_rows_heatmap(res_list, top_n = <%=top_n%>)', 'top_n = <%=top_n%>', opt = 'fig.width = 14, fig.height = 14/<%=length(res_list@list[[1]]@top_n)%>')
+<%}-%>
 knitr_insert_tabs()
 ```
 
-[% if(!is.null(res_list@list[[1]]@known_anno)) {
-	k = res_list@list[[1]]@k
-	txt = "Test correlation between subgroups and known annotations:\n\n"
-	txt = c(txt, "```{r, results = 'asis', echo = FALSE, include = TRUE}\n")
-	txt = c(txt, qq("knitr_add_tab_item('test_to_known_factors(res_list, k = @<k>)', 'k = @<k>')\n", code.pattern = '@<CODE>'))
-	txt = c(txt, "knitr_insert_tabs()\n")
-	txt = c(txt, "```\n")
-	paste(txt, collapse = "\n")
-} else {
-	""
-} %]
+<% if(!is.null(res_list@list[[1]]@known_anno)) { -%>
+
+Test correlation between subgroups and known annotations:
+
+```{r, results = 'asis', echo = FALSE, include = TRUE}
+<% for(k in all_k) { -%>
+knitr_add_tab_item('test_to_known_factors(res_list, k = <%=k%>)', 'k = <%=k%>')
+<%}-%>
+knitr_insert_tabs()
+```
+
+<%}-%> 
 
 ## Results for each method
 
-[% 
-section_template = paste(readLines(paste0(extdata_dir, "/section_template.Rmd")), collapse = "\n")
-section = NULL
+<% 
+is_hc = FALSE
 for(top_method in res_list@top_method) {
-    for(partition_method in res_list@partition_method) {
-        section = c(section, qq(section_template))
-    }
-}
-section = c(section, "\n")
-paste(section, collapse = "\n\n") %]
+    for(partition_method in res_list@partition_method) { -%>
 
+        <% brew(paste0(extdata_dir, "/section_template.Rmd")) %>
+
+<% }} -%>
 
 ## Session info
 
