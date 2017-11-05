@@ -32,9 +32,13 @@ if(is_methylation) {
 	res_list = run_all_consensus_partition_methods(data, k = 2:6, top_n = c(2000, 4000, 6000), mc.cores = ncore)
 }
 saveRDS(res_list, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_subgroups.rds"))
-
 dir.create(qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_subgroups_report"))
 cola_report(res_list, qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_subgroups_report"))
+
+res_hc = hierarchical_partition(data)
+saveRDS(res_hc, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_hc.rds"))
+dir.create(qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_hc_report"))
+cola_report(res_hc, qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_hc_report"))
 
 
 # for(f in dir("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA")) {
