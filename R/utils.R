@@ -109,7 +109,7 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 		m = as.matrix(m)
 	}
 
-	l = apply(m, function(x) sum(is.na(x))/length(x)) < max_na
+	l = apply(m, 1, function(x) sum(is.na(x))/length(x)) < max_na
 	qqcat("removed @{sum(!l)} rows where more than 50% of samples have NA values.\n")
 	m = m[l, , drop = FALSE]
 

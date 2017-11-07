@@ -13,6 +13,7 @@ css = paste(readLines(paste0(extdata_dir, "/custom.css")), collapse = "\n") -%>
 </style>
 
 ```{r, echo = FALSE, message = FALSE}
+library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "toc"), "base64_images"))
 options(width = 100)
@@ -48,10 +49,14 @@ dim(res_list@.env$data)
 
 Global distribution for each sample:
 
-```{r}
+```{r density-heatmap}
 library(ComplexHeatmap)
+<% if(is.null(res_list@list[[1]]@known_anno)) { -%>
+densityHeatmap(res_list@.env$data, ylab = "value")
+<% } else { -%>
 densityHeatmap(res_list@.env$data, anno = HeatmapAnnotation(df = res_list@list[[1]]@known_anno, 
 	col = res_list@list[[1]]@known_col), ylab = "value")
+<% } -%>
 ```
 
 Best `k` (number of partitions) for each combination of top methods and partition methods.
@@ -74,7 +79,7 @@ n_partition_method = length(res_list@partition_method)
 
 CDF of consensus matrix for all methods:
 
-```{r, fig.width = fs*n_top_method, fig.height = fs*n_partition_method}
+```{r collect-plots, fig.width = fs*n_top_method, fig.height = fs*n_partition_method}
 collect_plots(res_list, fun = plot_ecdf)
 ```
 
@@ -139,7 +144,7 @@ knitr_insert_tabs()
 
 Also visualize the correspondance of rankings between different top methods:
 
-```{r, fig.width = 14, fig.height = 8}
+```{r top-row-overlap, fig.width = 14, fig.height = 8}
 top_rows_overlap(res_list, top_n = <%= min(res_list@list[[1]]@top_n) %>, type = "correspondance")
 ```
 

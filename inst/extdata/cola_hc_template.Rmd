@@ -13,6 +13,7 @@ css = paste(readLines(paste0(extdata_dir, "/custom.css")), collapse = "\n") -%>
 </style>
 
 ```{r, echo = FALSE, message = FALSE}
+library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "toc"), "base64_images"))
 options(width = 100)
@@ -49,10 +50,14 @@ dim(res_hc@list[["0"]]@.env$data)
 
 Global distribution for each sample:
 
-```{r}
+```{r hc-density-heatmap}
 library(ComplexHeatmap)
+<% if(is.null(res_list@list[[1]]@known_anno)) { -%>
+densityHeatmap(res_hc@list[["0"]]@.env$data, ylab = "value")
+<% } else { -%>
 densityHeatmap(res_hc@list[["0"]]@.env$data, anno = HeatmapAnnotation(df = res_hc@list[["0"]]@known_anno, 
 	col = res_hc@list[["0"]]@known_col), ylab = "value")
+<% } -%>
 ```
 
 About the hierarchy:
@@ -81,7 +86,7 @@ knitr_insert_tabs()
 
 MDS plot:
 
-```{r}
+```{r hc-dimension-reduction}
 dimension_reduction(res_hc, merge = TRUE)
 ```
 
@@ -93,7 +98,7 @@ nc = min(c(4, n_plots))
 nr = ceiling(n_plots/nc)
 -%>
 
-```{r, fig.width = <%=nc*14/3%>, fig.height = <%=nr*14/3%>, echo = 2}
+```{r hc-dimension-reduction-separate, fig.width = <%=nc*14/3%>, fig.height = <%=nr*14/3%>, echo = 2}
 par(mfrow = c(nr, nc))
 dimension_reduction(res_hc, merge = FALSE)
 par(mfrow = c(1, 1))
@@ -101,7 +106,7 @@ par(mfrow = c(1, 1))
 
 Signature genes and the overlap:
 
-```{r, echo = max_depth > 2, eval = max_depth > 2}
+```{r hc-signature, echo = max_depth > 2, eval = max_depth > 2}
 lt_sig = get_signatures(res_hc)
 venn_euler(lt_sig)
 ```
