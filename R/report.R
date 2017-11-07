@@ -162,6 +162,10 @@ setMethod(f = "cola_report",
 	signature = "HierarchicalPartition",
 	definition = function(object, output_dir, env = parent.frame()) {
 
+	if(nrow(object@hierarchy) == 1) {
+		cat("No hierarchy detected, won't generate the report.\n")
+		return(invisible(NULL))
+	}
 	var_name = deparse(substitute(object, env = env))
 	make_report(var_name, object, output_dir, class = "HierarchicalPartition")
 
