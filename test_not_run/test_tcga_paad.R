@@ -45,7 +45,7 @@ saveRDS(res_list, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_sub
 
 # for(datatype in c("mRNA", "miRNA", "protein")) {
 # 	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_tcga_paad.R --datatype @{datatype} --ncore 4")
-# 	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=@{ifelse(data==\"methylation\", 100, 40)}:00:00,mem=20G,nodes=1:ppn=4 -N TCGA_PAAD_@{datatype}_subgroup' '@{cmd}'")
+# 	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=@{ifelse(datatype==\"methylation\", 100, 40)}:00:00,mem=20G,nodes=1:ppn=4 -N TCGA_PAAD_@{datatype}_subgroup' '@{cmd}'")
 # 	system(cmd)
 # }
 
