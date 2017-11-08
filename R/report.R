@@ -30,7 +30,7 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL) {
 options(width = 100)
 @{strrep('`', 3)}
 
-@{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', paste(', ', opt))}}
+@{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', paste0(', ', opt))}}
 @{code}
 @{strrep('`', 3)}
 
@@ -162,6 +162,10 @@ setMethod(f = "cola_report",
 	signature = "HierarchicalPartition",
 	definition = function(object, output_dir, env = parent.frame()) {
 
+	if(nrow(object@hierarchy) == 1) {
+		cat("No hierarchy detected, won't generate the report.\n")
+		return(invisible(NULL))
+	}
 	var_name = deparse(substitute(object, env = env))
 	make_report(var_name, object, output_dir, class = "HierarchicalPartition")
 
@@ -192,10 +196,13 @@ make_report = function(var_name, object, output_dir, class) {
 	op = getOption("markdown.HTML.options")
 	options(markdown.HTML.options = setdiff(op, "base64_images"))
 	md_file = gsub("Rmd$", "md", tempfile)
+	owd = getwd()
+	setwd(output_dir)
 	knit(tempfile, md_file)
 	markdownToHTML(md_file, paste0(output_dir, "/", html_file[class]))
 	# file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
+	setwd(owd)
 
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
 	file.copy(system.file("extdata", "jquery-ui.js", package = "cola"), paste0(output_dir, "/js/"))
