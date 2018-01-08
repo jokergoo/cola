@@ -261,6 +261,10 @@ setMethod(f = "get_signatures",
 			names(anno_col) = names(bottom_anno1@anno_list)
 			anno_col = anno_col[!sapply(anno_col, is.null)]
 
+			if(!is.null(object@known_col)) {
+				anno_col[names(object@known_col)] = object@known_col
+			}
+
 			bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
 				show_annotation_name = TRUE, annotation_name_side = "right")	
 		}
