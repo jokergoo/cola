@@ -58,6 +58,7 @@ setMethod(f = "get_signatures",
 	show_legend = TRUE,
 	show_column_names = TRUE, use_raster = TRUE,
 	plot = TRUE, mat_other = NULL, verbose = dev.interactive(),
+	top_k_genes = 5000,
 	...) {
 
 	class_df = get_class(object, k)
@@ -167,12 +168,12 @@ setMethod(f = "get_signatures",
 	}
 
 	more_than_5k = FALSE
-	if(nrow(mat) > 5000) {
+	if(nrow(mat) > top_k_genes) {
 		more_than_5k = TRUE
-		mat1 = mat[order(fdr2)[1:5000], column_used_logical, drop = FALSE]
-		mat2 = mat[order(fdr2)[1:5000], !column_used_logical, drop = FALSE]
-		group2 = group2[order(fdr2)[1:5000]]
-		if(verbose) cat("Only take top 5000 signatures with highest fdr\n")
+		mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
+		mat2 = mat[order(fdr2)[1:top_k_genes], !column_used_logical, drop = FALSE]
+		group2 = group2[order(fdr2)[1:top_k_genes]]
+		if(verbose) cat(paste0("Only take top ", top_k_genes, " signatures with highest fdr\n"))
 	} else {
 		mat1 = mat[, column_used_logical, drop = FALSE]
 		mat2 = mat[, !column_used_logical, drop = FALSE]
@@ -324,7 +325,7 @@ setMethod(f = "get_signatures",
 			show_column_dend = FALSE)
 	}
 
-	draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, ', top 5k signatures', '')}"),
+	draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, paste0(', top ', top_k_genes,' signatures'), '')}"),
 		show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
 	# https://www.stat.berkeley.edu/~s133/Cluster2a.html
 	decorate_annotation("silhouette", {
