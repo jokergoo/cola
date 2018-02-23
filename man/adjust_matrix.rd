@@ -7,12 +7,13 @@ Remove rows with low variance and impute missing data
 Remove rows with low variance and impute missing data
 }
 \usage{
-adjust_matrix(m, sd_quantile = 0.05)
+adjust_matrix(m, sd_quantile = 0.05, max_na = 0.25)
 }
 \arguments{
 
   \item{m}{a numeric matrix}
   \item{sd_quantile}{cutoff the quantile of standard variation}
+  \item{max_na}{maximum NA rate for rows}
 
 }
 \details{

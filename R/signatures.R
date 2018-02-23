@@ -27,7 +27,7 @@
 # Basically the function applies test for the difference of subgroups for every
 # row. There are three methods which test significance of the difference:
 #
-# -compare_to_highest_subgroup it first extracts the subgroup with higest value, then use t-test to test to 
+# -ttest it first extracts the subgroup with higest value, then use t-test to test to 
 #            all the other subgroups. 
 # -samr use SAM method to find significantly different rows between subgroups
 # -Ftest use F-test to find significantly different rows between subgroups
@@ -52,7 +52,7 @@ setMethod(f = "get_signatures",
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = ifelse(row_diff_by == "samr", 0.1, 0.05), 
 	scale_rows = object@scale_rows,
-	row_diff_by = c("compare_to_highest_subgroup", "Ftest", "samr"),
+	row_diff_by = c("ttest", "Ftest", "samr"),
 	anno = object@known_anno, 
 	anno_col = if(missing(anno)) object@known_col else NULL,
 	show_legend = TRUE,
@@ -122,8 +122,8 @@ setMethod(f = "get_signatures",
 
 		if(find_signature) {
 			if(verbose) qqcat("calculate row difference between subgroups by @{row_diff_by}\n")
-			if(row_diff_by == "compare_to_highest_subgroup") {
-				fdr = compare_to_highest_subgroup(data2, class)
+			if(row_diff_by == "ttest") {
+				fdr = ttest(data2, class)
 			} else if(row_diff_by == "samr") {
 				fdr = samr(data2, class, fdr.output = fdr_cutoff)
 			} else if(row_diff_by == "Ftest") {
@@ -386,6 +386,57 @@ compare_to_highest_subgroup = function(mat, class) {
 	fdr = p.adjust(p2, "BH")
 	fdr[is.na(fdr)] = Inf
 	return(fdr)
+}
+
+compare_to_lowest_subgroup = function(mat, class) {
+
+	od = order(class)
+	class = class[od]
+	mat = mat[, od, drop = FALSE]
+	class = as.numeric(factor(class))
+
+	group = apply(mat, 1, function(x) {
+		group_mean = tapply(x, class, mean)
+		which.min(group_mean)
+	})
+
+	if(requireNamespace("genefilter")) {
+		rowttests = getFromNamespace("rowttests", "genefilter")
+	} else {
+		stop("Cannot find 'genefilter' package.")
+	}
+
+	# class and subgroup_index are all numeric
+	compare_to_one_subgroup = function(mat, class, subgroup_index) {
+		
+		oc = setdiff(class, subgroup_index)
+		pmat = matrix(NA, nrow = nrow(mat), ncol = length(oc))
+		for(i in seq_along(oc)) {
+			l = class == subgroup_index | class == oc[i]
+			m2 = mat[, l]
+			fa = factor(class[l])
+			pmat[, i] = rowttests(m2, fa)[, "p.value"]
+		}
+		rowMaxs(pmat, na.rm = TRUE)
+	}
+
+	p = tapply(seq_len(nrow(mat)), group, function(ind) {
+		compare_to_one_subgroup(mat[ind, , drop = FALSE], class, group[ind][1])
+	})
+	p2 = numeric(length(group))
+	for(i in seq_along(p)) {
+		p2[group == i] = p[[i]]
+	}
+
+	fdr = p.adjust(p2, "BH")
+	fdr[is.na(fdr)] = Inf
+	return(fdr)
+}
+
+ttest = function(mat, class) {
+	fdr1 = compare_to_highest_subgroup(mat, class)
+	fdr2 = compare_to_lowest_subgroup(mat, class)
+	pmin(fdr1, fdr2)
 }
 
 samr = function(mat, class, ...) {

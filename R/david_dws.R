@@ -75,7 +75,7 @@ submit_to_david = function(genes, email,
 	response = POST(qq("@{DAVID_DWS}/addList"),
 		body = list("args0" = paste(genes, collapse = ","),  # inputIds
 			         "args1" = idtype,             # idType
-			         "args2" = Sys.time(),                    # listName
+			         "args2" = as.character(Sys.time()),                    # listName
 			         "args3" = 0))                           # listType
 
 	response = GET(qq("@{DAVID_DWS}/getSpecies"))

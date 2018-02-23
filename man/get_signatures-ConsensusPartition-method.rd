@@ -11,7 +11,7 @@ Get signature rows
     silhouette_cutoff = 0.5,
     fdr_cutoff = ifelse(row_diff_by == "samr", 0.1, 0.05),
     scale_rows = object@scale_rows,
-    row_diff_by = c("compare_to_highest_subgroup", "Ftest", "samr"),
+    row_diff_by = c("ttest", "Ftest", "samr"),
     anno = object@known_anno,
     anno_col = if(missing(anno)) object@known_col else NULL,
     show_legend = TRUE,
@@ -43,7 +43,7 @@ Basically the function applies test for the difference of subgroups for every
 row. There are three methods which test significance of the difference:
 
 \describe{
-  \item{compare_to_highest_subgroup}{it first extracts the subgroup with higest value, then use t-test to test to  all the other subgroups. }
+  \item{ttest}{it first extracts the subgroup with higest value, then use t-test to test to  all the other subgroups. }
   \item{samr}{use SAM method to find significantly different rows between subgroups}
   \item{Ftest}{use F-test to find significantly different rows between subgroups}
 }
