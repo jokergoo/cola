@@ -144,8 +144,13 @@ setMethod(f = "get_signatures",
 	for(i in seq_len(nrow(data2))) {
 		x = data2[i, ]
 		group_mean = tapply(x, class, mean)
-		max_group = names(which.max(group_mean))
-		group[i] = max_group
+		od = order(group_mean)
+
+		if(group_mean[od[2]] - group_mean[od[1]] > group_mean[od[length(od)]] - group_mean[od[length(od)-1]]) {
+			group[i] = names(group_mean)[od[1]]
+		} else {
+			group[i] = names(group_mean)[od[length(od)]]
+		}
 	}
 
 	mat = data[fdr < fdr_cutoff, , drop = FALSE]
