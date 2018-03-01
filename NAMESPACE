@@ -83,4 +83,4 @@ importFrom(png, readPNG)
 importFrom(samr, SAM)
 importFrom(skmeans, skmeans)
 importFrom(xml2, read_xml, xml_children, xml_attr, xml_text, xml_name)
-
+importFrom(pamr, pamr.train, pamr.cv, pamr.fdr, pamr.listgenes)
