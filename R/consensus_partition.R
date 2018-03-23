@@ -170,6 +170,10 @@ consensus_partition = function(data,
 			mean_dist = c(mean_dist, mean_dist_foo)
 		}
 		map = structure(names = names(mean_dist)[order(mean_dist)], names(mean_dist))
+		unclassfied = setdiff(1:k, map)
+		if(length(unclassfied)) {
+			map = c(map, structure(unclassfied, names = unclassfied))
+		}
 		class_ids = as.numeric(map[as.character(class_ids)])
 
 		class_ids_by_top_n = tapply(seq_along(partition_list), param$top_n, function(ind) {
@@ -181,6 +185,9 @@ consensus_partition = function(data,
 
 		membership_mat = cl_membership(partition_consensus)
 		class(membership_mat) = "matrix"
+		if(ncol(membership_mat) < k) {
+			membership_mat = cbind(membership_mat, matrix(0, nrow = nrow(membership_mat), ncol = k - ncol(membership_mat)))
+		}
 		map2 = structure(names(map), names = map)
 		membership_mat = membership_mat[, as.numeric(map2[as.character(1:k)])]
 
@@ -241,7 +248,8 @@ consensus_partition = function(data,
 			stat = stat
 		))
 	}
-
+browser()
+	# for some method, number of classes detected may be less than k
 	object_list = lapply(k, function(y) {
 		l = param$k == y
 		if(verbose) qqcat("wrapping results for k = @{y}\n")

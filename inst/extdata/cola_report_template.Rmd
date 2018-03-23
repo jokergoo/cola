@@ -7,8 +7,7 @@ Cola report
 
 <style type='text/css'>
 <%
-extdata_dir = "~/project/cola/inst/extdata";
-css = paste(readLines(paste0(extdata_dir, "/custom.css")), collapse = "\n") -%>
+css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 <%= css %>
 </style>
 
@@ -42,7 +41,7 @@ res_list
 The call for `run_all_consensus_partition_methods()`:
 
 ```{r, echo = FALSE}
-print(res_list@call)
+print(res_list@calling)
 ```
 
 Dimension of the input matrix:
@@ -52,6 +51,10 @@ dim(res_list@.env$data)
 ```
 
 Global distribution for each sample:
+
+```{r, echo = FALSE, message = FALSE}
+message("density heatmap for global distribution in all samples")
+```
 
 ```{r density-heatmap}
 library(ComplexHeatmap)
@@ -83,11 +86,19 @@ n_partition_method = length(res_list@partition_method)
 
 CDF of consensus matrix for all methods:
 
-```{r collect-plots, fig.width = fs*n_top_method, fig.height = fs*n_partition_method}
+```{r, echo = FALSE, message = FALSE}
+message("ECDF from all methods.")
+```
+
+```{r collect-plots, fig.width = fs*n_partition_method, fig.height = fs*n_top_method}
 collect_plots(res_list, fun = plot_ecdf)
 ```
 
 Consensus heatmaps for all methods:
+
+```{r, echo = FALSE, message = FALSE}
+message("Consensus heamtaps from all methods")
+```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% all_k = res_list@list[[1]]@k
@@ -95,7 +106,7 @@ fs = min(c(3*length(res_list@top_method), 14))/length(res_list@top_method)
 n_top_method = length(res_list@top_method)
 n_partition_method = length(res_list@partition_method)
 for(k in all_k) { -%>
-knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = consensus_heatmap)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_top_method%>, fig.height = <%=fs*n_partition_method%>')
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = consensus_heatmap)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_method%>')
 <% } -%>
 knitr_insert_tabs()
 ```
@@ -103,18 +114,26 @@ knitr_insert_tabs()
 
 Membership heatmaps for all methods:
 
+```{r, echo = FALSE, message = FALSE}
+message("Membership heamtaps from all methods")
+```
+
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = membership_heatmap)', 'k = <%=k%>', opt = 'fig.width =<%=fs*n_top_method%>, fig.height = <%=fs*n_partition_method%>')
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = membership_heatmap)', 'k = <%=k%>', opt = 'fig.width =<%=fs*n_partition_method%>, fig.height = <%=fs*n_top_method%>')
 <%}-%>
 knitr_insert_tabs()
+```
+
+```{r, echo = FALSE, message = FALSE}
+message("Look for signatures from all methods")
 ```
 
 Signature heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = get_signatures)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_top_method%>, fig.height = <%=fs*n_partition_method%>')
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = get_signatures)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_method%>')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -128,6 +147,10 @@ knitr_add_tab_item('get_stat(res_list, k = <%=k%>)', 'k = <%=k%>')
 knitr_insert_tabs()
 ```
 
+```{r, echo = FALSE, message = FALSE}
+message("Collect classifications from all methods")
+```
+
 Collect partitions from all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
@@ -138,6 +161,10 @@ knitr_insert_tabs()
 ```
 
 Overlap of top rows in different top methods:
+
+```{r, echo = FALSE, message = FALSE}
+message("Compare top row methods")
+```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(top_n in res_list@list[[1]]@top_n) { -%>
@@ -181,7 +208,7 @@ is_hc = FALSE
 for(top_method in res_list@top_method) {
     for(partition_method in res_list@partition_method) { -%>
 
-        <% brew(paste0(extdata_dir, "/section_template.Rmd")) %>
+        <% brew(paste0(TEMPLATE_DIR, "/section_template.Rmd")) %>
 
 <% }} -%>
 

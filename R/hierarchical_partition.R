@@ -24,7 +24,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
         hierarchy = "matrix",
         subgroup = "character",
         subgroup_col = "character",
-        call = "ANY"
+        calling = "ANY"
     )
 )
 
@@ -144,7 +144,7 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 
 	le = unique(as.vector(hp@hierarchy))
 	hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
-	hp@call = cl
+	hp@calling = cl
 
 	return(hp)
 }

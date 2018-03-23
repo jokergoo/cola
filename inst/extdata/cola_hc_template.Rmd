@@ -7,8 +7,7 @@ Cola report for hierarchical partitioning
 
 <style type='text/css'>
 <%
-extdata_dir = "~/project/cola/inst/extdata";
-css = paste(readLines(paste0(extdata_dir, "/custom.css")), collapse = "\n") -%>
+css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 <%= css %>
 </style>
 
@@ -42,7 +41,7 @@ res_hc
 The call for `hierarchical_partition()`:
 
 ```{r, echo = FALSE}
-print(res_hc@call)
+print(res_hc@calling)
 ```
 
 
@@ -136,7 +135,7 @@ is_hc = TRUE
 fs = 2
 all_k = res_hc@list[[1]]@k
 for(node in setdiff(all_nodes(res_hc), all_leaves(res_hc))) { -%>
-	<% brew(paste0(extdata_dir, "/section_template.Rmd")) %>
+	<% brew(paste0(TEMPLATE_DIR, "/section_template.Rmd")) %>
 <%} -%>
 
 ## Session info

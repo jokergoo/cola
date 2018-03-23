@@ -109,7 +109,8 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 		
 		if(inherits(x, "pairlist")) {
 			print(x)
-			stop(qq("You have an error when doing partition for @{tm}:@{pm}."))
+			qqcat("You have an error when doing partition for @{tm}:@{pm}.\n")
+			stop("You have an error.")
 		}
 		# for(k in res@k) {
 		# 	try(get_signatures(res, k = k, plot = FALSE, verbose = FALSE))
@@ -180,7 +181,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	    lt[[i]] = res
 	}
 	res_list@list = lt
-	res_list@call = cl
+	res_list@calling = cl
 
 	return(res_list)
 }
@@ -200,6 +201,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 setMethod(f = "show",
 	signature = "ConsensusPartitionList",
 	definition = function(object) {
+	qqcat("On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
 	qqcat("Top rows are extracted by '@{paste(object@top_method, collapse = ', ')}' methods.\n")
 	qqcat("Subgroups are detected by '@{paste(object@partition_method, collapse = ', ')}' method.\n")
 	qqcat("Number of partitions are tried for k = @{paste(object@list[[1]]@k, collapse = ', ')}\n")

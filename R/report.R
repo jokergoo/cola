@@ -51,6 +51,9 @@ options(width = 100)
 	return(invisible(NULL))
 }
 
+# TEMPLATE_DIR = system.file("extdata", package = "cola")
+TEMPLATE_DIR = "/home/guz/project/development/cola/inst/extdata"
+
 # == title
 # Generate the HTML code for the JavaScript tabs.
 #
@@ -62,10 +65,8 @@ options(width = 100)
 knitr_insert_tabs = function() {
 	KNITR_TAB_ENV$current_div_index = KNITR_TAB_ENV$current_div_index + 1
 
-	extdata_dir = system.file("extdata", package = "cola")
-
 	if(!KNITR_TAB_ENV$css_added) {
-		css = readLines(paste0(extdata_dir, "/jquery-ui.css"))
+		css = readLines(paste0(TEMPLATE_DIR, "/jquery-ui.css"))
 		cat("<style type='text/css'>\n")
 		cat(css, sep = "\n")
 		cat("</style>\n")
@@ -179,8 +180,7 @@ make_report = function(var_name, object, output_dir, class) {
 	html_file = c("HierarchicalPartition" = "cola_hc.html",
 		          "ConsensusPartitionList" = "cola_report.html")
 
-	# report_template = system.file("extdata", template_file[class], package = "cola")
-	report_template = paste0("~/project/cola/inst/extdata/", template_file[class])
+	report_template = paste0(TEMPLATE_DIR, "/", template_file[class])
 
 	if(file.exists(output_dir)) {
 		fileinfo = file.info(output_dir)
@@ -198,15 +198,15 @@ make_report = function(var_name, object, output_dir, class) {
 	md_file = gsub("Rmd$", "md", tempfile)
 	owd = getwd()
 	setwd(output_dir)
-	knit(tempfile, md_file)
+	knit(tempfile, md_file, quiet = TRUE,)
 	markdownToHTML(md_file, paste0(output_dir, "/", html_file[class]))
 	# file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
 	setwd(owd)
 
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
-	file.copy(system.file("extdata", "jquery-ui.js", package = "cola"), paste0(output_dir, "/js/"))
-	file.copy(system.file("extdata", "jquery-1.12.4.js", package = "cola"), paste0(output_dir, "/js/"))
+	file.copy(paste0(TEMPLATE_DIR, "/jquery-ui.js"), paste0(output_dir, "/js/"))
+	file.copy(paste0(TEMPLATE_DIR, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
 
 	qqcat("report is at @{output_dir}/@{html_file[class]}\n")
 

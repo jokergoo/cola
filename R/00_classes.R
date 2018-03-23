@@ -35,7 +35,7 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 		top_method = "character",
 		partition_method = "character",
 		consensus_class = "ANY",
-		call = "ANY",
+		calling = "ANY",
 		.env = "environment"
 ))
 

@@ -346,7 +346,7 @@ setMethod(f = "get_signatures",
 		})
 	}
 
-	return(invisible(mat_return))
+	return(invisible(list(mat_return, ht_list, scale = list(scaled_mean, scaled_sd))))
 })
 
 compare_to_highest_subgroup = function(mat, class) {
@@ -442,6 +442,8 @@ compare_to_lowest_subgroup = function(mat, class) {
 ttest = function(mat, class) {
 	fdr1 = compare_to_highest_subgroup(mat, class)
 	fdr2 = compare_to_lowest_subgroup(mat, class)
+	fdr1 = ifelse(is.infinite(fdr1), 1, fdr1)
+	fdr2 = ifelse(is.infinite(fdr2), 1, fdr2)
 	pmin(fdr1, fdr2)
 }
 
