@@ -190,9 +190,6 @@ register_partition_fun(
 	kmeans = function(mat, k, ...) {
 		kmeans(t(mat), centers = k, ...)
 	},
-	# NMF = function(mat, k, ...) {
-	# 	as.numeric(predict(nmf(x = mat, rank = k, ...)))
-	# },
 	skmeans = function(mat, k, ...) {
 		skmeans(x = t(mat), k = k, ...)
 	},
@@ -216,19 +213,26 @@ register_partition_fun(
 	mclust = function(mat, k, ...) {
 		pca = prcomp(t(mat))
 		Mclust(pca$x[, 1:3], G = k, verbose = FALSE, ...)$classification
-	},
-	som = function(mat, k, ...) {
-		kr = floor(sqrt(ncol(mat)))
-		somfit = som(t(mat), grid = somgrid(kr, kr, "hexagonal"), ...)
-		cl = cutree(hclust(dist(somfit$codes[[1]])), k)
-		group = numeric(ncol(mat))
-		for(cl_unique in unique(cl)) {
-			ind = which(cl == cl_unique)
-			l = somfit$unit.classif %in% ind
-			group[l] = cl_unique
-		}
-		group
 	}
+	# som = function(mat, k, ...) {
+	# 	kr = floor(sqrt(ncol(mat)))
+	# 	somfit = som(t(mat), grid = somgrid(kr, kr, "hexagonal"), ...)
+	# 	cl = cutree(hclust(dist(somfit$codes[[1]])), k)
+	# 	group = numeric(ncol(mat))
+	# 	for(cl_unique in unique(cl)) {
+	# 		ind = which(cl == cl_unique)
+	# 		l = somfit$unit.classif %in% ind
+	# 		group[l] = cl_unique
+	# 	}
+	# 	group
+	# }
+)
+
+register_partition_fun(
+	NMF = function(mat, k, ...) {
+		fit = nnmf(A = mat, k = k, verbose = FALSE, ...)
+		apply(fit$H, 2, which.max)
+	}, scale_method = "rescale"
 )
 
 # == title

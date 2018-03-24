@@ -248,7 +248,7 @@ consensus_partition = function(data,
 			stat = stat
 		))
 	}
-browser()
+
 	# for some method, number of classes detected may be less than k
 	object_list = lapply(k, function(y) {
 		l = param$k == y

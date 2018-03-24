@@ -11,6 +11,7 @@ print(microbenchmark(
 	library(RColorBrewer),
 	library(cluster),
 	library(NMF),
+	library(NNLM),
 	library(mclust),
 	library(skmeans),
 	library(cclust),
