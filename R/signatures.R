@@ -52,7 +52,7 @@ setMethod(f = "get_signatures",
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = ifelse(row_diff_by == "samr", 0.1, 0.05), 
 	scale_rows = object@scale_rows,
-	row_diff_by = c("ttest", "Ftest", "samr"),
+	row_diff_by = c("ttest", "Ftest", "samr", "pamr"),
 	anno = object@known_anno, 
 	anno_col = if(missing(anno)) object@known_col else NULL,
 	show_legend = TRUE,
@@ -129,6 +129,8 @@ setMethod(f = "get_signatures",
 				fdr = samr(data2, class, fdr.output = fdr_cutoff)
 			} else if(row_diff_by == "Ftest") {
 				fdr = Ftest(data2, class)
+			} else if(row_diff_by == "pamr") {
+				fdr = pamr(data2, class, fdr.ouput = fdr_cutoff)
 			}
 		}
 
@@ -479,6 +481,27 @@ samr = function(mat, class, ...) {
 	return(fdr)
 }
 
+pamr = function(mat, class, fdr.cutoff=0.1,...) {
+	class = as.numeric(factor(class))
+	
+	tempf = tempfile()
+	sink(tempf)
+	mydata <- list(x=mat, y=class, geneid = rownames(mat))
+	mydata.fit <- pamr.train(mydata)
+	mydata.cv <- pamr.cv(mydata.fit, mydata)
+	mydata.fdr <- pamr.fdr(mydata.fit, mydata)
+	threshold = min(mydata.fdr$results[mydata.fdr$results[,"Median FDR"] < fdr.cutoff, "Threshold"])
+	mydata.genelist <- pamr.listgenes(mydata.fit, mydata, threshold = threshold, fitcv=mydata.cv)
+	sink(NULL)
+	file.remove(tempf)
+
+	fdr = rep(1, nrow(mat))
+	fdr[rownames(mat) %in% mydata.genelist[,"id"]] = 0
+	
+	return(fdr)
+}
+
+
 Ftest = function(mat, class) {
 	if(requireNamespace("genefilter")) {
 		p = getFromNamespace("rowFtests", "genefilter")(mat, factor(class))[, "p.value"]
@@ -493,6 +516,7 @@ Ftest = function(mat, class) {
 test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 	set.seed(100)
 	x = matrix(rnorm(1000 * 20), ncol = 20)
+	rownames(x) = rep(paste0("gene1", 1:1000))
 	dd = sample(1:1000, size = 100)
 	u = matrix(2 * rnorm(100), ncol = 10, nrow = 100)
 	x[dd, 11:20] = x[dd, 11:20] + u
@@ -501,7 +525,7 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 	y = c(rep(1, 10), rep(2, 10))
 	fdr = fun(x, y)
 
-	ht = Heatmap(x, top_annotation = HeatmapAnnotation(foo = as.character(y), col = list(foo = c("1" = "blue", "2" = "red")))) +
+	ht = Heatmap(x, top_annotation = HeatmapAnnotation(foo = as.character(y), col = list(foo = c("1" = "blue", "2" = "red"))), show_row_names = FALSE) +
 	Heatmap(row_diff, name = "diff", col = c("yes" = "red", "no" = "white"), width = unit(5, "mm")) +
 	Heatmap(fdr, name = "fdr", width = unit(5, "mm"), show_row_names = FALSE)
 	draw(ht, split = fdr < fdr_cutoff)
