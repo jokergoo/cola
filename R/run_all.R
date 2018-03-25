@@ -280,7 +280,7 @@ setMethod(f = "get_best_k",
 		mean_silhouette = mean_silhouette)
 
 	rntb = rownames(tb)
-	l = tb$PAC < 0.05 & tb$mean_silhouette > 0.95
+	l = tb$PAC < 0.05 & tb$cophcor > 0.99
 	tb = cbind(tb, ifelse(l, ifelse(tb$PAC < 0.01, "**", "*"), ""), stringsAsFactors = FALSE)
 	colnames(tb)[ncol(tb)] = ""
 	return(tb)

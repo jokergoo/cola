@@ -91,9 +91,9 @@ get_partition_fun = function(method, partition_param = list()) {
 		}
 
 		nc = n_of_classes(x)
-		if(nc != k) {
-			cat(red(qq("!!! @{method}: number of classes (@{nc}) in the partition is not same as @{k} !!!\n")))
-		}
+		# if(nc != k) {
+		# 	cat(red(qq("!!! @{method}: number of classes (@{nc}) in the partition is not same as @{k} !!!\n")))
+		# }
 
 		return(x)
 	}
@@ -213,19 +213,21 @@ register_partition_fun(
 	mclust = function(mat, k, ...) {
 		pca = prcomp(t(mat))
 		Mclust(pca$x[, 1:3], G = k, verbose = FALSE, ...)$classification
+	},
+	som = function(mat, k, ...) {
+		kr = floor(sqrt(ncol(mat)))
+		somfit = som(t(mat), grid = somgrid(kr, kr, "hexagonal"), ...)
+		m = somfit$codes[[1]]
+		m = m[seq_len(nrow(m)) %in% somfit$unit.classif, ]
+		cl = cutree(hclust(dist(m)), k)
+		group = numeric(ncol(mat))
+		for(cl_unique in unique(cl)) {
+			ind = as.numeric(gsub("V", "", names(cl)[which(cl == cl_unique)]))
+			l = somfit$unit.classif %in% ind
+			group[l] = cl_unique
+		}
+		group
 	}
-	# som = function(mat, k, ...) {
-	# 	kr = floor(sqrt(ncol(mat)))
-	# 	somfit = som(t(mat), grid = somgrid(kr, kr, "hexagonal"), ...)
-	# 	cl = cutree(hclust(dist(somfit$codes[[1]])), k)
-	# 	group = numeric(ncol(mat))
-	# 	for(cl_unique in unique(cl)) {
-	# 		ind = which(cl == cl_unique)
-	# 		l = somfit$unit.classif %in% ind
-	# 		group[l] = cl_unique
-	# 	}
-	# 	group
-	# }
 )
 
 register_partition_fun(

@@ -45,6 +45,26 @@ consensus_partition = function(data,
 	verbose = TRUE,
 	.env = NULL) {
 
+	t = system.time(res <- .consensus_partition(...))
+	res@running_time = t[["elapsed"]]
+	return(res)
+}
+
+
+.consensus_partition = function(data,
+	top_method = "MAD",
+	top_n = seq(min(1000, round(nrow(data)*0.1)), 
+		        min(c(5000, round(nrow(data)*0.5))), 
+		        length.out = 5),
+	partition_method = "kmeans",
+	k = 2:6, p_sampling = 0.8,
+	partition_repeat = 50,
+	partition_param = list(),
+	known_anno = NULL,
+	known_col = NULL,
+	scale_rows = NULL,
+	verbose = TRUE,
+	.env = NULL) {
 	if(is.null(.env)) {
 		if(is.data.frame(data)) data = as.matrix(data)
 		if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
