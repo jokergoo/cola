@@ -104,7 +104,7 @@ setMethod(f = "get_stat",
 	for(i in seq_along(object@k)) {
 		m[i, ] = unlist(object@object_list[[i]]$stat[colnames(m)])
 	}
-	m = m[as.character(k), , drop = FALSE])
+	m = m[as.character(k), , drop = FALSE]
 	m = cbind(m, foo = sapply(1:k, function(i) foo(table(get_class(object, k = i)$class))))
 	return(m)
 })

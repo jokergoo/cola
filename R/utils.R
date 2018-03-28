@@ -1,13 +1,15 @@
 
-strrep = function(x, times) {
-	x = rep(x, times = times)
-	return(paste0(x, collapse = ""))
+if(!exists("strrep")) {
+	strrep = function(x, times) {
+		x = rep(x, times = times)
+		return(paste0(x, collapse = ""))
+	}
 }
-
 
 # change the label of `class` to let `class` fits `ref` more, maximize sum(class ==ref)
 # class = c(rep("a", 10), rep("b", 3))
 # ref = c(rep("b", 4), rep("a", 9))
+# relabel_class(class, ref)
 relabel_class = function(class, ref) {
 	class = as.character(class)
 	ref = as.character(ref)
@@ -22,7 +24,7 @@ relabel_class = function(class, ref) {
 	tb = table(class, ref)
 	m[rownames(tb), colnames(tb)] = tb
 
-	imap = solve_LSAP(m, maximum = TRUE)
+	imap = clue::solve_LSAP(m, maximum = TRUE)
 	map = structure(rownames(m)[imap], names = rownames(m))
 
 	df = data.frame(class = class, adjusted = map[class], ref = ref)
@@ -35,7 +37,7 @@ column_order_by_group = function(factor, mat) {
 	if(!is.factor(factor)) {
 		factor = factor(factor, levels = unique(factor))
 	}
-	do.call("c", lapply(sort(levels(factor)), function(le) {
+	do.call("c", lapply(levels(factor), function(le) {
 		m = mat[, factor == le, drop = FALSE]
 		if(ncol(m) == 1) {
 			which(factor == le)
@@ -56,11 +58,11 @@ column_order_by_group = function(factor, mat) {
 #
 # == param
 # -x a numeric vector
-# -q percential to adjust
+# -q quantile to adjust
 # 
 # == details
-# Vaules larger than percential ``1 - q`` are adjusted to ``1 - q`` and 
-# values smaller than percential ``q`` are adjusted to ``q``.
+# Vaules larger than quantile ``1 - q`` are adjusted to ``1 - q`` and 
+# values smaller than quantile ``q`` are adjusted to ``q``.
 #
 # == value
 # A numeric vector with same length as the original one.
@@ -84,8 +86,8 @@ adjust_outlier = function(x, q = 0.05) {
 #
 # == param
 # -m a numeric matrix
-# -sd_quantile cutoff the quantile of standard variation
-# -max_na maximum NA rate for rows
+# -sd_quantile cutoff the quantile of standard variation. Rows with variance less than it are removed.
+# -max_na maximum NA rate in each row. Rows with NA rate larger than it are removed.
 #
 # == details
 # The function uses `impute::impute.knn` to impute missing data, then
@@ -110,7 +112,7 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	}
 
 	l = apply(m, 1, function(x) sum(is.na(x))/length(x)) < max_na
-	qqcat("removed @{sum(!l)} rows where more than 50% of samples have NA values.\n")
+	qqcat("removed @{sum(!l)} rows where more than @{round(max_na*100)}% of samples have NA values.\n")
 	m = m[l, , drop = FALSE]
 
 	n_na = sum(is.na(m))
