@@ -16,7 +16,7 @@ print(microbenchmark(
 	library(skmeans),
 	library(cclust),
 	library(png),
-	library(venneuler),
+#	library(venneuler),
 	library(gplots),
 	library(Rtsne),
 	library(samr),

@@ -142,15 +142,16 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 #
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartition",
-	definition = function(object, k, known = object@known_anno, silhouette_cutoff = 0.5) {
+	definition = function(object, k, known = object@anno, silhouette_cutoff = 0.5) {
 
 	if(missing(k)) {
 		all_k = object@k
-		m = do.call("rbind", lapply(all_k, function(k) test_to_known_factors(object, k, known = known, silhouette_cutoff = silhouette_cutoff)))
+		m = do.call("rbind", lapply(all_k, function(k) test_to_known_factors(object, k, known = known, 
+			silhouette_cutoff = silhouette_cutoff)))
 		return(m)
 	}
 
-	class_df = get_class(object, k)
+	class_df = get_classes(object, k)
 	l = class_df$silhouette >= silhouette_cutoff
 	class = as.character(class_df$class)[l]
 
@@ -166,8 +167,9 @@ setMethod(f = "test_to_known_factors",
 		known = known[l]
 	}
 
-	m = test_between_factors(class, known, verbose = FALSE)
-	rownames(m) = paste(object@top_method, object@partition_method, sep = ":")
+	m = test_between_factors(class, known, verbose = TRUE)
+	rownames(m) = paste(object@top_value_method, object@partition_method, sep = ":")
+	colnames(m) = paste0(colnames(m), "(p-value)")
 	m = cbind(n = sum(l), m, k = k)
 	return(m)
 })
@@ -199,7 +201,7 @@ setMethod(f = "test_to_known_factors",
 #
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartitionList",
-	definition = function(object, k, known = object@list[[1]]@known_anno, 
+	definition = function(object, k, known = object@list[[1]]@anno, 
 		silhouette_cutoff = 0.5) {
 
 	if(missing(k)) {

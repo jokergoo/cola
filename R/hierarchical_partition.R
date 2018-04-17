@@ -21,6 +21,7 @@
 HierarchicalPartition = setClass("HierarchicalPartition",
     slots = list(
         list = "list",
+        best_k = "numeric",
         hierarchy = "matrix",
         subgroup = "character",
         subgroup_col = "character",
@@ -49,8 +50,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-hierarchical_partition = function(data, top_method = "MAD", partition_method = "kmeans",
-	PAC_cutoff = 0.2, min_samples = 6, k = 2:4, ...) {
+hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
+	concordance_cutoff = 0.9, min_samples = 6, max_k = 4, ...) {
 
 	cl = match.call()
 	
@@ -59,7 +60,8 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 	.h_obj$list = list()
 	.h_obj$subgroup = rep("", ncol(data))
 
-	.hierarchical_partition = function(.env, column_index, PAC_cutoff = 0.2, node_id = '0', parent = NULL, min_samples = 6, k = 2:4, ...) {
+	.hierarchical_partition = function(.env, column_index, concordance_cutoff = 0.9, node_id = '0', 
+		parent = NULL, min_samples = 6, max_k = 4, ...) {
 
 		if(node_id != "0") {
 			cat("\n")
@@ -68,36 +70,37 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 		qqcat("submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
 	   	.env$all_value_list = NULL
 	   	.env$column_index = column_index
-		part = consensus_partition(verbose = FALSE, .env = .env, k = k, 
-			top_method = top_method, partition_method = partition_method, ...)
+		part = consensus_partition(verbose = FALSE, .env = .env, max_k = max_k, 
+			top_value_method = top_value_method, partition_method = partition_method, ...)
 
 	    .h_obj$list[[node_id]] = part
 	    .h_obj$subgroup[column_index] = node_id
 
-	    best_k = get_best_k(part)
-	    cl = get_class(part, k = best_k)
+	    best_k = guess_best_k(part)
+	    cl = get_classes(part, k = best_k)
+	    .h_obj$best_k[node_id] = best_k
 
-		oe = try(sig <- get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE))
-		if(inherits(oe, "try-error")) {
-			cat("caught an error, stop.\n")
-			return(NULL)
-		}
-		if(length(sig$group) < 100) {
-			qqcat("Number of signatures are too small (< 100), stop.\n")
-			return(NULL)
-		}
+		# oe = try(sig <- get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE))
+		# if(inherits(oe, "try-error")) {
+		# 	cat("caught an error, stop.\n")
+		# 	return(NULL)
+		# }
+		# if(length(sig$group) < 100) {
+		# 	qqcat("Number of signatures are too small (< 100), stop.\n")
+		# 	return(NULL)
+		# }
 
 	    mat = .env$data[, column_index, drop = FALSE]
 	    mat = t(scale(t(mat)))
-	    mat = mat[order(.env$all_value_list[[1]], decreasing = TRUE)[1:max(part@top_n)], , drop = FALSE]
+	    mat = mat[order(.env$all_top_value_list[[1]], decreasing = TRUE)[1:max(part@top_n)], , drop = FALSE]
 	    s = most_tight_subgroup(mat, cl$class)
 	    set1 = which(cl$class == s)
 	    set2 = which(cl$class != s)
 
 	    qqcat("best k = @{best_k}, most tight subgroup: @{s}\n")
-		PAC_score = get_stat(part, k = best_k)[, "PAC"]
-	    if(PAC_score > PAC_cutoff) {
-	    	qqcat("PAC score too big @{PAC_score}, stop.\n")
+		concordance_score = get_stat(part, k = best_k)[, "concordance"]
+	    if(concordance_score < concordance_cutoff) {
+	    	qqcat("concordance score too small @{concordance_score}, stop.\n")
 	    	return(NULL)
 	    }
 
@@ -119,12 +122,12 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 
 	    	if(length(set1) > min_samples) {
 	    		.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1, parent = node_id,
-	    			PAC_cutoff = PAC_cutoff, min_samples = min_samples, k = k, ...)
+	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, ...)
 	    	}
 
 	    	if(length(set2) > min_samples) {
 	    		.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2, parent = node_id,
-	    			PAC_cutoff = PAC_cutoff, min_samples = min_samples, k = k, ...)
+	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, ...)
 	    	}
 	    	
 	    # }
@@ -134,11 +137,13 @@ hierarchical_partition = function(data, top_method = "MAD", partition_method = "
 
 	.env = new.env()
 	.env$data = data
-	.hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), PAC_cutoff = PAC_cutoff, min_samples = min_samples, node_id = "0", parent = NULL, k = k, ...)
+	.hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), concordance_cutoff = concordance_cutoff, min_samples = min_samples, 
+		node_id = "0", parent = NULL, max_k = max_k, ...)
 
 	hp = new("HierarchicalPartition")
 	hp@hierarchy = .h_obj$hierarchy
 	hp@list = .h_obj$list
+	hp@best_k = .h_obj$best_k
 	hp@subgroup = .h_obj$subgroup
 	names(hp@subgroup) = colnames(data)
 
@@ -154,6 +159,9 @@ calc_dend = function(object, hierarchy = object@hierarchy) {
 	lt = list()
 	lt[["0"]] = Node$new("all samples")
 	cn = colnames(object@list[["0"]]@.env$data)
+	if(length(cn) == 0) {
+		cn = paste0("c", seq_len(ncol(object@list[["0"]]@.env$data)))
+	}
 	max_depth = max(nchar(hierarchy))
 	lt[["0"]]$node_height = max_depth + 1
 	for(i in seq_len(nrow(hierarchy))) {
@@ -168,7 +176,7 @@ calc_dend = function(object, hierarchy = object@hierarchy) {
 
 			sample_node = lt[[ hierarchy[i, 2] ]]
 			sample_node$node_height = 0
-			
+
 			sample_node$AddChildNode({
 				node = Node$new(cn2[1])
 				node$node_height = 0
@@ -310,7 +318,7 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-setMethod(f = "get_class",
+setMethod(f = "get_classes",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = NULL) {
 
@@ -338,7 +346,7 @@ setMethod(f = "show",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 
-	qqcat("A 'HierarchicalPartition' object with '@{object@list[[1]]@top_method}:@{object@list[[1]]@partition_method}' method.\n")
+	qqcat("A 'HierarchicalPartition' object with '@{object@list[[1]]@top_value_method}:@{object@list[[1]]@partition_method}' method.\n")
 	cat("\n")
 
 	hierarchy = object@hierarchy
@@ -403,22 +411,22 @@ setMethod(f = "get_signatures",
 		which_group = as.numeric(substr(nm, nc, nc))
 		parent = substr(nm, 1, nc - 1)
 		obj = object@list[[parent]]
-		best_k = get_best_k(obj)
+		best_k = guess_best_k(obj)
 		qqcat("get signatures at node @{parent} for @{nm} with @{best_k} subgroups.\n")
-		sig = get_signatures(obj, k = best_k, verbose = FALSE, plot = FALSE, ...)$group
+		sig = get_signatures(obj, k = best_k, verbose = FALSE, plot = FALSE, ...)$df$group
 		if(which_group != 0) {
-			sig_lt[[nm]] = names(sig[sig == which_group])
+			sig_lt[[nm]] = which(sig == which_group)
 		} else if(nm == strrep("0", nchar(parent) + 1)) {
 			l = grepl(qq("^@{parent}\\d$"), all_subgroup_labels)
 			same_level = all_subgroup_labels[l]
 			other_group = setdiff(seq_len(best_k), substr(same_level, nc, nc))
 			qqcat("  use subgroup @{paste(other_group, collapse = ', ')}\n")
-			sig_lt[[nm]] = names(sig[sig %in% other_group])
+			sig_lt[[nm]] = which(sig %in% other_group)
 		} else {
 			l = grepl(qq("^@{parent}[1-9]$"), all_subgroup_labels)
 			if(any(l)) {
 				px = as.numeric(substr(all_subgroup_labels[l], nc, nc))
-				sig_lt[[nm]] = names(sig[! sig %in% px])
+				sig_lt[[nm]] = which(! sig %in% px)
 			}
 		}
 	}
@@ -427,12 +435,12 @@ setMethod(f = "get_signatures",
 	data = object@list[[1]]@.env$data
 	data = t(scale(t(data)))
 	m = data[all_sig, , drop = FALSE]
-	
+
 	m_sig = matrix(0, nrow = length(all_sig), ncol = length(sig_lt))
 	rownames(m_sig) = all_sig
 	colnames(m_sig) = names(sig_lt)
 	for(i in seq_along(sig_lt)) {
-		m_sig[sig_lt[[i]], i] = 1
+		m_sig[as.character(sig_lt[[i]]), i] = 1
 	}
 	col2 = lapply(names(sig_lt), function(x) {
 		foo = c("1" = object@subgroup_col[x], "0" = "white")
@@ -453,7 +461,7 @@ setMethod(f = "get_signatures",
 	} else {
 		ind = seq_len(nrow(m))
 	}
-	subgroup = get_class(object, depth = depth)
+	subgroup = get_classes(object, depth = depth)
 	col_order = column_order_by_group(subgroup, m)
 	mat_range = quantile(abs(m[ind, ]), 0.95)
 	col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
@@ -498,15 +506,15 @@ setMethod(f = "get_signatures",
 #
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL, anno = object@list[[1]]@known_anno, 
-	anno_col = if(missing(anno)) object@list[[1]]@known_col else NULL,
+	definition = function(object, depth = NULL, anno = object@list[[1]]@anno, 
+	anno_col = if(missing(anno)) object@list[[1]]@anno_col else NULL,
 	...) {
 
 	data = object@list[[1]]@.env$data
 	if(nrow(data) > 5000) {
 		data = data[order(rowSds(data), decreasing = TRUE)[1:5000], ]
 	}
-	cl = get_class(object, depth = depth)
+	cl = get_classes(object, depth = depth)
 
 	hierarchy = object@hierarchy
 	if(!is.null(depth)) {
@@ -537,24 +545,19 @@ setMethod(f = "collect_classes",
 	draw(ht_list)
 })
 
-# == title
-# Get result for a specified level in the partition hierarchy
-#
-# == param
-# -object a `HierarchicalPartition-class` object
-# -node node labal, see `hierarchical_partition` for explaination.
-#
-# == return 
-# A `ConsensusPartition-class` object.
-#
-# == author
-# Zuguang Gu <z.gu@dkfz.de>
-#
-setMethod(f = "get_single_run",
-	signature = "HierarchicalPartition",
-	definition = function(object, node = "0") {
-	object@list[[node]]
-})
+"[.HierarchicalPartition" = function(x, i) {
+	if(is.numeric(i)) {
+		i = names(x@list)[i]
+	}
+	x@list[[i]]
+}
+
+"[[.HierarchicalPartition" = function(x, i) {
+	if(is.numeric(i)) {
+		i = names(x@list)[i]
+	}
+	x@list[[i]]
+}
 
 # == title
 # Test correspondance between predicted and known classes
@@ -575,7 +578,7 @@ setMethod(f = "get_single_run",
 #
 setMethod(f = "test_to_known_factors",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL, known = object@list[[1]]@known_anno) {
+	definition = function(object, depth = NULL, known = object@list[[1]]@anno) {
 
 	if(!is.null(known)) {
 		if(is.atomic(known)) {
@@ -597,9 +600,9 @@ setMethod(f = "test_to_known_factors",
 		which_group = as.numeric(substr(nm, nc, nc))
 		parent = substr(nm, 1, nc - 1)
 		obj = object@list[[parent]]
-		best_k = get_best_k(obj)
+		best_k = guess_best_k(obj)
 		
-		cl = get_class(obj, k = best_k)$class
+		cl = get_classes(obj, k = best_k)$class
 		cl[cl != which_group] = 0
 
 		column_index = obj@column_index
@@ -608,7 +611,7 @@ setMethod(f = "test_to_known_factors",
 	}
 	rownames(p) = all_nodes
 
-	class = get_class(object)
+	class = get_classes(object)
 	m = test_between_factors(class, known, verbose = FALSE)
 	p = rbind(p, overall = m)
 	return(p)
@@ -635,38 +638,33 @@ setMethod(f = "test_to_known_factors",
 #
 setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
-	definition = function(object, merge = FALSE, depth = NULL,
-	top_n = NULL, method = c("mds", "pca", "tsne"),
+	definition = function(object,
+	depth = max_depth(object), parent_node,
+	top_n = NULL, method = c("pca", "mds", "tsne"),
 	silhouette_cutoff = 0.5, tsne_param = list()) {
 
 	method = match.arg(method)
-	data = data = object@list[[1]]@.env$data
+	data = object@list[[1]]@.env$data
 
-	if(!is.null(top_n)) {
-		top_n = min(c(top_n, nrow(data)))
-		all_value = object@list[["0"]]@.env$all_value_list[[object@list[["0"]]@top_method]]
-		ind = order(all_value)[1:top_n]
-		data = data[ind, , drop = FALSE]
-	}
-
-	class = get_class(object, depth = depth)
-	if(merge) {
+	if(missing(parent_node)) {
+		if(!is.null(top_n)) {
+			top_n = min(c(top_n, nrow(data)))
+			all_top_value = object@list[["0"]]@.env$all_top_value_list[[object@list[["0"]]@top_value_method]]
+			ind = order(all_top_value)[1:top_n]
+			data = data[ind, , drop = FALSE]
+		}
+		class = get_classes(object, depth = depth)
 		dimension_reduction(data, pch = 16, col = object@subgroup_col[class],
 			cex = 1, main = qq("Dimension reduction by @{method}, @{ncol(data)} samples"),
 			method = method, tsne_param = tsne_param)
 	} else {
-		all_nodes = sort(unique(as.vector(object@hierarchy)))
-		all_nodes = all_nodes[all_nodes != "0"]
-		if(!is.null(depth)) {
-			all_nodes = all_nodes[nchar(all_nodes) <= depth]
+		if(!parent_node %in% setdiff(all_nodes(object), all_leaves(object))) {
+			stop(qq("@{parent_node} has no children nodes.\n"))
 		}
-		all_parents = all_nodes[nchar(all_nodes) < max(nchar(all_nodes))]
-		for(p in all_parents) {
-			obj = get_single_run(object, node = p)
-			dimension_reduction(obj, k = get_best_k(obj), top_n = top_n, method = method,
-				silhouette_cutoff = silhouette_cutoff, tsne_param = tsne_param)
-			legend("topleft", legend = qq("node @{p}"))
-		}
+		obj = object[[parent_node]]
+		dimension_reduction(obj, k = guess_best_k(obj), top_n = top_n, method = method,
+			silhouette_cutoff = silhouette_cutoff, tsne_param = tsne_param)
+		legend("topleft", legend = qq("node @{parent_node}"))
 	}
 })
 
@@ -721,3 +719,15 @@ setMethod(f = "all_leaves",
 	tb = tb[tb <= 1]
 	names(tb)	
 })
+
+get_children = function(object, node = "0") {
+	hierarchy = unique(object@hierarchy)
+	hierarchy[hierarchy[, 1] == node, 2]
+}
+
+setMethod(f = "get_matrix",
+	signature = "ConsensusPartitionList",
+	definition = function(object) {
+	object@.env$data
+})
+

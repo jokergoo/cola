@@ -24,6 +24,8 @@ opts_chunk$set(
 )
 ```
 
+<% res_hc = object -%>
+
 ## Summary
 
 All available functions which can be applied to `res` object.
@@ -55,11 +57,11 @@ Global distribution for each sample:
 
 ```{r hc-density-heatmap}
 library(ComplexHeatmap)
-<% if(is.null(res_list@list[[1]]@known_anno)) { -%>
+<% if(is.null(res_hc@list[[1]]@anno)) { -%>
 densityHeatmap(res_hc@list[["0"]]@.env$data, ylab = "value")
 <% } else { -%>
-densityHeatmap(res_hc@list[["0"]]@.env$data, anno = HeatmapAnnotation(df = res_hc@list[["0"]]@known_anno, 
-	col = res_hc@list[["0"]]@known_col), ylab = "value")
+densityHeatmap(res_hc@list[["0"]]@.env$data, anno = HeatmapAnnotation(df = res_hc@list[["0"]]@anno, 
+	col = res_hc@list[["0"]]@anno_col), ylab = "value")
 <% } -%>
 ```
 
@@ -82,40 +84,31 @@ Partitions for different depth:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(depth in 2:max_depth) { -%>
-knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)\nget_class(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
+knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)\nget_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
 <% } -%>
 knitr_insert_tabs()
 ```
 
 MDS plot:
 
-```{r hc-dimension-reduction}
-dimension_reduction(res_hc, merge = TRUE)
+```{r, results = 'asis', echo = FALSE, include = TRUE}
+<% for(depth in 2:max_depth) { -%>
+knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
+<%}-%>
+knitr_insert_tabs()
 ```
 
-Or MDS plot at each node
-
-<%
-n_plots = length(setdiff(all_nodes(res_hc), all_leaves(res_hc)))
-nc = min(c(4, n_plots))
-nr = ceiling(n_plots/nc)
--%>
-
-```{r hc-dimension-reduction-separate, fig.width = <%=nc*14/3%>, fig.height = <%=nr*14/3%>, echo = 2}
-par(mfrow = c(nr, nc))
-dimension_reduction(res_hc, merge = FALSE)
-par(mfrow = c(1, 1))
-```
 
 Signature genes and the overlap:
 
 ```{r hc-signature, echo = max_depth > 2, eval = max_depth > 2}
-lt_sig = get_signatures(res_hc)
-venn_euler(lt_sig)
+get_signatures(res_hc)
 ```
 
 
-<% if(!is.null(res_hc@list[['0']]@known_anno)) { -%>
+<% has_known_anno = FALSE
+if(!is.null(res_hc@list[['0']]@anno)) { 
+has_known_anno = TRUE -%>
 
 Test correlation between subgroups and known annotations:
 

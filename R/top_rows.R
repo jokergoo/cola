@@ -20,11 +20,11 @@
 setMethod(f = "top_rows_overlap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = object@list[[1]]@top_n[1], 
-		type = c("venn", "correspondance"), ...) {
+		type = c("venn", "venneuler", "correspondance"), ...) {
 
-	all_value_list = object@.env$all_value_list
+	all_top_value_list = object@.env$all_top_value_list
 
-	top_rows_overlap(all_value_list, top_n = top_n, type = type, ...)
+	top_rows_overlap(all_top_value_list, top_n = top_n, type = type, ...)
 })
 
 # == title
@@ -52,18 +52,18 @@ setMethod(f = "top_rows_overlap",
 # top_rows_overlap(mat, top_n = 25)
 setMethod(f = "top_rows_overlap",
 	signature = "matrix",
-	definition = function(object, top_method = all_top_value_methods(), 
-		top_n = round(0.25*nrow(object)), type = c("venn", "correspondance"), ...) {
+	definition = function(object, top_value_method = all_top_value_methods(), 
+		top_n = round(0.25*nrow(object)), type = c("venn", "venneuler", "correspondance"), ...) {
 
-	all_value_list = lapply(top_method, function(x) {
-		get_value_fun = get_top_value_fun(x)
-		all_value = get_value_fun(object)
-		all_value[is.na(all_value)] = -Inf
-		all_value
+	all_top_value_list = lapply(top_value_method, function(x) {
+		get_top_value_fun = get_top_value_method(x)
+		all_top_value = get_top_value_fun(object)
+		all_top_value[is.na(all_top_value)] = -Inf
+		all_top_value
 	})
-	names(all_value_list) = top_method
+	names(all_top_value_list) = top_value_method
 
-	top_rows_overlap(all_value_list, top_n = top_n, type = type, ...)
+	top_rows_overlap(all_top_value_list, top_n = top_n, type = type, ...)
 })
 
 
@@ -91,22 +91,16 @@ setMethod(f = "top_rows_overlap",
 setMethod(f = "top_rows_overlap",
 	signature = "list",
 	definition = function(object, top_n = round(0.25*length(object[[1]])), 
-		type = c("venn", "correspondance"), ...) {
+		type = c("venn", "venneuler", "correspondance"), ...) {
 
 	lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
     
     type = match.arg(type)
     if(type == "venn") {
-    	oe = try(has_venneuler <- requireNamespace("venneuler"))
-    	if(inherits(oe, "try-error")) {
-    		venn(lt)
-    		title(qq("top @{top_n} rows"))
-    	} else if(!has_venneuler) {
-    		venn(lt)
-    		title(qq("top @{top_n} rows"))
-    	} else {
-   			venn_euler(lt, main = qq("top @{top_n} rows"), ...)
-   		}
+		venn(lt, ...)
+		title(qq("top @{top_n} rows"))
+	} else if(type == "venneuler") {
+		venn_euler(lt, main = qq("top @{top_n} rows"), ...)
 	} else if(type == "correspondance") {
 		correspond_between_rankings(object, top_n = top_n, ...)
 	}
@@ -131,14 +125,15 @@ setMethod(f = "top_rows_overlap",
 #
 setMethod(f = "top_rows_heatmap",
 	signature = "ConsensusPartitionList",
-	definition = function(object, top_n = object@list[[1]]@top_n[1], ...) {
+	definition = function(object, top_n = object@list[[1]]@top_n[1], 
+		scale_rows = object@list[[1]]@scale_rows, ...) {
 
-	all_value_list = object@.env$all_value_list[object@top_method]
+	all_top_value_list = object@.env$all_top_value_list[object@top_value_method]
     
     mat = object@.env$data
 
-    top_rows_heatmap(mat, all_value_list = all_value_list, top_n = top_n, 
-    	scale_rows = object@list[[1]]@scale_rows, ...)
+    top_rows_heatmap(mat, all_top_value_list = all_top_value_list, top_n = top_n, 
+    	scale_rows = scale_rows, ...)
 })
 
 # == title
@@ -172,22 +167,22 @@ setMethod(f = "top_rows_heatmap",
 # top_rows_heatmap(mat, top_n = 25)
 setMethod(f = "top_rows_heatmap",
 	signature = "matrix",
-	definition = function(object, all_value_list = NULL, top_method = all_top_value_methods(), 
+	definition = function(object, all_top_value_list = NULL, top_method = all_top_value_methods(), 
 		top_n = round(0.25*nrow(object)), layout_nr = 1, scale_rows = TRUE) {
 
-	if(is.null(all_value_list)) {
-		all_value_list = lapply(top_method, function(x) {
-			get_value_fun = get_top_value_fun(x)
-			all_value = get_value_fun(object)
-			all_value[is.na(all_value)] = -Inf
-			all_value
+	if(is.null(all_top_value_list)) {
+		all_top_value_list = lapply(top_value_method, function(x) {
+			get_top_value_fun = get_top_value_method(x)
+			all_top_value = get_top_value_fun(object)
+			all_top_value[is.na(all_top_value)] = -Inf
+			all_top_value
 		})
-		names(all_value_list) = top_method
+		names(all_top_value_list) = top_value_method
 	} else {
-		top_method = names(all_value_list)
+		top_value_method = names(all_top_value_list)
 	}
 
-	lt = lapply(all_value_list, function(x) order(x, decreasing = TRUE)[1:top_n])
+	lt = lapply(all_top_value_list, function(x) order(x, decreasing = TRUE)[1:top_n])
     
     grid.newpage()
     pushViewport(viewport(layout = grid.layout(nrow = layout_nr, ncol = ceiling(length(lt)/layout_nr))))
@@ -205,10 +200,20 @@ setMethod(f = "top_rows_heatmap",
 		if(scale_rows) {
 			mat = t(scale(t(mat)))
 		}
+		if(scale_rows) {
+			mat_range = quantile(abs(mat), 0.95, na.rm = TRUE)
+			col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
+			heatmap_name = "scaled_expr"
+		} else {
+			mat_range = quantile(mat, c(0.05, 0.95))
+			col_fun = colorRamp2(c(mat_range[1], mean(mat_range), mat_range[2]), c("blue", "white", "red"))
+			heatmap_name = "expr"
+		}
 		oe = try(
-			draw(Heatmap(mat, name = "matrix", show_row_names = FALSE,
-				column_title = qq("top @{top_n} rows of @{top_method[i]}"),
-				show_row_dend = FALSE, show_column_names = FALSE))
+			draw(Heatmap(mat, name = heatmap_name, col = col_fun, show_row_names = FALSE,
+				column_title = qq("top @{top_n} rows of @{top_value_method[i]}"),
+				show_row_dend = FALSE, show_column_names = FALSE, 
+				use_raster = TRUE, raster_quality = 2))
 		)
 		dev.off2()
 	    if(!inherits(oe, "try-error")) {

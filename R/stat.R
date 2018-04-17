@@ -152,7 +152,7 @@ entropy = function(p) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 # 
-PAC = function(consensus_mat) {
+PAC = function(consensus_mat, original = FALSE) {
 	f = ecdf(consensus_mat[lower.tri(consensus_mat)])
 
 	offset1 = seq(0, 0.3, by = 0.05)
@@ -161,12 +161,16 @@ PAC = function(consensus_mat) {
 	m_score = matrix(nrow = length(offset1), ncol = length(offset2))
 	for(i in seq_along(offset1)) {
 		for(j in seq_along(offset2)) {
-			x = seq(offset1[i], offset2[j], length = 100)
-			n2 = length(x)
-			v = sum((x[2:n2] - x[1:(n2-1)])*f(x[-n2]))
-			rg = offset2[j] - offset1[i]
+			if(original) {
+				m_score[i, j] = f(offset2[j]) - f(offset1[i])
+			} else {
+				x = seq(offset1[i], offset2[j], length = 100)
+				n2 = length(x)
+				v = sum((x[2:n2] - x[1:(n2-1)])*f(x[-n2]))
+				rg = offset2[j] - offset1[i]
 
-			m_score[i, j] = abs(v - rg*f(offset1[i]))/rg
+				m_score[i, j] = abs(v - rg*f(offset1[i]))/rg
+			}
 		}
 	}
 	mean(m_score, trim = 0.2)
@@ -186,3 +190,82 @@ tot_withinss = function(class_id, mat) {
 	})
 	sum(s)
 }
+
+
+pairwise_concordance_to_class = function(consensus_mat, class, reverse = FALSE) {
+	class_level = unique(class)
+	mat_logi = matrix(FALSE, nrow = nrow(consensus_mat), ncol = ncol(consensus_mat))
+	for(cl in class_level) {
+		l = class == cl
+		mat_logi[l, l] = TRUE
+	}
+	diag(mat_logi) = FALSE
+	if(reverse) {
+		mat_logi2 = !mat_logi
+		diag(mat_logi2) = FALSE
+		mean(consensus_mat[mat_logi2])
+	} else {
+		mean(consensus_mat[mat_logi])
+	}
+}
+
+rand_index = function(object, k = 3) {
+	if(k == 2) {
+		return(NA)
+	}
+
+	membership_each1 = get_membership(object, k - 1, each = TRUE)
+	membership_each2 = get_membership(object, k, each = TRUE)
+	mat11 = matrix(1, nrow = nrow(membership_each1), ncol = nrow(membership_each1))
+	mat01 = mat11
+	mat10 = mat11
+	mat00 = mat11
+	for(i in 1:(nrow(membership_each1)-1)) {
+		for(j in (i+1):nrow(membership_each1)) {
+			mat11[i, j] = sum(membership_each1[i, ] == membership_each1[j, ] & membership_each2[i, ] == membership_each2[j, ])/ncol(membership_each1)
+			mat11[j, i] = mat11[i, j]
+
+			mat01[i, j] = sum(membership_each1[i, ] != membership_each1[j, ] & membership_each2[i, ] == membership_each2[j, ])/ncol(membership_each1)
+			mat01[j, i] = mat01[i, j]
+
+			mat10[i, j] = sum(membership_each1[i, ] == membership_each1[j, ] & membership_each2[i, ] != membership_each2[j, ])/ncol(membership_each1)
+			mat10[j, i] = mat10[i, j]
+
+			mat00[i, j] = sum(membership_each1[i, ] != membership_each1[j, ] & membership_each2[i, ] != membership_each2[j, ])/ncol(membership_each1)
+			mat00[j, i] = mat00[i, j]
+		}
+ 	}
+ 	a = mean(mat00[lower.tri(mat00)])
+ 	b = mean(mat01[lower.tri(mat00)])
+ 	c = mean(mat10[lower.tri(mat00)])
+ 	d = mean(mat11[lower.tri(mat00)])
+
+ 	a
+}
+
+separation_rate = function(object, k = 3) {
+	
+	cl2 = get_classes(object, k)$class
+	if(k == 2) {
+		cl1 = rep(1, length(cl2))
+	} else {
+		cl1 = get_classes(object, k - 1)$class
+	}
+
+	m1 = outer(cl1, cl1, "==")
+	m2 = outer(cl2, cl2, "==")
+
+	m1[lower.tri(m1, diag = TRUE)] = FALSE
+	m2[lower.tri(m2, diag = TRUE)] = FALSE
+
+	sum(m1 & !m2)/sum(m1)
+}
+
+
+cophcor = function(consensus_mat) {
+	dis_consensus = as.dist(1 - consensus_mat)
+	hc = hclust(dis_consensus, method = "average")
+	cor(dis_consensus, cophenetic(hc))
+}
+
+

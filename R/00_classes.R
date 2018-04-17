@@ -32,9 +32,10 @@
 ConsensusPartitionList = setClass("ConsensusPartitionList",
 	slots = list(
 		list = "list",
-		top_method = "character",
+		top_value_method = "character",
 		partition_method = "character",
 		consensus_class = "ANY",
+		comb = "ANY",
 		calling = "ANY",
 		.env = "environment"
 ))
@@ -75,12 +76,12 @@ ConsensusPartition = setClass("ConsensusPartition",
 		k = "numeric", 
 		n_partition = "numeric",  
 		partition_method = "character", 
-		top_method = "character",
+		top_value_method = "character",
 		top_n = "numeric",
-		known_anno = "ANY", 
-		known_col = "ANY", 
+		anno = "ANY", 
+		anno_col = "ANY", 
 		scale_rows = "logical",
 		column_index = "numeric",
-		running_time = "numerc",
+		running_time = "ANY",
 		.env = "environment"
 ))

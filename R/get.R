@@ -15,12 +15,12 @@
 #
 setMethod(f = "get_param",
 	signature = "ConsensusPartition",
-	definition = function(object, k, unique = TRUE) {
-	i = which(object@k == k)
+	definition = function(object, k = object@k, unique = TRUE) {
+	ind = which(object@k %in% k)
 	if(unique) {
-		unique(object@object_list[[i]]$param)
+		unique(do.call("rbind", lapply(ind, function(i) object@object_list[[i]]$param)))
 	} else {
-		object@object_list[[i]]$param
+		do.call("rbind", lapply(ind, function(i) object@object_list[[i]]$param))
 	}
 })
 
@@ -105,14 +105,10 @@ setMethod(f = "get_stat",
 		m[i, ] = unlist(object@object_list[[i]]$stat[colnames(m)])
 	}
 	m = m[as.character(k), , drop = FALSE]
-	m = cbind(m, foo = sapply(1:k, function(i) foo(table(get_class(object, k = i)$class))))
+	# m = cbind(m, separation_rate = sapply(k, function(i) separation_rate(object, i)))
 	return(m)
 })
 
-foo = function(x) {
-	n = length(x)
-	exp(log(n) + sum(log(x))/n)
-}
 
 # == title
 # Get statistics
@@ -156,7 +152,7 @@ setMethod(f = "get_stat",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-setMethod(f = "get_class",
+setMethod(f = "get_classes",
 	signature = "ConsensusPartition",
 	definition = function(object, k) {
 	i = which(object@k == k)
@@ -180,7 +176,7 @@ setMethod(f = "get_class",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-setMethod(f = "get_class",
+setMethod(f = "get_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
 
@@ -193,7 +189,7 @@ setMethod(f = "get_class",
 	mean_cophcor = NULL
 	mean_silhouette = NULL
 	reference_class = NULL
-	for(tm in object@top_method) {
+	for(tm in object@top_value_method) {
 		for(pm in object@partition_method) {
 			nm = paste0(tm, ":", pm)
 			obj = object@list[[nm]]
@@ -201,16 +197,16 @@ setMethod(f = "get_class",
 
 			membership = get_membership(obj, k)
 			if(is.null(reference_class)) {
-	        	reference_class = get_class(obj, k)[, "class"]
+	        	reference_class = get_classes(obj, k)[, "class"]
 	        } else {
-	        	map = relabel_class(get_class(obj, k)[, "class"], reference_class)
+	        	map = relabel_class(get_classes(obj, k)[, "class"], reference_class)
 	        	map2 = structure(names(map), names = map)
 	        	membership = membership[, as.numeric(map2[as.character(1:k)]) ]
 				colnames(membership) = paste0("p", 1:k)
 			}
 
 			partition_list = c(partition_list, list(as.cl_partition(membership)))
-			mean_silhouette = c(mean_silhouette, mean(get_class(obj, k)[, "silhouette"]))
+			mean_silhouette = c(mean_silhouette, mean(get_classes(obj, k)[, "silhouette"]))
 		}
 	}
 	mean_silhouette[mean_silhouette < 0] = 0
@@ -238,3 +234,99 @@ setMethod(f = "get_class",
 
 	return(df)
 })
+
+# == title
+# Get the best number of partitions
+#
+# == param
+# -object a `ConsensusPartition-class` object
+#
+# == details
+# It looks for the best k with highest cophenetic correlation coefficient
+# or lowest PAC score or highest mean silhouette value.
+#
+# == value
+# The best k
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "guess_best_k",
+	signature = "ConsensusPartition",
+	definition = function(object) {
+
+	stat = get_stat(object)
+	stat = stat[stat[, "separation_rate"] > 0.2, , drop = FALSE]
+	dec = c(which.max(stat[, "cophcor"]), 
+		    which.min(stat[, "iPAC"]),
+		    which.max(stat[, "mean_silhouette"]),
+		    which.max(stat[, "concordance"]))
+	
+	tb = table(dec)
+	x = rownames(stat)[as.numeric(names(tb[which.max(tb)[1]]))]
+	
+	as.numeric(x)
+})
+
+
+# == title
+# Get the best number of partitions
+#
+# == param
+# -object a `ConsensusPartitionList-class` object
+#
+# == value
+# A data frame with best k for each combination of methods
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "guess_best_k",
+	signature = "ConsensusPartitionList",
+	definition = function(object) {
+
+	best_k = NULL
+	cophcor = NULL
+	iPAC = NULL
+	mean_silhouette = NULL
+	concordance = NULL
+	for(tm in object@top_value_method) {
+		for(pm in object@partition_method) {
+			nm = paste0(tm, ":", pm)
+			obj = object@list[[nm]]
+			best_k[nm] = guess_best_k(obj)
+			stat = get_stat(obj, k = best_k[nm])
+			cophcor[nm] = stat[1, "cophcor"]
+			iPAC[nm] = stat[1, "iPAC"]
+			mean_silhouette[nm] = stat[1, "mean_silhouette"]
+			concordance[nm] = stat[1, "concordance"]
+		}
+	}
+	tb = data.frame(best_k = best_k,
+		cophcor = cophcor,
+		iPAC = iPAC,
+		mean_silhouette = mean_silhouette,
+		concordance = concordance)
+
+	rntb = rownames(tb)
+	l = tb$concordance > 0.9
+	tb = cbind(tb, ifelse(l, ifelse(tb$concordance > 0.95, "**", "*"), ""), stringsAsFactors = FALSE)
+	colnames(tb)[ncol(tb)] = ""
+	return(tb)
+})
+
+
+setMethod(f = "get_matrix",
+	signature = "ConsensusPartitionList",
+	definition = function(object) {
+	object@.env$data
+})
+
+setMethod(f = "get_matrix",
+	signature = "ConsensusPartition",
+	definition = function(object) {
+	object@.env$data
+})
+
+
+

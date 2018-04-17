@@ -50,18 +50,18 @@ setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
 	silhouette_cutoff = 0.5, 
-	fdr_cutoff = ifelse(row_diff_by == "samr", 0.1, 0.05), 
+	fdr_cutoff = ifelse(diff_method == "samr", 0.05, 0.1), 
 	scale_rows = object@scale_rows,
-	row_diff_by = c("ttest", "Ftest", "samr", "pamr"),
-	anno = object@known_anno, 
-	anno_col = if(missing(anno)) object@known_col else NULL,
-	show_legend = TRUE,
+	diff_method = c("ttest", "Ftest", "samr", "pamr"),
+	anno = object@anno, 
+	anno_col = if(missing(anno)) object@anno_col else NULL,
+	internal = FALSE,
 	show_column_names = TRUE, use_raster = TRUE,
-	plot = TRUE, mat_other = NULL, verbose = dev.interactive(),
+	plot = TRUE, verbose = dev.interactive(),
 	top_k_genes = 5000,
 	...) {
 
-	class_df = get_class(object, k)
+	class_df = get_classes(object, k)
 	class_ids = class_df$class
 
 	data = object@.env$data[, object@column_index, drop = FALSE]
@@ -72,7 +72,7 @@ setMethod(f = "get_signatures",
 	column_used_index = which(l)
 	tb = table(class)
 	l = as.character(class) %in% names(which(tb <= 1))
-	data2 = data2[, !l]
+	data2 = data2[, !l, drop = FALSE]
 	class = class[!l]
 	column_used_index = column_used_index[!l]
 	column_used_logical = rep(FALSE, ncol(data))
@@ -82,6 +82,7 @@ setMethod(f = "get_signatures",
 
 	if(verbose) qqcat("@{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
 
+	tb = table(class)
 	if(sum(tb > 1) <= 1) {
 		stop("not enough samples.")
 	}
@@ -89,31 +90,38 @@ setMethod(f = "get_signatures",
 		stop("not enough classes.")
 	}
 
-	if(inherits(row_diff_by, "function")) {
+	if(inherits(diff_method, "function")) {
 		if(verbose) qqcat("calculate row difference between subgroups by user-defined function\n")
-		fdr = row_diff_by(data2, class)
+		fdr = diff_method(data2, class)
 	} else {
-		row_diff_by = match.arg(row_diff_by)
+		diff_method = match.arg(diff_method)
 
-		hash = digest(list(top_method = object@top_method, 
-			               partition_method = object@partition_method, 
+		hash = digest(list(used_samples = which(l), 
+			               class = class,
 			               n_group = k, 
-			               row_diff_by = row_diff_by,
+			               diff_method = diff_method,
 			               column_index = object@column_index),
 					algo = "md5")
 		nm = paste0("signature_fdr_", hash)
 
 		find_signature = TRUE
 		if(!is.null(object@.env[[nm]])) {
-			if(row_diff_by == "samr") {
-				if(object@.env[[nm]]$row_diff_by == "samr" && 
+			if(diff_method == "samr") {
+				if(object@.env[[nm]]$diff_method == "samr" && 
+				   object@.env[[nm]]$n_sample_used == n_sample_used && 
+				   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+					fdr = object@.env[[nm]]$fdr
+					find_signature = FALSE
+				}
+			} else if(diff_method == "pamr") {
+				if(object@.env[[nm]]$diff_method == "pamr" && 
 				   object@.env[[nm]]$n_sample_used == n_sample_used && 
 				   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
 					fdr = object@.env[[nm]]$fdr
 					find_signature = FALSE
 				}
 			} else {
-				if(object@.env[[nm]]$row_diff_by == row_diff_by &&
+				if(object@.env[[nm]]$diff_method == diff_method &&
 				   object@.env[[nm]]$n_sample_used == n_sample_used) {
 					fdr = object@.env[[nm]]$fdr
 					find_signature = FALSE
@@ -122,19 +130,21 @@ setMethod(f = "get_signatures",
 		}
 
 		if(find_signature) {
-			if(verbose) qqcat("calculate row difference between subgroups by @{row_diff_by}\n")
-			if(row_diff_by == "ttest") {
+			if(verbose) qqcat("calculate row difference between subgroups by @{diff_method}\n")
+			if(diff_method == "ttest") {
 				fdr = ttest(data2, class)
-			} else if(row_diff_by == "samr") {
+			} else if(diff_method == "samr") {
 				fdr = samr(data2, class, fdr.output = fdr_cutoff)
-			} else if(row_diff_by == "Ftest") {
+			} else if(diff_method == "Ftest") {
 				fdr = Ftest(data2, class)
-			} else if(row_diff_by == "pamr") {
+			} else if(diff_method == "pamr") {
 				fdr = pamr(data2, class, fdr.ouput = fdr_cutoff)
 			}
+		} else {
+			if(verbose) qqcat("extract row difference from cache (method: @{diff_method})\n")
 		}
 
-		object@.env[[nm]]$row_diff_by = row_diff_by
+		object@.env[[nm]]$diff_method = diff_method
 		object@.env[[nm]]$fdr_cutoff = fdr_cutoff
 		object@.env[[nm]]$fdr = fdr
 		object@.env[[nm]]$n_sample_used = n_sample_used
@@ -155,23 +165,27 @@ setMethod(f = "get_signatures",
 		}
 	}
 
-	mat = data[fdr < fdr_cutoff, , drop = FALSE]
-	fdr2 = fdr[fdr < fdr_cutoff]
-	group2 = group[fdr < fdr_cutoff]
+	l_fdr = fdr < fdr_cutoff
+	mat = data[l_fdr, , drop = FALSE]
+	fdr2 = fdr[l_fdr]
+	group2 = group[l_fdr]
 	names(group2) = rownames(mat)
-	mat_return = list(mat = mat, confident_samples = column_used_logical, fdr = fdr2, 
-		group = structure(as.numeric(group2), names = names(group2)), 
-		class_col = brewer_pal_set2_col)
+
+	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2, group = group2)
+	returned_obj = list(df = returned_df, sample_used = column_used_logical)
+
 	if(verbose) qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
 	if(nrow(mat) == 0) {
 		if(plot) {
-			grid.text("no sigatures")
+			grid.newpage()
+			grid.text("no sigatures", gp = gpar(fontsize = 20))
 		}
-		return(invisible(mat_return))
+		return(invisible(NULL))
 	}
+
 	if(!plot) {
-		return(invisible(mat_return))
+		return(invisible(returned_obj))
 	}
 
 	more_than_5k = FALSE
@@ -187,10 +201,14 @@ setMethod(f = "get_signatures",
 		
 	}
 	base_mean = rowMeans(mat1)
-
-	if(!is.null(mat_other)) {
-		mat_other = mat_other[rownames(mat1), , drop = FALSE]
+	if(nrow(mat) == 1) {
+		group_mean = matrix(tapply(mat1, class, mean), nrow = 1)
+	} else {
+		group_mean = do.call("cbind", tapply(seq_len(ncol(mat1)), class, function(ind) {
+			rowMeans(mat1[, ind, drop = FALSE])
+		}))
 	}
+	rel_diff = (rowMaxs(group_mean) - rowMins(group_mean))/base_mean/2
 
 	if(is.null(anno)) {
 		bottom_anno1 = NULL
@@ -230,12 +248,6 @@ setMethod(f = "get_signatures",
 		mat_range = quantile(abs(scaled_mat1), 0.95, na.rm = TRUE)
 		col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
 		heatmap_name = "scaled_expr"
-
-		if(!is.null(mat_other)) {
-			for(i in seq_len(nrow(mat_other))) {
-				mat_other[i, ] = (mat_other[i, ] - scaled_mean[i])/scaled_sd[i]
-			}
-		}
 	} else {
 		use_mat1 = mat1
 		use_mat2 = mat2
@@ -245,11 +257,11 @@ setMethod(f = "get_signatures",
 	}
 
 
-	mat_col_od1 = column_order_by_group(class, use_mat1)
+	mat_col_od1 = column_order_by_group(factor(class, levels = sort(unique(class))), use_mat1)
 
 	if(has_ambiguous) {
 		class2 = class_df$class[!column_used_logical]
-		mat_col_od2 = column_order_by_group(class2, use_mat2)
+		mat_col_od2 = column_order_by_group(factor(class2, levels = sort(unique(class2))), use_mat2)
 
 		if(is.null(anno)) {
 			bottom_anno2 = NULL
@@ -269,8 +281,8 @@ setMethod(f = "get_signatures",
 			names(anno_col) = names(bottom_anno1@anno_list)
 			anno_col = anno_col[!sapply(anno_col, is.null)]
 
-			if(!is.null(object@known_col)) {
-				anno_col[names(object@known_col)] = object@known_col
+			if(!is.null(object@anno_col)) {
+				anno_col[names(object@anno_col)] = object@anno_col
 			}
 
 			bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
@@ -283,41 +295,44 @@ setMethod(f = "get_signatures",
 	group2 = factor(group2, levels = sort(unique(group2)))
 	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
 
-	membership_mat = as.data.frame(get_membership(object, k))
-	col_list = rep(list(colorRamp2(c(0, 1), c("white", "red"))), k)
-	names(col_list) = colnames(membership_mat)
+	membership_mat = get_membership(object, k)
+	prop_col_fun = colorRamp2(c(0, 1), c("white", "red"))
 
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
-		top_annotation = HeatmapAnnotation(df = membership_mat[column_used_logical, ],
+		top_annotation = HeatmapAnnotation(prop = membership_mat[column_used_logical, ],
 			class = class_df$class[column_used_logical],
 			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
 				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
 					      col = NA),
-				baseline = 0, axis = !has_ambiguous, axis_side = "right"),
-			col = c(list(class = brewer_pal_set2_col), col_list),
-			annotation_height = unit(c(rep(4, k+1), 15), "mm"),
-			show_annotation_name = if(has_ambiguous) FALSE else c(rep(TRUE, k+1), FALSE),
+				bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_side = "right"),
+			col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
+			annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
+			show_annotation_name = !has_ambiguous,
 			annotation_name_side = "right",
-			show_legend = c(TRUE, rep(FALSE, k - 1), TRUE)),
+			show_legend = TRUE),
 		cluster_columns = FALSE, column_order = mat_col_od1,
 		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
 		use_raster = use_raster, raster_quality = 2,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, split = group2, combined_name_fun = NULL)
- 	if(scale_rows) {
-		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"))
+ 	
+	all_value_positive = !any(data < 0)
+ 	if(scale_rows && all_value_positive) {
+		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm")) +
+			Heatmap(rel_diff, col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")), 
+				show_row_names = FALSE, name = "rel_diff", width = unit(5, "mm"))
 	}
 
 	if(has_ambiguous) {
 		ht_list = ht_list + Heatmap(use_mat2, name = paste0(heatmap_name, 2), col = col_fun,
-			top_annotation = HeatmapAnnotation(df = membership_mat[!column_used_logical, ],
+			top_annotation = HeatmapAnnotation(prop = membership_mat[!column_used_logical, ,drop = FALSE],
 				class = class_df$class[!column_used_logical],
 				silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
 					gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
 					      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
-					baseline = 0, axis = TRUE, axis_side = "right"), 
-				col = c(list(class = brewer_pal_set2_col), col_list),
-				annotation_height = unit(c(rep(4, k+1), 15), "mm"),
-				show_annotation_name = c(rep(TRUE, k+1), FALSE),
+					bar_width = 1, baseline = 0, axis = TRUE, axis_side = "right"), 
+				col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
+				annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
+				show_annotation_name = TRUE,
 				annotation_name_side = "right",
 				show_legend = FALSE),
 			cluster_columns = FALSE, column_order = mat_col_od2,
@@ -326,14 +341,8 @@ setMethod(f = "get_signatures",
 			bottom_annotation = bottom_anno2, show_column_names = show_column_names)
 	}
 
-	if(!is.null(mat_other)) {
-		ht_list = ht_list + Heatmap(mat_other, col = col_fun, show_row_names = FALSE, show_column_names = show_column_names,
-			use_raster = use_raster, raster_quality = 2, show_heatmap_legend = FALSE,
-			show_column_dend = FALSE)
-	}
-
 	draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, paste0(', top ', top_k_genes,' signatures'), '')}"),
-		show_heatmap_legend = show_legend, show_annotation_legend = show_legend)
+		show_heatmap_legend = !internal, show_annotation_legend = !internal)
 	# https://www.stat.berkeley.edu/~s133/Cluster2a.html
 	decorate_annotation("silhouette", {
 		grid.rect(gp = gpar(fill = "transparent"))
@@ -348,8 +357,12 @@ setMethod(f = "get_signatures",
 		})
 	}
 
-	return(invisible(list(mat_return, ht_list, scale = list(scaled_mean, scaled_sd))))
+	return(invisible(returned_obj))
 })
+
+get_signature_index = function(sig, group) {
+	which(sig$df$group == group)
+}
 
 compare_to_highest_subgroup = function(mat, class) {
 
@@ -376,7 +389,7 @@ compare_to_highest_subgroup = function(mat, class) {
 		pmat = matrix(NA, nrow = nrow(mat), ncol = length(oc))
 		for(i in seq_along(oc)) {
 			l = class == subgroup_index | class == oc[i]
-			m2 = mat[, l]
+			m2 = mat[, l, drop = FALSE]
 			fa = factor(class[l])
 			pmat[, i] = rowttests(m2, fa)[, "p.value"]
 		}
@@ -421,7 +434,7 @@ compare_to_lowest_subgroup = function(mat, class) {
 		pmat = matrix(NA, nrow = nrow(mat), ncol = length(oc))
 		for(i in seq_along(oc)) {
 			l = class == subgroup_index | class == oc[i]
-			m2 = mat[, l]
+			m2 = mat[, l, drop = FALSE]
 			fa = factor(class[l])
 			pmat[, i] = rowttests(m2, fa)[, "p.value"]
 		}
@@ -481,7 +494,7 @@ samr = function(mat, class, ...) {
 	return(fdr)
 }
 
-pamr = function(mat, class, fdr.cutoff=0.1,...) {
+pamr = function(mat, class, fdr.cutoff = 0.1, ...) {
 	class = as.numeric(factor(class))
 	
 	tempf = tempfile()
@@ -534,7 +547,7 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 
 
 
-# == title
+# title
 # Density for the signatures
 #
 # == param
@@ -548,46 +561,45 @@ test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-setMethod(f = "signature_density",
-	signature = "ConsensusPartition",
-	definition = function(object, k, ...) {
+# setMethod(f = "signature_density",
+# 	signature = "ConsensusPartition",
+# 	definition = function(object, k, ...) {
 
-	cl = get_class(object, k = k)$class
-	data = object@.env$data[, object@column_index, drop = FALSE]
+# 	cl = get_class(object, k = k)$class
+# 	data = object@.env$data[, object@column_index, drop = FALSE]
 
-	all_den_list = lapply(seq_len(ncol(data)), function(i) {
-		x = data[, i]
-		density(x)
-	})
-	x_range = range(unlist(lapply(all_den_list, function(x) x$x)))
-	y_range = range(unlist(lapply(all_den_list, function(x) x$y)))
+# 	all_den_list = lapply(seq_len(ncol(data)), function(i) {
+# 		x = data[, i]
+# 		density(x)
+# 	})
+# 	x_range = range(unlist(lapply(all_den_list, function(x) x$x)))
+# 	y_range = range(unlist(lapply(all_den_list, function(x) x$y)))
 
-	x = get_signatures(object, k = k, plot = FALSE, verbose = FALSE, ...)
-	gp_tb = table(x$group)
-	n_gp = sum(gp_tb > 5)
-	gp_tb = gp_tb[gp_tb > 5]
+# 	x = get_signatures(object, k = k, plot = FALSE, verbose = FALSE, ...)
+# 	gp_tb = table(x$df$group)
+# 	n_gp = sum(gp_tb > 5)
+# 	gp_tb = gp_tb[gp_tb > 5]
 
-	op = par(no.readonly = TRUE)
-	par(mfrow = c(n_gp + 1, 1), mar = c(2, 4, 1, 3))
-	plot(NULL, type = "n", xlim = x_range, ylim = y_range, ylab = "density", xlab = NULL)
-	for(i in 1:ncol(data)) {
-		lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = 1)
-	}
-	mtext("all rows", side = 4, line = 1)
+# 	op = par(no.readonly = TRUE)
+# 	par(mfrow = c(n_gp + 1, 1), mar = c(2, 4, 1, 3))
+# 	plot(NULL, type = "n", xlim = x_range, ylim = y_range, ylab = "density", xlab = NULL)
+# 	for(i in 1:ncol(data)) {
+# 		lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = 1)
+# 	}
+# 	mtext("all rows", side = 4, line = 1)
 
+# 	gp = x$df$group
+# 	for(j in as.numeric(names(gp_tb))) {
+# 		gp2 = gp[gp == as.character(j)]
+# 		all_den_list = lapply(seq_len(ncol(data)), function(i) density(data[names(gp2), i]))
+# 		# x_range = range(unlist(lapply(all_den_list, function(x) x$x)))
+# 		y_range = range(unlist(lapply(all_den_list, function(x) x$y)))
 
-	gp = x$group
-	for(j in as.numeric(names(gp_tb))) {
-		gp2 = gp[gp == as.character(j)]
-		all_den_list = lapply(seq_len(ncol(data)), function(i) density(data[names(gp2), i]))
-		# x_range = range(unlist(lapply(all_den_list, function(x) x$x)))
-		y_range = range(unlist(lapply(all_den_list, function(x) x$y)))
-
-		plot(NULL, type = "n", xlim = x_range, ylim = y_range, ylab = "density", xlab = NULL)
-		for(i in 1:ncol(data)) {
-			lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = ifelse(cl[i] == j, 2, 0.5))
-		}
-		mtext(qq("subgroup @{j}/@{k}"), side = 4, line = 1)
-	}
-	par(op)
-})
+# 		plot(NULL, type = "n", xlim = x_range, ylim = y_range, ylab = "density", xlab = NULL)
+# 		for(i in 1:ncol(data)) {
+# 			lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = ifelse(cl[i] == j, 2, 0.5))
+# 		}
+# 		mtext(qq("subgroup @{j}/@{k}"), side = 4, line = 1)
+# 	}
+# 	par(op)
+# })

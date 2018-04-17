@@ -22,7 +22,7 @@ KNITR_TAB_ENV$css_added = FALSE
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
-knitr_add_tab_item = function(code, header, desc = "", opt = NULL) {
+knitr_add_tab_item = function(code, header, desc = "", opt = NULL, message = NULL) {
 	KNITR_TAB_ENV$current_tab_index = KNITR_TAB_ENV$current_tab_index + 1
 	tab = qq("tab-@{KNITR_TAB_ENV$random_str}-@{KNITR_TAB_ENV$current_tab_index}")
 	knitr_text = qq(
@@ -36,6 +36,16 @@ options(width = 100)
 
 @{desc}
 ")	
+
+	if(!is.null(message)) {
+		knitr_text = qq(
+"@{strrep('`', 3)}{r, echo = FALSE, message = FALSE}
+message('@{message}')
+@{strrep('`', 3)}
+
+@{knitr_text}"
+)
+	}
 
 	# while(dev.cur() > 1) dev.off()
 
@@ -52,7 +62,7 @@ options(width = 100)
 }
 
 # TEMPLATE_DIR = system.file("extdata", package = "cola")
-TEMPLATE_DIR = "/home/guz/project/development/cola/inst/extdata"
+TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
 
 # == title
 # Generate the HTML code for the JavaScript tabs.
@@ -66,9 +76,11 @@ knitr_insert_tabs = function() {
 	KNITR_TAB_ENV$current_div_index = KNITR_TAB_ENV$current_div_index + 1
 
 	if(!KNITR_TAB_ENV$css_added) {
-		css = readLines(paste0(TEMPLATE_DIR, "/jquery-ui.css"))
-		cat("<style type='text/css'>\n")
-		cat(css, sep = "\n")
+		css = paste(readLines(paste0(TEMPLATE_DIR, "/jquery-ui.css")), collapse = "\n")
+		# remove comments
+		css = gsub("\\/\\*.*?\\*\\/", '', css)
+		cat("\n<style type='text/css'>\n")
+		cat(css, "\n")
 		cat("</style>\n")
 		cat("<script src='js/jquery-1.12.4.js'></script>\n")
 		cat("<script src='js/jquery-ui.js'></script>\n")
@@ -189,8 +201,12 @@ make_report = function(var_name, object, output_dir, class) {
 		}
 	}
 
+	message(qq("* generating cola report for `@{var_name}` (a @{class} object)"))
+	message(qq("* the report is available at @{output_dir}"))
+
 	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
+	message("* generating R markdown file based on template report")
 	tempfile = tempfile(tmpdir = output_dir, pattern = "cola_", fileext = ".Rmd")
 	brew(report_template, output = tempfile)
 	op = getOption("markdown.HTML.options")
@@ -198,7 +214,8 @@ make_report = function(var_name, object, output_dir, class) {
 	md_file = gsub("Rmd$", "md", tempfile)
 	owd = getwd()
 	setwd(output_dir)
-	knit(tempfile, md_file, quiet = TRUE,)
+	message("* rendering R markdown file to html by knitr")
+	knit(tempfile, md_file, quiet = TRUE)
 	markdownToHTML(md_file, paste0(output_dir, "/", html_file[class]))
 	# file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
@@ -208,7 +225,10 @@ make_report = function(var_name, object, output_dir, class) {
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-ui.js"), paste0(output_dir, "/js/"))
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
 
-	qqcat("report is at @{output_dir}/@{html_file[class]}\n")
+	message("* removing temporary files")
+	file.remove(c(tempfile, md_file))
+
+	message(qq("* report is at @{output_dir}/@{html_file[class]}"))
 
 	KNITR_TAB_ENV$current_tab_index = 0
 	KNITR_TAB_ENV$current_div_index = 0

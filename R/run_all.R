@@ -35,9 +35,9 @@ try_and_trace = function(expr) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-run_all_consensus_partition_methods = function(data, top_method = all_top_value_methods(), 
-	partition_method = all_partition_methods(), k = 2:6,
-	mc.cores = 1, known_anno = NULL, known_col = NULL, ...) {
+run_all_consensus_partition_methods = function(data, top_value_method = all_top_value_methods(), 
+	partition_method = all_partition_methods(), max_k = 6,
+	mc.cores = 1, anno = NULL, anno_col = NULL, ...) {
 	
 	cl = match.call()
 
@@ -46,66 +46,66 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	if(is.data.frame(data)) data = as.matrix(data)
 	if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
 
-	all_value_list = lapply(top_method, function(tm) {
+	all_top_value_list = lapply(top_value_method, function(tm) {
 		qqcat("calculate @{tm} score for all rows\n")
-		all_value = get_top_value_fun(tm)(data)
-		all_value[is.na(all_value)] = -Inf
-		return(all_value)
+		all_top_value = get_top_value_method(tm)(data)
+		all_top_value[is.na(all_top_value)] = -Inf
+		return(all_top_value)
 	})
-	names(all_value_list) = top_method
-	.env$all_value_list = all_value_list
+	names(all_top_value_list) = top_value_method
+	.env$all_top_value_list = all_top_value_list
 
 	.env$data = data
 	res_list = ConsensusPartitionList(
 		list = list(), 
-		top_method = top_method, 
+		top_value_method = top_value_method, 
 		partition_method = partition_method, 
 		consensus_class = NULL,
 		.env = .env
 	)
 
-	if(!is.null(known_anno)) {
-		if(is.atomic(known_anno)) {
-			known_nm = deparse(substitute(known_anno))
-			known_anno = data.frame(known_anno)
-			colnames(known_anno) = known_nm
-			if(!is.null(known_col)) {
-				known_col = list(known_col)
-				names(known_col) = known_nm
+	if(!is.null(anno)) {
+		if(is.atomic(anno)) {
+			known_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = known_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = known_nm
 			}
 		}
 	}
 
-	if(is.null(known_col)) {
-		known_col = lapply(known_anno, ComplexHeatmap:::default_col)
+	if(is.null(anno_col)) {
+		anno_col = lapply(anno, ComplexHeatmap:::default_col)
 	} else {
-		if(is.null(names(known_col))) {
-			if(length(known_col) == ncol(known_anno)) {
-				names(known_col) = colnames(known_anno)
+		if(is.null(names(anno_col))) {
+			if(length(anno_col) == ncol(anno)) {
+				names(anno_col) = colnames(anno)
 			} else {
-				known_col = lapply(known_anno, ComplexHeatmap:::default_col)
+				anno_col = lapply(anno, ComplexHeatmap:::default_col)
 			}
 		}
-		for(nm in names(known_anno)) {
-			if(is.null(known_col[[nm]])) {
-				known_col[[nm]] = ComplexHeatmap:::default_col(known_anno[[nm]])
+		for(nm in names(anno)) {
+			if(is.null(anno_col[[nm]])) {
+				anno_col[[nm]] = ComplexHeatmap:::default_col(anno[[nm]])
 			}
 		}
 	}
-	if(is.null(known_anno)) {
-		known_col = NULL
+	if(is.null(anno)) {
+		anno_col = NULL
 	}
 
-	comb = expand.grid(top_method, partition_method, stringsAsFactors = FALSE)
+	comb = expand.grid(top_value_method, partition_method, stringsAsFactors = FALSE)
 	# comb = comb[sample(nrow(comb), nrow(comb)), ]
-	od = order(rep(sapply(partition_method, function(x) attr(get_partition_fun(x), "execution_scale")), each = length(top_method)), decreasing = TRUE)
-	comb = comb[od, ]
+	od = order(rep(sapply(partition_method, function(x) attr(get_partition_method(x), "execution_time")), each = length(top_value_method)), decreasing = TRUE)
+	comb = comb[od, , drop = FALSE]
 	lt = mclapply(seq_len(nrow(comb)), function(i) {
 		tm = comb[i, 1]
 		pm = comb[i, 2]
 		qqcat("running classification for @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
-		x = try_and_trace(res <- consensus_partition(top_method = tm, partition_method = pm, k = k,
-			known_anno = known_anno, known_col = known_col, .env = .env, verbose = FALSE, ...))
+		x = try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k,
+			anno = anno, anno_col = anno_col, .env = .env, verbose = interactive() & mc.cores == 1, ...))
 		
 		if(inherits(x, "pairlist")) {
 			print(x)
@@ -137,7 +137,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	data2 = t(scale(t(data)))
 	cat("adjust class labels according to the consensus classification from all methods.\n")
 	reference_class = lapply(lt[[1]]@k, function(k) {
-		cl_df = get_class(res_list, k)
+		cl_df = get_classes(res_list, k)
 		class_ids = cl_df$class
 		mean_dist = tapply(seq_len(ncol(data2)), class_ids, function(ind) {
 			n = length(ind)
@@ -164,7 +164,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
         	# - res$object_list[[ik]]$classification$class
         	# - column order of res$object_list[[ik]]$membership
         	# - res$object_list[[ik]]$membership_each
-        	class_df = get_class(res, k)
+        	class_df = get_classes(res, k)
         	class = class_df[, "class"]
         	map = relabel_class(class, reference_class[[ik]]$class)
         	map2 = structure(names(map), names = map)
@@ -181,6 +181,7 @@ run_all_consensus_partition_methods = function(data, top_method = all_top_value_
 	    lt[[i]] = res
 	}
 	res_list@list = lt
+	res_list@comb = comb
 	res_list@calling = cl
 
 	return(res_list)
@@ -202,7 +203,7 @@ setMethod(f = "show",
 	signature = "ConsensusPartitionList",
 	definition = function(object) {
 	qqcat("On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
-	qqcat("Top rows are extracted by '@{paste(object@top_method, collapse = ', ')}' methods.\n")
+	qqcat("Top rows are extracted by '@{paste(object@top_value_method, collapse = ', ')}' methods.\n")
 	qqcat("Subgroups are detected by '@{paste(object@partition_method, collapse = ', ')}' method.\n")
 	qqcat("Number of partitions are tried for k = @{paste(object@list[[1]]@k, collapse = ', ')}\n")
 	qqcat("\n")
@@ -213,75 +214,72 @@ setMethod(f = "show",
 	print(fname)
 })
 
-# == title
-# Get result for a single top method and partition method
-#
-# == param
-# -object a `ConsensusPartitionList-class` object
-# -top_method a single string which is used in `run_all_consensus_partition_methods`
-# -partition_method a single string which is used in `run_all_consensus_partition_methods`
-#
-# == return 
-# A `ConsensusPartition-class` object.
-#
-# == author
-# Zuguang Gu <z.gu@dkfz.de>
-#
-setMethod(f = "get_single_run",
-	signature = "ConsensusPartitionList",
-	definition = function(object, top_method = object@top_method[1], 
-		partition_method = object@partition_method[1]) {
-	if(!top_method %in% object@top_method) {
-		stop(qq("@{top_method} was not used in `run_all_consensus_partition_methods`."))
-	}
-	if(!partition_method %in% object@partition_method) {
-		stop(qq("@{partition_method} was not used in `run_all_consensus_partition_methods`."))
-	}
-	nm = paste0(top_method, ":", partition_method)
-	object@list[[nm]]
-})
+
+"[.ConsensusPartitionList" = function (x, i, j, drop = TRUE) {
+
+	all_top_value_methods = x@top_value_method
+	all_partition_methods = x@partition_method
+	n_top_value_methods = length(all_top_value_methods)
+	n_partition_methods = length(all_partition_methods)
+
+    if (!missing(i) && !missing(j)) {
+        if(is.numeric(i)) {
+        	i = all_top_value_methods[i]
+        }
+        if(is.numeric(j)) {
+        	j = all_partition_methods[j]
+        }
+        l = x@comb[, 1] %in% i & x@comb[, 2] %in% j
+        l[is.na(l)] = FALSE
+        x@comb = x@comb[l, , drop = FALSE]
+        x@list = x@list[l]
+        x@top_value_method = i
+        x@partition_method = j
+        if(length(x@list) == 0) {
+        	return(NULL)
+        }
+        if(length(x@list) == 1 && drop) {
+        	x = x@list[[1]]
+        }
+        return(x)
+    }
+    if (nargs() == 3 && missing(i)) {
+        if(is.numeric(j)) {
+        	j = all_partition_methods[j]
+        }
+        l = x@comb[, 2] %in% j
+        l[is.na(l)] = FALSE
+        x@comb = x@comb[l, , drop = FALSE]
+        x@list = x@list[l]
+        x@top_value_method = i
+        x@partition_method = j
+        if(length(x@list) == 0) {
+        	return(NULL)
+        }
+        if(length(x@list) == 1 && drop) {
+        	x = x@list[[1]]
+        } 
+        return(x)
+    }
+    if (missing(j)) {
+        if(is.numeric(i)) {
+        	i = all_top_value_methods[j]
+        }
+        l = x@comb[, 1] %in% i
+        l[is.na(l)] = FALSE
+        x@comb = x@comb[l, , drop = FALSE]
+        x@list = x@list[l]
+        x@top_value_method = i
+        x@partition_method = j
+        if(length(x@list) == 0) {
+        	return(NULL)
+        }
+        if(length(x@list) == 1 && drop) {
+        	x = x@list[[1]]
+        }
+        return(x)
+    }
+    return(x)
+}
 
 
-
-# == title
-# Get the best number of partitions
-#
-# == param
-# -object a `ConsensusPartitionList-class` object
-#
-# == value
-# A data frame with best k for each combination of methods
-#
-# == author
-# Zuguang Gu <z.gu@dkfz.de>
-#
-setMethod(f = "get_best_k",
-	signature = "ConsensusPartitionList",
-	definition = function(object) {
-
-	best_k = NULL
-	cophcor = NULL
-	PAC = NULL
-	mean_silhouette = NULL
-	for(tm in object@top_method) {
-		for(pm in object@partition_method) {
-			nm = paste0(tm, ":", pm)
-			obj = object@list[[nm]]
-			best_k[nm] = get_best_k(obj)
-			stat = get_stat(obj, k = best_k[nm])
-			cophcor[nm] = stat[1, "cophcor"]
-			PAC[nm] = stat[1, "PAC"]
-			mean_silhouette[nm] = stat[1, "mean_silhouette"]
-		}
-	}
-	tb = data.frame(best_k = best_k,
-		cophcor = cophcor,
-		PAC = PAC,
-		mean_silhouette = mean_silhouette)
-
-	rntb = rownames(tb)
-	l = tb$PAC < 0.05 & tb$cophcor > 0.99
-	tb = cbind(tb, ifelse(l, ifelse(tb$PAC < 0.01, "**", "*"), ""), stringsAsFactors = FALSE)
-	colnames(tb)[ncol(tb)] = ""
-	return(tb)
-})

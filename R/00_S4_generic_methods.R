@@ -15,7 +15,7 @@ setGeneric('select_partition_number', function(object, ...) standardGeneric('sel
 
 setGeneric('get_single_run', function(object, ...) standardGeneric('get_single_run'))
 
-setGeneric('get_best_k', function(object, ...) standardGeneric('get_best_k'))
+setGeneric('guess_best_k', function(object, ...) standardGeneric('guess_best_k'))
 
 setGeneric('get_stat', function(object, ...) standardGeneric('get_stat'))
 
@@ -27,9 +27,11 @@ setGeneric('signature_density', function(object, ...) standardGeneric('signature
 
 setGeneric('get_param', function(object, ...) standardGeneric('get_param'))
 
+setGeneric('get_matrix', function(object, ...) standardGeneric('get_matrix'))
+
 setGeneric('collect_classes', function(object, ...) standardGeneric('collect_classes'))
 
-setGeneric('get_class', function(object, ...) standardGeneric('get_class'))
+setGeneric('get_classes', function(object, ...) standardGeneric('get_classes'))
 
 setGeneric('get_signatures', function(object, ...) standardGeneric('get_signatures'))
 

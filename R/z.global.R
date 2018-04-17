@@ -82,15 +82,20 @@ get_partition_method = function(method, partition_param = list()) {
 		stop(qq("partition method '@{method}' has not been defined yet."))
 	}
 	fun = .ENV$ALL_PARTITION_FUN[[method]]
-	fun2 = function(mat, k) {
-		partition = do.call(fun, c(list(mat, k), partition_param))
-		if(is.atomic(partition)) {
-			x = as.cl_hard_partition(partition)
-		} else {
-			x = as.cl_hard_partition(cl_membership(partition))
-		}
 
-		nc = n_of_classes(x)
+	# if sample from columns, the columns which have not been samples should be filled with NA
+	fun2 = function(mat, k, column_index = seq_len(ncol(mat))) {
+		partition = do.call(fun, c(list(mat[, column_index, drop = FALSE], k), partition_param))
+		if(!is.atomic(partition)) {
+			partition = cl_membership(partition)
+			partition = as.vector(cl_class_ids(partition))
+		}
+		partition2 = rep(NA, ncol(mat))
+		partition2[column_index] = partition
+
+		x = as.cl_hard_partition(partition2)
+
+		# nc = n_of_classes(x)
 		# if(nc != k) {
 		# 	cat(red(qq("!!! @{method}: number of classes (@{nc}) in the partition is not same as @{k} !!!\n")))
 		# }
@@ -153,11 +158,11 @@ get_partition_method = function(method, partition_param = list()) {
 # remove_partition_method("random")
 register_partition_method = function(..., scale_method = c("standardization", "rescale", "none")) {
 	
-	scale_method = match.arg(scale_method)
+	scale_method = match.arg(scale_method)[1]
 	lt = list(...)
 	lt = lapply(lt, function(fun) {
 		# just in case people forgot to add the ...
-		if(length(formals(fun) == 2)) {
+		if(length(formals(fun)) == 2) {
 			function(mat, k, ...) {
 				fun(mat, k)
 			}
@@ -165,11 +170,8 @@ register_partition_method = function(..., scale_method = c("standardization", "r
 			fun
 		}
 	})
-	if(length(scale_method) == 1) {
-		scale_method = rep(scale_method, length(lt))
-	}
 	for(i in seq_along(lt)) {
-		attr(lt[[i]], "scale_method") = scale_method[i]
+		attr(lt[[i]], "scale_method") = scale_method
 	}
 
 	m = matrix(rnorm(100), 10)
@@ -178,7 +180,7 @@ register_partition_method = function(..., scale_method = c("standardization", "r
 	} else if(scale_method == "rescale") {
 		m2 = t(apply(m, 1, function(x) {
 			(x - min(x))/(max(x) - min(x))
-		})
+		}))
 	} else {
 		m2 = m
 	}
@@ -247,7 +249,6 @@ register_partition_method(
 		m = somfit$codes[[1]]
 		m = m[seq_len(nrow(m)) %in% somfit$unit.classif, ]
 		cl = cutree(hclust(dist(m)), k)
-		# cl = kmeans(m, centers = k)$cluster
 		group = numeric(ncol(mat))
 		for(cl_unique in unique(cl)) {
 			ind = as.numeric(gsub("V", "", names(cl)[which(cl == cl_unique)]))
@@ -262,7 +263,6 @@ register_partition_method(
 	NMF = function(mat, k, ...) {
 		fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
 		apply(fit$H, 2, which.max)
-		# kmeans(t(fit$H), centers = k)$cluster
 	}, scale_method = "rescale"
 )
 

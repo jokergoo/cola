@@ -6,26 +6,30 @@ if(is_hc) {
 	mark = ""
 	chunk_prefix = paste("node", node, sep = "-")
 } else {
-	tb = get_best_k(res_list)
-	nm = paste(top_method, partition_method, sep = ":")
+	tb = guess_best_k(res_list)
+	nm = paste(top_value_method, partition_method, sep = ":")
 	mark = tb[nm, 5]
-	chunk_prefix = paste(top_method, partition_method, sep = "-")
+	chunk_prefix = paste(top_value_method, partition_method, sep = ":")
 } -%>
 
 <% if(is_hc) { %>
 ### Node <%=node%>
 <% } else { %>
-### <%=top_method%>:<%=partition_method%> <%=mark%>
+### <%=top_value_method%>:<%=partition_method%> <%=mark%>
 <% } %>
+
+```{r, echo = FALSE, message = FALSE}
+message("* generating plots for <%=top_value_method%>:<%=partition_method%> (<%=i_section%>/<%=n_section%>)")
+```
 
 The object which only contains results for a single top method and a single partition method,
 and the functions that can be applied to.
 
 ```{r}
 <% if(is_hc) { -%>
-res = get_single_run(res_hc, node = "<%=node%>")
+res = res_hc["<%=node%>"]
 <% } else { -%>
-res = get_single_run(res_list, top_method = "<%=top_method%>", partition_method = "<%=partition_method%>")
+res = res_list["<%=top_value_method%>", "<%=partition_method%>"]
 <% } -%>
 res
 ```
@@ -34,7 +38,7 @@ Major plots made from `res` for different `k` (number of partitions). Individual
 later in this section.
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("  [@{top_method}:@{partition_method}] collect plots"))
+message("  - collect all plots")
 ```
 
 ```{r <%=chunk_prefix%>-collect-plots, fig.width = <%=fs*length(all_k)%>, fig.height = <%=fs*4%>, results = "hide"}
@@ -42,6 +46,10 @@ collect_plots(res)
 ```
 
 Plots showing different statistics for choosing optimized `k`:
+
+```{r, echo = FALSE, message = FALSE}
+message("  - plotting various statistics of selecting best k")
+```
 
 ```{r <%=chunk_prefix%>-select-partition-number, results = "hide", fig.width = 10}
 select_partition_number(res)
@@ -56,24 +64,24 @@ get_stat(res)
 Guess the best `k`:
 
 ```{r}
-get_best_k(res)
+guess_best_k(res)
 ```
 
 The partitions:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('get_class(res, k = <%=k%>)', 'k = <%=k%>')
+knitr_add_tab_item('get_classes(res, k = <%=k%>)', 'k = <%=k%>')
 <%}-%>
 knitr_insert_tabs()
 ```
 
 Heatmaps for the consensus matrix:
 
-
 ```{r, echo = FALSE, message = FALSE}
-message(qq("  [@{top_method}:@{partition_method}] consensus heatmaps"))
+message("  - consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
+
 
 ```{r <%=chunk_prefix%>-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -84,9 +92,8 @@ knitr_insert_tabs()
 
 Heatmaps for the membership of samples in each random sampling:
 
-
 ```{r, echo = FALSE, message = FALSE}
-message(qq("  [@{top_method}:@{partition_method}] membership heatmaps"))
+message("  - membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
 ```{r <%=chunk_prefix%>-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
@@ -99,40 +106,27 @@ knitr_insert_tabs()
 Heatmaps for signatures:
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("  [@{top_method}:@{partition_method}] get signatures"))
+message("  - get signatures (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
 ```{r <%=chunk_prefix%>-signature, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('get_signatures(res, k = <%=k%>)', 'k = <%=k%>', opt = 'results = "hide"')
+knitr_add_tab_item('try(get_signatures(res, k = <%=k%>))', 'k = <%=k%>', opt = 'results = "hide"')
 <%}-%>
 knitr_insert_tabs()
 ```
 
 ```{r <%=chunk_prefix%>-signature-no-scale, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('get_signatures(res, k = <%=k%>, scale_rows = FALSE)', 'k = <%=k%>')
+knitr_add_tab_item('try(get_signatures(res, k = <%=k%>, scale_rows = FALSE))', 'k = <%=k%>')
 <%}-%>
 knitr_insert_tabs()
 ```
 
-Distribution of signatures in differnet subgroups:
+PCA plots:
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("  [@{top_method}:@{partition_method}] signature density"))
-```
-
-```{r <%=chunk_prefix%>-signature-density, results = "asis", echo = FALSE, include = TRUE}
-<% for(k in all_k) { -%>
-knitr_add_tab_item('signature_density(res, k = <%=k%>)', 'k = <%=k%>')
-<%}-%>
-knitr_insert_tabs()
-```
-
-MDS plots:
-
-```{r, echo = FALSE, message = FALSE}
-message(qq("  [@{top_method}:@{partition_method}] MDS plots"))
+message("  - PCA plot (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
 ```{r <%=chunk_prefix%>-mds, results = "asis", echo = FALSE, include = TRUE}
@@ -142,17 +136,25 @@ knitr_add_tab_item('dimension_reduction(res, k = <%=k%>)', 'k = <%=k%>')
 knitr_insert_tabs()
 ```
 
+```{r, echo = FALSE, message = FALSE}
+message("  - collecting classifications for all k")
+```
+
 How subgroups split when increasing `k`:
 
 ```{r <%=chunk_prefix%>-collect-classes}
 collect_classes(res)
 ```
 
-<% if(!is.null(res_list@list[[1]]@known_anno)) { %>
+<% if(has_known_anno) { %>
+
+```{r, echo = FALSE, message = FALSE}
+message(qq("* testing correlation of subgroups to known annotations"))
+```
 	
 Test to known annotations:
 
-```{r, eval = !is.null(res@known_anno), echo = !is.null(res@known_anno)}
+```{r, eval = !is.null(res@anno), echo = !is.null(res@anno)}
 test_to_known_factors(res)
 ```
 
