@@ -7,19 +7,19 @@ Run subgroup classification from all methods
 Run subgroup classification from all methods
 }
 \usage{
-run_all_consensus_partition_methods(data, top_method = all_top_value_methods(),
-    partition_method = all_partition_methods(), k = 2:6,
-    mc.cores = 1, known_anno = NULL, known_col = NULL, ...)
+run_all_consensus_partition_methods(data, top_value_method = all_top_value_methods(),
+    partition_method = all_partition_methods(), max_k = 6,
+    mc.cores = 1, anno = NULL, anno_col = NULL, ...)
 }
 \arguments{
 
   \item{data}{a numeric matrix where subgroups are found by samples}
-  \item{top_method}{method which are used to extract top n rows. Allowed methods are in \code{\link{all_top_value_methods}} and can be self-added by \code{\link{register_top_value_fun}}.}
+  \item{top_value)method}{method which are used to extract top n rows. Allowed methods are in \code{\link{all_top_value_methods}} and can be self-added by \code{\link{register_top_value_fun}}.}
   \item{partition_method}{method which are used to do partition on samples.  Allowed methods are in \code{\link{all_partition_methods}} and can be self-added  by \code{\link{register_partition_fun}}.}
-  \item{k}{a list number of partitions.}
+  \item{max_k}{maximum number of partitions to try. It starts from 2 partitions.}
   \item{mc.cores}{number of cores to use.}
-  \item{known_anno}{a data frame with known annotation of samples}
-  \item{known_col}{a list of colors for the annotations in \code{known_anno}.}
+  \item{anno}{a data frame with known annotation of samples}
+  \item{anno_col}{a list of colors for the annotations in \code{known_anno}.}
   \item{...}{other arguments passed to \code{\link{consensus_partition}}.}
 
 }
@@ -33,7 +33,15 @@ A \code{\link{ConsensusPartitionList-class}} object.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+\dontrun{
+set.seed(123)
+m = cbind(rbind(matrix(rnorm(20*20, mean = 1), nr = 20),
+			    matrix(rnorm(20*20, mean = -1), nr = 20)),
+	rbind(matrix(rnorm(20*20, mean = -1), nr = 20),
+			    matrix(rnorm(20*20, mean = 1), nr = 20))
+) + matrix(rnorm(40*40), nr = 40)
+rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40))
+}
+rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+rl
 }

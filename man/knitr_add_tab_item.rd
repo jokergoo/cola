@@ -7,7 +7,7 @@ Add one JavaScript tab in the report
 Add one JavaScript tab in the report
 }
 \usage{
-knitr_add_tab_item(code, header, desc = "", opt = NULL)
+knitr_add_tab_item(code, header, desc = "", opt = NULL, message = NULL)
 }
 \arguments{
 

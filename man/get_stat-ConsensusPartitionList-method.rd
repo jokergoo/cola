@@ -23,7 +23,6 @@ matrix correspond to all combinations of top methods and partition methods.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+get_stat(rl, k = 2)
 }

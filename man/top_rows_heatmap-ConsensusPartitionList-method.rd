@@ -7,7 +7,8 @@ Heatmap of top rows from different top methods
 Heatmap of top rows from different top methods
 }
 \usage{
-\S4method{top_rows_heatmap}{ConsensusPartitionList}(object, top_n = object@list[[1]]@top_n[1], ...)
+\S4method{top_rows_heatmap}{ConsensusPartitionList}(object, top_n = object@list[[1]]@top_n[1],
+    scale_rows = object@list[[1]]@scale_rows, ...)
 }
 \arguments{
 

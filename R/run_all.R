@@ -15,15 +15,15 @@ try_and_trace = function(expr) {
 #
 # == param
 # -data a numeric matrix where subgroups are found by samples
-# -top_method method which are used to extract top n rows. Allowed methods
+# -top_value)method method which are used to extract top n rows. Allowed methods
 #        are in `all_top_value_methods` and can be self-added by `register_top_value_fun`.
 # -partition_method method which are used to do partition on samples. 
 #        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_fun`.
-# -k a list number of partitions.
+# -max_k maximum number of partitions to try. It starts from 2 partitions.
 # -mc.cores number of cores to use.
-# -known_anno a data frame with known annotation of samples
-# -known_col a list of colors for the annotations in ``known_anno``.
+# -anno a data frame with known annotation of samples
+# -anno_col a list of colors for the annotations in ``known_anno``.
 # -... other arguments passed to `consensus_partition`.
 #
 # == details
@@ -35,6 +35,18 @@ try_and_trace = function(expr) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# \dontrun{
+# set.seed(123)
+# m = cbind(rbind(matrix(rnorm(20*20, mean = 1), nr = 20),
+# 			    matrix(rnorm(20*20, mean = -1), nr = 20)),
+# 	rbind(matrix(rnorm(20*20, mean = -1), nr = 20),
+# 			    matrix(rnorm(20*20, mean = 1), nr = 20))
+# ) + matrix(rnorm(40*40), nr = 40)
+# rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40))
+# }
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# rl
 run_all_consensus_partition_methods = function(data, top_value_method = all_top_value_methods(), 
 	partition_method = all_partition_methods(), max_k = 6,
 	mc.cores = 1, anno = NULL, anno_col = NULL, ...) {
@@ -164,7 +176,7 @@ run_all_consensus_partition_methods = function(data, top_value_method = all_top_
         	# - res$object_list[[ik]]$classification$class
         	# - column order of res$object_list[[ik]]$membership
         	# - res$object_list[[ik]]$membership_each
-        	class_df = get_classes(res, k)
+        	class_df = get_consensus_from_multiple_methods(res, k)
         	class = class_df[, "class"]
         	map = relabel_class(class, reference_class[[ik]]$class)
         	map2 = structure(names(map), names = map)
@@ -187,6 +199,61 @@ run_all_consensus_partition_methods = function(data, top_value_method = all_top_
 	return(res_list)
 }
 
+get_consensus_from_multiple_methods = function(object, k) {
+
+	res = object
+	partition_list = NULL
+	mean_cophcor = NULL
+	mean_silhouette = NULL
+	reference_class = NULL
+	for(tm in object@top_value_method) {
+		for(pm in object@partition_method) {
+			nm = paste0(tm, ":", pm)
+			obj = object@list[[nm]]
+			ik = which(obj@k == k)
+
+			membership = get_membership(obj, k)
+			if(is.null(reference_class)) {
+	        	reference_class = get_classes(obj, k)[, "class"]
+	        } else {
+	        	map = relabel_class(get_classes(obj, k)[, "class"], reference_class)
+	        	map2 = structure(names(map), names = map)
+	        	membership = membership[, as.numeric(map2[as.character(1:k)]) ]
+				colnames(membership) = paste0("p", 1:k)
+			}
+
+			partition_list = c(partition_list, list(as.cl_partition(membership)))
+			mean_silhouette = c(mean_silhouette, mean(get_classes(obj, k)[, "silhouette"]))
+		}
+	}
+
+	mean_silhouette[mean_silhouette < 0] = 0
+	consensus = cl_consensus(cl_ensemble(list = partition_list), weights = mean_silhouette)
+	m = cl_membership(consensus)
+	class(m) = "matrix"
+	colnames(m) = paste0("p", 1:k)
+	class = as.vector(cl_class_ids(consensus))
+	df = cbind(class = class, as.data.frame(m))
+	df$entropy = apply(m, 1, entropy)
+
+	membership_each = do.call("cbind", lapply(partition_list, function(x) {
+		as.vector(cl_class_ids(x))
+	}))
+
+	consensus_mat = matrix(1, nrow = nrow(m), ncol = nrow(m))
+	for(i in 1:(nrow(membership_each)-1)) {
+		for(j in (i+1):nrow(membership_each)) {
+			consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ])/ncol(membership_each)
+			consensus_mat[j, i] = consensus_mat[i, j]
+		}
+ 	}
+ 
+	df$silhouette = silhouette(class, dist(t(consensus_mat)))[, "sil_width"]
+
+	return(df)
+}
+
+
 # == title
 # Print the ConsensusPartitionList object
 #
@@ -202,33 +269,70 @@ run_all_consensus_partition_methods = function(data, top_value_method = all_top_
 setMethod(f = "show",
 	signature = "ConsensusPartitionList",
 	definition = function(object) {
-	qqcat("On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
-	qqcat("Top rows are extracted by '@{paste(object@top_value_method, collapse = ', ')}' methods.\n")
-	qqcat("Subgroups are detected by '@{paste(object@partition_method, collapse = ', ')}' method.\n")
-	qqcat("Number of partitions are tried for k = @{paste(object@list[[1]]@k, collapse = ', ')}\n")
+	obj_name = "object"
+	qqcat("A 'ConsensusPartitionList' object with @{length(object@top_value_method)*length(object@partition_method)} methods.\n")
+	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
+	qqcat("  Top rows are extracted by '@{paste(object@top_value_method, collapse = ', ')}' methods.\n")
+	qqcat("  Subgroups are detected by '@{paste(object@partition_method, collapse = ', ')}' method.\n")
+	qqcat("  Number of partitions are tried for k = @{paste(object@list[[1]]@k, collapse = ', ')}\n")
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'ConsensusPartitionList' object:\n")
 	txt = showMethods(classes = "ConsensusPartitionList", where = topenv(), printTo = FALSE)
 	txt = grep("Function", txt, value = TRUE)
 	fname = gsub("Function: (.*?) \\(package.*$", "\\1", txt)
 	print(fname)
+	cat("\n")
+
+	qqcat("You can get result for a single method by e.g. @{obj_name}[\"@{object@top_value_method[1]}\", \"@{object@partition_method[1]}\"] or @{obj_name}[\"@{object@top_value_method[1]}:@{object@partition_method[1]}\"]\n")
+	if(length(object@top_value_method) == 1) {
+		ri = qq("\"@{object@top_value_method[1]}\"")
+	} else {
+		ri = qq("c(\"@{object@top_value_method[1]}\", \"@{object@top_value_method[2]}\")")
+	}
+	if(length(object@partition_method) == 1) {
+		ci = qq("\"@{object@partition_method[1]}\"")
+	} else {
+		ci = qq("c(\"@{object@partition_method[1]}\", \"@{object@partition_method[2]}\")")
+	}
+	if(length(object@top_value_method) > 1 | length(object@partition_method) > 1) {
+		qqcat("or a subset of methods by @{obj_name}[@{ri}], @{ci}]\n")
+	}
 })
 
 
+# == title
+# Subset a ConsensusPartitionList object
+#
+# == param
+# -x a `ConsensusPartition-class` object
+# -i index for top value methods
+# -j index for partition methods
+# -drop whether drop class
+#
+# == details
+# A 
 "[.ConsensusPartitionList" = function (x, i, j, drop = TRUE) {
+
+	cl = as.list(match.call())
+	called_args = names(cl)[-1]
 
 	all_top_value_methods = x@top_value_method
 	all_partition_methods = x@partition_method
 	n_top_value_methods = length(all_top_value_methods)
 	n_partition_methods = length(all_partition_methods)
 
-    if (!missing(i) && !missing(j)) {
+	if(nargs() == 1) {
+		return(x)
+	}
+    if("i" %in% called_args & "j" %in% called_args) {
         if(is.numeric(i)) {
         	i = all_top_value_methods[i]
         }
         if(is.numeric(j)) {
         	j = all_partition_methods[j]
         }
+        i = intersect(i, all_top_value_methods)
+        j = intersect(j, all_partition_methods)
         l = x@comb[, 1] %in% i & x@comb[, 2] %in% j
         l[is.na(l)] = FALSE
         x@comb = x@comb[l, , drop = FALSE]
@@ -243,15 +347,16 @@ setMethod(f = "show",
         }
         return(x)
     }
-    if (nargs() == 3 && missing(i)) {
+    if(!"i" %in% called_args & "j" %in% called_args) {
         if(is.numeric(j)) {
         	j = all_partition_methods[j]
         }
+        j = intersect(j, all_partition_methods)
         l = x@comb[, 2] %in% j
         l[is.na(l)] = FALSE
         x@comb = x@comb[l, , drop = FALSE]
         x@list = x@list[l]
-        x@top_value_method = i
+        x@top_value_method = all_top_value_methods
         x@partition_method = j
         if(length(x@list) == 0) {
         	return(NULL)
@@ -261,16 +366,38 @@ setMethod(f = "show",
         } 
         return(x)
     }
-    if (missing(j)) {
+    if("i" %in% called_args & !"j" %in% called_args) {
+    	if(nargs() == 3 & "drop" %in% called_args) {
+    		if(length(i) > 1) {
+    			stop("index can only be length 1.")
+    		}
+    		if(is.numeric(i)) {
+	    		i = names(x)[i]
+	    	}
+	    	a = strsplit(i, ":")[[1]]
+	    	return(x[a[1], a[2], cl$drop])
+    	}
+    	if(nargs() == 2) {
+    		if(length(i) > 1) {
+    			stop("index can only be length 1.")
+    		}
+	    	if(is.numeric(i)) {
+	    		i = names(x)[i]
+	    	}
+	    	a = strsplit(i, ":")[[1]]
+	    	return(x[a[1], a[2]])
+	    }
+
         if(is.numeric(i)) {
         	i = all_top_value_methods[j]
         }
+        i = intersect(i, all_top_value_methods)
         l = x@comb[, 1] %in% i
         l[is.na(l)] = FALSE
         x@comb = x@comb[l, , drop = FALSE]
         x@list = x@list[l]
         x@top_value_method = i
-        x@partition_method = j
+        x@partition_method = all_partition_methods
         if(length(x@list) == 0) {
         	return(NULL)
         }
@@ -279,6 +406,7 @@ setMethod(f = "show",
         }
         return(x)
     }
+    
     return(x)
 }
 

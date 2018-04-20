@@ -41,8 +41,8 @@ add_transparency = function (col, transparency = 0) {
 # x2 = rowMads(mat)
 # correspond_between_two_rankings(x1, x2, name1 = "sd", name2 = "mad", top_n = 20)
 correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "", 
-	col1 = 1, col2 = 2, top_n = round(0.25*length(x1)), transparency = 0.9, 
-	pt_size = unit(1, "mm"), newpage = FALSE, ratio = c(1, 1, 1)) {
+	col1 = 2, col2 = 3, top_n = round(0.25*length(x1)), transparency = 0.9, 
+	pt_size = unit(1, "mm"), newpage = TRUE, ratio = c(1, 1, 1)) {
 	
 	if(newpage) {
 		grid.newpage()
@@ -65,7 +65,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 		xscale = c(0, max_x1), yscale = c(0, n + 1)))
 	grid.segments(max_x1 - x1, r1, max_x1, r1, default.units = "native", gp = gpar(col = "#EFEFEF"))
 	l = r2 >= n - top_n
-	grid.points(unit(runif(sum(l)), "npc"), r1[l], default.units = "native", pch = 16, size = pt_size, gp = gpar(col = add_transparency(col2, 0.8)))
+	grid.points(max_x1 - x1[l], r1[l], default.units = "native", pch = 16, size = pt_size, gp = gpar(col = add_transparency(col2, 0.5)))
 	grid.text(name1, x = 1, y = unit(n + 1, "native") + unit(1, "mm"), default.units = "npc", just = c("right", "bottom"))
 	upViewport()
 
@@ -74,7 +74,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 		xscale = c(0, max_x2), yscale = c(0, n + 1)))
 	grid.segments(0, r2, x2, r2, default.units = "native", gp = gpar(col = "#EFEFEF"))
 	l = r1 >= n - top_n
-	grid.points(unit(runif(sum(l)), "npc"), r2[l], default.units = "native", pch = 16, size = pt_size, gp = gpar(col = add_transparency(col1, 0.8)))
+	grid.points(x2[l], r2[l], default.units = "native", pch = 16, size = pt_size, gp = gpar(col = add_transparency(col1, 0.5)))
 	grid.text(name2, x = 0, y = unit(n + 1, "native") + unit(1, "mm"), default.units = "native", just = c("left", "bottom"))
 	upViewport()
 
@@ -91,11 +91,11 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 	# add a venn diagram at the bottom
 	n_intersect = length(intersect(order(x1, decreasing = TRUE)[1:top_n], order(x2, decreasing = TRUE)[1:top_n]))
 	n_union = 2*top_n - n_intersect
-	grid.roundrect(x = unit(0.25, "npc"), y = unit(0.4, "cm"), width = unit(0.5*top_n/n_union, "npc"), 
-		height = unit(0.4, "cm"), gp = gpar(fill = add_transparency(col1, 0.5), col = NA), just = "left")
-	grid.roundrect(x = unit(0.75, "npc"), y = unit(0.4, "cm"), width = unit(0.5*top_n/n_union, "npc"), 
-		height = unit(0.4, "cm"), gp = gpar(fill = add_transparency(col2, 0.5), col = NA), just = "right")
-	grid.text(qq("top @{top_n}"), x = unit(0.5, "npc"), y = unit(0.7, "cm"), just = "bottom", gp = gpar(fontsize = 8))
+	grid.roundrect(x = unit(0.5 - n_intersect/2/top_n*0.4, "npc"), y = unit(0.4, "cm"), width = unit(0.4, "npc"), 
+		height = unit(0.4, "cm"), gp = gpar(fill = add_transparency(col2, 0.5), col = NA), just = "left")
+	grid.roundrect(x = unit(0.5 + n_intersect/2/top_n*0.4, "npc"), y = unit(0.4, "cm"), width = unit(0.4, "npc"), 
+		height = unit(0.4, "cm"), gp = gpar(fill = add_transparency(col1, 0.5), col = NA), just = "right")
+	grid.text(qq("top @{top_n}/@{length(x1)}"), x = unit(0.5, "npc"), y = unit(0.7, "cm"), just = "bottom", gp = gpar(fontsize = 8))
 
 }
 
@@ -144,7 +144,7 @@ correspond_between_rankings = function(lt, top_n = length(lt[[1]]),
 			k = k + 1
 			pushViewport(viewport(layout.pos.row = 1, layout.pos.col = k))
 			pushViewport(viewport(width = 0.9))
-			correspond_between_two_rankings(lt[[i]], lt[[j]], nm[i], nm[j], col[i], col[j], top_n, ...)
+			correspond_between_two_rankings(lt[[i]], lt[[j]], nm[i], nm[j], col[i], col[j], top_n, newpage = FALSE, ...)
 			upViewport()
 			upViewport()
 		}

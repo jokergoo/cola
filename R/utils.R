@@ -57,8 +57,8 @@ column_order_by_group = function(factor, mat) {
 # Adjust outliers
 #
 # == param
-# -x a numeric vector
-# -q quantile to adjust
+# -x a numeric vector.
+# -q quantile to adjust.
 # 
 # == details
 # Vaules larger than quantile ``1 - q`` are adjusted to ``1 - q`` and 
@@ -85,7 +85,7 @@ adjust_outlier = function(x, q = 0.05) {
 # Remove rows with low variance and impute missing data
 #
 # == param
-# -m a numeric matrix
+# -m a numeric matrix.
 # -sd_quantile cutoff the quantile of standard variation. Rows with variance less than it are removed.
 # -max_na maximum NA rate in each row. Rows with NA rate larger than it are removed.
 #
@@ -112,7 +112,9 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	}
 
 	l = apply(m, 1, function(x) sum(is.na(x))/length(x)) < max_na
-	qqcat("removed @{sum(!l)} rows where more than @{round(max_na*100)}% of samples have NA values.\n")
+	if(sum(!l)) {
+		qqcat("removed @{sum(!l)} rows where more than @{round(max_na*100)}% of samples have NA values.\n")
+	}
 	m = m[l, , drop = FALSE]
 
 	n_na = sum(is.na(m))
@@ -125,11 +127,15 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	l = abs(row_sd) < 1e-6
 	m2 = m[!l, , drop = FALSE]
 	row_sd = row_sd[!l]
-	qqcat("@{sum(l)} rows have been removed for zero variance (sd < 1e-6).\n")
+	if(sum(l)) {
+		qqcat("@{sum(l)} rows have been removed with zero variance (sd < 1e-6).\n")
+	}
 
 	qa = quantile(row_sd, sd_quantile, na.rm = TRUE)
 	l = row_sd >= qa
-	qqcat("@{sum(!l)} rows have been removed for too low variance (sd < @{sd_quantile} quantile)\n")
+	if(sum(!l)) {
+		qqcat("@{sum(!l)} rows have been removed with too low variance (sd < @{sd_quantile} quantile)\n")
+	}
 	m2[l, , drop = FALSE]
 }
 

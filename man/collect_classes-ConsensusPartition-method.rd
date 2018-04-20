@@ -7,7 +7,7 @@ Collect classes from ConsensusPartitionList object
 Collect classes from ConsensusPartitionList object
 }
 \usage{
-\S4method{collect_classes}{ConsensusPartition}(object, show_legend = TRUE, ...)
+\S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE, ...)
 }
 \arguments{
 

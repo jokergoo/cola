@@ -23,7 +23,7 @@ A consensus matrix corresponding to the current k.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+obj = rl["sd", "kmeans"]
+get_consensus(obj, k = 2)
 }

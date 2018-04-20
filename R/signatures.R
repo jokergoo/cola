@@ -11,7 +11,7 @@
 #        proper silhouette value, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
 # -fdr_cutoff cutoff for FDR of the difference between subgroups.
 # -scale_rows whether apply row scaling when making the heatmap.
-# -row_diff_by methods to get rows which are significantly different between subgroups, see 'Details' section.
+# -diff_method methods to get rows which are significantly different between subgroups, see 'Details' section.
 # -anno a data frame with known annotation of samples.
 # -anno_col a list of colors for the annotations in ``anno``.
 # -show_legend whether draw the legends on the heatmap.
@@ -53,11 +53,11 @@ setMethod(f = "get_signatures",
 	fdr_cutoff = ifelse(diff_method == "samr", 0.05, 0.1), 
 	scale_rows = object@scale_rows,
 	diff_method = c("ttest", "Ftest", "samr", "pamr"),
-	anno = object@anno, 
-	anno_col = if(missing(anno)) object@anno_col else NULL,
+	anno = get_anno(object), 
+	anno_col = get_anno_col(object),
 	internal = FALSE,
 	show_column_names = TRUE, use_raster = TRUE,
-	plot = TRUE, verbose = dev.interactive(),
+	plot = TRUE, verbose = TRUE,
 	top_k_genes = 5000,
 	...) {
 
@@ -84,10 +84,12 @@ setMethod(f = "get_signatures",
 
 	tb = table(class)
 	if(sum(tb > 1) <= 1) {
-		stop("not enough samples.")
+		cat("not enough samples.\n")
+		return(invisible(NULL))
 	}
 	if(length(unique(class)) <= 1) {
-		stop("not enough classes.")
+		cat("not enough classes.\n")
+		return(invisible(NULL))
 	}
 
 	if(inherits(diff_method, "function")) {
@@ -292,6 +294,8 @@ setMethod(f = "get_signatures",
 	silhouette_range = range(class_df$silhouette)
 	silhouette_range[2] = 1
 
+	if(verbose) qqcat("making heatmaps.\n")
+
 	group2 = factor(group2, levels = sort(unique(group2)))
 	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
 
@@ -304,7 +308,7 @@ setMethod(f = "get_signatures",
 			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
 				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
 					      col = NA),
-				bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_side = "right"),
+				bar_width = 0.8, baseline = 0, axis = !has_ambiguous, axis_side = "right"),
 			col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
 			annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
 			show_annotation_name = !has_ambiguous,
@@ -329,7 +333,7 @@ setMethod(f = "get_signatures",
 				silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
 					gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
 					      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
-					bar_width = 1, baseline = 0, axis = TRUE, axis_side = "right"), 
+					bar_width = 0.8, baseline = 0, axis = TRUE, axis_side = "right"), 
 				col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
 				annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
 				show_annotation_name = TRUE,

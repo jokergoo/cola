@@ -29,7 +29,8 @@ A membership matrix where rows correspond to the samples in the original matrix.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+obj = rl["sd", "kmeans"]
+get_membership(obj, k = 2)
+get_membership(obj, k = 2, each = TRUE)
 }

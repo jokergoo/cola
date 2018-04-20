@@ -31,7 +31,8 @@ A matrix of partition statistics for all k.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+obj = rl["sd", "kmeans"]
+get_stat(obj)
+get_stat(obj, k = 2)
 }

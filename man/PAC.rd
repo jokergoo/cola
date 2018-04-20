@@ -7,7 +7,7 @@ PAC score
 PAC score
 }
 \usage{
-PAC(consensus_mat)
+PAC(consensus_mat, original = FALSE)
 }
 \arguments{
 

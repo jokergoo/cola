@@ -7,7 +7,7 @@ Heatmap of top rows from different top methods
 Heatmap of top rows from different top methods
 }
 \usage{
-\S4method{top_rows_heatmap}{matrix}(object, all_value_list = NULL, top_method = all_top_value_methods(),
+\S4method{top_rows_heatmap}{matrix}(object, all_top_value_list = NULL, top_method = all_top_value_methods(),
     top_n = round(0.25*nrow(object)), layout_nr = 1, scale_rows = TRUE)
 }
 \arguments{

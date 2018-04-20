@@ -8,7 +8,7 @@ Get parameters
 Get parameters
 }
 \usage{
-\S4method{get_param}{ConsensusPartition}(object, k, unique = TRUE)
+\S4method{get_param}{ConsensusPartition}(object, k = object@k, unique = TRUE)
 }
 \arguments{
 
@@ -24,7 +24,9 @@ A data frame of parameters corresponding to the current k.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+obj = rl["sd", "kmeans"]
+get_param(obj)
+get_param(obj, k = 2)
+get_param(obj, unique = FALSE)
 }

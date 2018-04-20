@@ -3,9 +3,9 @@
 # Get parameters
 #
 # == param
-# -object a `ConsensusPartition-class` object
-# -k number of partitions
-# -unique whether apply `base::unique` to rows
+# -object a `ConsensusPartition-class` object.
+# -k number of partitions.
+# -unique whether apply `base::unique` to rows of the returned data frame.
 #
 # == value
 # A data frame of parameters corresponding to the current k.
@@ -13,6 +13,12 @@
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# obj = rl["sd", "kmeans"]
+# get_param(obj)
+# get_param(obj, k = 2)
+# get_param(obj, unique = FALSE)
 setMethod(f = "get_param",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k, unique = TRUE) {
@@ -28,8 +34,8 @@ setMethod(f = "get_param",
 # Get consensus matrix
 #
 # == param
-# -object a `ConsensusPartition-class` object
-# -k number of partitions
+# -object a `ConsensusPartition-class` object.
+# -k number of partitions.
 #
 # == value
 # A consensus matrix corresponding to the current k.
@@ -37,6 +43,10 @@ setMethod(f = "get_param",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# obj = rl["sd", "kmeans"]
+# get_consensus(obj, k = 2)
 setMethod(f = "get_consensus",
 	signature = "ConsensusPartition",
 	definition = function(object, k) {
@@ -48,10 +58,10 @@ setMethod(f = "get_consensus",
 # Get membership matrix
 #
 # == param
-# -object a `ConsensusPartition-class` object
-# -k number of partitions
-# -each whether return the percentage membership matrix or the membership
-#       in every random sampling
+# -object a `ConsensusPartition-class` object.
+# -k number of partitions.
+# -each whether return the percentage membership matrix which is summarized from all random samplings
+#       or the individual membership in every random sampling.
 #
 # == details
 # If ``each == TRUE``, the value in the membership matrix is the probability
@@ -64,6 +74,11 @@ setMethod(f = "get_consensus",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# obj = rl["sd", "kmeans"]
+# get_membership(obj, k = 2)
+# get_membership(obj, k = 2, each = TRUE)
 setMethod(f = "get_membership",
 	signature = "ConsensusPartition",
 	definition = function(object, k, each = FALSE) {
@@ -74,6 +89,15 @@ setMethod(f = "get_membership",
 		object@object_list[[i]]$membership
 	}
 })
+
+setMethod(f = "get_membership",
+	signature = "ConsensusPartitionList",
+	definition = function(object, k) {
+	df = object@consensus_class[[as.character(k)]]
+	df[, grep("^p\\d+$", colnames(df)), drop = FALSE]
+})
+
+
 
 # == title
 # Get statistics
@@ -95,6 +119,11 @@ setMethod(f = "get_membership",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# obj = rl["sd", "kmeans"]
+# get_stat(obj)
+# get_stat(obj, k = 2)
 setMethod(f = "get_stat",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k) {
@@ -124,6 +153,9 @@ setMethod(f = "get_stat",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# get_stat(rl, k = 2)
 setMethod(f = "get_stat",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
@@ -152,6 +184,10 @@ setMethod(f = "get_stat",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# obj = rl["sd", "kmeans"]
+# get_classes(obj, k = 2)
 setMethod(f = "get_classes",
 	signature = "ConsensusPartition",
 	definition = function(object, k) {
@@ -176,67 +212,18 @@ setMethod(f = "get_classes",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# get_classes(rl, k = 2)
 setMethod(f = "get_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
-
-	if(!is.null(object@consensus_class)) {
-		return(object@consensus_class[[as.character(k)]])
-	}
-
-	res = object
-	partition_list = NULL
-	mean_cophcor = NULL
-	mean_silhouette = NULL
-	reference_class = NULL
-	for(tm in object@top_value_method) {
-		for(pm in object@partition_method) {
-			nm = paste0(tm, ":", pm)
-			obj = object@list[[nm]]
-			ik = which(obj@k == k)
-
-			membership = get_membership(obj, k)
-			if(is.null(reference_class)) {
-	        	reference_class = get_classes(obj, k)[, "class"]
-	        } else {
-	        	map = relabel_class(get_classes(obj, k)[, "class"], reference_class)
-	        	map2 = structure(names(map), names = map)
-	        	membership = membership[, as.numeric(map2[as.character(1:k)]) ]
-				colnames(membership) = paste0("p", 1:k)
-			}
-
-			partition_list = c(partition_list, list(as.cl_partition(membership)))
-			mean_silhouette = c(mean_silhouette, mean(get_classes(obj, k)[, "silhouette"]))
-		}
-	}
-	mean_silhouette[mean_silhouette < 0] = 0
-	consensus = cl_consensus(cl_ensemble(list = partition_list), weights = mean_silhouette)
-	m = cl_membership(consensus)
-	class(m) = "matrix"
-	colnames(m) = paste0("p", 1:k)
-	class = as.vector(cl_class_ids(consensus))
-	df = cbind(as.data.frame(m), class = class)
-	df$entropy = apply(m, 1, entropy)
-
-	membership_each = do.call("cbind", lapply(partition_list, function(x) {
-		as.vector(cl_class_ids(x))
-	}))
-
-	consensus_mat = matrix(1, nrow = nrow(m), ncol = nrow(m))
-	for(i in 1:(nrow(membership_each)-1)) {
-		for(j in (i+1):nrow(membership_each)) {
-			consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ])/ncol(membership_each)
-			consensus_mat[j, i] = consensus_mat[i, j]
-		}
- 	}
- 
-	df$silhouette = silhouette(class, dist(t(consensus_mat)))[, "sil_width"]
-
-	return(df)
+	df = object@consensus_class[[as.character(k)]]
+	df[, !grepl("^p\\d+$", colnames(df)), drop = FALSE]
 })
 
 # == title
-# Get the best number of partitions
+# Guess the best number of partitions
 #
 # == param
 # -object a `ConsensusPartition-class` object
@@ -251,6 +238,10 @@ setMethod(f = "get_classes",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# obj = rl["sd", "kmeans"]
+# guess_best_k(obj)
 setMethod(f = "guess_best_k",
 	signature = "ConsensusPartition",
 	definition = function(object) {
@@ -281,6 +272,9 @@ setMethod(f = "guess_best_k",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# guess_best_k(rl)
 setMethod(f = "guess_best_k",
 	signature = "ConsensusPartitionList",
 	definition = function(object) {
@@ -315,18 +309,117 @@ setMethod(f = "guess_best_k",
 	return(tb)
 })
 
-
+# == title
+# Get original matrix
+#
+# == param
+# -object a `ConsensusPartitionList-class` object
+#
+# == value
+# A numeric matrix.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# get_matrix(rl)
 setMethod(f = "get_matrix",
 	signature = "ConsensusPartitionList",
 	definition = function(object) {
 	object@.env$data
 })
 
+# == title
+# Get original matrix
+#
+# == param
+# -object a `ConsensusPartition-class` object
+#
+# == value
+# A numeric matrix.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+# == example
+# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
+# obj = rl["sd", "kmeans"]
+# get_matrix(obj)
 setMethod(f = "get_matrix",
 	signature = "ConsensusPartition",
 	definition = function(object) {
 	object@.env$data
 })
 
+# == title
+# Get annotations
+#
+# == param
+# -object a `ConsensusPartitionList-class` object
+#
+# == value
+# A data frame if ``anno`` was specified in `run_all_consensus_partition_methods`, or ``NULL``.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_anno",
+	signature = "ConsensusPartitionList",
+	definition = function(object) {
+	object@list[[1]]@anno
+})
 
+# == title
+# Get annotations
+#
+# == param
+# -object a `ConsensusPartition-class` object
+#
+# == value
+# A data frame if ``anno`` was specified in `run_all_consensus_partition_methods` or `consensus_partition`, or ``NULL``.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_anno",
+	signature = "ConsensusPartition",
+	definition = function(object) {
+	object@anno
+})
 
+# == title
+# Get annotation colors
+#
+# == param
+# -object a `ConsensusPartitionList-class` object
+#
+# == value
+# A list of color vectors or ``NULL``.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_anno_col",
+	signature = "ConsensusPartitionList",
+	definition = function(object) {
+	object@list[[1]]@anno_col
+})
+
+# == title
+# Get annotation colors
+#
+# == param
+# -object a `ConsensusPartition-class` object
+#
+# == value
+# A list of color vectors or ``NULL``.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_anno_col",
+	signature = "ConsensusPartition",
+	definition = function(object) {
+	object@anno_col
+})

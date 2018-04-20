@@ -8,30 +8,28 @@ Heatmap for the consensus matrix
 Heatmap for the consensus matrix
 }
 \usage{
-\S4method{consensus_heatmap}{ConsensusPartition}(object, k, show_legend = TRUE,
-    anno = object@known_anno,
-    anno_col = if(missing(anno)) object@known_col else NULL,
-    show_row_names = FALSE, ...)
+\S4method{consensus_heatmap}{ConsensusPartition}(object, k, internal = FALSE,
+    anno = get_anno(object), anno_col = get_anno_col(object),
+    show_row_names = FALSE)
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object.}
   \item{k}{number of partitions.}
-  \item{show_legend}{whether show heatmap and annotation legends.}
-  \item{anno}{a data frame with column annotations}
-  \item{anno_col}{colors for the annotations}
-  \item{show_row_names}{whether plot row names on the consensus heatmap}
-  \item{...}{other arguments}
+  \item{internal}{used internally.}
+  \item{anno}{a data frame with column annotations of samples. By default it used the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
+  \item{anno_col}{a list of colors (a named vector) for the annotations.}
+  \item{show_row_names}{whether plot row names on the consensus heatmap (which are the column names in the original matrix)}
 
 }
 \details{
 There are following heatmaps from left to right:
 
 \itemize{
-  \item probability of the column to stay in the subgroup
-  \item silhouette values which measure the distance for an item to the second closest subgroups
-  \item predicted classes
-  \item consensus matrix
+  \item probability of the sample to stay in the corresponding subgroup.
+  \item silhouette values which measure the distance for an item to the second closest subgroups.
+  \item predicted classes.
+  \item consensus matrix.
   \item more annotations if provided as \code{anno}
 }
 }

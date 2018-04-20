@@ -7,12 +7,11 @@ Collect plots from ConsensusPartition object
 Collect plots from ConsensusPartition object
 }
 \usage{
-\S4method{collect_plots}{ConsensusPartition}(object, ...)
+\S4method{collect_plots}{ConsensusPartition}(object, verbose = TRUE, ...)
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object}
-  \item{...}{other arguments}
 
 }
 \details{

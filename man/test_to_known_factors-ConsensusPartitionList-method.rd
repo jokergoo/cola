@@ -7,7 +7,7 @@ Test correspondance between predicted and known classes
 Test correspondance between predicted and known classes
 }
 \usage{
-\S4method{test_to_known_factors}{ConsensusPartitionList}(object, k, known = object@list[[1]]@known_anno,
+\S4method{test_to_known_factors}{ConsensusPartitionList}(object, k, known = object@list[[1]]@anno,
     silhouette_cutoff = 0.5)
 }
 \arguments{

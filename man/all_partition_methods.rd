@@ -10,7 +10,7 @@ All supported partition methods
 all_partition_methods()
 }
 \value{
-A vector of supported partition methods
+A vector of supported partition methods.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

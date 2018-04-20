@@ -7,8 +7,8 @@ Collect classes from hierarchical_partition object
 Collect classes from hierarchical_partition object
 }
 \usage{
-\S4method{collect_classes}{HierarchicalPartition}(object, depth = NULL, anno = object@list[[1]]@known_anno,
-    anno_col = if(missing(anno)) object@list[[1]]@known_col else NULL,
+\S4method{collect_classes}{HierarchicalPartition}(object, depth = NULL, anno = object@list[[1]]@anno,
+    anno_col = if(missing(anno)) object@list[[1]]@anno_col else NULL,
     ...)
 }
 \arguments{

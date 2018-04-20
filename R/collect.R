@@ -26,6 +26,7 @@ setMethod(f = "collect_plots",
 	definition = function(object, k = 2, fun = consensus_heatmap,
 	top_value_method = object@top_value_method, partition_method = object@partition_method, ...) {
 
+	fun_name = deparse(substitute(fun))
 	grid.newpage()
 	pushViewport(viewport(layout = grid.layout(nrow = length(top_value_method)+1, 
 	    ncol = length(partition_method)+1,
@@ -45,14 +46,15 @@ setMethod(f = "collect_plots",
 	highlight_row = NULL
 	highlight_col = NULL
 	for(i in seq_along(top_value_method)) {
-	    for(j in seq_along(partition_method)) {  
+	    for(j in seq_along(partition_method)) {
+	    	qqcat("applying @{fun_name} for @{top_value_method[i]}:@{partition_method[j]}\n")
 	    	res = object[top_value_method[i], partition_method[j]]
-	    	if(!missing(k)) {
-		    	if(get_stat(res, k = k)[, "PAC"] < 0.05) {
-		    		highlight_row = c(highlight_row, i + 1)
-		    		highlight_col = c(highlight_col, j + 1)
-		    	}
-		    }
+	    	# if(!missing(k)) {
+		    # 	if(get_stat(res, k = k)[, "PAC"] < 0.05) {
+		    # 		highlight_row = c(highlight_row, i + 1)
+		    # 		highlight_col = c(highlight_col, j + 1)
+		    # 	}
+		    # }
 	    	pushViewport(viewport(layout.pos.row = i + 1, layout.pos.col = j + 1))
 	    	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
     		# image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
@@ -72,13 +74,13 @@ setMethod(f = "collect_plots",
 			if(file.exists(file_name)) file.remove(file_name)
 	    }
 	}
-	if(!missing(k)) {
-		for(i in seq_along(highlight_row)) {
-			pushViewport(viewport(layout.pos.row = highlight_row[i], layout.pos.col = highlight_col[i]))
-			grid.rect(gp = gpar(fill = "transparent", col = "red", lwd = 2))
-			upViewport()
-		}
-	}
+	# if(!missing(k)) {
+	# 	for(i in seq_along(highlight_row)) {
+	# 		pushViewport(viewport(layout.pos.row = highlight_row[i], layout.pos.col = highlight_col[i]))
+	# 		grid.rect(gp = gpar(fill = "transparent", col = "red", lwd = 2))
+	# 		upViewport()
+	# 	}
+	# }
 
 	upViewport()
 })

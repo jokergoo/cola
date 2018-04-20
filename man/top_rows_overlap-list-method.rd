@@ -8,7 +8,7 @@ Overlap of top rows from different top methods
 }
 \usage{
 \S4method{top_rows_overlap}{list}(object, top_n = round(0.25*length(object[[1]])),
-    type = c("venn", "correspondance"), ...)
+    type = c("venn", "venneuler", "correspondance"), ...)
 }
 \arguments{
 

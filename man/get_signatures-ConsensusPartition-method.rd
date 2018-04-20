@@ -9,14 +9,15 @@ Get signature rows
 \usage{
 \S4method{get_signatures}{ConsensusPartition}(object, k,
     silhouette_cutoff = 0.5,
-    fdr_cutoff = ifelse(row_diff_by == "samr", 0.1, 0.05),
+    fdr_cutoff = ifelse(diff_method == "samr", 0.05, 0.1),
     scale_rows = object@scale_rows,
-    row_diff_by = c("ttest", "Ftest", "samr"),
-    anno = object@known_anno,
-    anno_col = if(missing(anno)) object@known_col else NULL,
-    show_legend = TRUE,
+    diff_method = c("ttest", "Ftest", "samr", "pamr"),
+    anno = get_anno(object),
+    anno_col = get_anno_col(object),
+    internal = FALSE,
     show_column_names = TRUE, use_raster = TRUE,
-    plot = TRUE, mat_other = NULL, verbose = dev.interactive(),
+    plot = TRUE, verbose = TRUE,
+    top_k_genes = 5000,
     ...)
 }
 \arguments{
@@ -26,7 +27,7 @@ Get signature rows
   \item{silhouette_cutoff}{cutoff for silhouette values. Columns with values  less than it are not used for finding signature rows. For selecting a  proper silhouette value, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
   \item{fdr_cutoff}{cutoff for FDR of the difference between subgroups.}
   \item{scale_rows}{whether apply row scaling when making the heatmap.}
-  \item{row_diff_by}{methods to get rows which are significantly different between subgroups, see 'Details' section.}
+  \item{diff_method}{methods to get rows which are significantly different between subgroups, see 'Details' section.}
   \item{anno}{a data frame with known annotation of samples.}
   \item{anno_col}{a list of colors for the annotations in \code{anno}.}
   \item{show_legend}{whether draw the legends on the heatmap.}

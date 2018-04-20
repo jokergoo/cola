@@ -7,8 +7,8 @@ Overlap of top rows from different top methods
 Overlap of top rows from different top methods
 }
 \usage{
-\S4method{top_rows_overlap}{matrix}(object, top_method = all_top_value_methods(),
-    top_n = round(0.25*nrow(object)), type = c("venn", "correspondance"), ...)
+\S4method{top_rows_overlap}{matrix}(object, top_value_method = all_top_value_methods(),
+    top_n = round(0.25*nrow(object)), type = c("venn", "venneuler", "correspondance"), ...)
 }
 \arguments{
 
