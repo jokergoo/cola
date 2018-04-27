@@ -21,12 +21,12 @@ The \code{\link{ConsensusPartition-class}} has following methods:
   \item{\code{\link{collect_plots,ConsensusPartition-method}}:}{Heatmaps for consensus matrix and membership matrix with different number of partitions.}
   \item{\code{\link{collect_classes,ConsensusPartition-method}}:}{Heatmap of classes with different number of partitions.}
   \item{\code{\link{get_param,ConsensusPartition-method}}:}{get parameters for the consensus clustering.}
+  \item{\code{\link{get_matrix,ConsensusPartition-method}}:}{get the original matrix.}
   \item{\code{\link{get_consensus,ConsensusPartition-method}}:}{get the consensus matrix.}
   \item{\code{\link{get_membership,ConsensusPartition-method}}:}{get the membership in random samplings.}
   \item{\code{\link{get_stat,ConsensusPartition-method}}:}{get statistics for the consensus clustering.}
-  \item{\code{\link{get_class,ConsensusPartition-method}}:}{get the consensus class IDs and other columns.}
-  \item{\code{\link{get_best_k,ConsensusPartition-method}}:}{guess the best number of partitions.}
-  \item{\code{\link{signature_density,ConsensusPartition-method}}:}{plot the density distribution of signatures in different groups.}
+  \item{\code{\link{get_classes,ConsensusPartition-method}}:}{get the consensus class IDs and other columns.}
+  \item{\code{\link{guess_best_k,ConsensusPartition-method}}:}{guess the best number of partitions.}
   \item{\code{\link{test_to_known_factors,ConsensusPartition-method}}:}{test correlation between predicted subgrouping and known annotations, if available.}
 }}
 \author{

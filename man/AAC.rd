@@ -17,23 +17,23 @@ AAC(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
   \item{min_cor}{minimal absolute correlation.}
   \item{max_cor}{maximal absolute correlation.}
   \item{mc.cores}{number of cores.}
-  \item{n_sampling}{when the number of columns are too high, to get the curmulative distribution, actually we don't need to use all the rows, e.g. 1000 rows can already give a farely nice estimation for the distribution.}
-  \item{q_sd}{percential of the sd to ignore}
+  \item{n_sampling}{when the number of columns are too big, to get the curmulative distribution, actually we don't need to use all the rows, e.g. 1000 rows can already give a farely nice estimation for the distribution.}
+  \item{q_sd}{percential of the sd for the rows to ignore.}
 
 }
 \details{
-AAC score for a given item is the area above the curve of the curmulative 
-distribution of the absolute correlation to all other items with \code{x >= min_cor}.
+For a given row in a matrix, the AAC score is the area above the curve of the curmulative density
+distribution of the absolute correlation to all other rows. Formally, if \code{F_i(x)} is the 
+CDF of the absolute correlation for row i, \code{AAC_i = 1 - \\int_{min_cor}^{max_cor} F_i(x)}.
 }
 \value{
-A vector of AAC scores.
+A vector of numeric values.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 set.seed(12345)
-require(matrixStats)
 nr1 = 100
 mat1 = matrix(rnorm(100*nr1), nrow = nr1)
 

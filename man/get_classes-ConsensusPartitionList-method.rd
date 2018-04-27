@@ -11,8 +11,8 @@ Get class from the ConsensusPartitionList object
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object}
-  \item{k}{number of partitions}
+  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
+  \item{k}{number of partitions.}
 
 }
 \details{
@@ -26,6 +26,6 @@ A data frame with class IDs, membership, entropy and silhouette scores.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-rl = readRDS(system.file("extdata/example.rds", package = "cola"))
-get_classes(rl, k = 2)
+data(cola_rl)
+get_classes(cola_rl, k = 2)
 }

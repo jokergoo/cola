@@ -23,10 +23,13 @@ add_transparency = function (col, transparency = 0) {
 # In ``x1`` and ``x2``, the i^{th} element is the same object but with different 
 # scores under different metrics.
 # 
-# ``x1`` and ``x2`` are sorted in the plot. Lines are connecting the same object
-# for those with top values. Shadows on the two sides are the sorted values for ``x1``
-# and ``x2``, and points corresponds to positions of the top objects but are randomly shifted
-# on x-directions.
+# ``x1`` and ``x2`` are sorted in the left panel and right panel. The top n elements
+# under corresponding metric are highlighted by vertical lines in both panels.
+# Lines connect the same element with top values in either ``x1`` or ``x2``, and it shows
+# e.g. the rank of the element by the second metric which has rank 1 by the first metric.
+#
+# Under the plot is a simple Venn diagram showing the overlaps of the top n elements 
+# by the two metrics.
 #
 # == value
 # No value is returned.
@@ -109,7 +112,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 # -... pass to `correspond_between_two_rankings`.
 # 
 # == details
-# It makes plots for pairwise comparisons between different rankings.
+# It makes plots for every pairwise comparisons between different rankings.
 #
 # == value
 # No value is returned.

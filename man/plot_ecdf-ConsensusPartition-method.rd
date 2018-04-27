@@ -32,7 +32,6 @@ See \code{\link[stats]{ecdf}} for a detailed explanation of the empirical cumula
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+data(cola_rl)
+plot_ecdf(cola_rl["sd", "hclust"])
 }

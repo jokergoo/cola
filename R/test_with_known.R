@@ -15,13 +15,11 @@
 # - two numeric variables: correlation test by `stats::cor.test` is applied;
 # - two character or factor variables: `stats::fisher.test` is applied;
 # - one numeric variable and one character/factor variable: oneway ANOVA test by `stats::oneway.test` is applied.
-#
-# If there are NA values, basically it means there are no efficient data points to perform the test.
 # 
 # This function can be used to test the correlation between the predicted classes and other known factors.
 # 
 # == return 
-# A matrix of p-values.
+# A matrix of p-values. If there are NA values, basically it means there are no efficient data points to perform the test.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -123,14 +121,15 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 # Test correspondance between predicted and known classes
 #
 # == param
-# -object a `ConsensusPartition-class` object
-# -k number of partitions
-# -known a vector or a data frame with known factors
+# -object a `ConsensusPartition-class` object.
+# -k number of partitions. It uses all ``k`` if it is not set.
+# -known a vector or a data frame with known factors.
 # -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
 #
 # == value
 # A data frame with columns:
-# - the number of samples used to test after filtering by ``silhouette_cutoff``
+#
+# - number of samples used to test after filtering by ``silhouette_cutoff``
 # - p-values from the tests
 # - number of partitions
 #
@@ -140,9 +139,12 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rl)
+# test_to_known_factors(cola_rl[1, 1], known = 1:40)
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartition",
-	definition = function(object, k, known = object@anno, silhouette_cutoff = 0.5) {
+	definition = function(object, k, known = get_anno(object), silhouette_cutoff = 0.5) {
 
 	if(missing(k)) {
 		all_k = object@k
@@ -178,18 +180,19 @@ setMethod(f = "test_to_known_factors",
 # Test correspondance between predicted and known classes
 #
 # == param
-# -object a `ConsensusPartitionList-class` object
-# -k number of partitions
-# -known a vector or a data frame with known factors
+# -object a `ConsensusPartitionList-class` object.
+# -k number of partitions. It uses all ``k`` if it is not set.
+# -known a vector or a data frame with known factors.
 # -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
 #
 # == details
 # The function basically sends each `ConsensusPartition-class` object to
-# `test_to_known_factors,ConsensusPartition-method` and merges afterwards.
+# `test_to_known_factors,ConsensusPartition-method` and merges results afterwards.
 #
 # == value
 # A data frame with columns:
-# - the number of samples used to test after filtering by ``silhouette_cutoff``
+#
+# - number of samples used to test after filtering by ``silhouette_cutoff``
 # - p-values from the tests
 # - number of partitions
 #
@@ -199,6 +202,9 @@ setMethod(f = "test_to_known_factors",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rl)
+# test_to_known_factors(cola_rl, known = 1:40)
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, known = object@list[[1]]@anno, 

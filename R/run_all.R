@@ -14,13 +14,13 @@ try_and_trace = function(expr) {
 # Run subgroup classification from all methods
 #
 # == param
-# -data a numeric matrix where subgroups are found by samples
-# -top_value)method method which are used to extract top n rows. Allowed methods
-#        are in `all_top_value_methods` and can be self-added by `register_top_value_fun`.
+# -data a numeric matrix where subgroups are found by columns.
+# -top_value_method method which are used to extract top n rows. Allowed methods
+#        are in `all_top_value_methods` and can be self-added by `register_top_value_method`.
 # -partition_method method which are used to do partition on samples. 
 #        Allowed methods are in `all_partition_methods` and can be self-added 
-#        by `register_partition_fun`.
-# -max_k maximum number of partitions to try. It starts from 2 partitions.
+#        by `register_partition_method`.
+# -max_k maximum number of partitions to try. It will use ``2:max_k`` partitions.
 # -mc.cores number of cores to use.
 # -anno a data frame with known annotation of samples
 # -anno_col a list of colors for the annotations in ``known_anno``.
@@ -30,7 +30,8 @@ try_and_trace = function(expr) {
 # The function run consensus partitions for all combinations of top methods and parittion methods.
 #
 # == return 
-# A `ConsensusPartitionList-class` object. 
+# A `ConsensusPartitionList-class` object. Simply type the name of the object in the R interactive session
+# to see which functions can be applied on it.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -45,9 +46,10 @@ try_and_trace = function(expr) {
 # ) + matrix(rnorm(40*40), nr = 40)
 # rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40))
 # }
-# rl = readRDS(system.file("extdata/example.rds", package = "cola"))
-# rl
-run_all_consensus_partition_methods = function(data, top_value_method = all_top_value_methods(), 
+# data(cola_rl)
+# cola_rl
+run_all_consensus_partition_methods = function(data, 
+	top_value_method = all_top_value_methods(), 
 	partition_method = all_partition_methods(), max_k = 6,
 	mc.cores = 1, anno = NULL, anno_col = NULL, ...) {
 	
@@ -149,7 +151,7 @@ run_all_consensus_partition_methods = function(data, top_value_method = all_top_
 	data2 = t(scale(t(data)))
 	cat("adjust class labels according to the consensus classification from all methods.\n")
 	reference_class = lapply(lt[[1]]@k, function(k) {
-		cl_df = get_classes(res_list, k)
+		cl_df = get_consensus_from_multiple_methods(res_list, k)
 		class_ids = cl_df$class
 		mean_dist = tapply(seq_len(ncol(data2)), class_ids, function(ind) {
 			n = length(ind)
@@ -176,7 +178,7 @@ run_all_consensus_partition_methods = function(data, top_value_method = all_top_
         	# - res$object_list[[ik]]$classification$class
         	# - column order of res$object_list[[ik]]$membership
         	# - res$object_list[[ik]]$membership_each
-        	class_df = get_consensus_from_multiple_methods(res, k)
+        	class_df = get_classes(res, k)
         	class = class_df[, "class"]
         	map = relabel_class(class, reference_class[[ik]]$class)
         	map2 = structure(names(map), names = map)
@@ -258,7 +260,7 @@ get_consensus_from_multiple_methods = function(object, k) {
 # Print the ConsensusPartitionList object
 #
 # == param
-# -object a `ConsensusPartitionList-class` object
+# -object a `ConsensusPartitionList-class` object.
 #
 # == value
 # No value is returned.
@@ -269,7 +271,10 @@ get_consensus_from_multiple_methods = function(object, k) {
 setMethod(f = "show",
 	signature = "ConsensusPartitionList",
 	definition = function(object) {
+	
+	# obj_name = deparse(substitute(object, env = env))
 	obj_name = "object"
+
 	qqcat("A 'ConsensusPartitionList' object with @{length(object@top_value_method)*length(object@partition_method)} methods.\n")
 	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
 	qqcat("  Top rows are extracted by '@{paste(object@top_value_method, collapse = ', ')}' methods.\n")
@@ -304,13 +309,25 @@ setMethod(f = "show",
 # Subset a ConsensusPartitionList object
 #
 # == param
-# -x a `ConsensusPartition-class` object
-# -i index for top value methods
-# -j index for partition methods
+# -x a `ConsensusPartition-class` object.
+# -i index for top value methods, character or nummeric.
+# -j index for partition methods, character or nummeric.
 # -drop whether drop class
 #
-# == details
-# A 
+# == value
+# A `ConsensusPartitionList-class` object or a `ConsensusPartition-class` object.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+# == example
+# data(cola_rl)
+# cola_rl[c("sd", "MAD"), c("hclust", "kmeans")]
+# cola_rl["sd", "kmeans"]
+# cola_rl["sd", "kmeans", drop = FALSE]
+# cola_rl["sd", ]
+# cola_rl[, "hclust"]
+# cola_rl[1:2, 1:2]
 "[.ConsensusPartitionList" = function (x, i, j, drop = TRUE) {
 
 	cl = as.list(match.call())

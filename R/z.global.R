@@ -20,7 +20,7 @@ get_top_value_method = function(method) {
 # 
 # == details 
 # The user-defined function should accept one argument which is the data
-# matrix and the scores are calculated by rows. Rows with larger scores are treated
+# matrix and the scores are calculated by rows. Rows with top scores are treated
 # as "top rows". Follow is how we register "sd" top value method:
 #
 #   register_top_value_method(sd = function(mat), apply(mat, 1, sd))
@@ -127,12 +127,12 @@ get_partition_method = function(method, partition_param = list()) {
 # == param
 # -... a named list of functions.
 # -scale_method normally, data matrix are scaled by rows before sent to
-#        the partition function. The default scaling is apply by `base::scale`.
+#        the partition function. The default scaling is applied by `base::scale`.
 #        However, some partition functions may not accept negative values which 
 #        are produced by `base::scale`. Here ``scale_method`` can be set to ``rescale``
 #        which scales rows by ``(x - min)/(max - min)``. Note here ``scale_method`` only means
 #        the method to scale rows. When ``scale_rows`` is set to ``FALSE`` in `consensus_partition`
-#        or `run_all_consensus_partition_methods`, there wil be no row scaling before doing partition.
+#        or `run_all_consensus_partition_methods`, there wil be no row scaling when doing partition.
 #        The value for ``scale_method`` can be a vector if user specifies more than one partition function.
 # 
 # == details 
@@ -143,13 +143,13 @@ get_partition_method = function(method, partition_param = list()) {
 #
 # The function should return a vector of partitions (or class labels) or an object which can be recognized by `clue::cl_membership`.
 # 
-# The partition function should be applied on columns (this should be careful because some of the R functions apply on rows and
-# some of the R functions apply on columns). E.g. following is how we register kmeans partitioning:
+# The partition function should be applied on columns (Users should be careful with this because some of the R functions apply on rows and
+# some of the R functions apply on columns). E.g. following is how we register kmeans partition method:
 #
 #   register_partition_method(
-# 	    kmeans = function(mat, k, ...) {
-# 		    kmeans(t(mat), centers = k, ...)$centers
-# 	    }
+#       kmeans = function(mat, k, ...) {
+#           kmeans(t(mat), centers = k, ...)$centers
+#       }
 #   )
 #
 # The registered partition methods will be used as defaults in `run_all_consensus_partition_methods`.
@@ -166,7 +166,6 @@ get_partition_method = function(method, partition_param = list()) {
 # -"pam" by `cluster::pam`.
 # -"mclust" by `mclust::Mclust`. mclust is applied to the first three principle components from rows.
 # -"som" by `kohonen::som`. The SOM map is organized as ``kr x kr`` grids where ``kr = floor(sqrt(ncol(mat)))``.
-# -"nnmf" by `NNLM::nnmf`.
 #
 # == value
 # No value is returned.
@@ -287,12 +286,12 @@ register_partition_method(
 	}
 )
 
-register_partition_method(
-	nnmf = function(mat, k, ...) {
-		fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
-		apply(fit$H, 2, which.max)
-	}, scale_method = "rescale"
-)
+# register_partition_method(
+# 	nnmf = function(mat, k, ...) {
+# 		fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
+# 		apply(fit$H, 2, which.max)
+# 	}, scale_method = "rescale"
+# )
 
 # == title
 # Remove top value methods

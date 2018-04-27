@@ -10,9 +10,8 @@
 #
 # -`hierarchical_partition`: constructor method.
 # -`collect_classes,HierarchicalPartition-method`: plot the hierarchy of subgroups predicted.
-# -`get_class,HierarchicalPartition-method`: get the class IDs of subgroups.
+# -`get_classes,HierarchicalPartition-method`: get the class IDs of subgroups.
 # -`get_signatures,HierarchicalPartition-method`: get the signatures for each subgroup.
-# -`get_single_run,HierarchicalPartition-method`: get a `ConsensusPartition-class` object at a specified hierarchy level.
 # -`test_to_known_factors,HierarchicalPartition-method`: test correlation between predicted subgrouping and known annotations, if available.
 #
 # == author
@@ -34,11 +33,11 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 #
 # == param
 # -data a numeric matrix where subgroups are found by samples.
-# -top_method a single top method. Available methods are in `all_top_value_methods`.
+# -top_value_method a single top method. Available methods are in `all_top_value_methods`.
 # -partition_method a single partition method. Available ialble methods are in `all_partition_methods`.
-# -PAC_cutoff the cutoff of PAC scores to determine whether to continuou looking to subgroups.
+# -concordance_cutoff the cutoff of PAC scores to determine whether to continuou looking to subgroups.
 # -min_samples the cutoff of number of samples to determine whether to continuou looking to subgroups.
-# -k a list number of partitions.
+# -max_k a list number of partitions.
 # -... pass to `consensus_partition`
 #
 # == details
@@ -51,7 +50,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
-	concordance_cutoff = 0.9, min_samples = 6, max_k = 4, ...) {
+	concordance_cutoff = 0.8, min_samples = 6, max_k = 4, ...) {
 
 	cl = match.call()
 	
@@ -385,6 +384,8 @@ setMethod(f = "show",
 # == param
 # -object a `HierarchicalPartition-class` object.
 # -depth minimal depth of the hierarchy
+# -force_specific force specific
+# -... other arguments
 # 
 # == details
 # The function called `get_signatures,ConsensusPartition-method` to find signatures at
@@ -545,14 +546,14 @@ setMethod(f = "collect_classes",
 	draw(ht_list)
 })
 
+# == title
+# Subset
+#
+# == param
+# -x a `HierarchicalPartition-class` object
+# -i index
+#
 "[.HierarchicalPartition" = function(x, i) {
-	if(is.numeric(i)) {
-		i = names(x@list)[i]
-	}
-	x@list[[i]]
-}
-
-"[[.HierarchicalPartition" = function(x, i) {
 	if(is.numeric(i)) {
 		i = names(x@list)[i]
 	}
@@ -622,9 +623,9 @@ setMethod(f = "test_to_known_factors",
 #
 # == param
 # -object a numeric matrix
-# -merge whether merge all samples into one single plot or make plots for every hierarchy
 # -depth depth of the hierarchy
 # -top_n top n genes to use
+# -parent_node parent node
 # -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
 #         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
 # -silhouette_cutoff silhouette cutoff
@@ -674,6 +675,9 @@ setMethod(f = "dimension_reduction",
 # == param
 # -object the object
 #
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "max_depth",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
@@ -687,6 +691,9 @@ setMethod(f = "max_depth",
 # == param
 # -object the object
 # -depth depth
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "all_nodes",
 	signature = "HierarchicalPartition",
@@ -705,6 +712,9 @@ setMethod(f = "all_nodes",
 # == param
 # -object the object
 # -depth depth
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "all_leaves",
 	signature = "HierarchicalPartition",
@@ -725,6 +735,15 @@ get_children = function(object, node = "0") {
 	hierarchy[hierarchy[, 1] == node, 2]
 }
 
+# == title
+# Get the original matrix
+#
+# == param
+# -object the object
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
 setMethod(f = "get_matrix",
 	signature = "ConsensusPartitionList",
 	definition = function(object) {

@@ -9,24 +9,24 @@
 # -top_n number of rows with top values. The value can be a vector with length > 1. When n > 5000, the function only randomly sample 5000 rows from top n rows.
 # -partition_method a single partition method. Available methods are in `all_partition_methods`.
 #                   Use `register_partition_method` to add a new partition method.
-# -max_k maximum number of partitions to try. It starts from 2 partitions.
+# -max_k maximum number of partitions to try. The function will try ``2:max_k`` partitions.
 # -p_sampling proportion of the top n rows to sample.
 # -partition_repeat number of repeats for the random sampling.
 # -partition_param parameters for the partition method which are passed to ``...`` in a registered partition method. See `register_partition_method` for detail.
 # -anno a data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation
 #       to predicted subgroups will be tested.
 # -anno_col a list of colors (a named vector) for the annotations in ``anno``. If not specified, random colors are used.
-# -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_fun` is used.
+# -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_method` is used.
 # -verbose whether print messages.
 # -.env an environment, internally used.
 #
 # == details
-# The function performs analysis in following procedures:
+# The function performs analysis in following steps:
 #
 # - calculate scores for rows by top value method,
 # - for each top_n value, take top n rows,
 # - randomly sample ``p_sampling`` rows from the top_n rows and perform partitioning for ``partition_repeats`` times,
-# - collect partitions from all resamplings and calculate consensus partitions.
+# - collect partitions from all partitions and calculate consensus partitions.
 #
 # == return
 # A `ConsensusPartition-class` object. Simply type the name of the object in the R interactive session
@@ -39,14 +39,6 @@
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-# == example
-# m = cbind(
-# 	matrix(rnorm(100*30, mean = 1), nr = 100),
-# 	matrix(rnorm(100*30, mean = 0), nr = 100),
-# 	matrix(rnorm(100*30, mean = -1), nr = 100)
-# ) + matrix(rnorm(100*90, sd = 1), nr = 100) # add noise
-# res = consensus_partition(m, top_n = 100)
-# res
 consensus_partition = function(data,
 	top_value_method = "MAD",
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
@@ -330,10 +322,9 @@ consensus_partition = function(data,
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
 			cophcor =  cophcor(consensus_mat),
-			iPAC = PAC(consensus_mat),
-			PAC = PAC(consensus_mat, original = TRUE),
+			PAC = PAC(consensus_mat),
 			mean_silhouette = mean(class_df$silhouette),
-			concordance = pairwise_concordance_to_class(consensus_mat, class_ids) - pairwise_concordance_to_class(consensus_mat, class_ids, reverse = TRUE)
+			concordance = concordance(membership_each, class_ids)
 		)
 		
 		return(list(
@@ -398,22 +389,20 @@ consensus_partition = function(data,
 		object_list[[i]]$stat$area_increased = delta_k[i]
 	}
 
-	for(i in seq_along(k)) {
-		cl2 = object_list[[i]]$class_df$class
-		if(i == 1) {
-			cl1 = rep(1, length(cl2))
-		} else {
-			cl1 = object_list[[i-1]]$class_df$class
+	n_sample = ncol(data)
+	# for(method in c("Rand", "cRand", "NMI", "KP", "FM", "Jaccard", "purity", "PS")) {
+	for(method in c("Rand", "Jaccard")) {
+		for(i in seq_along(k)) {
+			if(i == 1) {
+				cl1 = rep(1, n_sample)
+			} else {
+				cl1 = object_list[[i - 1]]$class_df$class
+			}
+			cl2 = object_list[[i]]$class_df$class
+			object_list[[i]]$stat[[method]] = cl_agreement(as.cl_hard_partition(cl1), as.cl_hard_partition(cl2), method = method)[[1]]
 		}
-
-		m1 = outer(cl1, cl1, "==")
-		m2 = outer(cl2, cl2, "==")
-
-		m1[lower.tri(m1, diag = TRUE)] = FALSE
-		m2[lower.tri(m2, diag = TRUE)] = FALSE
-
-		object_list[[i]]$stat$separation_rate = sum(m1 & !m2)/sum(m1)
 	}
+	
 
 	# process the annotations so it can be shared in `run_all_consensus_partition_methods()` and `hierarchical_partitions()`
 	if(!is.null(anno)) {
@@ -460,8 +449,7 @@ consensus_partition = function(data,
 # Print the ConsensusPartition object
 #
 # == param
-# -x a `ConsensusPartition-class` object
-# -... additional arguments
+# -object a `ConsensusPartition-class` object.
 #
 # == value
 # No value is returned.
@@ -506,6 +494,9 @@ setMethod(f = "show",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rl)
+# plot_ecdf(cola_rl["sd", "hclust"])
 setMethod(f = "plot_ecdf",
 	signature = "ConsensusPartition",
 	definition = function(object, lwd = 4, ...) {
@@ -526,17 +517,19 @@ setMethod(f = "plot_ecdf",
 # Several plots for determining the optimized number of partitions
 #
 # == param
-# -object a `ConsensusPartition-class` object
+# -object a `ConsensusPartition-class` object.
 #
 # == details
-# There are six plots made:
+# There are following plots made:
 #
 # - cdf of the consensus matrix under each k
 # - the cophenetic correlation coefficient
 # - PAC score
 # - mean sihouette score
-# - the sum of intra-partition distance
+# - the concordance for each partition to the consensus partition
 # - area increase of the area under the cdf of consensus matrix with increasing k
+# - Rand index for current k compared to k - 1
+# - Jaccard coefficient for current k compared to k - 1
 #
 # == value
 # No value is returned.
@@ -544,6 +537,9 @@ setMethod(f = "plot_ecdf",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rl)
+# select_partition_number(cola_rl["sd", "hclust"])
 setMethod(f = "select_partition_number",
 	signature = "ConsensusPartition",
 	definition = function(object) {
@@ -576,8 +572,13 @@ setMethod(f = "select_partition_number",
 # -anno a data frame with column annotations of samples. By default it used the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
 # -anno_col a list of colors (a named vector) for the annotations.
 # -show_row_names whether plot row names on the consensus heatmap (which are the column names in the original matrix)
+# -... other arguments
 #
 # == details
+# For row i and column j in the consensus matrix, the value of corresponding x_ij
+# is the probability of sample i and sample j being in a same subgroup from the repetitive 
+# partitionings.
+#
 # There are following heatmaps from left to right:
 #
 # - probability of the sample to stay in the corresponding subgroup.
@@ -592,11 +593,14 @@ setMethod(f = "select_partition_number",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rl)
+# consensus_heatmap(cola_rl["sd", "hclust"], k = 3)
 setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
 	anno = get_anno(object), anno_col = get_anno_col(object), 
-	show_row_names = FALSE) {
+	show_row_names = FALSE, ...) {
 
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
@@ -641,7 +645,7 @@ setMethod(f = "consensus_heatmap",
 })
 
 # == title
-# Heatmap of membership of samples in each random sampling
+# Heatmap of membership of samples in each partition
 #
 # == param
 # -object a `ConsensusPartition-class` object.
@@ -650,9 +654,10 @@ setMethod(f = "consensus_heatmap",
 # -anno a data frame with column annotations.
 # -anno_col colors for the annotations.
 # -show_column_names whether show column names in the heatmap (which is the column name in the original matrix).
+# -... other arguments
 #
 # == details
-# Each row in the heatmap is the membership of samples in one random sampling.
+# Each row in the heatmap is the membership of samples in one partition.
 #
 # Heatmap is split on rows by ``top_n``. The value shown is ``top_n*p_sampling``.
 #
@@ -661,12 +666,15 @@ setMethod(f = "consensus_heatmap",
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
-#`
+#
+# == example
+# data(cola_rl)
+# membership_heatmap(cola_rl["sd", "hclust"], k = 3)
 setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE, 
 	anno = get_anno(object), anno_col = get_anno_col(object),
-	show_column_names = TRUE) {
+	show_column_names = TRUE, ...) {
 
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
@@ -735,8 +743,8 @@ setMethod(f = "membership_heatmap",
 # Visualize samples after dimension reduction
 #
 # == param
-# -object a `ConsensusPartition-class` object
-# -k number of partitions
+# -object a `ConsensusPartition-class` object.
+# -k number of partitions.
 # -top_n top n rows to use. By default it uses all rows in the original matrix.
 # -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
 #         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
@@ -745,6 +753,7 @@ setMethod(f = "membership_heatmap",
 # -remove whether to remove columns which have less silhouette values than
 #        the cutoff.
 # -tsne_param parameters pass to `Rtsne::Rtsne`
+# -... other arguments
 #
 # == value
 # No value is returned.
@@ -752,12 +761,15 @@ setMethod(f = "membership_heatmap",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rl)
+# dimension_reduction(cola_rl["sd", "kmeans"], k = 3)
 setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,
 	method = c("pca", "mds", "tsne"),
 	silhouette_cutoff = 0.5, remove = FALSE,
-	tsne_param = list()) {
+	tsne_param = list(), ...) {
 
 	method = match.arg(method)
 	data = object@.env$data[, object@column_index, drop = FALSE]
@@ -789,13 +801,13 @@ setMethod(f = "dimension_reduction",
 # Visualize columns after dimension reduction
 #
 # == param
-# -object a numeric matrix
+# -object a numeric matrix.
 # -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
 #         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
-# -pch shape of points
-# -col color of points
-# -cex size of points
-# -main title of the plot
+# -pch shape of points.
+# -col color of points.
+# -cex size of points.
+# -main title of the plot.
 # -tsne_param parameters pass to `Rtsne::Rtsne`
 #
 # == value

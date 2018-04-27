@@ -22,31 +22,31 @@ Get signature rows
 }
 \arguments{
 
-  \item{object}{A \code{\link{ConsensusPartition-class}} object. The object can be returned from \code{\link{get_single_run}} or directly from \code{\link{consensus_partition}}.}
-  \item{k}{number of partitions}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{k}{number of partitions.}
   \item{silhouette_cutoff}{cutoff for silhouette values. Columns with values  less than it are not used for finding signature rows. For selecting a  proper silhouette value, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
   \item{fdr_cutoff}{cutoff for FDR of the difference between subgroups.}
   \item{scale_rows}{whether apply row scaling when making the heatmap.}
   \item{diff_method}{methods to get rows which are significantly different between subgroups, see 'Details' section.}
   \item{anno}{a data frame with known annotation of samples.}
   \item{anno_col}{a list of colors for the annotations in \code{anno}.}
-  \item{show_legend}{whether draw the legends on the heatmap.}
+  \item{internal}{used internally.}
   \item{show_column_names}{whether show column names on the heatmap.}
-  \item{use_raster}{internally used}
-  \item{mat_other}{other matrix you want to attach to the heatmap list. The matrix should have row names so that rows can be subsetted and matched to the main heatmap}
-  \item{plot}{whether to make the plot}
-  \item{verbose}{whether to print messages}
-  \item{...}{other arguments}
+  \item{use_raster}{internally used.}
+  \item{plot}{whether to make the plot.}
+  \item{verbose}{whether to print messages.}
+  \item{top_k_genes}{top k genes to show on the heatmap if the number of signatures exceed it.}
+  \item{...}{other arguments.}
 
 }
 \details{
 Basically the function applies test for the difference of subgroups for every
-row. There are three methods which test significance of the difference:
+row. There are following methods which test significance of the difference:
 
 \describe{
-  \item{ttest}{it first extracts the subgroup with higest value, then use t-test to test to  all the other subgroups. }
-  \item{samr}{use SAM method to find significantly different rows between subgroups}
-  \item{Ftest}{use F-test to find significantly different rows between subgroups}
+  \item{ttest}{First it looks for the subgroup with highest mean value, compare to each of the  other subgroups with t-test and take the maximum p-value. Second it looks for the subgroup with lowest mean value, compare to each of the other subgroups again with t-test and take the maximum p-values. Later for these two list of p-values take the minimal p-value as the final p-value. }
+  \item{samr/pamr}{use SAM/PAM method to find significantly different rows between subgroups.}
+  \item{Ftest}{use F-test to find significantly different rows between subgroups.}
 }
 
 Also, to call it a signature for a given subgroup, the values in the
@@ -58,8 +58,8 @@ as the p-value of the row and used for FDR calculation.
 A list of three elements:
 
 \describe{
-  \item{\code{mat}}{the matrix for the signatures}
-  \item{\code{group}}{subgroups that the rows are significantly high}
+  \item{\code{df}}{a data frame.}
+  \item{\code{sample_used}}{sample index used.}
 }
 }
 \author{

@@ -8,20 +8,23 @@ Collect plots from ConsensusPartitionList object
 }
 \usage{
 \S4method{collect_plots}{ConsensusPartitionList}(object, k = 2, fun = consensus_heatmap,
-    top_value_method = object@top_value_method, partition_method = object@partition_method, ...)
+    top_value_method = object@top_value_method,
+    partition_method = object@partition_method, ...)
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartitionList-class}} object from \code{\link{run_all_consensus_partition_methods}}.}
   \item{k}{number of partitions.}
-  \item{fun}{function used to generate plots. Valid functions are \code{\link{consensus_heatmap,ConsensusPartition-method}}, \code{\link{plot_ecdf,ConsensusPartition-method}}, \code{\link{membership_heatmap,ConsensusPartition-method}}, \code{\link{get_signatures,ConsensusPartition-method}} and \code{\link{dimension_reduction,ConsensusPartition-method}}.}
-  \item{top_value_method}{a vector of top methods.}
+  \item{fun}{function used to generate plots. Valid functions are \code{\link{consensus_heatmap}}, \code{\link{plot_ecdf}}, \code{\link{membership_heatmap}}, \code{\link{get_signatures}} and \code{\link{dimension_reduction}}.}
+  \item{top_value_method}{a vector of top value methods.}
   \item{partition_method}{a vector of partition methods.}
   \item{...}{other arguments passed to corresponding \code{fun}.}
 
 }
 \details{
-Plots for all combinations of top methods and parittion methods are arranged in one page.
+Plots for all combinations of top value methods and parittion methods are arranged in one single page.
+
+This function makes it easy to directly compare results from multiple methods.
 }
 \value{
 No value is returned.
@@ -30,7 +33,10 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+data(cola_rl)
+collect_plots(cola_rl, k = 3)
+\dontrun{
+collect_plots(cola_rl, k = 3, fun = membership_heatmap)
+collect_plots(cola_rl, k = 3, fun = get_signatures)
+}
 }

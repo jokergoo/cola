@@ -15,6 +15,9 @@ max depth of the hierarchy
   \item{object}{the object}
 
 }
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

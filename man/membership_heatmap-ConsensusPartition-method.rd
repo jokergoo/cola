@@ -2,15 +2,15 @@
 \alias{membership_heatmap,ConsensusPartition-method}
 \alias{membership_heatmap}
 \title{
-Heatmap of membership of samples in each random sampling
+Heatmap of membership of samples in each partition
 }
 \description{
-Heatmap of membership of samples in each random sampling
+Heatmap of membership of samples in each partition
 }
 \usage{
 \S4method{membership_heatmap}{ConsensusPartition}(object, k, internal = FALSE,
     anno = get_anno(object), anno_col = get_anno_col(object),
-    show_column_names = TRUE)
+    show_column_names = TRUE, ...)
 }
 \arguments{
 
@@ -20,10 +20,11 @@ Heatmap of membership of samples in each random sampling
   \item{anno}{a data frame with column annotations.}
   \item{anno_col}{colors for the annotations.}
   \item{show_column_names}{whether show column names in the heatmap (which is the column name in the original matrix).}
+  \item{...}{other arguments}
 
 }
 \details{
-Each row in the heatmap is the membership of samples in one random sampling.
+Each row in the heatmap is the membership of samples in one partition.
 
 Heatmap is split on rows by \code{top_n}. The value shown is \code{top_n*p_sampling}.
 }
@@ -32,10 +33,8 @@ No value is returned.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
-`
 }
 \examples{
-# There is no example
-NULL
-
+data(cola_rl)
+membership_heatmap(cola_rl["sd", "hclust"], k = 3)
 }

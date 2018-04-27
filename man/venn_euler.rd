@@ -11,8 +11,8 @@ venn_euler(lt, ...)
 }
 \arguments{
 
-  \item{lt}{a list of items}
-  \item{...}{other arguments passed to \code{\link[graphics]{plot.default}}}
+  \item{lt}{a list of vectors.}
+  \item{...}{other arguments passed to \code{\link[graphics]{plot.default}}.}
 
 }
 \details{

@@ -3,9 +3,8 @@
 # Get signature rows
 #
 # == param
-# -object A `ConsensusPartition-class` object. The object can be returned
-#        from `get_single_run` or directly from `consensus_partition`.
-# -k number of partitions
+# -object A `ConsensusPartition-class` object.
+# -k number of partitions.
 # -silhouette_cutoff cutoff for silhouette values. Columns with values 
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette value, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
@@ -14,23 +13,25 @@
 # -diff_method methods to get rows which are significantly different between subgroups, see 'Details' section.
 # -anno a data frame with known annotation of samples.
 # -anno_col a list of colors for the annotations in ``anno``.
-# -show_legend whether draw the legends on the heatmap.
+# -internal used internally.
 # -show_column_names whether show column names on the heatmap.
-# -use_raster internally used
-# -mat_other other matrix you want to attach to the heatmap list. The matrix should have row names so that
-#            rows can be subsetted and matched to the main heatmap
-# -plot whether to make the plot
-# -verbose whether to print messages
-# -... other arguments
+# -use_raster internally used.
+# -plot whether to make the plot.
+# -verbose whether to print messages.
+# -top_k_genes top k genes to show on the heatmap if the number of signatures exceed it.
+# -... other arguments.
 # 
 # == details 
 # Basically the function applies test for the difference of subgroups for every
-# row. There are three methods which test significance of the difference:
+# row. There are following methods which test significance of the difference:
 #
-# -ttest it first extracts the subgroup with higest value, then use t-test to test to 
-#            all the other subgroups. 
-# -samr use SAM method to find significantly different rows between subgroups
-# -Ftest use F-test to find significantly different rows between subgroups
+# -ttest First it looks for the subgroup with highest mean value, compare to each of the 
+#        other subgroups with t-test and take the maximum p-value. Second it looks
+#        for the subgroup with lowest mean value, compare to each of the other subgroups
+#        again with t-test and take the maximum p-values. Later for these two list of p-values
+#        take the minimal p-value as the final p-value. 
+# -samr/pamr use SAM/PAM method to find significantly different rows between subgroups.
+# -Ftest use F-test to find significantly different rows between subgroups.
 #
 # Also, to call it a signature for a given subgroup, the values in the
 # corresponding subgroup should have the highest mean value compared to all
@@ -40,8 +41,8 @@
 # == return 
 # A list of three elements:
 # 
-# -``mat`` the matrix for the signatures
-# -``group`` subgroups that the rows are significantly high
+# -``df`` a data frame.
+# -``sample_used`` sample index used.
 # 
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -408,9 +409,7 @@ compare_to_highest_subgroup = function(mat, class) {
 		p2[group == i] = p[[i]]
 	}
 
-	fdr = p.adjust(p2, "BH")
-	fdr[is.na(fdr)] = Inf
-	return(fdr)
+	return(p2)
 }
 
 compare_to_lowest_subgroup = function(mat, class) {
@@ -453,20 +452,20 @@ compare_to_lowest_subgroup = function(mat, class) {
 		p2[group == i] = p[[i]]
 	}
 
-	fdr = p.adjust(p2, "BH")
-	fdr[is.na(fdr)] = Inf
-	return(fdr)
+	return(p2)
 }
 
 ttest = function(mat, class) {
-	fdr1 = compare_to_highest_subgroup(mat, class)
-	fdr2 = compare_to_lowest_subgroup(mat, class)
-	fdr1 = ifelse(is.infinite(fdr1), 1, fdr1)
-	fdr2 = ifelse(is.infinite(fdr2), 1, fdr2)
-	pmin(fdr1, fdr2)
+	p1 = compare_to_highest_subgroup(mat, class)
+	p2 = compare_to_lowest_subgroup(mat, class)
+	p = pmin(p1, p2, na.rm = TRUE)
+	fdr = p.adjust(p, method = "BH")
+	fdr[is.na(fdr)] = Inf
+	fdr
 }
 
 samr = function(mat, class, ...) {
+	on.exit(if(sink.number()) sink(NULL))
 	class = as.numeric(factor(class))
 	n_class = length(unique(class))
 	
@@ -499,6 +498,8 @@ samr = function(mat, class, ...) {
 }
 
 pamr = function(mat, class, fdr.cutoff = 0.1, ...) {
+	on.exit(if(sink.number()) sink(NULL))
+
 	class = as.numeric(factor(class))
 	
 	tempf = tempfile()

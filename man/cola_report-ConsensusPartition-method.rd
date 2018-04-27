@@ -11,8 +11,8 @@ Make report for the ConsensusPartition object
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object}
-  \item{output_dir}{the output directory where put the report}
+  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
+  \item{output_dir}{the output directory where the report is put.}
 
 }
 \details{

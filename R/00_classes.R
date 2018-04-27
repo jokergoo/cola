@@ -14,11 +14,13 @@
 # The `ConsensusPartitionList-class` provides following methods:
 #
 # -`run_all_consensus_partition_methods`: constructor method.
-# -`get_single_run,ConsensusPartitionList-method`: get a single `ConsensusPartition-class` object from the list.
 # -`top_rows_overlap,ConsensusPartitionList-method`: plot the overlaps of top rows under different top methods.
 # -`top_rows_heatmap,ConsensusPartitionList-method`: plot the heatmap of top rows under different top methods.
-# -`get_class,ConsensusPartitionList-method`: get a consensus class IDs merging from all methods.
+# -`get_classes,ConsensusPartitionList-method`: get a consensus class IDs merging from all methods.
+# -`get_matrix,ConsensusPartition-method`: get the original matrix.
 # -`get_stat,ConsensusPartitionList-method`: get statistics for a specified k.
+# -`get_membership,ConsensusPartitionList-method`: get consensus membership matrix summarized from all methods.
+# -`guess_best_k,ConsensusPartitionList-method`: guess the best number of partitions.
 # -`collect_plots,ConsensusPartitionList-method`: collect plots from all combinations of top methods and partition methods with choosing a plotting function.
 # -`collect_classes,ConsensusPartitionList-method`: make a plot which contains predicted classes from all combination of top methods and partition methods.
 # -`test_to_known_factors,ConsensusPartitionList-method`: test correlation between predicted subgrouping and known annotations, if available.
@@ -59,12 +61,12 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 # -`collect_plots,ConsensusPartition-method`: Heatmaps for consensus matrix and membership matrix with different number of partitions.
 # -`collect_classes,ConsensusPartition-method`: Heatmap of classes with different number of partitions.
 # -`get_param,ConsensusPartition-method`: get parameters for the consensus clustering.
+# -`get_matrix,ConsensusPartition-method`: get the original matrix.
 # -`get_consensus,ConsensusPartition-method`: get the consensus matrix.
 # -`get_membership,ConsensusPartition-method`: get the membership in random samplings.
 # -`get_stat,ConsensusPartition-method`: get statistics for the consensus clustering.
-# -`get_class,ConsensusPartition-method`: get the consensus class IDs and other columns.
-# -`get_best_k,ConsensusPartition-method`: guess the best number of partitions.
-# -`signature_density,ConsensusPartition-method`: plot the density distribution of signatures in different groups.
+# -`get_classes,ConsensusPartition-method`: get the consensus class IDs and other columns.
+# -`guess_best_k,ConsensusPartition-method`: guess the best number of partitions.
 # -`test_to_known_factors,ConsensusPartition-method`: test correlation between predicted subgrouping and known annotations, if available.
 #
 # == author

@@ -11,18 +11,18 @@ Get statistics
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object}
+  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
   \item{k}{number of partitions.}
 
 }
 \value{
 A matrix of partition statistics for a selected k. Rows in the 
-matrix correspond to all combinations of top methods and partition methods.
+matrix correspond to all combinations of top value methods and partition methods.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-rl = readRDS(system.file("extdata/example.rds", package = "cola"))
-get_stat(rl, k = 2)
+data(cola_rl)
+get_stat(cola_rl, k = 2)
 }

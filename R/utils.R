@@ -61,8 +61,8 @@ column_order_by_group = function(factor, mat) {
 # -q quantile to adjust.
 # 
 # == details
-# Vaules larger than quantile ``1 - q`` are adjusted to ``1 - q`` and 
-# values smaller than quantile ``q`` are adjusted to ``q``.
+# Vaules larger than quantile ``1 - q`` are adjusted to the ``1 - q`` quantile and 
+# values smaller than quantile ``q`` are adjusted to the ``q`` quantile.
 #
 # == value
 # A numeric vector with same length as the original one.

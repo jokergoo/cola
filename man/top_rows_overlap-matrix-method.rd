@@ -1,22 +1,22 @@
 \name{top_rows_overlap-matrix-method}
 \alias{top_rows_overlap,matrix-method}
 \title{
-Overlap of top rows from different top methods
+Overlap of top rows from different top value methods
 }
 \description{
-Overlap of top rows from different top methods
+Overlap of top rows from different top value methods
 }
 \usage{
 \S4method{top_rows_overlap}{matrix}(object, top_value_method = all_top_value_methods(),
-    top_n = round(0.25*nrow(object)), type = c("venn", "venneuler", "correspondance"), ...)
+    top_n = round(0.25*nrow(object)), method = c("venn", "venneuler", "correspondance"), ...)
 }
 \arguments{
 
-  \item{object}{a numeric matrix}
-  \item{top_method}{methods defined in \code{\link{all_top_value_methods}}.}
-  \item{top_n}{number of top rows}
-  \item{type}{\code{venn}: use Venn Euler diagram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
-  \item{...}{additional arguments passed to \code{\link{venn_euler}} or \code{\link{correspond_between_rankings}}}
+  \item{object}{a numeric matrix.}
+  \item{top_value_method}{methods defined in \code{\link{all_top_value_methods}}.}
+  \item{top_n}{number of top rows.}
+  \item{method}{\code{venn}: use Venn diagram; \code{venneuler}: use Venn Euler diagram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
+  \item{...}{additional arguments passed to \code{\link{venn_euler}} or \code{\link{correspond_between_rankings}}.}
 
 }
 \value{

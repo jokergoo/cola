@@ -7,13 +7,12 @@ Collect classes from ConsensusPartitionList object
 Collect classes from ConsensusPartitionList object
 }
 \usage{
-\S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE, ...)
+\S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object}
-  \item{show_legend}{whether show legend.}
-  \item{...}{other arguments.}
+  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
+  \item{internal}{used internally.}
 
 }
 \details{
@@ -26,7 +25,6 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+data(cola_rl)
+collect_classes(cola_rl["sd", "kmeans"])
 }

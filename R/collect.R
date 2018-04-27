@@ -5,15 +5,16 @@
 # == param
 # -object a `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
 # -k number of partitions.
-# -fun function used to generate plots. Valid functions are `consensus_heatmap,ConsensusPartition-method`,
-#        `plot_ecdf,ConsensusPartition-method`, `membership_heatmap,ConsensusPartition-method`,
-#        `get_signatures,ConsensusPartition-method` and `dimension_reduction,ConsensusPartition-method`.
-# -top_value_method a vector of top methods.
+# -fun function used to generate plots. Valid functions are `consensus_heatmap`,
+#        `plot_ecdf`, `membership_heatmap`, `get_signatures` and `dimension_reduction`.
+# -top_value_method a vector of top value methods.
 # -partition_method a vector of partition methods.
 # -... other arguments passed to corresponding ``fun``.
 #
 # == details
-# Plots for all combinations of top methods and parittion methods are arranged in one page.
+# Plots for all combinations of top value methods and parittion methods are arranged in one single page.
+#
+# This function makes it easy to directly compare results from multiple methods. 
 #
 # == value
 # No value is returned.
@@ -21,10 +22,18 @@
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rl)
+# collect_plots(cola_rl, k = 3)
+# \dontrun{
+# collect_plots(cola_rl, k = 3, fun = membership_heatmap)
+# collect_plots(cola_rl, k = 3, fun = get_signatures)
+# }
 setMethod(f = "collect_plots",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k = 2, fun = consensus_heatmap,
-	top_value_method = object@top_value_method, partition_method = object@partition_method, ...) {
+	top_value_method = object@top_value_method, 
+	partition_method = object@partition_method, ...) {
 
 	fun_name = deparse(substitute(fun))
 	grid.newpage()
@@ -62,7 +71,7 @@ setMethod(f = "collect_plots",
     		image_height = 800
 	        file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height)
-	        oe = try(fun(res, k = k, internal = TRUE, show_column_names = FALSE, use_raster = FALSE, ...))
+	        oe = try(fun(res, k = k, internal = TRUE, use_raster = FALSE, ...))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
 		        grid.raster(readPNG(file_name))
@@ -89,11 +98,12 @@ setMethod(f = "collect_plots",
 # Collect plots from ConsensusPartition object
 #
 # == param
-# -object a `ConsensusPartition-class` object
+# -object a `ConsensusPartition-class` object.
+# -verbose whether print messages.
 # 
 # == details
-# Plots by `plot_ecdf,ConsensusPartition-method`, `collect_classes,ConsensusPartition-method`, `consensus_heatmap,ConsensusPartition-method`, `membership_heatmap,ConsensusPartition-method` 
-# and `get_signatures,ConsensusPartition-method` are arranged in one single page, for all avaialble k.
+# Plots by `plot_ecdf`, `collect_classes,ConsensusPartition-method`, `consensus_heatmap`, `membership_heatmap` 
+# and `get_signatures` are arranged in one single page, for all avaialble k.
 #
 # == value
 # No value is returned.
@@ -101,9 +111,14 @@ setMethod(f = "collect_plots",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# \dontrun{
+# data(cola_rl)
+# collect_plots(cola_rl["sd", "kmeans"])
+# }
 setMethod(f = "collect_plots",
 	signature = "ConsensusPartition",
-	definition = function(object, verbose = TRUE, ...) {
+	definition = function(object, verbose = TRUE) {
 
 	all_k = object@k
 	grid.newpage()
@@ -111,8 +126,8 @@ setMethod(f = "collect_plots",
 	layout_ncol = 1+max(c(2, length(all_k)))
 	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 	pushViewport(viewport(layout = grid.layout(nrow = 4+2, ncol = layout_ncol,
-		width = unit.c(2*text_height, unit(rep(1, layout_ncol - 1), "null")),
-		height = unit.c(2*text_height, unit(1, "null"), 2*text_height, unit(rep(1, 3), "null")))))
+		widths = unit.c(2*text_height, unit(rep(1, layout_ncol - 1), "null")),
+		heights = unit.c(2*text_height, unit(1, "null"), 2*text_height, unit(rep(1, 3), "null")))))
 	
 	# first row are two names
 	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
@@ -176,7 +191,7 @@ setMethod(f = "collect_plots",
 		pushViewport(viewport(layout.pos.row = 4, layout.pos.col = i + 1))
 		file_name = tempfile(tmpdir = ".")
         png(file_name, width = image_width, height = image_height)
-        oe = try(consensus_heatmap(object, k = all_k[i], internal = TRUE, show_row_names = FALSE, ...))
+        oe = try(consensus_heatmap(object, k = all_k[i], internal = TRUE, show_row_names = FALSE))
         dev.off2()
         if(!inherits(oe, "try-error")) {
 	        grid.raster(readPNG(file_name))  
@@ -189,7 +204,7 @@ setMethod(f = "collect_plots",
 	    pushViewport(viewport(layout.pos.row = 5, layout.pos.col = i + 1))
 	    file_name = tempfile()
         png(file_name, width = image_width*2, height=  image_height*2)
-        oe = try(membership_heatmap(object, k = all_k[i], internal = TRUE, show_column_names = FALSE, ...))
+        oe = try(membership_heatmap(object, k = all_k[i], internal = TRUE, show_column_names = FALSE))
         dev.off2()
         if(!inherits(oe, "try-error")) {
 	        grid.raster(readPNG(file_name))
@@ -225,23 +240,34 @@ setMethod(f = "collect_plots",
 # == param
 # -object a `ConsensusPartitionList-class` object returned by `run_all_consensus_partition_methods`.
 # -k number of partitions
-# -top_value_method a vector of top methods
+# -top_value_method a vector of top value methods
 # -partition_method a vector of partition methods
-# -... other arguments.
 #
 # == details
-# The function plots class IDs for all methods and the similarity between methods.
+# There are following panels in the plot:
+#
+# - a heatmap shows partitions predicted from all methods where the top annotation
+#   is the consensus partition summarized from partitions from all methods, weighted
+#   by mean silhouette scores.
+# - a row barplot annotation showing the mean silhouette scores for different methods.
+# - a heatmap shows the similarities of the partitions of pairwise methods, calculated
+#    by `clue::cl_dissimilarity` with the ``comembership`` method.
 #
 # == value
-# No value is returned
+# No value is returned.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# \dontrun{
+# data(cola_rl)
+# collect_classes(cola_rl, k = 3)
+# }
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, 
-	top_value_method = object@top_value_method, partition_method = object@partition_method, ...) {
+	top_value_method = object@top_value_method, partition_method = object@partition_method) {
 
 	top_value_method_vec = NULL
 	partition_method_vec = NULL
@@ -293,8 +319,6 @@ setMethod(f = "collect_classes",
 		bottom_annotation = bottom_annotation, width = 1) + 
 		rowAnnotation(mean_silhouette = row_anno_barplot(get_stat(object, k = k)[, "mean_silhouette"], baseline = 0, axis = TRUE),
 			width = unit(2, "cm")) +
-		Heatmap((pac < 0.1) + 0, name = "PAC < 0.1", col = c("1" = "orange", "0" = "white"),
-			show_row_names = FALSE, width = unit(2, "mm")) +
 		rowAnnotation(top_value_method = top_value_method_vec, 
 			partition_method = partition_method_vec,
 			show_annotation_name = TRUE, annotation_name_side = "bottom",
@@ -307,11 +331,12 @@ setMethod(f = "collect_classes",
 	m_diss = cl_dissimilarity(clen, method = "comembership")
 	m_diss = as.matrix(m_diss)
 
-	ht = ht + Heatmap(m_diss, name = "dissimilarity", show_row_names = FALSE, show_column_names = FALSE,
+	ht = ht + Heatmap(m_diss, name = "comembership", show_row_names = FALSE, show_column_names = FALSE,
 		show_row_dend = FALSE, show_column_dend = FALSE, width = 1,
+		column_title = "comembership",
 		col = colorRamp2(quantile(m_diss, c(0, 0.5, 1)), c("red", "white", "blue")))
 
-	draw(ht, main_heatmap = "dissimilarity", column_title = qq("classification from all methods, k = @{k}"))
+	draw(ht, main_heatmap = "comembership", column_title = qq("classification from all methods, k = @{k}"))
 	decorate_annotation("mean_silhouette", {
 		grid.text("mean_silhouette", y = unit(-1, "cm"))
 	})
@@ -322,9 +347,8 @@ setMethod(f = "collect_classes",
 # Collect classes from ConsensusPartitionList object
 #
 # == param
-# -object a `ConsensusPartitionList-class` object
-# -show_legend whether show legend.
-# -... other arguments.
+# -object a `ConsensusPartitionList-class` object.
+# -internal used internally.
 #
 # == details
 # Membership matrix and the classes with each k are plotted in the heatmap.
@@ -335,9 +359,12 @@ setMethod(f = "collect_classes",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rl)
+# collect_classes(cola_rl["sd", "kmeans"])
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",
-	definition = function(object, internal = FALSE, ...) {
+	definition = function(object, internal = FALSE) {
 
 	all_k = object@k
 
@@ -352,7 +379,8 @@ setMethod(f = "collect_classes",
 			show_row_names = FALSE, cluster_columns = FALSE, cluster_rows = FALSE, show_heatmap_legend = i == 1,
 			name = paste0("membership_", all_k[i])) + 
 			Heatmap(class, col = brewer_pal_set2_col, 
-				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), name = paste(all_k[i], "_classes"))
+				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), name = paste(all_k[i], "_classes"),
+				column_title = qq("k = @{all_k[i]}"))
 		gap = c(gap, c(0, 4))
 		class_mat = cbind(class_mat, as.numeric(class))
 	}
@@ -363,7 +391,7 @@ setMethod(f = "collect_classes",
 	}
 
     draw(ht_list, gap = unit(gap, "mm"), row_order = do.call("order", as.data.frame(class_mat)),
-    	column_title = qq("classes from k = '@{paste(all_k, collapse = ', ')}'"),
+    	# column_title = qq("classes from k = '@{paste(all_k, collapse = ', ')}'"),
     	show_heatmap_legend = !internal, show_annotation_legend = !internal)
 
     for(k in all_k) {

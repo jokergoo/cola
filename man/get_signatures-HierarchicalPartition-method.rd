@@ -13,6 +13,8 @@ Get signatures rows
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{minimal depth of the hierarchy}
+  \item{force_specific}{force specific}
+  \item{...}{other arguments}
 
 }
 \details{

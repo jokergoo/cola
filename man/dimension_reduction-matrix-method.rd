@@ -14,12 +14,12 @@ Visualize columns after dimension reduction
 }
 \arguments{
 
-  \item{object}{a numeric matrix}
+  \item{object}{a numeric matrix.}
   \item{method}{which method to reduce the dimension of the data. \code{mds} uses \code{\link[stats]{cmdscale}}, \code{pca} uses \code{\link[stats]{prcomp}} and \code{tsne} uses \code{\link[Rtsne]{Rtsne}}.}
-  \item{pch}{shape of points}
-  \item{col}{color of points}
-  \item{cex}{size of points}
-  \item{main}{title of the plot}
+  \item{pch}{shape of points.}
+  \item{col}{color of points.}
+  \item{cex}{size of points.}
+  \item{main}{title of the plot.}
   \item{tsne_param}{parameters pass to \code{\link[Rtsne]{Rtsne}}}
 
 }

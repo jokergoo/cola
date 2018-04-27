@@ -16,6 +16,9 @@ all nodes in the hierarchy
   \item{depth}{depth}
 
 }
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
 \examples{
 # There is no example
 NULL

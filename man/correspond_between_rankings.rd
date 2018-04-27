@@ -19,7 +19,7 @@ correspond_between_rankings(lt, top_n = length(lt[[1]]),
 
 }
 \details{
-It makes plots for pairwise comparisons between different rankings.
+It makes plots for every pairwise comparisons between different rankings.
 }
 \value{
 No value is returned.

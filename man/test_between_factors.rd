@@ -26,12 +26,10 @@ Pairwise test is applied to every two columns in the data frames. Methods are:
   \item one numeric variable and one character/factor variable: oneway ANOVA test by \code{\link[stats]{oneway.test}} is applied.
 }
 
-If there are NA values, basically it means there are no efficient data points to perform the test.
-
 This function can be used to test the correlation between the predicted classes and other known factors.
 }
 \value{
-A matrix of p-values.
+A matrix of p-values. If there are NA values, basically it means there are no efficient data points to perform the test.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

@@ -7,12 +7,16 @@ Get the best number of partitions
 Get the best number of partitions
 }
 \usage{
-\S4method{guess_best_k}{ConsensusPartitionList}(object)
+\S4method{guess_best_k}{ConsensusPartitionList}(object, rand_index_cutoff = 0.9)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object}
+  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
+  \item{rand_index_cutoff}{the Rand index compared to previous k is larger than this, it is filtered out.}
 
+}
+\details{
+It basically gives best k for each combination of top value method and partition method.
 }
 \value{
 A data frame with best k for each combination of methods
@@ -21,6 +25,6 @@ A data frame with best k for each combination of methods
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-rl = readRDS(system.file("extdata/example.rds", package = "cola"))
-guess_best_k(rl)
+data(cola_rl)
+guess_best_k(cola_rl)
 }

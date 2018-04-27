@@ -7,23 +7,23 @@ Get class from the ConsensusPartition object
 Get class from the ConsensusPartition object
 }
 \usage{
-\S4method{get_classes}{ConsensusPartition}(object, k)
+\S4method{get_classes}{ConsensusPartition}(object, k = object@k)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object}
-  \item{k}{number of partitions}
+  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
+  \item{k}{number of partitions.}
 
 }
 \value{
 A data frame with class IDs and other columns which are entropy of the membership matrix
-and the silhouette scores which measure the stability of a sample to stay in its subgroup.
+and the silhouette scores which measure the stability of a sample to stay in its group.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-rl = readRDS(system.file("extdata/example.rds", package = "cola"))
-obj = rl["sd", "kmeans"]
+data(cola_rl)
+obj = cola_rl["sd", "kmeans"]
 get_classes(obj, k = 2)
 }

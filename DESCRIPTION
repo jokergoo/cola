@@ -19,9 +19,7 @@ Imports: ComplexHeatmap (>= 1.15.1),
          gplots, 
          mclust, 
          crayon, 
-         NMF, 
          Rtsne, 
-         samr, 
          methods, 
          kohonen, 
          xml2,
@@ -33,10 +31,12 @@ Imports: ComplexHeatmap (>= 1.15.1),
          dendextend,
          digest,
          impute,
-         brew
+         brew,
+         samr,
+         pamr
 Suggests: venneuler, 
-          mvtnorm, 
-          genefilter
+          genefilter,
+          mvtnorm
 Description: Subgroup classification is a basic task in genomic data analysis, 
   especially for gene expression data and methylation data. It can predict novel 
   subgroups when there is nothing known about the data or it can test consistency 
@@ -48,7 +48,7 @@ Description: Subgroup classification is a basic task in genomic data analysis,
   find subgroups in a hierarchical manner.
 URL: https://github.com/jokergoo/cola
 VignetteBuilder: knitr
-License: MIT
+License: MIT + file LICENSE
 Packaged: 2017-4-14 00:00:00 UTC; Administrator
 Repository: CRAN
 Date/Publication: 2017-4-14 00:00:00

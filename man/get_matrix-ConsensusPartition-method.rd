@@ -21,7 +21,7 @@ A numeric matrix.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-rl = readRDS(system.file("extdata/example.rds", package = "cola"))
-obj = rl["sd", "kmeans"]
+data(cola_rl)
+obj = cola_rl["sd", "kmeans"]
 get_matrix(obj)
 }

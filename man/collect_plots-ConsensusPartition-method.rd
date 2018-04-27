@@ -7,16 +7,17 @@ Collect plots from ConsensusPartition object
 Collect plots from ConsensusPartition object
 }
 \usage{
-\S4method{collect_plots}{ConsensusPartition}(object, verbose = TRUE, ...)
+\S4method{collect_plots}{ConsensusPartition}(object, verbose = TRUE)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object}
+  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
+  \item{verbose}{whether print messages.}
 
 }
 \details{
-Plots by \code{\link{plot_ecdf,ConsensusPartition-method}}, \code{\link{collect_classes,ConsensusPartition-method}}, \code{\link{consensus_heatmap,ConsensusPartition-method}}, \code{\link{membership_heatmap,ConsensusPartition-method}} 
-and \code{\link{get_signatures,ConsensusPartition-method}} are arranged in one single page, for all avaialble k.
+Plots by \code{\link{plot_ecdf}}, \code{\link{collect_classes,ConsensusPartition-method}}, \code{\link{consensus_heatmap}}, \code{\link{membership_heatmap}} 
+and \code{\link{get_signatures}} are arranged in one single page, for all avaialble k.
 }
 \value{
 No value is returned.
@@ -25,7 +26,8 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+\dontrun{
+data(cola_rl)
+collect_plots(cola_rl["sd", "kmeans"])
+}
 }

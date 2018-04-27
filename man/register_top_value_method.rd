@@ -16,7 +16,7 @@ register_top_value_method(...)
 }
 \details{
 The user-defined function should accept one argument which is the data
-matrix and the scores are calculated by rows. Rows with larger scores are treated
+matrix and the scores are calculated by rows. Rows with top scores are treated
 as "top rows". Follow is how we register "sd" top value method:
 
   \preformatted{

@@ -9,24 +9,24 @@
 # -min_cor minimal absolute correlation.
 # -max_cor maximal absolute correlation.
 # -mc.cores number of cores.
-# -n_sampling when the number of columns are too high, to get the curmulative
+# -n_sampling when the number of columns are too big, to get the curmulative
 #           distribution, actually we don't need to use all the rows, e.g. 1000
 #           rows can already give a farely nice estimation for the distribution.
-# -q_sd percential of the sd to ignore
+# -q_sd percential of the sd for the rows to ignore.
 # 
 # == details 
-# AAC score for a given item is the area above the curve of the curmulative 
-# distribution of the absolute correlation to all other items with ``x >= min_cor``.
+# For a given row in a matrix, the AAC score is the area above the curve of the curmulative density
+# distribution of the absolute correlation to all other rows. Formally, if ``F_i(x)`` is the 
+# CDF of the absolute correlation for row i, ``AAC_i = 1 - \\int_{min_cor}^{max_cor} F_i(x)``.
 #
 # == return 
-# A vector of AAC scores.
+# A vector of numeric values.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == examples
 # set.seed(12345)
-# require(matrixStats)
 # nr1 = 100
 # mat1 = matrix(rnorm(100*nr1), nrow = nr1)
 # 
@@ -138,128 +138,110 @@ entropy = function(p) {
 # PAC score
 #
 # == param
-# -consensus_mat a consensus matrix
+# -consensus_mat a consensus matrix.
+# -x1 lower bound to define "ambiguous clustering". The value can be a vector.
+# -x2 upper bound to define "ambihuous clustering". The value can be a vector.
+# -trim percent of extreme values to trim if combinations of ``x1`` and ``x2`` are more than 10.
 # 
 # == details
 # This a variant of the orignial PAC (proportion of ambiguous clustering) method.
-#
-# Assume x_1 in [0, 0.3] and x_2 in [0.7, 1], we calculate s = (\\int_{x_1}^{x_2} F(x) - F(x1)*(x_2 - x_1))/(x_2 - x_1) where F(x) is the CDF of the consensus matrix
-# and the mean value is taken as the final value.
+# 
+# For each ``x_1i`` in ``x1`` and ``x_2j`` in ``x2``, ``PAC_k = F(x_2j) - F(x_1i)``
+# where ``F(x)`` is the ecdf of the consensus matrix (the lower triangle matrix without diagnals). 
+# The final PAC is the mean of all ``PAC_k`` by removing top ``trim/2`` percent and bottom ``trim/2`` percent of all values.
 # 
 # == return 
-# A single PAC score.
+# A single numeric score.
+#
+# == see also
+# See https://www.nature.com/articles/srep06207 for explanation of PAC score.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 # 
-PAC = function(consensus_mat, original = FALSE) {
+# == example
+# data(cola_rl)
+# PAC(get_consensus(cola_rl[1, 1], k = 2))
+# PAC(get_consensus(cola_rl[1, 1], k = 3))
+# PAC(get_consensus(cola_rl[1, 1], k = 4))
+# PAC(get_consensus(cola_rl[1, 1], k = 5))
+# PAC(get_consensus(cola_rl[1, 1], k = 6))
+#
+PAC = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
+	x2 = seq(0.7, 0.9, by = 0.02), trim = 0.2) {
+
 	f = ecdf(consensus_mat[lower.tri(consensus_mat)])
 
-	offset1 = seq(0, 0.3, by = 0.05)
-	offset2 = 1 - seq(0, 0.3, by = 0.05)
+	offset1 = x1
+	offset2 = x2
 
 	m_score = matrix(nrow = length(offset1), ncol = length(offset2))
 	for(i in seq_along(offset1)) {
 		for(j in seq_along(offset2)) {
-			if(original) {
-				m_score[i, j] = f(offset2[j]) - f(offset1[i])
-			} else {
-				x = seq(offset1[i], offset2[j], length = 100)
-				n2 = length(x)
-				v = sum((x[2:n2] - x[1:(n2-1)])*f(x[-n2]))
-				rg = offset2[j] - offset1[i]
-
-				m_score[i, j] = abs(v - rg*f(offset1[i]))/rg
-			}
+			m_score[i, j] = f(offset2[j]) - f(offset1[i])
 		}
 	}
-	mean(m_score, trim = 0.2)
-}
-
-
-tot_withinss = function(class_id, mat) {
-	s = tapply(seq_along(class_id), class_id, function(ind) {
-		if(length(ind) == 1) {
-			return(0)
-		} else {
-			m = mat[, ind, drop = FALSE]
-			mean = rowMeans(m)
-			m = cbind(mean, m)
-			sum((dist(t(m))[1:length(ind)])^2)
-		}
-	})
-	sum(s)
-}
-
-
-pairwise_concordance_to_class = function(consensus_mat, class, reverse = FALSE) {
-	class_level = unique(class)
-	mat_logi = matrix(FALSE, nrow = nrow(consensus_mat), ncol = ncol(consensus_mat))
-	for(cl in class_level) {
-		l = class == cl
-		mat_logi[l, l] = TRUE
-	}
-	diag(mat_logi) = FALSE
-	if(reverse) {
-		mat_logi2 = !mat_logi
-		diag(mat_logi2) = FALSE
-		mean(consensus_mat[mat_logi2])
+	if(length(m_score)*trim > 1) {
+		mean(m_score, trim = trim)
 	} else {
-		mean(consensus_mat[mat_logi])
+		mean(m_score)
 	}
 }
 
-rand_index = function(object, k = 3) {
-	if(k == 2) {
-		return(NA)
-	}
 
-	membership_each1 = get_membership(object, k - 1, each = TRUE)
-	membership_each2 = get_membership(object, k, each = TRUE)
-	mat11 = matrix(1, nrow = nrow(membership_each1), ncol = nrow(membership_each1))
-	mat01 = mat11
-	mat10 = mat11
-	mat00 = mat11
-	for(i in 1:(nrow(membership_each1)-1)) {
-		for(j in (i+1):nrow(membership_each1)) {
-			mat11[i, j] = sum(membership_each1[i, ] == membership_each1[j, ] & membership_each2[i, ] == membership_each2[j, ])/ncol(membership_each1)
-			mat11[j, i] = mat11[i, j]
+# tot_withinss = function(class_id, mat) {
+# 	s = tapply(seq_along(class_id), class_id, function(ind) {
+# 		if(length(ind) == 1) {
+# 			return(0)
+# 		} else {
+# 			m = mat[, ind, drop = FALSE]
+# 			mean = rowMeans(m)
+# 			m = cbind(mean, m)
+# 			sum((dist(t(m))[1:length(ind)])^2)
+# 		}
+# 	})
+# 	sum(s)
+# }
 
-			mat01[i, j] = sum(membership_each1[i, ] != membership_each1[j, ] & membership_each2[i, ] == membership_each2[j, ])/ncol(membership_each1)
-			mat01[j, i] = mat01[i, j]
 
-			mat10[i, j] = sum(membership_each1[i, ] == membership_each1[j, ] & membership_each2[i, ] != membership_each2[j, ])/ncol(membership_each1)
-			mat10[j, i] = mat10[i, j]
+# pairwise_concordance_to_class = function(consensus_mat, class, reverse = FALSE) {
+# 	class_level = unique(class)
+# 	mat_logi = matrix(FALSE, nrow = nrow(consensus_mat), ncol = ncol(consensus_mat))
+# 	for(cl in class_level) {
+# 		l = class == cl
+# 		mat_logi[l, l] = TRUE
+# 	}
+# 	diag(mat_logi) = FALSE
+# 	if(reverse) {
+# 		mat_logi2 = !mat_logi
+# 		diag(mat_logi2) = FALSE
+# 		mean(consensus_mat[mat_logi2])
+# 	} else {
+# 		mean(consensus_mat[mat_logi])
+# 	}
+# }
 
-			mat00[i, j] = sum(membership_each1[i, ] != membership_each1[j, ] & membership_each2[i, ] != membership_each2[j, ])/ncol(membership_each1)
-			mat00[j, i] = mat00[i, j]
-		}
- 	}
- 	a = mean(mat00[lower.tri(mat00)])
- 	b = mean(mat01[lower.tri(mat00)])
- 	c = mean(mat10[lower.tri(mat00)])
- 	d = mean(mat11[lower.tri(mat00)])
+# concordance = function(consensus_mat, class) {
+# 	pairwise_concordance_to_class(consensus_mat, class) - pairwise_concordance_to_class(consensus_mat, class, reverse = TRUE)
+# }
 
- 	a
-}
-
-separation_rate = function(object, k = 3) {
+# separation_rate = function(object, k = 3) {
 	
-	cl2 = get_classes(object, k)$class
-	if(k == 2) {
-		cl1 = rep(1, length(cl2))
-	} else {
-		cl1 = get_classes(object, k - 1)$class
-	}
+# 	cl2 = get_classes(object, k)$class
+# 	if(k == 2) {
+# 		cl1 = rep(1, length(cl2))
+# 	} else {
+# 		cl1 = get_classes(object, k - 1)$class
+# 	}
 
-	m1 = outer(cl1, cl1, "==")
-	m2 = outer(cl2, cl2, "==")
+# 	m1 = outer(cl1, cl1, "==")
+# 	m2 = outer(cl2, cl2, "==")
 
-	m1[lower.tri(m1, diag = TRUE)] = FALSE
-	m2[lower.tri(m2, diag = TRUE)] = FALSE
+# 	m1[lower.tri(m1, diag = TRUE)] = FALSE
+# 	m2[lower.tri(m2, diag = TRUE)] = FALSE
 
-	sum(m1 & !m2)/sum(m1)
-}
+# 	sum(m1 & !m2)/sum(m1)
+# }
 
 
 cophcor = function(consensus_mat) {
@@ -268,4 +250,25 @@ cophcor = function(consensus_mat) {
 	cor(dis_consensus, cophenetic(hc))
 }
 
-
+# == title
+# Concordance of partitions to the consensus partition
+#
+# == param
+# -membership_each all repetetive parititions.
+# -class consensus class ids.
+#
+# == details
+# Class ids in ``membership_meach`` have already be adjusted to the consensus class ids
+# to let ``sum(x1 == x_consensus)`` to get maximum.
+#
+# The concordance score is the mean probability of fiting the consensus class ids in all
+# partitions.
+#
+# This function is used internally.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+concordance = function(membership_each, class) {
+	mean(apply(membership_each, 2, function(x) sum(x == class, na.rm = TRUE)/length(x)))
+}

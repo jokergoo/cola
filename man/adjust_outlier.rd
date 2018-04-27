@@ -11,13 +11,13 @@ adjust_outlier(x, q = 0.05)
 }
 \arguments{
 
-  \item{x}{a numeric vector}
-  \item{q}{quantile to adjust}
+  \item{x}{a numeric vector.}
+  \item{q}{quantile to adjust.}
 
 }
 \details{
-Vaules larger than quantile \code{1 - q} are adjusted to \code{1 - q} and 
-values smaller than quantile \code{q} are adjusted to \code{q}.
+Vaules larger than quantile \code{1 - q} are adjusted to the \code{1 - q} quantile and 
+values smaller than quantile \code{q} are adjusted to the \code{q} quantile.
 }
 \value{
 A numeric vector with same length as the original one.

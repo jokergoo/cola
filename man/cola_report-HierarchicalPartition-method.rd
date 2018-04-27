@@ -11,9 +11,9 @@ Make report for the HierarchicalPartition object
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object}
-  \item{output_dir}{the output directory where put the report}
-  \item{env}{where the objects in the report are found, internally used}
+  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
+  \item{output_dir}{the output directory where the report is put.}
+  \item{env}{where the objects in the report are found, internally used.}
 
 }
 \details{
@@ -24,7 +24,8 @@ in the partition hierarchy.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+\dontrun{
+data(cola_rh)
+cola_report(cola_rh, output_dir = "~/test2")
+}
 }

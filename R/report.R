@@ -12,13 +12,19 @@ KNITR_TAB_ENV$css_added = FALSE
 # Add one JavaScript tab in the report
 #
 # == param
-# -code R code to execute
-# -header header or the title for the tab
-# -desc decription in the tab
-# -opt options for knitr chunk
+# -code R code to execute.
+# -header header or the title for the tab.
+# -desc decription in the tab.
+# -opt options for the knitr chunk.
+# -message message to print.
 #
 # == details
+# Each tab contains the R source code and results generated from it (figure, tables, text, ...).
+#
 # This function in only for internal use.
+#
+# == seealso
+# `knitr_insert_tabs` produces a complete HTML fragment.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -68,6 +74,11 @@ TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
 # Generate the HTML code for the JavaScript tabs.
 #
 # == details
+# The jQuery UI is used to generate html tabs (https://jqueryui.com/tabs/).
+#
+# ``knitr_insert_tabs`` should be used after several callings of `knitr_add_tab_item`
+# to generate a complete HTML fragment for all tabs with all necessary Javascript and css code.
+#
 # This function is only for internal use.
 #
 # == author
@@ -112,18 +123,23 @@ $( function() {
 # Make report for the ConsensusPartitionList object
 #
 # == param
-# -object a `ConsensusPartitionList-class` object
-# -output_dir the output directory where put the report
-# -env where the objects in the report are found, internally used
+# -object a `ConsensusPartitionList-class` object.
+# -output_dir the output directory where the report is put.
+# -env where the objects in the report are found, internally used.
 #
 # == details
-# The `ConsensusPartitionList-class` object contains results for all top methods and all partition methods.
+# The `ConsensusPartitionList-class` object contains results for all top value methods and all partition methods.
 # This function generates a HTML report which contains all plots for every combination
-# of top method and partition method.
+# of top value method and partition method. The report generation may take a while.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# \dontrun{
+# data(cola_rl)
+# cola_report(cola_rl[c("sd", "MAD"), c("hclust", "skmeans")], output_dir = "~/test")
+# }
 setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
 	definition = function(object, output_dir = getwd(), env = parent.frame()) {
@@ -138,8 +154,8 @@ setMethod(f = "cola_report",
 # Make report for the ConsensusPartition object
 #
 # == param
-# -object a `ConsensusPartition-class` object
-# -output_dir the output directory where put the report
+# -object a `ConsensusPartition-class` object.
+# -output_dir the output directory where the report is put.
 #
 # == details
 # Please generate report on the `ConsensusPartitionList-class` object directly.
@@ -160,9 +176,9 @@ setMethod(f = "cola_report",
 # Make report for the HierarchicalPartition object
 #
 # == param
-# -object a `HierarchicalPartition-class` object
-# -output_dir the output directory where put the report
-# -env where the objects in the report are found, internally used
+# -object a `HierarchicalPartition-class` object.
+# -output_dir the output directory where the report is put.
+# -env where the objects in the report are found, internally used.
 #
 # == details
 # This function generates a HTML report which contains all plots for all nodes
@@ -171,6 +187,11 @@ setMethod(f = "cola_report",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# \dontrun{
+# data(cola_rh)
+# cola_report(cola_rh, output_dir = "~/test2")
+# }
 setMethod(f = "cola_report",
 	signature = "HierarchicalPartition",
 	definition = function(object, output_dir, env = parent.frame()) {
