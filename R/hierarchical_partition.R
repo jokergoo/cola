@@ -507,8 +507,8 @@ setMethod(f = "get_signatures",
 #
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL, anno = object@list[[1]]@anno, 
-	anno_col = if(missing(anno)) object@list[[1]]@anno_col else NULL,
+	definition = function(object, depth = NULL, anno = get_anno(object[1]), 
+	anno_col = get_anno_col(object[1]),
 	...) {
 
 	data = object@list[[1]]@.env$data
@@ -553,7 +553,14 @@ setMethod(f = "collect_classes",
 # -x a `HierarchicalPartition-class` object
 # -i index
 #
+# == example
+# data(cola_rh)
+# cola_rh["01"]
+# cola_rh["2"]
 "[.HierarchicalPartition" = function(x, i) {
+	if(length(i) > 1) {
+		stop("length of the index should only be one.")
+	}
 	if(is.numeric(i)) {
 		i = names(x@list)[i]
 	}
@@ -564,7 +571,7 @@ setMethod(f = "collect_classes",
 # Test correspondance between predicted and known classes
 #
 # == param
-# -object a `HierarchicalPartition-class` object
+# -object a `HierarchicalPartition-class` object.
 # -depth minimal depth of the hierarchy
 # -known a vector or a data frame with known factors
 #
@@ -579,7 +586,7 @@ setMethod(f = "collect_classes",
 #
 setMethod(f = "test_to_known_factors",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL, known = object@list[[1]]@anno) {
+	definition = function(object, depth = NULL, known = get_anno(object[1])) {
 
 	if(!is.null(known)) {
 		if(is.atomic(known)) {
@@ -622,14 +629,17 @@ setMethod(f = "test_to_known_factors",
 # Visualize columns after dimension reduction
 #
 # == param
-# -object a numeric matrix
-# -depth depth of the hierarchy
-# -top_n top n genes to use
-# -parent_node parent node
+# -object a `HierarchicalPartition-class` object.
+# -depth depth of the hierarchy.
+# -top_n top n genes to use.
+# -parent_node parent node. If it is set, the function calls is identical to ``dimension_reduction(object[parent_node])``
 # -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
 #         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
 # -silhouette_cutoff silhouette cutoff
 # -tsne_param parameters pass to `Rtsne::Rtsne`
+#
+# == details
+# The classes is extract at depth ``depth``.
 #
 # == value
 # No value is returned.
@@ -662,7 +672,7 @@ setMethod(f = "dimension_reduction",
 		if(!parent_node %in% setdiff(all_nodes(object), all_leaves(object))) {
 			stop(qq("@{parent_node} has no children nodes.\n"))
 		}
-		obj = object[[parent_node]]
+		obj = object[parent_node]
 		dimension_reduction(obj, k = guess_best_k(obj), top_n = top_n, method = method,
 			silhouette_cutoff = silhouette_cutoff, tsne_param = tsne_param)
 		legend("topleft", legend = qq("node @{parent_node}"))
@@ -670,14 +680,17 @@ setMethod(f = "dimension_reduction",
 })
 
 # == title
-# max depth of the hierarchy
+# Max depth of the hierarchy
 #
 # == param
-# -object the object
+# -object a `HierarchicalPartition-class` object.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rh)
+# max_depth(cola_rh)
 setMethod(f = "max_depth",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
@@ -686,15 +699,18 @@ setMethod(f = "max_depth",
 })
 
 # == title
-# all nodes in the hierarchy
+# All nodes in the hierarchy
 #
 # == param
-# -object the object
-# -depth depth
+# -object a `HierarchicalPartition-class` object.
+# -depth depth in the hierarchy.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rh)
+# all_nodes(cola_rh)
 setMethod(f = "all_nodes",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = NULL) {
@@ -707,15 +723,18 @@ setMethod(f = "all_nodes",
 })
 
 # == title
-# all leaves in the hierarchy
+# All leaves in the hierarchy
 #
 # == param
-# -object the object
-# -depth depth
+# -object a `HierarchicalPartition-class` object.
+# -depth depth in the hierarchy.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rh)
+# all_leaves(cola_rh)
 setMethod(f = "all_leaves",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = NULL) {
@@ -739,14 +758,13 @@ get_children = function(object, node = "0") {
 # Get the original matrix
 #
 # == param
-# -object the object
+# -object a `HierarchicalPartition-class` object.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
 setMethod(f = "get_matrix",
-	signature = "ConsensusPartitionList",
+	signature = "HierarchicalPartition",
 	definition = function(object) {
 	object@.env$data
 })
-

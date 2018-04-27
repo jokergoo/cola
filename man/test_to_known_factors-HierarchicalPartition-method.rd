@@ -7,11 +7,11 @@ Test correspondance between predicted and known classes
 Test correspondance between predicted and known classes
 }
 \usage{
-\S4method{test_to_known_factors}{HierarchicalPartition}(object, depth = NULL, known = object@list[[1]]@anno)
+\S4method{test_to_known_factors}{HierarchicalPartition}(object, depth = NULL, known = get_anno(object[1]))
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object}
+  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{minimal depth of the hierarchy}
   \item{known}{a vector or a data frame with known factors}
 

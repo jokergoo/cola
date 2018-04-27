@@ -344,10 +344,10 @@ setMethod(f = "collect_classes",
 
 
 # == title
-# Collect classes from ConsensusPartitionList object
+# Collect classes from ConsensusPartition object
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
+# -object a `ConsensusPartition-class` object.
 # -internal used internally.
 #
 # == details

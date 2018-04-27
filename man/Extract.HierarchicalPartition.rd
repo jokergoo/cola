@@ -16,7 +16,5 @@ Subset
 
 }
 \examples{
-# There is no example
-NULL
 
 }

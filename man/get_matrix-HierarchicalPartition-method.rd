@@ -1,0 +1,23 @@
+\name{get_matrix-HierarchicalPartition-method}
+\alias{get_matrix,HierarchicalPartition-method}
+\title{
+Get the original matrix
+}
+\description{
+Get the original matrix
+}
+\usage{
+\S4method{get_matrix}{HierarchicalPartition}(object)
+}
+\arguments{
+
+  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
+
+}
+\author{
+Zuguang Gu <z.gu@dkfz.de>
+}
+\examples{
+# There is no example
+NULL
+}

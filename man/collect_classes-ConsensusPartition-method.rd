@@ -1,17 +1,17 @@
 \name{collect_classes-ConsensusPartition-method}
 \alias{collect_classes,ConsensusPartition-method}
 \title{
-Collect classes from ConsensusPartitionList object
+Collect classes from ConsensusPartition object
 }
 \description{
-Collect classes from ConsensusPartitionList object
+Collect classes from ConsensusPartition object
 }
 \usage{
 \S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
+  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
   \item{internal}{used internally.}
 
 }
