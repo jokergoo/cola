@@ -10,7 +10,7 @@ GetoptLong(
 
 library(cola)
 # source(qq("@{dirname(get_scriptname())}/../load.R"))
-register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
+#register_top_value_fun(AAC = function(mat) AAC(t(mat), mc.cores = ncore))
 
 x = readRDS(qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA/@{file}.rds"))
 data = x$dat
@@ -35,10 +35,10 @@ saveRDS(res_list, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_sub
 dir.create(qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_subgroups_report"))
 cola_report(res_list, qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_subgroups_report"))
 
-res_hc = hierarchical_partition(data)
-saveRDS(res_hc, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_hc.rds"))
-dir.create(qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_hc_report"))
-cola_report(res_hc, qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_hc_report"))
+#res_hc = hierarchical_partition(data)
+#saveRDS(res_hc, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_hc.rds"))
+#dir.create(qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_hc_report"))
+#cola_report(res_hc, qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA_subgroup/@{file}_hc_report"))
 
 
 # for(f in dir("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/TCGA")) {

@@ -48,7 +48,7 @@ saveRDS(res_hc, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/recount2/@
 
 # for(pid in dir("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/recount2/", pattern = "\\d{4,}")) {
 # 	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_recount.R --pid @{pid}")
-# 	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=50:00:00,mem=20G,nodes=1:ppn=4 -N cola_recount_@{pid}' '@{cmd}'")
+# 	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=50:00:00,mem=10G,nodes=1:ppn=4 -N cola_recount_@{pid}' '@{cmd}'")
 # 	system(cmd)
 # }
 
