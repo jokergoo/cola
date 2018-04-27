@@ -41,14 +41,14 @@ mat = log2(rpkm[gt[rownames(rpkm)] == "protein_coding", ] + 1)
 library(cola)
 mat = adjust_matrix(mat)
 
-res_list = run_all_consensus_partition_methods(mat, k = 2:8, mc.cores = 4, top_method = tm, partition_method = pm)
+res_list = run_all_consensus_partition_methods(mat, max_k = 8, mc.cores = 4, top_method = tm, partition_method = pm)
 saveRDS(res_list, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/recount2/@{pid}/@{pid}_cola_all.rds"))
-res_hc = hierarchical_partition(mat)
-saveRDS(res_hc, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/recount2/@{pid}/@{pid}_cola_hc.rds"))
+# res_hc = hierarchical_partition(mat)
+# saveRDS(res_hc, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/recount2/@{pid}/@{pid}_cola_hc.rds"))
 
 # for(pid in dir("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/recount2/", pattern = "\\d{4,}")) {
-# 	cmd = qq("Rscript-3.3.1 /home/guz/project/development/cola/test_not_run/test_recount.R --pid @{pid}")
-# 	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=50:00:00,mem=10G,nodes=1:ppn=4 -N cola_recount_@{pid}' '@{cmd}'")
+# 	cmd = qq("module load R/3.3.1; Rscript /home/guz/project/development/cola/test_not_run/test_recount.R --pid @{pid}")
+# 	cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=50:00:00,mem=20G,nodes=1:ppn=4 -N cola_recount_@{pid}' '@{cmd}'")
 # 	system(cmd)
 # }
 
