@@ -123,8 +123,8 @@ setMethod(f = "get_membership",
 setMethod(f = "get_membership",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
-	df = object@consensus_class[[as.character(k)]]
-	df[, grep("^p\\d+$", colnames(df)), drop = FALSE]
+	lt = object@consensus_class[[as.character(k)]]
+	lt$membership
 })
 
 
@@ -262,8 +262,8 @@ setMethod(f = "get_classes",
 setMethod(f = "get_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
-	df = object@consensus_class[[as.character(k)]]
-	df[, !grepl("^p\\d+$", colnames(df)), drop = FALSE]
+	lt = object@consensus_class[[as.character(k)]]
+	lt$class_df
 })
 
 # == title

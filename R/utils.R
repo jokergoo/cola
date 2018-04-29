@@ -10,9 +10,10 @@ if(!exists("strrep")) {
 # class = c(rep("a", 10), rep("b", 3))
 # ref = c(rep("b", 4), rep("a", 9))
 # relabel_class(class, ref)
-relabel_class = function(class, ref) {
+relabel_class = function(class, ref, full_set = union(class, ref)) {
 	class = as.character(class)
 	ref = as.character(ref)
+	full_set = as.character(full_set)
 
 	# if(length(intersect(class, ref)) == 0) {
 	# 	stop("class and ref must be from same set of labels.")
@@ -26,7 +27,11 @@ relabel_class = function(class, ref) {
 
 	imap = clue::solve_LSAP(m, maximum = TRUE)
 	map = structure(rownames(m)[imap], names = rownames(m))
-
+	unmapped = setdiff(full_set, map)
+	if(length(unmapped)) {
+		map = c(map, structure(unmapped, names = unmapped))
+	}
+	    	
 	df = data.frame(class = class, adjusted = map[class], ref = ref)
 	attr(map, "df") = df
 	return(map)

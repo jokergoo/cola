@@ -189,19 +189,19 @@ PAC = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 }
 
 
-# tot_withinss = function(class_id, mat) {
-# 	s = tapply(seq_along(class_id), class_id, function(ind) {
-# 		if(length(ind) == 1) {
-# 			return(0)
-# 		} else {
-# 			m = mat[, ind, drop = FALSE]
-# 			mean = rowMeans(m)
-# 			m = cbind(mean, m)
-# 			sum((dist(t(m))[1:length(ind)])^2)
-# 		}
-# 	})
-# 	sum(s)
-# }
+tot_withinss = function(class_id, mat) {
+	s = tapply(seq_along(class_id), class_id, function(ind) {
+		if(length(ind) == 1) {
+			return(0)
+		} else {
+			m = mat[, ind, drop = FALSE]
+			mean = rowMeans(m)
+			m = cbind(mean, m)
+			sum((dist(t(m))[1:length(ind)])^2)
+		}
+	})
+	sum(s)
+}
 
 
 # pairwise_concordance_to_class = function(consensus_mat, class, reverse = FALSE) {

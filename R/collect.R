@@ -377,10 +377,13 @@ setMethod(f = "collect_classes",
 
 		ht_list = ht_list + Heatmap(membership, col = colorRamp2(c(0, 1), c("white", "red")),
 			show_row_names = FALSE, cluster_columns = FALSE, cluster_rows = FALSE, show_heatmap_legend = i == 1,
+			heatmap_legend_param = list(title = "membership"),
+			column_title = qq("k = @{all_k[i]}"),
 			name = paste0("membership_", all_k[i])) + 
 			Heatmap(class, col = brewer_pal_set2_col, 
-				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), name = paste(all_k[i], "_classes"),
-				column_title = qq("k = @{all_k[i]}"))
+				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), 
+				heatmap_legend_param = list(title = "classes"),
+				name = paste(all_k[i], "_classes"))
 		gap = c(gap, c(0, 4))
 		class_mat = cbind(class_mat, as.numeric(class))
 	}

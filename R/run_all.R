@@ -146,26 +146,50 @@ run_all_consensus_partition_methods = function(data,
 		}
 		stop("There are errors when doing mclapply.")
 	}
-	
+
 	res_list@list = lt
 	data2 = t(scale(t(data)))
 	cat("adjust class labels according to the consensus classification from all methods.\n")
+	cat("- adjust class labels for each k\n")
 	reference_class = lapply(lt[[1]]@k, function(k) {
 		cl_df = get_consensus_from_multiple_methods(res_list, k)
-		class_ids = cl_df$class
-		mean_dist = tapply(seq_len(ncol(data2)), class_ids, function(ind) {
-			n = length(ind)
-			if(n == 1) {
-				return(Inf)
-			}
-			sum(dist(t(data2[, ind, drop = FALSE]))^2)/(n*(n-1)/2)
-		})
-		map = structure(names = names(mean_dist)[order(mean_dist)], names(mean_dist))
-		class_ids = as.numeric(map[as.character(class_ids)])
-		cl_df$class = class_ids
+		# class_ids = cl_df$class
+		# mean_dist = tapply(seq_len(ncol(data2)), class_ids, function(ind) {
+		# 	n = length(ind)
+		# 	if(n == 1) {
+		# 		return(Inf)
+		# 	}
+		# 	sum(dist(t(data2[, ind, drop = FALSE]))^2)/(n*(n-1)/2)
+		# })
+		# map = structure(names = names(mean_dist)[order(mean_dist)], names(mean_dist))
+		# class_ids = as.numeric(map[as.character(class_ids)])
+		# cl_df$class = class_ids
 		return(cl_df)
 	})
 	names(reference_class) = as.character(lt[[1]]@k)
+	
+	# also adjust between consensus classes
+	cat("- adjust class labels across all k.\n")
+	rc = reference_class[[1]]$class_df$class
+	all_k = lt[[1]]@k
+	for(i in seq_along(all_k)[-1]) {
+		class_df = reference_class[[i]]$class_df
+    	class = class_df[, "class"]
+
+    	map = relabel_class(class, rc, full_set = 1:(all_k[i]))
+    	map2 = structure(names(map), names = map)
+    	# unmapped = setdiff(as.character(1:k[i]), map)
+    	# map = c(map, structure(unmapped, names = unmapped))
+    	# map2 = c(map2, structure(unmapped, names = unmapped))
+    	reference_class[[i]]$class_df$class = as.numeric(map[as.character(class)])
+    	
+    	# the class label for the global membership matrix needs to be adjusted
+    	reference_class[[i]]$membership = reference_class[[i]]$membership[, as.numeric(map2[as.character(1:all_k[i])]) ]
+		colnames(reference_class[[i]]$membership) = paste0("p", 1:all_k[i])
+			
+		rc = reference_class[[i]]$class_df$class
+	}
+
 	res_list@consensus_class = reference_class
 
 	for(i in seq_along(lt)) {
@@ -180,10 +204,13 @@ run_all_consensus_partition_methods = function(data,
         	# - res$object_list[[ik]]$membership_each
         	class_df = get_classes(res, k)
         	class = class_df[, "class"]
-        	map = relabel_class(class, reference_class[[ik]]$class)
+        	map = relabel_class(class, reference_class[[ik]]$class_df$class, full_set = 1:k)
         	map2 = structure(names(map), names = map)
+      #   	unmapped = setdiff(as.character(1:k), map)
+	    	# map = c(map, structure(unmapped, names = unmapped))
+	    	# map2 = c(map2, structure(unmapped, names = unmapped))
+	    	
         	res@object_list[[ik]]$class_df$class = as.numeric(map[as.character(class)])
-
         	res@object_list[[ik]]$membership = res@object_list[[ik]]$membership[, as.numeric(map2[as.character(1:k)]) ]
 			colnames(res@object_list[[ik]]$membership) = paste0("p", 1:k)
 			
@@ -218,7 +245,7 @@ get_consensus_from_multiple_methods = function(object, k) {
 			if(is.null(reference_class)) {
 	        	reference_class = get_classes(obj, k)[, "class"]
 	        } else {
-	        	map = relabel_class(get_classes(obj, k)[, "class"], reference_class)
+	        	map = relabel_class(get_classes(obj, k)[, "class"], reference_class, full_set = 1:k)
 	        	map2 = structure(names(map), names = map)
 	        	membership = membership[, as.numeric(map2[as.character(1:k)]) ]
 				colnames(membership) = paste0("p", 1:k)
@@ -234,8 +261,10 @@ get_consensus_from_multiple_methods = function(object, k) {
 	m = cl_membership(consensus)
 	class(m) = "matrix"
 	colnames(m) = paste0("p", 1:k)
+	attr(m, "n_of_classes") = NULL
+	attr(m, "is_cl_hard_partition") = NULL
 	class = as.vector(cl_class_ids(consensus))
-	df = cbind(class = class, as.data.frame(m))
+	df = data.frame(class = class)
 	df$entropy = apply(m, 1, entropy)
 
 	membership_each = do.call("cbind", lapply(partition_list, function(x) {
@@ -252,7 +281,7 @@ get_consensus_from_multiple_methods = function(object, k) {
  
 	df$silhouette = silhouette(class, dist(t(consensus_mat)))[, "sil_width"]
 
-	return(df)
+	return(list(class_df = df, membership = as.matrix(m)))
 }
 
 

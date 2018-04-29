@@ -277,7 +277,7 @@ consensus_partition = function(data,
 		class_ids_by_top_n = tapply(seq_along(partition_list), param$top_n, function(ind) {
 			partition_consensus = cl_consensus(cl_ensemble(list = partition_list[ind]))
 			ci = as.vector(cl_class_ids(partition_consensus))
-			map = relabel_class(ci, class_ids)
+			map = relabel_class(ci, class_ids, full_set = 1:k)
 			as.numeric(map[as.character(ci)])
 		})
 
@@ -286,7 +286,7 @@ consensus_partition = function(data,
 			x = partition_list[[i]]
 			class_ids = class_ids_by_top_n[[as.character(param$top_n[i])]]
 			class = as.vector(cl_class_ids(x))
-			map = relabel_class(class, class_ids)
+			map = relabel_class(class, class_ids, full_set = 1:k)
 			class = as.numeric(map[as.character(class)])
 			class
 		}))
@@ -354,11 +354,11 @@ consensus_partition = function(data,
 		class_df = object_list[[i]]$class_df
     	class = class_df[, "class"]
 
-    	map = relabel_class(class, reference_class)
+    	map = relabel_class(class, reference_class, full_set = 1:(k[i]))
     	map2 = structure(names(map), names = map)
-    	unmapped = setdiff(as.character(1:k[i]), map)
-    	map = c(map, structure(unmapped, names = unmapped))
-    	map2 = c(map2, structure(unmapped, names = unmapped))
+    	# unmapped = setdiff(as.character(1:k[i]), map)
+    	# map = c(map, structure(unmapped, names = unmapped))
+    	# map2 = c(map2, structure(unmapped, names = unmapped))
     	object_list[[i]]$class_df$class = as.numeric(map[as.character(class)])
     	
     	# the class label for the global membership matrix needs to be adjusted
