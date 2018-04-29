@@ -16,5 +16,7 @@ Subset
 
 }
 \examples{
-
+data(cola_rh)
+cola_rh["01"]
+cola_rh["2"]
 }
