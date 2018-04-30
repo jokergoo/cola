@@ -355,7 +355,7 @@ setMethod(f = "guess_best_k",
 	l = tb$concordance > 0.9
 	tb = cbind(tb, ifelse(l, ifelse(tb$concordance > 0.95, "**", "*"), ""), stringsAsFactors = FALSE)
 	colnames(tb)[ncol(tb)] = ""
-	return(tb)
+	return(tb[order(tb[, "concordance"], decreasing = TRUE), , drop = FALSE])
 })
 
 # == title

@@ -64,7 +64,7 @@ dim(mat)
 Global distribution for each sample:
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("* density heatmap of global distribution in each sample (@{ncol(mat)} samples)"))
+message(qq("* making density heatmap of global distribution in each sample (@{ncol(mat)} samples)"))
 ```
 
 ```{r density-heatmap}
@@ -83,7 +83,7 @@ n_partition_method = length(res_list@partition_method)
 n_method = n_top_value_method * n_partition_method
 message(qq("* top rows are extracted by '@{paste(res_list@top_value_method, collapse = ', ')}' methods"))
 message(qq("* subgroups are detected by '@{paste(res_list@partition_method, collapse = ', ')}' methods"))
-message(qq("* finally there are @{n_method} combinations of methods"))
+message(qq("  - in total @{n_method} combinations of methods"))
 ```
 
 ```{r, echo = FALSE, message = FALSE}
@@ -98,6 +98,10 @@ guess_best_k(res_list)
 
 ```{r, echo = FALSE}
 tb = guess_best_k(res_list)
+g = expand.grid(res_list@partition_method, res_list@top_value_method)
+g = paste0(g[, 2], ":", g[, 1])
+od = sapply(rownames(tb), function(x) which(g == x))
+rownames(tb) = paste0("[", rownames(tb), "](#toc_", od + 2, ")")
 kable(tb)
 ```
 
@@ -108,10 +112,10 @@ fs = min(c(3*n_top_value_method, 14))/n_partition_method
 CDF of consensus matrix for all methods:
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("* making ecdf curves for all methods (@{n_method} plots)"))
+message(qq("* making empirical cumulative distribution curves for all methods"))
 ```
 
-```{r collect-plots, fig.width = fs*n_partition_method, fig.height = fs*n_top_value_method}
+```{r collect-plots, fig.width = fs*n_partition_method, fig.height = fs*n_top_value_method, results = "hide"}
 collect_plots(res_list, fun = plot_ecdf)
 ```
 
@@ -128,8 +132,8 @@ n_top_value_method = length(res_list@top_value_method)
 n_partition_method = length(res_list@partition_method)
 n_method = n_top_value_method * n_partition_method
 for(k in all_k) { -%>
-message("  - consensus heamtaps for all methods (k=<%=k%>, <%=n_method%> plots)")
-knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = consensus_heatmap)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>')
+message("  - consensus heamtaps for all methods (k = <%=k%>)")
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = consensus_heatmap)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"')
 <% } -%>
 knitr_insert_tabs()
 ```
@@ -142,8 +146,8 @@ Membership heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-message("  - membership heamtap for all methods (k=<%=k%>, <%=n_method%> plots)")
-knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = membership_heatmap)', 'k = <%=k%>', opt = 'fig.width =<%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>')
+message("  - membership heamtap for all methods (k = <%=k%>)")
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = membership_heatmap)', 'k = <%=k%>', opt = 'fig.width =<%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -156,8 +160,8 @@ Signature heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-message("  - signature heamtap for all methods (k=<%=k%>, <%=n_method%> plots)")
-knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = get_signatures)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>')
+message("  - signature heamtap for all methods (k = <%=k%>)")
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = get_signatures)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -184,7 +188,7 @@ Collect partitions from all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-message("  - collect classifications from all methods (k=<%=k%>)")
+message("  - classifications from all methods (k = <%=k%>)")
 knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 14, fig.height = 8')
 <%}-%>
 knitr_insert_tabs()
@@ -196,9 +200,16 @@ message(qq("* overlaping top rows from different top value methods"))
 
 Overlap of top rows in different top methods:
 
+<% oe = try(loadNamespace("venneuler"), silent = TRUE)
+if(inherits(oe, "try-error")) {
+   venn_method = "venn"
+} else {
+   venn_method = "venneuler"
+}-%>
+
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(top_n in res_list@list[[1]]@top_n) { -%>
-knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>)', 'top_n = <%=top_n%>', opt = 'fig.width = 5, fig.height = 5')
+knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>, method = "<%=venn_method%>")', 'top_n = <%=top_n%>', opt = 'fig.width = 5, fig.height = 5')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -206,7 +217,7 @@ knitr_insert_tabs()
 Also visualize the correspondance of rankings between different top methods:
 
 ```{r top-row-overlap, fig.width = 14, fig.height = 8}
-top_rows_overlap(res_list, top_n = <%= min(res_list@list[[1]]@top_n) %>, type = "correspondance")
+top_rows_overlap(res_list, top_n = <%= min(res_list@list[[1]]@top_n) %>, method = "correspondance")
 ```
 
 Heatmaps for the top rows:
@@ -224,7 +235,7 @@ if(n_top_value_method <= 4) {
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(top_n in res_list@list[[1]]@top_n) { -%>
-message("  - compare top row methods by heatmap (top_n=<%=top_n%>)")
+message("  - comparing top row methods by heatmap (top_n=<%=top_n%>)")
 knitr_add_tab_item('top_rows_heatmap(res_list, top_n = <%=top_n%>)', 'top_n = <%=top_n%>', opt = 'fig.width = <%=fig_width%>, fig.height = <%=fig_height%>')
 <%}-%>
 knitr_insert_tabs()
@@ -267,4 +278,8 @@ for(top_value_method in res_list@top_value_method) {
 
 ```{r}
 sessionInfo()
+```
+
+```{r, echo = FALSE, message = FALSE}
+message("-----------------------------------------------------------------")
 ```

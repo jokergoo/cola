@@ -125,7 +125,7 @@ consensus_partition = function(data,
 	k = sort(k)
 	l = k <= ncol(data)
 	if(sum(l) != length(k)) {
-		qqcat("Following k (@{paste(k[!l], collapse=', ')}) are removed.\n")
+		qqcat("* Following k (@{paste(k[!l], collapse=', ')}) are removed.\n")
 	}
 	k = k[l]
 	if(length(k) == 0) {
@@ -135,7 +135,7 @@ consensus_partition = function(data,
 	top_n = round(top_n)
 	l = top_n <= nrow(data)
 	if(sum(l) != length(top_n)) {
-		qqcat("Following top_n (@{paste(top_n[!l], collapse=', ')}) are removed.\n")
+		qqcat("* Following top_n (@{paste(top_n[!l], collapse=', ')}) are removed.\n")
 	}
 	top_n = top_n[l]
 	if(length(top_n) == 0) {
@@ -152,18 +152,18 @@ consensus_partition = function(data,
 	# also since one top value metric will be used for different partition methods,
 	# we cache the top values for repetitive use
 	if(is.null(.env$all_top_value_list)) {
-		if(verbose) qqcat("calcualte @{top_value_method} values.\n")
+		if(verbose) qqcat("* calcualte @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list = list()
 		.env$all_top_value_list[[top_value_method]] = all_top_value
 	} else if(is.null(.env$all_top_value_list[[top_value_method]])) {
-		if(verbose) qqcat("calcualte @{top_value_method} values.\n")
+		if(verbose) qqcat("* calcualte @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list[[top_value_method]] = all_top_value
 	} else {
-		if(verbose) qqcat("@{top_value_method} values have already been calculated. Get from cache.\n")
+		if(verbose) qqcat("* @{top_value_method} values have already been calculated. Get from cache.\n")
 		all_top_value = .env$all_top_value_list[[top_value_method]]
 	}
 
@@ -175,10 +175,10 @@ consensus_partition = function(data,
 	if(scale_rows) {
 		scale_method = attr(partition_fun, "scale_method")
 		if("standardization" %in% scale_method) {
-			if(verbose) cat("rows are scaled before sent to partition: standardization ((x - mean)/sd)\n")
+			if(verbose) cat("* rows are scaled before sent to partition: standardization (x - mean)/sd\n")
 			data = t(scale(t(data)))
 		} else if("rescale" %in% scale_method) {
-			if(verbose) cat("rows are scaled before sent to partition: rescale ((x - min)/(max - min))\n")
+			if(verbose) cat("* rows are scaled before sent to partition: rescale (x - min)/(max - min)\n")
 			row_min = rowMeans(data)
 			row_max = rowMaxs(data)
 			row_range = row_max - row_min
@@ -191,7 +191,7 @@ consensus_partition = function(data,
 	# in case NA is produced in scaling
 	l = apply(data, 1, function(x) any(is.na(x)))
 	if(any(l)) {
-		if(verbose) qqcat("remove @{sum(l)} rows with NA values after row scaling.\n")
+		if(verbose) qqcat("* remove @{sum(l)} rows with NA values after row scaling.\n")
 		data = data[!l, , drop = FALSE]
 		all_top_value = all_top_value[!l]
 		top_n = top_n[top_n <= sum(!l)]
@@ -204,9 +204,9 @@ consensus_partition = function(data,
 
 		if(length(ind) > 5000) {
 			ind = sample(ind, 5000)
-			if(verbose) qqcat("get top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
+			if(verbose) qqcat("* get top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
 		} else {
-			if(verbose) qqcat("get top @{top_n[i]} rows by @{top_value_method} method\n")
+			if(verbose) qqcat("* get top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
 		for(j in 1:partition_repeat) {
@@ -228,7 +228,7 @@ consensus_partition = function(data,
 		if(interactive() && verbose) cat("\n")
 	}
 
-	construct_consensus_object = function(param, partition_list, k, prefix = "  ") {
+	construct_consensus_object = function(param, partition_list, k, prefix = "  - ") {
 
 		partition_list = do.call("c", partition_list)
 		partition_list = cl_ensemble(list = partition_list)
@@ -340,7 +340,7 @@ consensus_partition = function(data,
 	# for some method, number of classes detected may be less than k
 	object_list = lapply(k, function(y) {
 		l = param$k == y
-		if(verbose) qqcat("wrapping results for k = @{y}\n")
+		if(verbose) qqcat("* wrapping results for k = @{y}\n")
 		construct_consensus_object(param[l, ], partition_list[l], y)
 	})
 	names(object_list) = as.character(k)

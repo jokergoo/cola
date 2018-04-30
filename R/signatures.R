@@ -81,7 +81,7 @@ setMethod(f = "get_signatures",
 	has_ambiguous = sum(!column_used_logical)
 	n_sample_used = length(class)
 
-	if(verbose) qqcat("@{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
+	if(verbose) qqcat("* @{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
 
 	tb = table(class)
 	if(sum(tb > 1) <= 1) {
@@ -93,64 +93,76 @@ setMethod(f = "get_signatures",
 		return(invisible(NULL))
 	}
 
+	do_row_clustering = TRUE
 	if(inherits(diff_method, "function")) {
-		if(verbose) qqcat("calculate row difference between subgroups by user-defined function\n")
-		fdr = diff_method(data2, class)
+		if(verbose) qqcat("* calculate row difference between subgroups by user-defined function\n")
+		diff_method_fun = diff_method
+		diff_method = digest(diff_method)
 	} else {
 		diff_method = match.arg(diff_method)
+	}
 
-		hash = digest(list(used_samples = which(l), 
-			               class = class,
-			               n_group = k, 
-			               diff_method = diff_method,
-			               column_index = object@column_index),
-					algo = "md5")
-		nm = paste0("signature_fdr_", hash)
+	hash = digest(list(used_samples = which(l), 
+		               class = class,
+		               n_group = k, 
+		               diff_method = diff_method,
+		               column_index = object@column_index),
+				algo = "md5")
+	nm = paste0("signature_fdr_", hash)
 
-		find_signature = TRUE
-		if(!is.null(object@.env[[nm]])) {
-			if(diff_method == "samr") {
-				if(object@.env[[nm]]$diff_method == "samr" && 
-				   object@.env[[nm]]$n_sample_used == n_sample_used && 
-				   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
-					fdr = object@.env[[nm]]$fdr
-					find_signature = FALSE
-				}
-			} else if(diff_method == "pamr") {
-				if(object@.env[[nm]]$diff_method == "pamr" && 
-				   object@.env[[nm]]$n_sample_used == n_sample_used && 
-				   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
-					fdr = object@.env[[nm]]$fdr
-					find_signature = FALSE
-				}
-			} else {
-				if(object@.env[[nm]]$diff_method == diff_method &&
-				   object@.env[[nm]]$n_sample_used == n_sample_used) {
-					fdr = object@.env[[nm]]$fdr
-					find_signature = FALSE
-				}
+	find_signature = TRUE
+	if(!is.null(object@.env[[nm]])) {
+		if(diff_method == "samr") {
+			if(object@.env[[nm]]$diff_method == "samr" && 
+			   object@.env[[nm]]$n_sample_used == n_sample_used && 
+			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+				fdr = object@.env[[nm]]$fdr
+				find_signature = FALSE
 			}
-		}
-
-		if(find_signature) {
-			if(verbose) qqcat("calculate row difference between subgroups by @{diff_method}\n")
-			if(diff_method == "ttest") {
-				fdr = ttest(data2, class)
-			} else if(diff_method == "samr") {
-				fdr = samr(data2, class, fdr.output = fdr_cutoff)
-			} else if(diff_method == "Ftest") {
-				fdr = Ftest(data2, class)
-			} else if(diff_method == "pamr") {
-				fdr = pamr(data2, class, fdr.ouput = fdr_cutoff)
+		} else if(diff_method == "pamr") {
+			if(object@.env[[nm]]$diff_method == "pamr" && 
+			   object@.env[[nm]]$n_sample_used == n_sample_used && 
+			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+				fdr = object@.env[[nm]]$fdr
+				find_signature = FALSE
 			}
 		} else {
-			if(verbose) qqcat("extract row difference from cache (method: @{diff_method})\n")
+			if(object@.env[[nm]]$diff_method == diff_method &&
+			   object@.env[[nm]]$n_sample_used == n_sample_used) {
+				fdr = object@.env[[nm]]$fdr
+				find_signature = FALSE
+			}
 		}
+	}
 
-		object@.env[[nm]]$diff_method = diff_method
-		object@.env[[nm]]$fdr_cutoff = fdr_cutoff
-		object@.env[[nm]]$fdr = fdr
-		object@.env[[nm]]$n_sample_used = n_sample_used
+	if(verbose) qqcat("* calculate row difference between subgroups by @{diff_method}\n")
+	if(find_signature) {
+		if(diff_method == "ttest") {
+			fdr = ttest(data2, class)
+		} else if(diff_method == "samr") {
+			fdr = samr(data2, class, fdr.output = fdr_cutoff)
+		} else if(diff_method == "Ftest") {
+			fdr = Ftest(data2, class)
+		} else if(diff_method == "pamr") {
+			fdr = pamr(data2, class, fdr.ouput = fdr_cutoff)
+		} else {
+			fdr = diff_method_fun(data2, class)
+		}
+	} else {
+		if(verbose) qqcat("  - row difference is extracted from cache\n")
+	}
+
+	object@.env[[nm]]$diff_method = diff_method
+	object@.env[[nm]]$fdr_cutoff = fdr_cutoff
+	object@.env[[nm]]$fdr = fdr
+	object@.env[[nm]]$n_sample_used = n_sample_used
+
+	if(scale_rows && !is.null(object@.env[[nm]]$row_order_scaled)) {
+		row_order = object@.env[[nm]]$row_order_scaled
+		do_row_clustering = FALSE
+	} else if(!scale_rows && !is.null(object@.env[[nm]]$row_order_unscaled)) {
+		row_order = object@.env[[nm]]$row_order_unscaled
+		do_row_clustering = FALSE
 	}
 
 	fdr[is.na(fdr)] = 1
@@ -177,7 +189,7 @@ setMethod(f = "get_signatures",
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2, group = group2)
 	returned_obj = list(df = returned_df, sample_used = column_used_logical)
 
-	if(verbose) qqcat("@{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
+	if(verbose) qqcat("* @{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
 	if(nrow(mat) == 0) {
 		if(plot) {
@@ -197,7 +209,7 @@ setMethod(f = "get_signatures",
 		mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
 		mat2 = mat[order(fdr2)[1:top_k_genes], !column_used_logical, drop = FALSE]
 		group2 = group2[order(fdr2)[1:top_k_genes]]
-		if(verbose) cat(paste0("Only take top ", top_k_genes, " signatures with highest fdr\n"))
+		if(verbose) cat(paste0("* Only take top ", top_k_genes, " signatures with highest fdr\n"))
 	} else {
 		mat1 = mat[, column_used_logical, drop = FALSE]
 		mat2 = mat[, !column_used_logical, drop = FALSE]
@@ -295,7 +307,7 @@ setMethod(f = "get_signatures",
 	silhouette_range = range(class_df$silhouette)
 	silhouette_range[2] = 1
 
-	if(verbose) qqcat("making heatmaps.\n")
+	if(verbose) qqcat("* making heatmaps\n")
 
 	group2 = factor(group2, levels = sort(unique(group2)))
 	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
@@ -303,8 +315,16 @@ setMethod(f = "get_signatures",
 	membership_mat = get_membership(object, k)
 	prop_col_fun = colorRamp2(c(0, 1), c("white", "red"))
 
-	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
-		top_annotation = HeatmapAnnotation(prop = membership_mat[column_used_logical, ],
+	if(internal) {
+		ha1 = HeatmapAnnotation(prop = membership_mat[column_used_logical, ],
+				class = class_df$class[column_used_logical],
+				col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
+				annotation_height = unit(c(ncol(membership_mat)*5, 5), "mm"),
+				show_annotation_name = !has_ambiguous,
+				annotation_name_side = "right",
+				show_legend = TRUE)
+	} else {
+		ha1 = HeatmapAnnotation(prop = membership_mat[column_used_logical, ],
 			class = class_df$class[column_used_logical],
 			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
 				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
@@ -314,7 +334,10 @@ setMethod(f = "get_signatures",
 			annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
 			show_annotation_name = !has_ambiguous,
 			annotation_name_side = "right",
-			show_legend = TRUE),
+			show_legend = TRUE)
+	}
+	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
+		top_annotation = ha1,
 		cluster_columns = FALSE, column_order = mat_col_od1,
 		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
 		use_raster = use_raster, raster_quality = 2,
@@ -328,8 +351,16 @@ setMethod(f = "get_signatures",
 	}
 
 	if(has_ambiguous) {
-		ht_list = ht_list + Heatmap(use_mat2, name = paste0(heatmap_name, 2), col = col_fun,
-			top_annotation = HeatmapAnnotation(prop = membership_mat[!column_used_logical, ,drop = FALSE],
+		if(internal) {
+			ha2 = HeatmapAnnotation(prop = membership_mat[!column_used_logical, ,drop = FALSE],
+				class = class_df$class[!column_used_logical],
+				col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
+				annotation_height = unit(c(ncol(membership_mat)*5, 5), "mm"),
+				show_annotation_name = TRUE,
+				annotation_name_side = "right",
+				show_legend = FALSE)
+		} else {
+			ha2 = HeatmapAnnotation(prop = membership_mat[!column_used_logical, ,drop = FALSE],
 				class = class_df$class[!column_used_logical],
 				silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
 					gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
@@ -339,27 +370,47 @@ setMethod(f = "get_signatures",
 				annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
 				show_annotation_name = TRUE,
 				annotation_name_side = "right",
-				show_legend = FALSE),
+				show_legend = FALSE)
+		}
+		ht_list = ht_list + Heatmap(use_mat2, name = paste0(heatmap_name, 2), col = col_fun,
+			top_annotation = ha2,
 			cluster_columns = FALSE, column_order = mat_col_od2,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
 			use_raster = use_raster, raster_quality = 2,
 			bottom_annotation = bottom_anno2, show_column_names = show_column_names)
 	}
 
-	draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, paste0(', top ', top_k_genes,' signatures'), '')}"),
-		show_heatmap_legend = !internal, show_annotation_legend = !internal)
+	if(do_row_clustering) {
+		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, paste0(', top ', top_k_genes,' signatures'), '')}"),
+			show_heatmap_legend = !internal, show_annotation_legend = !internal)
+		
+		row_order = row_order(ht_list)
+		if(scale_rows) {
+			object@.env[[nm]]$row_order_scaled = do.call("c", row_order)
+		} else {
+			object@.env[[nm]]$row_order_unscaled = do.call("c", row_order)
+		}
+		
+	} else {
+		cat("  - use row order from cache\n")
+		draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, paste0(', top ', top_k_genes,' signatures'), '')}"),
+			show_heatmap_legend = !internal, show_annotation_legend = !internal,
+			cluster_rows = FALSE, row_order = row_order)
+	}
 	# https://www.stat.berkeley.edu/~s133/Cluster2a.html
-	decorate_annotation("silhouette", {
-		grid.rect(gp = gpar(fill = "transparent"))
-		grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
-		if(!has_ambiguous) grid.text("silhouette", x = unit(1, "npc") + unit(10, "mm"), just = "left")
-	})
-	if(has_ambiguous) {
-		decorate_annotation("silhouette2", {
+	if(!internal) {
+		decorate_annotation("silhouette", {
 			grid.rect(gp = gpar(fill = "transparent"))
 			grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
-			if(has_ambiguous) grid.text("silhouette", x = unit(1, "npc") + unit(10, "mm"), just = "left")
+			if(!has_ambiguous) grid.text("silhouette", x = unit(1, "npc") + unit(10, "mm"), just = "left")
 		})
+		if(has_ambiguous) {
+			decorate_annotation("silhouette2", {
+				grid.rect(gp = gpar(fill = "transparent"))
+				grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
+				if(has_ambiguous) grid.text("silhouette", x = unit(1, "npc") + unit(10, "mm"), just = "left")
+			})
+		}
 	}
 
 	return(invisible(returned_obj))

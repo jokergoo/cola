@@ -8,17 +8,19 @@ if(is_hc) {
 } else {
 	tb = guess_best_k(res_list)
 	nm = paste(top_value_method, partition_method, sep = ":")
-	mark = tb[nm, 5]
-	chunk_prefix = paste(top_value_method, partition_method, sep = ":")
+	mark = tb[nm, 6]
+	#mark = gsub("\\*", "&#42;", mark)
+	chunk_prefix = paste(top_value_method, partition_method, sep = "-")
 } -%>
 
 <% if(is_hc) { %>
 ### Node <%=node%>
 <% } else { %>
-### <%=top_value_method%>:<%=partition_method%> <%=mark%>
+### <%=top_value_method%>:<%=partition_method%><%=mark%>
 <% } %>
 
 ```{r, echo = FALSE, message = FALSE}
+message("-----------------------------------------------------------------")
 message("* generating plots for <%=top_value_method%>:<%=partition_method%> (<%=i_section%>/<%=n_section%>)")
 ```
 
@@ -38,7 +40,7 @@ Major plots made from `res` for different `k` (number of partitions). Individual
 later in this section.
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - collect all plots")
+message("  - collecting all plots (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
 ```{r <%=chunk_prefix%>-collect-plots, fig.width = <%=fs*length(all_k)%>, fig.height = <%=fs*4%>, results = "hide"}
@@ -48,7 +50,7 @@ collect_plots(res)
 Plots showing different statistics for choosing optimized `k`:
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - plotting various statistics of selecting best k")
+message("  - plotting various statistics for selecting best k")
 ```
 
 ```{r <%=chunk_prefix%>-select-partition-number, results = "hide", fig.width = 10}
@@ -79,7 +81,7 @@ knitr_insert_tabs()
 Heatmaps for the consensus matrix:
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
+message("  - making consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
 
@@ -93,7 +95,7 @@ knitr_insert_tabs()
 Heatmaps for the membership of samples in each random sampling:
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
+message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
 ```{r <%=chunk_prefix%>-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
@@ -106,19 +108,19 @@ knitr_insert_tabs()
 Heatmaps for signatures:
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - get signatures (k = '<%=paste(all_k, collapse=', ')%>')")
+message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
 ```{r <%=chunk_prefix%>-signature, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('try(get_signatures(res, k = <%=k%>))', 'k = <%=k%>', opt = 'results = "hide"')
+knitr_add_tab_item('get_signatures(res, k = <%=k%>)', 'k = <%=k%>', opt = 'results = "hide"')
 <%}-%>
 knitr_insert_tabs()
 ```
 
 ```{r <%=chunk_prefix%>-signature-no-scale, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('try(get_signatures(res, k = <%=k%>, scale_rows = FALSE))', 'k = <%=k%>')
+knitr_add_tab_item('get_signatures(res, k = <%=k%>, scale_rows = FALSE)', 'k = <%=k%>', opt = 'results = "hide"')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -126,7 +128,7 @@ knitr_insert_tabs()
 PCA plots:
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - PCA plot (k = '<%=paste(all_k, collapse=', ')%>')")
+message("  - making PCA plots (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
 ```{r <%=chunk_prefix%>-mds, results = "asis", echo = FALSE, include = TRUE}
