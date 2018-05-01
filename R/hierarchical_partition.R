@@ -24,7 +24,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
         hierarchy = "matrix",
         subgroup = "character",
         subgroup_col = "character",
-        calling = "ANY"
+        calling = "ANY",
+        .env = "environment"
     )
 )
 
@@ -66,7 +67,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 			cat("\n")
 			.h_obj$hierarchy = rbind(.h_obj$hierarchy, c(parent, node_id))
 		}
-		qqcat("submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
+		qqcat("* submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
 	   	.env$all_value_list = NULL
 	   	.env$column_index = column_index
 		part = consensus_partition(verbose = FALSE, .env = .env, max_k = max_k, 
@@ -96,10 +97,10 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	    set1 = which(cl$class == s)
 	    set2 = which(cl$class != s)
 
-	    qqcat("best k = @{best_k}, most tight subgroup: @{s}\n")
+	    qqcat("* best k = @{best_k}, most tight subgroup: @{s}\n")
 		concordance_score = get_stat(part, k = best_k)[, "concordance"]
 	    if(concordance_score < concordance_cutoff) {
-	    	qqcat("concordance score too small @{concordance_score}, stop.\n")
+	    	qqcat("* concordance score too small @{concordance_score}, stop.\n")
 	    	return(NULL)
 	    }
 
@@ -110,11 +111,11 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	    # } else {
 
 	    	if(length(set1) <= min_samples || length(set2) <= min_samples) {
-	    		cat("subgroups have too few columns, stop.\n")
+	    		cat("* subgroups have too few columns, stop.\n")
 	    		return(NULL)
 	    	}
 
-	    	qqcat("partitioned into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
+	    	qqcat("* partitioned into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
 	    	# insert the two subgroups into the hierarchy
 	    	sub_node_1 = paste0(node_id, s)
 	    	sub_node_2 = paste0(node_id, "0")
@@ -149,6 +150,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	le = unique(as.vector(hp@hierarchy))
 	hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
 	hp@calling = cl
+	hp@.env = .h_obj$list[[1]]@.env
 
 	return(hp)
 }
@@ -319,7 +321,7 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 #
 setMethod(f = "get_classes",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL) {
+	definition = function(object, depth = max_depth(object)) {
 
 	subgroup = object@subgroup
 	if(!is.null(depth)) {
@@ -346,8 +348,11 @@ setMethod(f = "show",
 	definition = function(object) {
 
 	qqcat("A 'HierarchicalPartition' object with '@{object@list[[1]]@top_value_method}:@{object@list[[1]]@partition_method}' method.\n")
+	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
+	qqcat("  There are @{length(all_leaves(object))} groups.\n")
 	cat("\n")
 
+	cat("Hierarchy of the partition:\n")
 	hierarchy = object@hierarchy
 	nodes = hierarchy[, 2]
 	nc = nchar(nodes)
@@ -358,7 +363,7 @@ setMethod(f = "show",
 
 	lines = character(n)
 	for(i in seq_len(n)) {
-		lines[i] = paste0(strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{length(object@list[[nodes[i]]]@column_index)} cols"))
+		lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{length(object@list[[nodes[i]]]@column_index)} cols"))
 		p = nodes[i]
 		while(p != "0") {
 			p = parent[p]
@@ -368,7 +373,7 @@ setMethod(f = "show",
 		}
 	}
 	# substr(lines[1], 1, 1) = "+"
-	lines = c(qq("0, @{length(object@list[['0']]@column_index)} cols"), lines)
+	lines = c(qq("  0, @{length(object@list[['0']]@column_index)} cols"), lines)
 	cat(lines, sep = "\n")
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'HierarchicalPartition' object:\n")
@@ -384,7 +389,6 @@ setMethod(f = "show",
 # == param
 # -object a `HierarchicalPartition-class` object.
 # -depth minimal depth of the hierarchy
-# -force_specific force specific
 # -... other arguments
 # 
 # == details
@@ -399,91 +403,142 @@ setMethod(f = "show",
 #
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL, force_specific = FALSE, ...) {
+	definition = function(object, depth = max_depth(object) - 1, 
+	scale_rows = object[1]@scale_rows, 
+	anno = get_anno(object[1]), 
+	anno_col = get_anno_col(object[1]),
+	show_column_names = TRUE, 
+	verbose = TRUE,
+	random_k_genes = 5000,
+	...) {
 
-	all_subgroup_labels = unique(object@subgroup)
-	if(!is.null(depth)) {
-		all_subgroup_labels = all_subgroup_labels[nchar(all_subgroup_labels) <= depth]
+	if(depth <= 1) {
+		stop("depth should be at least larger than 1.")
 	}
+
+	alf = all_leaves(object, depth = depth)
+	ap = setdiff(all_nodes(object, depth = depth), all_leaves(object, depth = depth))
 
 	sig_lt = list()
-	for(nm in all_subgroup_labels) {
-		nc = nchar(nm)
-		which_group = as.numeric(substr(nm, nc, nc))
-		parent = substr(nm, 1, nc - 1)
-		obj = object@list[[parent]]
-		best_k = guess_best_k(obj)
-		qqcat("get signatures at node @{parent} for @{nm} with @{best_k} subgroups.\n")
-		sig = get_signatures(obj, k = best_k, verbose = FALSE, plot = FALSE, ...)$df$group
-		if(which_group != 0) {
-			sig_lt[[nm]] = which(sig == which_group)
-		} else if(nm == strrep("0", nchar(parent) + 1)) {
-			l = grepl(qq("^@{parent}\\d$"), all_subgroup_labels)
-			same_level = all_subgroup_labels[l]
-			other_group = setdiff(seq_len(best_k), substr(same_level, nc, nc))
-			qqcat("  use subgroup @{paste(other_group, collapse = ', ')}\n")
-			sig_lt[[nm]] = which(sig %in% other_group)
-		} else {
-			l = grepl(qq("^@{parent}[1-9]$"), all_subgroup_labels)
-			if(any(l)) {
-				px = as.numeric(substr(all_subgroup_labels[l], nc, nc))
-				sig_lt[[nm]] = which(! sig %in% px)
-			}
-		}
-	}
-	all_sig = unique(unlist(sig_lt))
+	for(p in ap) {
+		best_k = guess_best_k(object[[p]])
+		qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
+		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE)
+		sig_tb$group = paste0(p, sig_tb$group)
 
-	data = object@list[[1]]@.env$data
-	data = t(scale(t(data)))
-	m = data[all_sig, , drop = FALSE]
+		ch = intersect(alf, paste0(p, 0:best_k))
+		if(any(grepl("0$", ch))) {
+			sig_tb[!sig_tb$group %in% ch, "group"] = grep("0$", ch, value = TRUE)
+		}
+
+		sig_tb = sig_tb[sig_tb$group %in% alf, , drop = FALSE]
+		sig_lt[[p]] = sig_tb
+	}
+	sig = do.call("rbind", sig_lt)
+	sig_lt = split(sig, sig[, "group"])
+
+	all_sig = unique(unlist(lapply(sig_lt, function(x) x[, "which_row"])))
 
 	m_sig = matrix(0, nrow = length(all_sig), ncol = length(sig_lt))
 	rownames(m_sig) = all_sig
 	colnames(m_sig) = names(sig_lt)
 	for(i in seq_along(sig_lt)) {
-		m_sig[as.character(sig_lt[[i]]), i] = 1
-	}
-	col2 = lapply(names(sig_lt), function(x) {
-		foo = c("1" = object@subgroup_col[x], "0" = "white")
-		names(foo) = c("1", "0")
-		foo
-	})
-	names(col2) = colnames(m_sig)
-
-	if(force_specific) {
-		l = rowSums(m_sig) == 1
-		m = m[l, ]
-		m_sig = m_sig[l, ]
+		m_sig[as.character(sig_lt[[i]][, "which_row"]), i] = 1
 	}
 
-	if(nrow(m) > 5000) {
-		qqcat("randomly sample 5000 rows from @{nrow(m)} total rows.\n")
-		ind = sample(nrow(m), 5000)
+	m = object@.env$data[all_sig, , drop = FALSE]
+
+	class = get_classes(object, depth = depth)
+
+	if(nrow(m) > random_k_genes) {
+		qqcat("* randomly sample @{random_k_genes} rows from @{nrow(m)} total rows.\n")
+		ind = sample(nrow(m), random_k_genes)
 	} else {
 		ind = seq_len(nrow(m))
 	}
-	subgroup = get_classes(object, depth = depth)
-	col_order = column_order_by_group(subgroup, m)
-	mat_range = quantile(abs(m[ind, ]), 0.95)
-	col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
+	mat1 = m[ind, , drop = FALSE]
 
-	ht_list = Heatmap(m[ind, ], top_annotation = HeatmapAnnotation(subgroup = subgroup, col = list(subgroup = object@subgroup_col), show_annotation_name = TRUE),
-		name = "scaled_expr", show_row_names = FALSE, cluster_columns = FALSE, column_order = col_order, col = col_fun,
+	base_mean = rowMeans(mat1)
+	if(nrow(mat) == 1) {
+		group_mean = matrix(tapply(mat1, class, mean), nrow = 1)
+	} else {
+		group_mean = do.call("cbind", tapply(seq_len(ncol(mat1)), class, function(ind) {
+			rowMeans(mat1[, ind, drop = FALSE])
+		}))
+	}
+	rel_diff = (rowMaxs(group_mean) - rowMins(group_mean))/base_mean/2
+
+	if(is.null(anno)) {
+		bottom_anno1 = NULL
+	} else {
+		if(is.atomic(anno)) {
+			anno_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = anno_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = anno_nm
+			}
+		}
+
+		if(is.null(anno_col)) {
+			bottom_anno1 = HeatmapAnnotation(df = anno, , drop = FALSE],
+				show_annotation_name = TRUE, annotation_name_side = "right")
+		} else {
+			bottom_anno1 = HeatmapAnnotation(df = anno, , drop = FALSE], col = anno_col,
+				show_annotation_name = TRUE, annotation_name_side = "right")
+		}
+	}
+
+	if(scale_rows) {
+		scaled_mean = base_mean
+		scaled_sd = rowSds(mat1)
+		scaled_mat1 = t(scale(t(mat1)))
+
+		use_mat1 = scaled_mat1
+		mat_range = quantile(abs(scaled_mat1), 0.95, na.rm = TRUE)
+		col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
+		heatmap_name = "scaled_expr"
+	} else {
+		use_mat1 = mat1
+		mat_range = quantile(mat1, c(0.05, 0.95))
+		col_fun = colorRamp2(c(mat_range[1], mean(mat_range), mat_range[2]), c("blue", "white", "red"))
+		heatmap_name = "expr"
+	}
+
+	col_order = column_order_by_group(class, mat1)
+
+	if(verbose) qqcat("* making heatmaps for signatures\n")
+
+	ha1 = HeatmapAnnotation(
+		class = class,
+		col = list(class = object@subgroup_col),
+		annotation_height = unit(5, "mm"),
+		show_annotation_name = TRUE,
+		annotation_name_side = "right",
+		show_legend = TRUE)
+	
+	ht_list = Heatmap(use_mat1, top_annotation = ha1,
+		name = heatmap_name, show_row_names = FALSE, cluster_columns = FALSE, 
+		show_column_names = show_column_names,
+		column_order = col_order, col = col_fun,
+		use_raster = TRUE,
 		show_row_dend = FALSE)
 	
-	ht_list = ht_list + rowAnnotation(df = m_sig[ind, , drop = FALSE], col = col2, width = unit(0.5*length(sig_lt), "cm"), show_legend = FALSE)
-	
-	if(force_specific) {
-		group = character(nrow(m_sig))
-		for(i in seq_len(ncol(m_sig))) {
-			group[as.logical(m_sig[, i])] = colnames(m_sig)[i]
-		}
-		draw(ht_list, split = group[ind])
-		return(invisible(list(mat = m, group = group)))
-	} else {
-		draw(ht_list)
-		return(invisible(sig_lt))
+	all_value_positive = !any(m < 0)
+ 	if(scale_rows && all_value_positive) {
+		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm")) +
+			Heatmap(rel_diff, col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")), 
+				show_row_names = FALSE, name = "rel_diff", width = unit(5, "mm"))
 	}
+
+	sig_iden_col_list = lapply(alf, function(x) structure(c("transparent", object@subgroup_col[x]), names = c("0", "1")))
+	names(sig_iden_col_list) = alf
+	ht_list = ht_list + rowAnnotation(df = m_sig, col = sig_iden_col_list, 
+		width = unit(0.5*length(sig_lt), "cm"), show_legend = FALSE, show_annotation_name = TRUE)
+	
+	draw(ht_list)
+	return(invisible(sig))
 })
 
 # == title
@@ -507,9 +562,8 @@ setMethod(f = "get_signatures",
 #
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL, anno = get_anno(object[1]), 
-	anno_col = get_anno_col(object[1]),
-	...) {
+	definition = function(object, depth = max_depth(object), 
+	anno = get_anno(object[1]), anno_col = get_anno_col(object[1]), ...) {
 
 	data = object@list[[1]]@.env$data
 	if(nrow(data) > 5000) {
@@ -553,6 +607,9 @@ setMethod(f = "collect_classes",
 # -x a `HierarchicalPartition-class` object
 # -i index
 #
+# == details
+# Note you cannot get a sub-hierarchy of the partition.
+#
 # == example
 # data(cola_rh)
 # cola_rh["01"]
@@ -566,6 +623,25 @@ setMethod(f = "collect_classes",
 	}
 	x@list[[i]]
 }
+
+# == title
+# Subset
+#
+# == param
+# -x a `HierarchicalPartition-class` object
+# -i index
+#
+# == details
+# Note you cannot get a sub-hierarchy of the partition.
+#
+# == example
+# data(cola_rh)
+# cola_rh[["01"]]
+# cola_rh[["2"]]
+"[[.HierarchicalPartition" = function(x, i) {
+	x[i]
+}
+
 
 # == title
 # Test correspondance between predicted and known classes
@@ -586,7 +662,8 @@ setMethod(f = "collect_classes",
 #
 setMethod(f = "test_to_known_factors",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL, known = get_anno(object[1])) {
+	definition = function(object, depth = max_depth(object), 
+	known = get_anno(object[1])) {
 
 	if(!is.null(known)) {
 		if(is.atomic(known)) {
@@ -713,7 +790,7 @@ setMethod(f = "max_depth",
 # all_nodes(cola_rh)
 setMethod(f = "all_nodes",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL) {
+	definition = function(object, depth = max_depth(object)) {
 
 	all_nodes = unique(as.vector(object@hierarchy))
 	if(!is.null(depth)) {
@@ -737,7 +814,7 @@ setMethod(f = "all_nodes",
 # all_leaves(cola_rh)
 setMethod(f = "all_leaves",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = NULL) {
+	definition = function(object, depth = max_depth(object)) {
 
 	hierarchy = unique(object@hierarchy)
 	if(!is.null(depth)) {

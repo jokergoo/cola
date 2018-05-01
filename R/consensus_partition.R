@@ -152,13 +152,13 @@ consensus_partition = function(data,
 	# also since one top value metric will be used for different partition methods,
 	# we cache the top values for repetitive use
 	if(is.null(.env$all_top_value_list)) {
-		if(verbose) qqcat("* calcualte @{top_value_method} values.\n")
+		if(verbose) qqcat("* calcualting @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list = list()
 		.env$all_top_value_list[[top_value_method]] = all_top_value
 	} else if(is.null(.env$all_top_value_list[[top_value_method]])) {
-		if(verbose) qqcat("* calcualte @{top_value_method} values.\n")
+		if(verbose) qqcat("* calcualting @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list[[top_value_method]] = all_top_value
@@ -204,9 +204,9 @@ consensus_partition = function(data,
 
 		if(length(ind) > 5000) {
 			ind = sample(ind, 5000)
-			if(verbose) qqcat("* get top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
+			if(verbose) qqcat("* getting top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
 		} else {
-			if(verbose) qqcat("* get top @{top_n[i]} rows by @{top_value_method} method\n")
+			if(verbose) qqcat("* getting top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
 		for(j in 1:partition_repeat) {
@@ -316,7 +316,7 @@ consensus_partition = function(data,
 			class_df$silhouette = silhouette(class_ids, dist(t(consensus_mat)))[, "sil_width"]
 		}
 
-		if(verbose) qqcat("@{prefix}calculate metrics for the consensus matrix.\n")
+		if(verbose) qqcat("@{prefix}calculating metrics for the consensus matrix.\n")
 		ind = order(all_top_value, decreasing = TRUE)[1:max(top_n)]
 		if(length(ind) > 5000) ind = sample(ind, 5000)
 		stat = list(
@@ -461,9 +461,10 @@ setMethod(f = "show",
 	signature = "ConsensusPartition",
 	definition = function(object) {
 	qqcat("A 'ConsensusPartition' object with k = @{paste(object@k, collapse = ', ')}.\n")
-	qqcat("  top rows (@{paste(object@top_n, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
-	qqcat("  subgroups are detected by '@{object@partition_method}' method.\n")
-	qqcat("  best k for subgroups seems to be @{guess_best_k(object)}.\n")
+	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
+	qqcat("  Top rows (@{paste(object@top_n, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
+	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")
+	qqcat("  Best k for subgroups seems to be @{guess_best_k(object)}.\n")
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'ConsensusPartition' object:\n")
 	txt = showMethods(classes = "ConsensusPartition", where = topenv(), printTo = FALSE)

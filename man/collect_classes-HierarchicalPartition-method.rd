@@ -7,9 +7,8 @@ Collect classes from hierarchical_partition object
 Collect classes from hierarchical_partition object
 }
 \usage{
-\S4method{collect_classes}{HierarchicalPartition}(object, depth = NULL, anno = get_anno(object[1]),
-    anno_col = get_anno_col(object[1]),
-    ...)
+\S4method{collect_classes}{HierarchicalPartition}(object, depth = max_depth(object),
+    anno = get_anno(object[1]), anno_col = get_anno_col(object[1]), ...)
 }
 \arguments{
 

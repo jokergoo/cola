@@ -148,7 +148,7 @@ setMethod(f = "collect_plots",
 	upViewport()
 
 	# ecdf
-	if(verbose) cat("* plot ecdf of consensus matrix\n")
+	if(verbose) cat("* plotting empirical cumulative distribution curves of the consensus matrix\n")
 	pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 2))
 	file_name = tempfile()
 	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
@@ -165,7 +165,7 @@ setMethod(f = "collect_plots",
     upViewport()
     if(file.exists(file_name)) file.remove(file_name)
 	
-	if(verbose) cat("* plot classes for all k\n")
+	if(verbose) cat("* plotting classes for all k\n")
 	pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 3))
 	file_name = tempfile()
     png(file_name, width = image_width, height = image_height)
@@ -199,7 +199,7 @@ setMethod(f = "collect_plots",
 		grid.text(qq("k = @{all_k[i]}"))
 		upViewport()
 
-		qqcat("* consensus heatmap for k = @{all_k[i]}\n")
+		qqcat("* making consensus heatmap for k = @{all_k[i]}\n")
 		pushViewport(viewport(layout.pos.row = 4, layout.pos.col = i + 1))
 		raster_name = qq("raster_@{top_value_method}_@{partition_method}_@{all_k[i]}_consensus_heatmap")
 		if(!is.null(object@.env[[raster_name]])) {
@@ -219,7 +219,7 @@ setMethod(f = "collect_plots",
 		grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
 
-	    qqcat("* membership heatmap for k = @{all_k[i]}\n")
+	    qqcat("* making membership heatmap for k = @{all_k[i]}\n")
 	    pushViewport(viewport(layout.pos.row = 5, layout.pos.col = i + 1))
 	    raster_name = qq("raster_@{top_value_method}_@{partition_method}_@{all_k[i]}_membership_heatmap")
 	    if(!is.null(object@.env[[raster_name]])) {
@@ -238,7 +238,7 @@ setMethod(f = "collect_plots",
 		grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
 
-	    qqcat("* signature heatmap for k = @{all_k[i]}\n")
+	    qqcat("* making signature heatmap for k = @{all_k[i]}\n")
 	    pushViewport(viewport(layout.pos.row = 6, layout.pos.col = i + 1))
 	    raster_name = qq("raster_@{top_value_method}_@{partition_method}_@{all_k[i]}_get_signature")
 	    if(!is.null(object@.env[[raster_name]])) {

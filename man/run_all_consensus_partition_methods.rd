@@ -8,8 +8,9 @@ Run subgroup classification from all methods
 }
 \usage{
 run_all_consensus_partition_methods(data,
-    top_value_method = all_top_value_methods(),
-    partition_method = all_partition_methods(), max_k = 6,
+    top_value_method = c("sd", "MAD", "AAC"),
+    partition_method = c("hclust", "kmeans", "skmeans", "pam"),
+    max_k = 6,
     mc.cores = 1, anno = NULL, anno_col = NULL, ...)
 }
 \arguments{

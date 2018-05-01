@@ -309,7 +309,7 @@ setMethod(f = "show",
 	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
 	qqcat("  Top rows are extracted by '@{paste(object@top_value_method, collapse = ', ')}' methods.\n")
 	qqcat("  Subgroups are detected by '@{paste(object@partition_method, collapse = ', ')}' method.\n")
-	qqcat("  Number of partitions are tried for k = @{paste(object@list[[1]]@k, collapse = ', ')}\n")
+	qqcat("  Number of partitions are tried for k = @{paste(object@list[[1]]@k, collapse = ', ')}.\n")
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'ConsensusPartitionList' object:\n")
 	txt = showMethods(classes = "ConsensusPartitionList", where = topenv(), printTo = FALSE)

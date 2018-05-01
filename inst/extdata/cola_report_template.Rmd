@@ -235,7 +235,7 @@ if(n_top_value_method <= 4) {
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(top_n in res_list@list[[1]]@top_n) { -%>
-message("  - comparing top row methods by heatmap (top_n=<%=top_n%>)")
+message("  - comparing top row methods by heatmap (top_n = <%=top_n%>)")
 knitr_add_tab_item('top_rows_heatmap(res_list, top_n = <%=top_n%>)', 'top_n = <%=top_n%>', opt = 'fig.width = <%=fig_width%>, fig.height = <%=fig_height%>')
 <%}-%>
 knitr_insert_tabs()

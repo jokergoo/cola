@@ -7,7 +7,7 @@ Get class from the HierarchicalPartition object
 Get class from the HierarchicalPartition object
 }
 \usage{
-\S4method{get_classes}{HierarchicalPartition}(object, depth = NULL)
+\S4method{get_classes}{HierarchicalPartition}(object, depth = max_depth(object))
 }
 \arguments{
 

@@ -7,7 +7,8 @@ Get signatures rows
 Get signatures rows
 }
 \usage{
-\S4method{get_signatures}{HierarchicalPartition}(object, depth = NULL, force_specific = FALSE, ...)
+\S4method{get_signatures}{HierarchicalPartition}(object, depth = max_depth(object),
+    force_specific = FALSE, ...)
 }
 \arguments{
 

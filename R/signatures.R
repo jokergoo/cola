@@ -135,7 +135,7 @@ setMethod(f = "get_signatures",
 		}
 	}
 
-	if(verbose) qqcat("* calculate row difference between subgroups by @{diff_method}\n")
+	if(verbose) qqcat("* calculating row difference between subgroups by @{diff_method}\n")
 	if(find_signature) {
 		if(diff_method == "ttest") {
 			fdr = ttest(data2, class)
@@ -187,14 +187,17 @@ setMethod(f = "get_signatures",
 	names(group2) = rownames(mat)
 
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2, group = group2)
-	returned_obj = list(df = returned_df, sample_used = column_used_logical)
+	returned_df = returned_df[order(returned_df[, "fdr"]), ]
+	returned_obj = returned_df
+	attr(returned_obj, "sample_used") = column_used_logical
 
 	if(verbose) qqcat("* @{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
 
 	if(nrow(mat) == 0) {
 		if(plot) {
 			grid.newpage()
-			grid.text("no sigatures", gp = gpar(fontsize = 20))
+			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
+			grid.text("no sigatures", gp = gpar(fontsize = fontsize))
 		}
 		return(invisible(NULL))
 	}
@@ -307,7 +310,7 @@ setMethod(f = "get_signatures",
 	silhouette_range = range(class_df$silhouette)
 	silhouette_range[2] = 1
 
-	if(verbose) qqcat("* making heatmaps\n")
+	if(verbose) qqcat("* making heatmaps for signatures\n")
 
 	group2 = factor(group2, levels = sort(unique(group2)))
 	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
@@ -392,7 +395,7 @@ setMethod(f = "get_signatures",
 		}
 		
 	} else {
-		cat("  - use row order from cache\n")
+		if(verbose) cat("  - using row order from cache\n")
 		draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, paste0(', top ', top_k_genes,' signatures'), '')}"),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order)
