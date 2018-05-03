@@ -8,13 +8,25 @@ Get signatures rows
 }
 \usage{
 \S4method{get_signatures}{HierarchicalPartition}(object, depth = max_depth(object),
-    force_specific = FALSE, ...)
+    scale_rows = object[1]@scale_rows,
+    anno = get_anno(object[1]),
+    anno_col = get_anno_col(object[1]),
+    show_column_names = TRUE,
+    verbose = TRUE, plot = TRUE,
+    silhouette_cutoff = -Inf,
+    ...)
 }
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{minimal depth of the hierarchy}
-  \item{force_specific}{force specific}
+  \item{scale_rows}{whether scale rows}
+  \item{anno}{annotation}
+  \item{anno_col}{annotation color}
+  \item{show_column_names}{whether show column names}
+  \item{verbose}{whether print messages}
+  \item{plot}{whether make the heatmap}
+  \item{silhouette_cutoff}{cutoff for silhouette scores.}
   \item{...}{other arguments}
 
 }
@@ -29,7 +41,8 @@ A list of signature names (row names of the original data matrix)
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+\dontrun{
+data(cola_rh)
+get_signatures(cola_rh)
+}
 }

@@ -1,9 +1,9 @@
 <!--
 %\VignetteEngine{knitr}
-%\VignetteIndexEntry{Consensus and Hierarchical Partitioning}
+%\VignetteIndexEntry{A Framework for Consensus and Hierarchical Partition}
 -->
 
-cola: a general Framework for Consensus and Hierarchical Partitioning
+cola: A General Framework for Consensus and Hierarchical Partition
 =============================================================
 
 **Author**: Zuguang Gu ( z.gu@dkfz.de )
@@ -164,10 +164,10 @@ mat = adjust_matrix(mat)
 
 Run clustering for all combination of methods in batch:
 
-```{r}
-res_list = run_all_consensus_partition_methods(mat, top_n = c(1000, 2000), k = 2:6,
-	top_method = c("MAD", "vc"), partition_method = c("hclust", "kmeans"), 
-	known_anno = anno, known_col = anno_col)
+```{r, results = "hide"}
+res_list = run_all_consensus_partition_methods(mat, top_n = c(1000, 2000), max_k = 6,
+	top_value_method = c("MAD", "cv"), partition_method = c("hclust", "kmeans"), 
+	anno = anno, anno_col = anno_col)
 res_list
 ```
 
@@ -180,7 +180,7 @@ collect_plots(res_list, k = 4, fun = consensus_heatmap)
 Get clustering in a specified combination of top method and partition method:
 
 ```{r}
-res = get_single_run(res_list, top_method = "MAD", partition_method = "kmeans")
+res = res_list["MAD", "kmeans"]
 res
 ```
 

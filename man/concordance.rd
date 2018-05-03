@@ -24,6 +24,9 @@ partitions.
 
 This function is used internally.
 }
+\value{
+A numeric value.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

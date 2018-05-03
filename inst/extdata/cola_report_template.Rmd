@@ -22,7 +22,8 @@ opts_chunk$set(
 	warning = FALSE,
 	message = FALSE
 )
-library(ComplexHeatmap)
+suppressPackageStartupMessages(library(ComplexHeatmap))
+suppressPackageStartupMessages(library(genefilter))
 ```
 
 <% res_list = object -%>
@@ -72,8 +73,8 @@ library(ComplexHeatmap)
 <% if(is.null(res_list@list[[1]]@anno)) { -%>
 densityHeatmap(mat, ylab = "value")
 <% } else { -%>
-densityHeatmap(mat, anno = HeatmapAnnotation(df = res_list@list[[1]]@anno, 
-	col = res_list@list[[1]]@anno_col), ylab = "value")
+densityHeatmap(mat, anno = HeatmapAnnotation(df = get_anno(res_list), 
+	col = get_anno_col(res_list)), ylab = "value")
 <% } -%>
 ```
 

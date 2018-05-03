@@ -22,21 +22,32 @@ opts_chunk$set(
 	warning = FALSE,
 	message = FALSE
 )
+suppressPackageStartupMessages(library(ComplexHeatmap))
+suppressPackageStartupMessages(library(genefilter))
 ```
 
 <% res_hc = object -%>
 
 ## Summary
 
-All available functions which can be applied to `res` object.
+All available functions which can be applied to `res_hc` object.
 
 <% same_var_name = var_name == "res_hc" -%>
 
-```{r, eval = <%= ifelse(same_var_name, '1:2','2:3')%>, echo = <%= ifelse(same_var_name, '2', 'c(1, 3)')%>}
+
+```{r, eval = <%= ifelse(same_var_name, '1:2','2:3')%>, echo = FALSE}
 <% if(!same_var_name) { -%>
 res_hc = <%=var_name%>
 <% } -%>
 res_hc = object
+res_hc
+```
+
+
+```{r, eval = FALSE, echo = TRUE}
+<% if(!same_var_name) { -%>
+res_hc = <%=var_name%>
+<% } -%>
 res_hc
 ```
 
@@ -50,18 +61,24 @@ print(res_hc@calling)
 Dimension of the input matrix:
 
 ```{r}
-dim(res_hc@list[["0"]]@.env$data)
+mat = get_matrix(res_hc)
+dim(mat)
 ```
 
 Global distribution for each sample:
 
+
+```{r, echo = FALSE, message = FALSE}
+message(qq("* making density heatmap of global distribution in each sample (@{ncol(mat)} samples)"))
+```
+
 ```{r hc-density-heatmap}
 library(ComplexHeatmap)
 <% if(is.null(res_hc@list[[1]]@anno)) { -%>
-densityHeatmap(res_hc@list[["0"]]@.env$data, ylab = "value")
+densityHeatmap(mat, ylab = "value")
 <% } else { -%>
-densityHeatmap(res_hc@list[["0"]]@.env$data, anno = HeatmapAnnotation(df = res_hc@list[["0"]]@anno, 
-	col = res_hc@list[["0"]]@anno_col), ylab = "value")
+densityHeatmap(mat, anno = HeatmapAnnotation(df = get_anno(res_hc), 
+	col = get_anno_col(res_hc)), ylab = "value")
 <% } -%>
 ```
 
@@ -77,10 +94,20 @@ all_leaves = all_leaves(res_hc)
 all_leaves
 ```
 
+```{r, echo = FALSE, message = FALSE}
+message(qq("* top rows are extracted by '@{res_hc[1]@top_value_method}' method"))
+message(qq("* subgroups are detected by '@{res_hc[1]@partition_method}' method"))
+message(qq("* In total there are @{length(all_leaves)} subgroups"))
+```
+
 
 Partitions for different depth:
 
 <% max_depth = max_depth(res_hc) -%>
+
+```{r, echo = FALSE, message = FALSE}
+message(qq("* collecting classifications for each depth (2..@{max_depth})"))
+```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(depth in 2:max_depth) { -%>
@@ -91,6 +118,10 @@ knitr_insert_tabs()
 
 MDS plot:
 
+```{r, echo = FALSE, message = FALSE}
+message(qq("* making PCA plots"))
+```
+
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(depth in 2:max_depth) { -%>
 knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
@@ -98,12 +129,28 @@ knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>)', 'depth = <
 knitr_insert_tabs()
 ```
 
+Or you can also do it for each parent node:
 
+```{r, results = 'asis', echo = FALSE, include = TRUE}
+<% all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
+for(p in all_parents) { -%>
+knitr_add_tab_item('dimension_reduction(res_hc, parent_node = "<%=p%>")', 'parent_node = "<%=p%>"')
+<%}-%>
+knitr_insert_tabs()
+```
+
+<% if(max_depth >= 2) { %>
 Signature genes and the overlap:
 
-```{r hc-signature, echo = max_depth > 2, eval = max_depth > 2}
+```{r, echo = FALSE, message = FALSE}
+message(qq("* making signature heatmaps"))
+```
+
+```{r hc-signature, results = "hide"}
 get_signatures(res_hc)
 ```
+
+<% } -%>
 
 
 <% has_known_anno = FALSE
@@ -111,6 +158,10 @@ if(!is.null(res_hc@list[['0']]@anno)) {
 has_known_anno = TRUE -%>
 
 Test correlation between subgroups and known annotations:
+
+```{r, echo = FALSE, message = FALSE}
+message(qq("* testing correlation of subgroups to known annotations"))
+```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(depth in 2:max_depth) { -%>
@@ -127,7 +178,11 @@ knitr_insert_tabs()
 is_hc = TRUE
 fs = 2
 all_k = res_hc@list[[1]]@k
-for(node in setdiff(all_nodes(res_hc), all_leaves(res_hc))) { -%>
+all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
+n_section = length(all_parents)
+i_section = 0
+for(node in all_parents) {
+	i_section = i_section + 1 -%>
 	<% brew(paste0(TEMPLATE_DIR, "/section_template.Rmd")) %>
 <%} -%>
 

@@ -23,6 +23,9 @@ KNITR_TAB_ENV$css_added = FALSE
 #
 # This function in only for internal use.
 #
+# == value
+# No value is returned.
+#
 # == seealso
 # `knitr_insert_tabs` produces a complete HTML fragment.
 #
@@ -81,6 +84,9 @@ TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
 #
 # This function is only for internal use.
 #
+# == value
+# No value is returned.
+#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 knitr_insert_tabs = function() {
@@ -132,6 +138,9 @@ $( function() {
 # This function generates a HTML report which contains all plots for every combination
 # of top value method and partition method. The report generation may take a while.
 #
+# == value
+# No value is returned.
+#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
@@ -160,6 +169,9 @@ setMethod(f = "cola_report",
 # == details
 # Please generate report on the `ConsensusPartitionList-class` object directly.
 #
+# == value
+# No value is returned.
+#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
@@ -183,6 +195,9 @@ setMethod(f = "cola_report",
 # == details
 # This function generates a HTML report which contains all plots for all nodes
 # in the partition hierarchy.
+#
+# == value
+# No value is returned.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -254,7 +269,7 @@ make_report = function(var_name, object, output_dir, class) {
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
 
 	message("* removing temporary files")
-	file.remove(c(tempfile, md_file))
+	# file.remove(c(tempfile, md_file))
 
 	message(qq("* report is at @{output_dir}/@{html_file[class]}"))
 

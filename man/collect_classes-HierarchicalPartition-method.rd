@@ -29,7 +29,7 @@ No value is returned
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+data(cola_rh)
+collect_classes(cola_rh)
+collect_classes(cola_rh, depth = 2)
 }

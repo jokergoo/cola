@@ -23,6 +23,9 @@ Each tab contains the R source code and results generated from it (figure, table
 
 This function in only for internal use.
 }
+\value{
+No value is returned.
+}
 \seealso{
 \code{\link{knitr_insert_tabs}} produces a complete HTML fragment.
 }

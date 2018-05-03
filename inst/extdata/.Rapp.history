@@ -1,0 +1,6 @@
+load("/Users/jokergoo/project/cola/inst/extdata/consensus_mat_list.RData")
+ls()
+mat_list
+load("/Users/jokergoo/project/cola/inst/extdata/example.rds")
+readRDS("/Users/jokergoo/project/cola/inst/extdata/example.rds")
+load("/Users/jokergoo/project/cola/inst/extdata/TCGA_GBM_microarray_subset.RData")

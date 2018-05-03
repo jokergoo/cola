@@ -17,6 +17,9 @@ to generate a complete HTML fragment for all tabs with all necessary Javascript 
 
 This function is only for internal use.
 }
+\value{
+No value is returned.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

@@ -1,10 +1,10 @@
 \name{[.HierarchicalPartition}
 \alias{[.HierarchicalPartition}
 \title{
-Subset
+Subset the HierarchicalPartition object
 }
 \description{
-Subset
+Subset the HierarchicalPartition object
 }
 \usage{
 \method{[}{HierarchicalPartition}(x, i)
@@ -14,6 +14,9 @@ Subset
   \item{x}{a \code{\link{HierarchicalPartition-class}} object}
   \item{i}{index}
 
+}
+\details{
+Note you cannot get a sub-hierarchy of the partition.
 }
 \examples{
 data(cola_rh)

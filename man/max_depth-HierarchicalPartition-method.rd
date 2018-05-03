@@ -15,6 +15,9 @@ Max depth of the hierarchy
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
 
 }
+\value{
+A numeric value.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

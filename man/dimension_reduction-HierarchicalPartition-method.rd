@@ -33,7 +33,7 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+data(cola_rh)
+dimension_reduction(cola_rh)
+dimension_reduction(cola_rh, parent_node = "00")
 }

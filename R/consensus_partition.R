@@ -601,7 +601,7 @@ setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
 	anno = get_anno(object), anno_col = get_anno_col(object), 
-	show_row_names = FALSE, ...) {
+	show_row_names = !internal, ...) {
 
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
@@ -675,7 +675,7 @@ setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE, 
 	anno = get_anno(object), anno_col = get_anno_col(object),
-	show_column_names = TRUE, ...) {
+	show_column_names = !internal, ...) {
 
 	class_df = get_classes(object, k)
 	class_ids = class_df$class

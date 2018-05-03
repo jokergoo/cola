@@ -21,6 +21,9 @@ The \code{\link{ConsensusPartitionList-class}} object contains results for all t
 This function generates a HTML report which contains all plots for every combination
 of top value method and partition method. The report generation may take a while.
 }
+\value{
+No value is returned.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

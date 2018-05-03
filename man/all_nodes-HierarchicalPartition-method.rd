@@ -8,13 +8,16 @@ All nodes in the hierarchy
 All nodes in the hierarchy
 }
 \usage{
-\S4method{all_nodes}{HierarchicalPartition}(object, depth = NULL)
+\S4method{all_nodes}{HierarchicalPartition}(object, depth = max_depth(object))
 }
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{depth in the hierarchy.}
 
+}
+\value{
+A vector of node ids.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

@@ -22,7 +22,7 @@ A vector of predicted classes.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+data(cola_rh)
+get_classes(cola_rh)
+get_classes(cola_rh, depth = 2)
 }

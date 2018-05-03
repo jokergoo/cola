@@ -20,6 +20,9 @@ Make report for the HierarchicalPartition object
 This function generates a HTML report which contains all plots for all nodes
 in the partition hierarchy.
 }
+\value{
+No value is returned.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

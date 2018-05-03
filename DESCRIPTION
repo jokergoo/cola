@@ -1,12 +1,17 @@
 Package: cola
 Type: Package
-Title: Unsupervised subgroup classification based on consensus clustering
+Title: A Framework for Consensus and Hierarchical Partition
 Version: 0.99.0
 Date: 2017-4-14
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.3.0)
-Imports: ComplexHeatmap (>= 1.15.1), 
+Imports: grDevices, 
+         graphics, 
+         grid, 
+         stats, 
+         utils,
+         ComplexHeatmap (>= 1.15.1), 
          matrixStats, 
          GetoptLong, 
          circlize (>= 0.4.0), 
@@ -48,6 +53,7 @@ Description: Subgroup classification is a basic task in genomic data analysis,
   find subgroups in a hierarchical manner.
 URL: https://github.com/jokergoo/cola
 VignetteBuilder: knitr
+biocViews: Clustering
 License: MIT + file LICENSE
 Packaged: 2017-4-14 00:00:00 UTC; Administrator
 Repository: CRAN

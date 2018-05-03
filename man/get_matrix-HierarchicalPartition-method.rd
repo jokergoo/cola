@@ -14,6 +14,9 @@ Get the original matrix
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
 
 }
+\value{
+A numeric matrix.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

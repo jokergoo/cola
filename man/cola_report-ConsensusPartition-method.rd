@@ -18,6 +18,9 @@ Make report for the ConsensusPartition object
 \details{
 Please generate report on the \code{\link{ConsensusPartitionList-class}} object directly.
 }
+\value{
+No value is returned.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

@@ -289,10 +289,16 @@ setMethod(f = "get_classes",
 # guess_best_k(obj)
 setMethod(f = "guess_best_k",
 	signature = "ConsensusPartition",
-	definition = function(object, rand_index_cutoff = 0.9) {
+	definition = function(object, rand_index_cutoff = 0.95) {
 
 	stat = get_stat(object)
 	stat = stat[stat[, "Rand"] < rand_index_cutoff, , drop = FALSE]
+
+	l = stat[, "cophcor"] >= 0.99 | stat[, "PAC"] <= 0.1 | stat[, "concordance"] >= 0.95
+	if(sum(l)) {
+		return(max(as.numeric(rownames(stat)[l])))
+	}
+
 	dec = c(which.max(stat[, "cophcor"]), 
 		    which.min(stat[, "PAC"]),
 		    which.max(stat[, "mean_silhouette"]),

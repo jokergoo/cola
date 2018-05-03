@@ -7,7 +7,8 @@ Test correspondance between predicted and known classes
 Test correspondance between predicted and known classes
 }
 \usage{
-\S4method{test_to_known_factors}{HierarchicalPartition}(object, depth = NULL, known = get_anno(object[1]))
+\S4method{test_to_known_factors}{HierarchicalPartition}(object, depth = max_depth(object),
+    known = get_anno(object[1]))
 }
 \arguments{
 

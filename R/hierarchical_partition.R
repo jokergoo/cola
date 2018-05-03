@@ -68,7 +68,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 			.h_obj$hierarchy = rbind(.h_obj$hierarchy, c(parent, node_id))
 		}
 		qqcat("* submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
-	   	.env$all_value_list = NULL
+	   	.env$all_top_value_list = NULL
 	   	.env$column_index = column_index
 		part = consensus_partition(verbose = FALSE, .env = .env, max_k = max_k, 
 			top_value_method = top_value_method, partition_method = partition_method, ...)
@@ -91,13 +91,16 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 		# }
 
 	    mat = .env$data[, column_index, drop = FALSE]
-	    mat = t(scale(t(mat)))
-	    mat = mat[order(.env$all_top_value_list[[1]], decreasing = TRUE)[1:max(part@top_n)], , drop = FALSE]
-	    s = most_tight_subgroup(mat, cl$class)
+	    if(part@scale_rows) {
+	    	mat = t(scale(t(mat)))
+	    }
+	    mat = mat[order(.env$all_top_value_list[[1]], decreasing = TRUE), , drop = FALSE]
+	    s = farthest_subgroup(mat, cl$class, part@top_n)
 	    set1 = which(cl$class == s)
 	    set2 = which(cl$class != s)
+	    .env$all_top_value_list = NULL
 
-	    qqcat("* best k = @{best_k}, most tight subgroup: @{s}\n")
+	    qqcat("* best k = @{best_k}, the farthest subgroup: @{s}\n")
 		concordance_score = get_stat(part, k = best_k)[, "concordance"]
 	    if(concordance_score < concordance_cutoff) {
 	    	qqcat("* concordance score too small @{concordance_score}, stop.\n")
@@ -278,18 +281,37 @@ calc_dend = function(object, hierarchy = object@hierarchy) {
 	dend_env$dend
 }
 
-most_tight_subgroup = function(mat, subgroup) {
-	
-	mean_dist = tapply(seq_len(ncol(mat)), subgroup, function(ind) {
-		n = length(ind)
-		if(n == 1) {
-			return(Inf)
-		}
-		sum(dist(t(mat[, ind, drop = FALSE]))^2)/(n*(n-1)/2)
-	})
-	as.numeric(names(mean_dist[which.min(mean_dist)]))
+tightest_subgroup = function(mat, subgroup, top_n) {
+	x = NULL
+	for(n in top_n) {
+		m2 = mat[1:n, , drop = FALSE]
+		mean_dist = tapply(seq_len(ncol(m2)), subgroup, function(ind) {
+			n = length(ind)
+			if(n == 1) {
+				return(Inf)
+			}
+			sum(dist(t(m2[, ind, drop = FALSE]))^2)/(n*(n-1)/2)
+		})
+		x = c(x, as.numeric(names(mean_dist[which.min(mean_dist)])))
+	}
+	tb = table(x)
+	as.numeric(names(which.max(tb)))
 }
 
+
+farthest_subgroup = function(mat, subgroup, top_n) {
+	x = NULL
+	for(n in top_n) {
+		m2 = mat[1:n, , drop = FALSE]
+		group_mean = do.call("cbind", tapply(seq_len(ncol(m2)), subgroup, function(ind) {
+			rowMeans(m2[, ind, drop = FALSE])
+		}))
+		d = as.matrix(dist(t(group_mean)))
+		x = c(x, as.numeric(names(which.max(rowSums(d)))))
+	}
+	tb = table(x)
+	as.numeric(names(which.max(tb)))
+}
 
 # mat = matrix(rnorm(100), 10)
 # mat2 = cbind(matrix(rnorm(50, mean = -1), nrow = 10), matrix(rnorm(50, mean = 1), nrow = 10))
@@ -319,6 +341,10 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rh)
+# get_classes(cola_rh)
+# get_classes(cola_rh, depth = 2)
 setMethod(f = "get_classes",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object)) {
@@ -343,6 +369,9 @@ setMethod(f = "get_classes",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rh)
+# cola_rh
 setMethod(f = "show",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
@@ -389,6 +418,13 @@ setMethod(f = "show",
 # == param
 # -object a `HierarchicalPartition-class` object.
 # -depth minimal depth of the hierarchy
+# -scale_rows whether scale rows
+# -anno annotation
+# -anno_col annotation color
+# -show_column_names whether show column names
+# -verbose whether print messages
+# -plot whether make the heatmap
+# -silhouette_cutoff cutoff for silhouette scores.
 # -... other arguments
 # 
 # == details
@@ -401,15 +437,20 @@ setMethod(f = "show",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# \dontrun{
+# data(cola_rh)
+# get_signatures(cola_rh)
+# }
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object) - 1, 
+	definition = function(object, depth = max_depth(object), 
 	scale_rows = object[1]@scale_rows, 
 	anno = get_anno(object[1]), 
 	anno_col = get_anno_col(object[1]),
 	show_column_names = TRUE, 
-	verbose = TRUE,
-	random_k_genes = 5000,
+	verbose = TRUE, plot = TRUE,
+	silhouette_cutoff = -Inf, 
 	...) {
 
 	if(depth <= 1) {
@@ -422,8 +463,8 @@ setMethod(f = "get_signatures",
 	sig_lt = list()
 	for(p in ap) {
 		best_k = guess_best_k(object[[p]])
-		qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
-		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE)
+		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
+		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff, ...)
 		sig_tb$group = paste0(p, sig_tb$group)
 
 		ch = intersect(alf, paste0(p, 0:best_k))
@@ -433,11 +474,18 @@ setMethod(f = "get_signatures",
 
 		sig_tb = sig_tb[sig_tb$group %in% alf, , drop = FALSE]
 		sig_lt[[p]] = sig_tb
+		n_tb = table(sig_tb$group)
+		if(verbose) qqcat("  - find @{n_tb} signatures for @{names(n_tb)}\n")
 	}
 	sig = do.call("rbind", sig_lt)
+	
+	if(!plot) {
+		return(invisible(sig))
+	}
 	sig_lt = split(sig, sig[, "group"])
 
 	all_sig = unique(unlist(lapply(sig_lt, function(x) x[, "which_row"])))
+	if(verbose) qqcat("* in total @{length(all_sig)} signatures in all classes found\n")
 
 	m_sig = matrix(0, nrow = length(all_sig), ncol = length(sig_lt))
 	rownames(m_sig) = all_sig
@@ -450,16 +498,17 @@ setMethod(f = "get_signatures",
 
 	class = get_classes(object, depth = depth)
 
-	if(nrow(m) > random_k_genes) {
-		qqcat("* randomly sample @{random_k_genes} rows from @{nrow(m)} total rows.\n")
-		ind = sample(nrow(m), random_k_genes)
+	if(nrow(m) > 5000) {
+		if(verbose) qqcat("* randomly sample @{5000} rows from @{nrow(m)} total rows.\n")
+		ind = sample(nrow(m), 5000)
 	} else {
 		ind = seq_len(nrow(m))
 	}
 	mat1 = m[ind, , drop = FALSE]
+	m_sig = m_sig[ind, , drop = FALSE]
 
 	base_mean = rowMeans(mat1)
-	if(nrow(mat) == 1) {
+	if(nrow(mat1) == 1) {
 		group_mean = matrix(tapply(mat1, class, mean), nrow = 1)
 	} else {
 		group_mean = do.call("cbind", tapply(seq_len(ncol(mat1)), class, function(ind) {
@@ -482,10 +531,10 @@ setMethod(f = "get_signatures",
 		}
 
 		if(is.null(anno_col)) {
-			bottom_anno1 = HeatmapAnnotation(df = anno, , drop = FALSE],
+			bottom_anno1 = HeatmapAnnotation(df = anno,
 				show_annotation_name = TRUE, annotation_name_side = "right")
 		} else {
-			bottom_anno1 = HeatmapAnnotation(df = anno, , drop = FALSE], col = anno_col,
+			bottom_anno1 = HeatmapAnnotation(df = anno, col = anno_col,
 				show_annotation_name = TRUE, annotation_name_side = "right")
 		}
 	}
@@ -506,7 +555,7 @@ setMethod(f = "get_signatures",
 		heatmap_name = "expr"
 	}
 
-	col_order = column_order_by_group(class, mat1)
+	col_order = column_order_by_group(factor(class, levels = sort(unique(class))), mat1)
 
 	if(verbose) qqcat("* making heatmaps for signatures\n")
 
@@ -517,13 +566,17 @@ setMethod(f = "get_signatures",
 		show_annotation_name = TRUE,
 		annotation_name_side = "right",
 		show_legend = TRUE)
-	
+		
+	split = do.call("paste", as.data.frame(m_sig))
+	split = factor(split, levels = sort(unique(split)))
 	ht_list = Heatmap(use_mat1, top_annotation = ha1,
 		name = heatmap_name, show_row_names = FALSE, cluster_columns = FALSE, 
 		show_column_names = show_column_names,
 		column_order = col_order, col = col_fun,
 		use_raster = TRUE,
-		show_row_dend = FALSE)
+		show_row_dend = FALSE,
+		split = split,
+		combined_name_fun = NULL)
 	
 	all_value_positive = !any(m < 0)
  	if(scale_rows && all_value_positive) {
@@ -537,7 +590,7 @@ setMethod(f = "get_signatures",
 	ht_list = ht_list + rowAnnotation(df = m_sig, col = sig_iden_col_list, 
 		width = unit(0.5*length(sig_lt), "cm"), show_legend = FALSE, show_annotation_name = TRUE)
 	
-	draw(ht_list)
+	draw(ht_list, column_title = qq("@{length(unique(class))} subgroups, @{length(all_sig)} signatures"))
 	return(invisible(sig))
 })
 
@@ -560,6 +613,10 @@ setMethod(f = "get_signatures",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rh)
+# collect_classes(cola_rh)
+# collect_classes(cola_rh, depth = 2)
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object), 
@@ -601,7 +658,7 @@ setMethod(f = "collect_classes",
 })
 
 # == title
-# Subset
+# Subset the HierarchicalPartition object
 #
 # == param
 # -x a `HierarchicalPartition-class` object
@@ -609,6 +666,9 @@ setMethod(f = "collect_classes",
 #
 # == details
 # Note you cannot get a sub-hierarchy of the partition.
+#
+# == value
+# A `ConsensusPartition-class` object.
 #
 # == example
 # data(cola_rh)
@@ -625,7 +685,7 @@ setMethod(f = "collect_classes",
 }
 
 # == title
-# Subset
+# Subset the HierarchicalPartition object
 #
 # == param
 # -x a `HierarchicalPartition-class` object
@@ -633,6 +693,9 @@ setMethod(f = "collect_classes",
 #
 # == details
 # Note you cannot get a sub-hierarchy of the partition.
+#
+# == value
+# A `ConsensusPartition-class` object.
 #
 # == example
 # data(cola_rh)
@@ -724,6 +787,10 @@ setMethod(f = "test_to_known_factors",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rh)
+# dimension_reduction(cola_rh)
+# dimension_reduction(cola_rh, parent_node = "00")
 setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
 	definition = function(object,
@@ -762,6 +829,9 @@ setMethod(f = "dimension_reduction",
 # == param
 # -object a `HierarchicalPartition-class` object.
 #
+# == value
+# A numeric value.
+#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
@@ -781,6 +851,9 @@ setMethod(f = "max_depth",
 # == param
 # -object a `HierarchicalPartition-class` object.
 # -depth depth in the hierarchy.
+#
+# == value
+# A vector of node ids.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -805,6 +878,9 @@ setMethod(f = "all_nodes",
 # == param
 # -object a `HierarchicalPartition-class` object.
 # -depth depth in the hierarchy.
+#
+# == value
+# A vector of node ids.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -837,6 +913,9 @@ get_children = function(object, node = "0") {
 # == param
 # -object a `HierarchicalPartition-class` object.
 #
+# == value
+# A numeric matrix.
+#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
@@ -844,4 +923,43 @@ setMethod(f = "get_matrix",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 	object@.env$data
+})
+
+
+# == title
+# Get annotations
+#
+# == param
+# -object a `HierarchicalPartition-class` object
+#
+# == value
+# A data frame if ``anno`` was specified in `hierarchical_partition`, or ``NULL``.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_anno",
+	signature = "HierarchicalPartition",
+	definition = function(object) {
+	get_anno(object[1])
+})
+
+
+
+# == title
+# Get annotation colors
+#
+# == param
+# -object a `HierarchicalPartition-class` object
+#
+# == value
+# A list of color vectors or ``NULL``.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+setMethod(f = "get_anno_col",
+	signature = "HierarchicalPartition",
+	definition = function(object) {
+	get_anno_col(object[1])
 })

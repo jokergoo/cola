@@ -19,10 +19,17 @@ if(is_hc) {
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
 <% } %>
 
+<% if(is_hc) { -%>
+```{r, echo = FALSE, message = FALSE}
+message("-----------------------------------------------------------------")
+message("* generating plots for node <%=node%> (<%=i_section%>/<%=n_section%>)")
+```
+<% } else { -%>
 ```{r, echo = FALSE, message = FALSE}
 message("-----------------------------------------------------------------")
 message("* generating plots for <%=top_value_method%>:<%=partition_method%> (<%=i_section%>/<%=n_section%>)")
 ```
+<% } -%>
 
 The object which only contains results for a single top method and a single partition method,
 and the functions that can be applied to.
