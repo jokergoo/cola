@@ -21,7 +21,7 @@ make_silhouette_example = function() {
 	df1 = random_points(5, x = -2, y = 0, r = 1)
 	df2 = random_points(5, x = 2, y = 2)
 	df3 = random_points(5, x = 1, y = -1)
-
+	par(xpd = NA)
 	plot(rbind(df1, df2, df3), col = rep(2:4, each = 5), pch = 16, axes = FALSE, ann = FALSE, asp = 1)
 
 	i = which.max(df1[, 1])
@@ -42,10 +42,13 @@ make_silhouette_example = function() {
 	m2 = mean_dist(df1[i, 1], df1[i, 2], df2[, ])
 	m3 = mean_dist(df1[i, 1], df1[i, 2], df3[, ])
 
-	txt = qq("mean_1 = @{sprintf('%.2f', m1)}\nmean_2 = @{sprintf('%.2f', m2)}\nmean_3 = @{sprintf('%.2f', m3)}
-	silhouette coefficient = 1 - mean_1/min(mean_2, mean_3) = @{sprintf('%.2f', 1 - m1/min(c(m2, m3)))}")
-	par(xpd = NA)
-	text(-3, -2.5, txt, adj = c(0, 0), cex = 0.7)
+	txt = qq(
+"mean_1 = @{sprintf('%.2f', m1)}
+mean_2 = @{sprintf('%.2f', m2)}
+mean_3 = @{sprintf('%.2f', m3)}
+silhouette coefficient = 1 - mean_1/min(mean_2, mean_3) = @{sprintf('%.2f', 1 - m1/min(c(m2, m3)))}")
+	
+	text(-3, -2.5, txt, adj = c(0, 0), cex = 1)
 }
 
 make_silhouette_example()

@@ -16,6 +16,7 @@ library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "toc"), "base64_images"))
 options(width = 100)
+options(digits = 3)
 opts_chunk$set(
 	comment = "#>",
 	fig.path = "figure_cola/",
@@ -26,30 +27,33 @@ suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
 ```
 
+
 <% res_list = object -%>
 
 ## Summary
 
-All available functions which can be applied to `res_list` object.
-
 <% same_var_name = var_name == "res_list" -%>
 
-```{r, eval = <%= ifelse(same_var_name, '1:2','2:3')%>, echo = FALSE}
 <% if(!same_var_name) { -%>
-res_list = <%=var_name%>
-<% } -%>
-res_list = object
-res_list
-```
+
+First the variable name is changed to `res_list`.
 
 ```{r, eval = FALSE, echo = TRUE}
-<% if(!same_var_name) { -%>
 res_list = <%=var_name%>
+```
 <% } -%>
+
+```{r, echo = FALSE}
+res_list = object
+```
+
+All available functions which can be applied to this `res_list` object:
+
+```{r}
 res_list
 ```
 
-The call for `run_all_consensus_partition_methods()`:
+The call of `run_all_consensus_partition_methods()` was:
 
 ```{r, echo = FALSE}
 print(res_list@calling)
@@ -62,7 +66,7 @@ mat = get_matrix(res_list)
 dim(mat)
 ```
 
-Global distribution for each sample:
+The density distribution for each sample is visualized as heatmap as one column in follwing plot:
 
 ```{r, echo = FALSE, message = FALSE}
 message(qq("* making density heatmap of global distribution in each sample (@{ncol(mat)} samples)"))
@@ -70,11 +74,11 @@ message(qq("* making density heatmap of global distribution in each sample (@{nc
 
 ```{r density-heatmap}
 library(ComplexHeatmap)
-<% if(is.null(res_list@list[[1]]@anno)) { -%>
-densityHeatmap(mat, ylab = "value")
+<% if(is.null(get_anno(res_list))) { -%>
+densityHeatmap(mat, ylab = "value", cluster_columns = TRUE)
 <% } else { -%>
 densityHeatmap(mat, anno = HeatmapAnnotation(df = get_anno(res_list), 
-	col = get_anno_col(res_list)), ylab = "value")
+	col = get_anno_col(res_list)), ylab = "value", cluster_columns = TRUE)
 <% } -%>
 ```
 
@@ -87,11 +91,13 @@ message(qq("* subgroups are detected by '@{paste(res_list@partition_method, coll
 message(qq("  - in total @{n_method} combinations of methods"))
 ```
 
+`res_list` contains results for 	
+
 ```{r, echo = FALSE, message = FALSE}
 message("* guessing best k for each method")
 ```
 
-Best `k` (number of partitions) for each combination of top methods and partition methods.
+Best `k` (number of partitions) for each combination of top value methods and partition methods:
 
 ```{r, eval = FALSE}
 guess_best_k(res_list)
@@ -190,7 +196,7 @@ Collect partitions from all methods:
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
 message("  - classifications from all methods (k = <%=k%>)")
-knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 14, fig.height = 8')
+knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 8, fig.height = 8')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -217,8 +223,11 @@ knitr_insert_tabs()
 
 Also visualize the correspondance of rankings between different top methods:
 
-```{r top-row-overlap, fig.width = 14, fig.height = 8}
-top_rows_overlap(res_list, top_n = <%= min(res_list@list[[1]]@top_n) %>, method = "correspondance")
+```{r, results = "asis", echo = FALSE, include = TRUE}
+<% for(top_n in res_list@list[[1]]@top_n) { -%>
+knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>, method = "correspondance")', 'top_n = <%=top_n%>', opt = 'fig.width = 14, fig.height = 8')
+<%}-%>
+knitr_insert_tabs()
 ```
 
 Heatmaps for the top rows:

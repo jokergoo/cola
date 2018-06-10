@@ -18,6 +18,9 @@ Subset the HierarchicalPartition object
 \details{
 Note you cannot get a sub-hierarchy of the partition.
 }
+\value{
+A \code{\link{ConsensusPartition-class}} object.
+}
 \examples{
 data(cola_rh)
 cola_rh["01"]

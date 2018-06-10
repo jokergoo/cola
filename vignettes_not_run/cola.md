@@ -8,30 +8,13 @@ cola: A General Framework for Consensus and Hierarchical Partition
 
 **Author**: Zuguang Gu ( z.gu@dkfz.de )
 
-**Date**: `r Sys.Date()`
+**Date**: 2018-06-10
 
-**Package version**: `r installed.packages()["cola", "Version"]`
+**Package version**: 0.99.0
 
 -------------------------------------------------------------
 
-```{r, echo = FALSE, message = FALSE}
-library(markdown)
-options(markdown.HTML.options = c(options('markdown.HTML.options')[[1]], "toc"))
 
-library(knitr)
-knitr::opts_chunk$set(
-    error = FALSE,
-    tidy  = FALSE,
-    message = FALSE,
-    fig.align = "center")
-options(markdown.HTML.stylesheet = "custom.css")
-
-options(width = 100)
-library(ComplexHeatmap)
-library(circlize)
-library(cola)
-library(gridBase)
-```
 
 ## Introduction
 
@@ -97,7 +80,8 @@ In following part of this vignette, we call the columns of the matrix as
 Before doing consensus partition, a simple but important step is to clean the
 input matrix:
 
-```{r, eval = FALSE}
+
+```r
 data = adjust_matrix(data)
 ```
 
@@ -123,7 +107,8 @@ already in a fixed data scale (0 ~ 1).
 method and a single partition method. The major arguments for
 `consensus_partition()` are:
 
-```{r, eval = FALSE}
+
+```r
 res = consensus_partition(data,
     top_value_method = "MAD",
     top_n = c(1000, 2000, 3000, 4000, 5000),
@@ -132,7 +117,7 @@ res = consensus_partition(data,
     p_sampling = 0.8,
     partition_repeat = 50,
     anno = NULL)
-``` 
+```
 
 - `data`: a data matrix where subgroups are found by columns.
 - `top_value_method`: name of the method to assign values to rows in the
@@ -158,7 +143,8 @@ partition methods to see which combination of methods gives the best prediction.
 The helper function `run_all_consensus_partition_methods()` is a convinient
 way for doing this:
 
-```{r, eval = FALSE}
+
+```r
 rl = run_all_consensus_partition_methods(data, 
 	top_value_method = c("sd", "MAD", ...),
 	partition_method = c("hclust", "kmeans", ...),
@@ -175,8 +161,13 @@ scores are ordered and only the top $n$ rows with the highest scores are used fo
 consensus partition. The default top-value methods provided in the package
 are:
 
-```{r}
+
+```r
 all_top_value_methods()
+```
+
+```
+## [1] "sd"  "cv"  "MAD" "AAC"
 ```
 
 These top methods are:
@@ -202,7 +193,8 @@ as the row score and we also add the "QCD" ([quartile coefficient of
 dispersion](https://en.wikipedia.org/wiki/Quartile_coefficient_of_dispersion))
 method as a second method here.
 
-```{r}
+
+```r
 register_top_value_method(
 	max = function(mat) rowMaxs(mat),
 	QCD = function(mat) {
@@ -212,12 +204,17 @@ register_top_value_method(
 all_top_value_methods()
 ```
 
+```
+## [1] "sd"  "cv"  "MAD" "AAC" "max" "QCD"
+```
+
 By default the consensus partition functions use all registered top-value
 methods, but still you can explicitly specify a subset of top-value methods.
 To remove registered top-value methods, simply use `remove_top_value_method()`
 by providing a vector of names.
 
-```{r}
+
+```r
 remove_top_value_method(c("max", "QCD"))
 ```
 
@@ -248,11 +245,7 @@ In following plot, the line is the CDF curve. AAC is the area above the CDF
 curve. It can be imagined that when row $i$ correlates with more other rows,
 the CDF curve shifts more to the right, thus with higher AAC scores.
 
-```{r, echo = FALSE, fig.width = 5, fig.height = 5}
-source("AAC.R")
-par(mar = c(4, 4, 1, 1))
-AAC_definition()
-```
+<img src="figure/unnamed-chunk-8-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" style="display: block; margin: auto;" />
 
 Next we perform a simulation test to show the attributes of AAC. A matrix with
 160 rows with random values are generated as follows:
@@ -265,9 +258,7 @@ In the left figure in following, they are ECDF curves of the correlation when
 calculating AAC scores. The middle figure is the AAC for all 160 rows and the
 right figure is the standard deviation for the 160 rows.
 
-```{r, echo = FALSE, fig.width = 12, fig.height = 4}
-AAC_simulation()
-```
+<img src="figure/unnamed-chunk-9-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" style="display: block; margin: auto;" />
 
 All the 160 rows have theretical variance of 1 that they cannot be
 distinguished very well by using variance. As a contrast, the rows with
@@ -281,8 +272,13 @@ patterns.
 Partition methods are used to separate samples into $k$ subgroups where $k$ is
 a known parameter for the partition. The default partition methods are:
 
-```{r}
+
+```r
 all_partition_methods()
+```
+
+```
+## [1] "hclust"  "kmeans"  "skmeans" "pam"     "mclust"
 ```
 
 These partition methods are:
@@ -307,7 +303,8 @@ $k$.**
 Following example registers a partition method which randomly assign subgroup
 labels to samples:
 
-```{r}
+
+```r
 register_partition_method(random = function(mat, k) {
 	sample(letters[1:k], ncol(mat), replace = TRUE)
 })
@@ -319,7 +316,8 @@ with numeric indices internally.
 
 To remove a partition method, use `remove_partition_method()`:
 
-```{r}
+
+```r
 remove_partition_method("random")
 ```
 
@@ -363,19 +361,7 @@ less stability of subgrouping than the right one, while for the right one,
 there are three very obvious blocks in the diagnal that in each block, the
 corresponding samples are likely all in a same subgroup.
 
-```{r, echo = FALSE, fig.width = 9, fig.height = 4}
-data(cola_rl)
-m1 = get_consensus(cola_rl["sd:kmeans"], k = 2)
-m2 = get_consensus(cola_rl["sd:kmeans"], k = 3)
-grid.newpage()
-pushViewport(viewport(layout = grid.layout(nr = 1, nc = 2)))
-pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
-draw(Heatmap(m1, name = "matrix1", show_row_dend = FALSE, show_column_dend = FALSE, col = colorRamp2(c(0, 1), c("white", "blue"))), show_heatmap_legend = T, newpage = FALSE, padding = unit(c(5, 5, 5, 5), "mm"))
-popViewport()
-pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
-draw(Heatmap(m2, name = "matrix2", show_row_dend = FALSE, show_column_dend = FALSE, col = colorRamp2(c(0, 1), c("white", "blue"))), show_heatmap_legend = T, newpage = FALSE, padding = unit(c(5, 5, 5, 5), "mm"))
-popViewport(2)
-```
+<img src="figure/unnamed-chunk-13-1.png" title="plot of chunk unnamed-chunk-13" alt="plot of chunk unnamed-chunk-13" style="display: block; margin: auto;" />
 
 ### Consensus subgroup labels
 
@@ -441,9 +427,7 @@ visualization of all partitions and correspondance to the consensus partition.
 The "p\*" annotation on top of the heatmap is the probability of being in
 subgroup $i$ across all partitions.
 
-```{r, echo = FALSE}
-membership_heatmap(cola_rl["sd:hclust"], k = 3)
-```
+<img src="figure/unnamed-chunk-14-1.png" title="plot of chunk unnamed-chunk-14" alt="plot of chunk unnamed-chunk-14" style="display: block; margin: auto;" />
 
 ## Determine the best number of subgroups
 
@@ -480,9 +464,7 @@ $$d_b = min_{j \neq a}^k d_j$$
 
 Following plot illustrates how silhouette score is calculated.
 
-```{r, echo = FALSE, fig.width = 6, fig.height = 5}
-source("silhouette.R")
-```
+<img src="figure/unnamed-chunk-15-1.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" style="display: block; margin: auto;" />
 
 The mean silhouette score from all samples is used to choose the best $k$ where
 higher the mean silhouette score, better the $k$.
@@ -499,34 +481,7 @@ $x_1$ and $x_2$ where $x_1$ is very close to 0 and $x_2$ is very close to 1
 because there are very few values between $x_1$ and $x_2$. And then $F(x_2) -
 F(x_1)$ can be used to measure how much the ambiguous subgrouping is.
 
-```{r, echo = FALSE, fig.width = 14, fig.height = 14/3}
-m1 = get_consensus(cola_rl["sd:kmeans"], k = 2)
-m2 = get_consensus(cola_rl["sd:kmeans"], k = 3)
-
-grid.newpage()
-pushViewport(viewport(layout = grid.layout(nr = 1, nc = 3)))
-pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
-draw(Heatmap(m1, name = "matrix1", show_row_dend = FALSE, show_column_dend = FALSE, col = colorRamp2(c(0, 1), c("white", "blue"))), show_heatmap_legend = T, newpage = FALSE, padding = unit(c(5, 5, 5, 5), "mm"))
-popViewport()
-pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
-draw(Heatmap(m2, name = "matrix2", show_row_dend = FALSE, show_column_dend = FALSE, col = colorRamp2(c(0, 1), c("white", "blue"))), show_heatmap_legend = T, newpage = FALSE, padding = unit(c(5, 5, 5, 5), "mm"))
-popViewport()
-
-pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 3))
-f1 = ecdf(m1[upper.tri(m1, diag = FALSE)])
-f2 = ecdf(m2[upper.tri(m2, diag = FALSE)])
-pushViewport(viewport(xscale = c(0, 1), yscale = c(0, 1), x = unit(2, "cm"), y = unit(2, "cm"),
-    just = c("left", "bottom"), width = unit(1, "npc") - unit(2.5, "cm"), height = unit(1, "npc") - unit(2.5, "cm")))
-x = seq(0, 1, by = 0.01)
-grid.lines(x, f1(x), gp = gpar(col = "red"))
-grid.lines(x, f2(x), gp = gpar(col = "blue"))
-grid.segments(c(0.1, 0.9), c(0, 0), c(0.1, 0.9), c(1, 1), gp = gpar(col = "grey", lty = 2))
-grid.points(c(0.1, 0.9), f1(c(0.1, 0.9)), pch = 16, gp = gpar(col = "red"))
-grid.points(c(0.1, 0.9), f2(c(0.1, 0.9)), pch = 16, gp = gpar(col = "blue"))
-grid.xaxis(gp = gpar(fontsize = 10)); grid.text("x", x = 0.5, y = unit(-1.5, "cm"))
-grid.yaxis(gp = gpar(fontsize = 10)); grid.text("P(X <= x)", x = unit(-1.5, "cm"), y = 0.5, rot = 90)
-upViewport(2)
-```
+<img src="figure/unnamed-chunk-16-1.png" title="plot of chunk unnamed-chunk-16" alt="plot of chunk unnamed-chunk-16" style="display: block; margin: auto;" />
 
 In the original implementation of PAC, $x_1$ and $x_2$ are fixed (e.g. 0.1 and
 0.9). But in many cases, the choice of $x_1$ and $x_2$ is quite sensitive,
@@ -565,28 +520,11 @@ $$A_k = \int F_k(x)$$
 
 In follow example, there are five consensus heatmaps corresponding to $k = 2..6$:
 
-```{r, echo = FALSE, fig.width = 14, fig.height = 14/5}
-grid.newpage()
-pushViewport(viewport(layout = grid.layout(nr = 1, nc = 5)))
-for(k in 2:6) {
-    m = get_consensus(cola_rl["sd:kmeans"], k = k)
-    pushViewport(viewport(layout.pos.row = 1, layout.pos.col = k-1))
-    draw(Heatmap(m, show_row_dend = FALSE, show_column_dend = FALSE, 
-        col = colorRamp2(c(0, 1), c("white", "blue"))), show_heatmap_legend = FALSE, 
-        newpage = FALSE, column_title = paste0("k = ", k))
-    popViewport()
-}
-popViewport()
-```
+<img src="figure/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" style="display: block; margin: auto;" />
 
 The corresponding CDF curves and the area increased are:
 
-```{r, echo = FALSE, fig.width = 10, fig.height = 5}
-par(mfrow = c(1, 2))
-plot_ecdf(cola_rl["sd:kmeans"], lwd = 1)
-area_increased = get_stat(cola_rl["sd:kmeans"])[, "area_increased"]
-plot(2:6, area_increased, type = "b", xlab = "k", ylab = "area increased")
-```
+<img src="figure/unnamed-chunk-18-1.png" title="plot of chunk unnamed-chunk-18" alt="plot of chunk unnamed-chunk-18" style="display: block; margin: auto;" />
 
 The $k$ before the elbow is taken as the best $k$ (in above example it is 3).
 Basically when $k$ reaches a stable subgrouping, increasing $k$ won't change
@@ -679,7 +617,8 @@ of top-value method and partition method gives better results. Here
 `run_all_consensus_partition_methods()` can perform anlaysis with multiple
 methods:
 
-```{r, eval = FALSE}
+
+```r
 rl = run_all_consensus_partition_methods(...)
 ```
 
@@ -689,7 +628,8 @@ By default it runs analysis for all combinations of top-value methods in
 **cola** package provides functions to collect plots from all combinations of
 methods for straightforward comparisons.
 
-```{r, eval = FALSE}
+
+```r
 collect_plots(rl, fun = consensus_heatmap, k = ...)
 collect_plots(rl, fun = membership_heatmap, k = ...)
 collect_plots(rl, fun = get_signatures, k = ...)
@@ -697,7 +637,8 @@ collect_plots(rl, fun = get_signatures, k = ...)
 
 And `collect_classes()` compares consensus partition from all methos:
 
-```{r, eval = FALSE}
+
+```r
 collect_classes(rl, k = ...)
 ```
 
@@ -721,52 +662,73 @@ visualization functions that can be applied to it.
 different statistics along with different $k$, which helps to determine the
 "best k".
 
-```{r, fig.width = 8, fig.height = 8}
+
+```r
 rl = readRDS("~/cola_test/TCGA_subgroup.rds")
 res = rl["MAD:kmeans"] # the ConsensusPartition object
 select_partition_number(res)
 ```
 
+<img src="figure/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" style="display: block; margin: auto;" />
+
 The heatmap for the consensus matrix with a certain $k$:
 
-```{r}
+
+```r
 consensus_heatmap(res, k = 4, show_row_names = FALSE)
 ```
 
+<img src="figure/unnamed-chunk-23-1.png" title="plot of chunk unnamed-chunk-23" alt="plot of chunk unnamed-chunk-23" style="display: block; margin: auto;" />
+
 The heatmap for the membership matrix with a certain $k$:
 
-```{r}
+
+```r
 membership_heatmap(res, k =4)
 ```
 
+<img src="figure/unnamed-chunk-24-1.png" title="plot of chunk unnamed-chunk-24" alt="plot of chunk unnamed-chunk-24" style="display: block; margin: auto;" />
+
 The PCA plot under the subgroups with a certain $k$:
 
-```{r}
+
+```r
 dimension_reduction(res, k = 4)
 ```
+
+<img src="figure/unnamed-chunk-25-1.png" title="plot of chunk unnamed-chunk-25" alt="plot of chunk unnamed-chunk-25" style="display: block; margin: auto;" />
 
 The heatmap for the signature rows with a certain $k$. The heatmap is split
 into two parts by columns. The left heatmap contains samples with silhouette
 scores larger than 0.5 and the right heatmap contains samples with silhouette
 scores less than 0.5.
 
-```{r, results = "hide"}
+
+```r
 get_signatures(res, k = 4, show_column_names = FALSE)
 ```
+
+<img src="figure/unnamed-chunk-26-1.png" title="plot of chunk unnamed-chunk-26" alt="plot of chunk unnamed-chunk-26" style="display: block; margin: auto;" />
 
 `collect_classes()` which is applied on the `ConsensusPartition` object
 visualizes how subgroups are corresponded with increasing $k$:
 
-```{r}
+
+```r
 collect_classes(res, show_row_names = FALSE)
 ```
+
+<img src="figure/unnamed-chunk-27-1.png" title="plot of chunk unnamed-chunk-27" alt="plot of chunk unnamed-chunk-27" style="display: block; margin: auto;" />
 
 `collect_plots()` which is applied on the `ConsensusPartition` object puts
 all the plots from all $k$ into one single page.
 
-```{r, results = "hide", fig.width = 14, fig.height = 14/5*4}
+
+```r
 collect_plots(res)
 ```
+
+<img src="figure/unnamed-chunk-28-1.png" title="plot of chunk unnamed-chunk-28" alt="plot of chunk unnamed-chunk-28" style="display: block; margin: auto;" />
 
 ### On the ConsensusPartitionList object
 
@@ -774,9 +736,12 @@ collect_plots(res)
 There are two main functions which can visualize results from all combinations
 of methods and compare directly.
 
-```{r, fig.width = 14, fig.height = 14/5*4, results = "hide"}
+
+```r
 collect_plots(rl, fun = consensus_heatmap, k = 4)
 ```
+
+<img src="figure/unnamed-chunk-29-1.png" title="plot of chunk unnamed-chunk-29" alt="plot of chunk unnamed-chunk-29" style="display: block; margin: auto;" />
 
 `fun` can also be `membership_heatmap` or `get_signatures` that membership heatmap
 and signature heatmap for each method will be plotted.
@@ -788,9 +753,12 @@ measurement from `clue::cl_dissimilarity(..., method = "comembership")`. On top 
 consensus subgroup is inferred from all methods by taking the mean silhouette scores
 as weight.
 
-```{r, fig.width = 10}
+
+```r
 collect_classes(rl, k = 4)
 ```
+
+<img src="figure/unnamed-chunk-30-1.png" title="plot of chunk unnamed-chunk-30" alt="plot of chunk unnamed-chunk-30" style="display: block; margin: auto;" />
 
 ## A Real example
 
@@ -801,7 +769,8 @@ The two files (`unifiedScaled.txt` and `TCGA_unified_CORE_ClaNC840.txt`) for use
 
 Following code is used to perform analysis of consensus partition.
 
-```{r, eval = FALSE}
+
+```r
 data = read.table("~/cola_test/unifiedScaled.txt", header = TRUE, 
     row.names = 1, check.names = FALSE)
 data = as.matrix(data)
@@ -820,39 +789,43 @@ rl = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 3000, 4000)
 
 Simply type `rl` gives a summary of the analysis:
 
-```{r}
+
+```r
 rl
+```
+
+```
+## A 'ConsensusPartitionList' object with 20 methods.
+##   On a matrix with 11268 rows and 173 columns.
+##   Top rows are extracted by 'sd, cv, MAD, AAC' methods.
+##   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust' method.
+##   Number of partitions are tried for k = 2, 3, 4, 5, 6.
+##   Performed in total 4000 partitions.
+## 
+## Following methods can be applied to this 'ConsensusPartitionList' object:
+##  [1] "cola_report"           "collect_classes"       "collect_plots"         "get_anno_col"         
+##  [5] "get_anno"              "get_classes"           "get_matrix"            "get_membership"       
+##  [9] "get_stat"              "guess_best_k"          "show"                  "test_to_known_factors"
+## [13] "top_rows_heatmap"      "top_rows_overlap"     
+## 
+## You can get result for a single method by its node id, e.g. object["sd", "hclust"] or object["sd:hclust"]
+## or a subset of methods by object[c("sd", "cv")], c("hclust", "kmeans")]
 ```
 
 `cola_report()` function generates a detailed report (with all the tables and
 plots) for this analysis which can be visited at https://jokergoo.github.io/cola_test/tcga_cola_rl_report/cola_report.html.
 
-```{r, eval = FALSE}
+
+```r
 cola_report(rl, output_dir = "~/cola_test/tcga_cola_rl_report")
 ```
 
 ## Hierarchical partition
 
-Normal consensus partition methods aim to find $k$ subgroups at the same time. However, when
-1. there are dominant subgroups, or 2. the number of potential subgroups are large, it is 
-difficult to find secondary subgroups which show less difference with normal consensus partition
-process. To solve this problem, the subgroups can be found in a hierarchical way, where dominant
-subgroups are found first, later secondary subgroups are detected.
-
-**cola** package implements hierarchical partition and the flowchart is as follows.
-
 <img src="hierarchical_partition_workflow.png" width="600" />
 
-Generally, at each step, the consensus partition is performed for a small
-set of $k$, If the PAC score of the "best k" subgroups is less than 0.15,
-the samples are split into two subgroups where the first one contains samples
-in the subgroup with smallest intra-distance and the second subgroups
-are all other samples. If the number of samples is less than 6, the hierarchial
-partition stops, or it repeatedly perform the hierarchial partition.
 
-Hierarchical partition is performed by `hierarchical_partition()` function:
-
-```{r, eval = FALSE}
+```r
 rh = hierarchical_partition(data, top_n = c(1000, 2000, 3000, 4000),
     top_value_method = "MAD", partition_method = "kmeans",
     anno = data.frame(subtype = subtype,
@@ -861,47 +834,120 @@ rh = hierarchical_partition(data, top_n = c(1000, 2000, 3000, 4000),
         consensus = structure(brewer.pal(4, "Set1"), names = 1:4)))
 ```
 
-```{r, echo = FALSE}
-rh = readRDS("~/cola_test/TCGA_subgroup_hierarchical_partition.rds")
-```
 
-Simply typing `rh` gives summary of the analysis.
 
-```{r}
+
+```r
 rh
 ```
 
-`collect_classes()` plots the hierarchial of subgroups.
+```
+## A 'HierarchicalPartition' object with 'MAD:kmeans' method.
+##   On a matrix with 11268 rows and 173 columns.
+##   Performed in total 5400 partitions.
+##   There are 5 groups.
+## 
+## Hierarchy of the partition:
+##   0, 173 cols
+##   |-- 02, 38 cols
+##   `-- 00, 135 cols
+##       |-- 001, 52 cols
+##       |   |-- 0011, 37 cols
+##       |   `-- 0010, 15 cols
+##       `-- 000, 83 cols
+##           |-- 0001, 46 cols
+##           `-- 0000, 37 cols
+## 
+## Following methods can be applied to this 'HierarchicalPartition' object:
+##  [1] "all_leaves"            "all_nodes"             "cola_report"           "collect_classes"      
+##  [5] "dimension_reduction"   "get_anno_col"          "get_anno"              "get_classes"          
+##  [9] "get_matrix"            "get_signatures"        "max_depth"             "show"                 
+## [13] "test_to_known_factors"
+## 
+## You can get result for a single node by e.g. object["01"]
+```
 
-```{r}
+
+```r
 collect_classes(rh)
 ```
 
-In above plot, hierarchical partition especially found two subgroups
-for the Mesenchumal samples, or subgroup 1 in `rl`, totally 5 subgroups.
-However, if we check the 5 subgroup in `rl`, actually the subgrouping
-is not stable. 
+<img src="figure/unnamed-chunk-37-1.png" title="plot of chunk unnamed-chunk-37" alt="plot of chunk unnamed-chunk-37" style="display: block; margin: auto;" />
 
-```{r}
+
+```r
 consensus_heatmap(rl["MAD:kmeans"], k = 5, show_row_names = FALSE)
 ```
 
-If only applying consensus partition on node `001`, ...
+<img src="figure/unnamed-chunk-38-1.png" title="plot of chunk unnamed-chunk-38" alt="plot of chunk unnamed-chunk-38" style="display: block; margin: auto;" />
 
-```{r, results = "hide"}
+
+```r
 get_signatures(rh["001"], k = 2, show_column_names = FALSE)
 ```
 
-Similar as the `ConsensusPartitionList` object, `cola_report()` function
-can also be applied to this `HierarchicalPartition` object. The full report
-for `rh` can be found at https://jokergoo.github.io/cola_test/tcga_cola_rh_report/cola_report.html.
-
-```{r, eval = FALSE}
-cola_report(rh, output_dir = "~/cola_test/tcga_cola_rh_report")
 ```
+## * 52/52 samples (in 2 classes) remain after filtering by silhouette (>= 0.5).
+## * calculating row difference between subgroups by ttest
+## * 3533 signatures under fdr < 0.1
+## * making heatmaps for signatures
+```
+
+<img src="figure/unnamed-chunk-39-1.png" title="plot of chunk unnamed-chunk-39" alt="plot of chunk unnamed-chunk-39" style="display: block; margin: auto;" />
 
 ## Session info
 
-```{r}
+
+```r
 sessionInfo()
+```
+
+```
+## R version 3.4.4 (2018-03-15)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: macOS High Sierra 10.13.2
+## 
+## Matrix products: default
+## BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+## 
+## attached base packages:
+## [1] grid      stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] GetoptLong_0.1.6      mvtnorm_1.0-8         matrixStats_0.53.1    gridBase_0.4-7       
+##  [5] cola_0.99.0           circlize_0.4.4        ComplexHeatmap_1.17.1 markdown_0.8         
+##  [9] knitr_1.20            colorout_1.2-0       
+## 
+## loaded via a namespace (and not attached):
+##   [1] bitops_1.0-6         bit64_0.9-7          RColorBrewer_1.1-2   httr_1.3.1          
+##   [5] prabclus_2.2-6       data.tree_0.7.5      tools_3.4.4          R6_2.2.2            
+##   [9] KernSmooth_2.23-15   DBI_1.0.0            BiocGenerics_0.24.0  lazyeval_0.2.1      
+##  [13] colorspace_1.3-2     trimcluster_0.1-2    nnet_7.3-12          tidyselect_0.2.4    
+##  [17] gridExtra_2.3        bit_1.1-14           compiler_3.4.4       Biobase_2.38.0      
+##  [21] xml2_1.2.0           influenceR_0.1.0     microbenchmark_1.4-4 slam_0.1-43         
+##  [25] samr_2.0             diptest_0.75-7       caTools_1.17.1       scales_0.5.0        
+##  [29] DEoptimR_1.0-8       robustbase_0.93-0    genefilter_1.60.0    readr_1.1.1         
+##  [33] stringr_1.3.1        digest_0.6.15        pkgconfig_2.0.1      htmltools_0.3.6     
+##  [37] highr_0.7            htmlwidgets_1.2      rlang_0.2.1          GlobalOptions_0.1.0 
+##  [41] RSQLite_2.1.1        rstudioapi_0.7       impute_1.52.0        shape_1.4.4         
+##  [45] bindr_0.1.1          visNetwork_2.0.3     jsonlite_1.5         mclust_5.4          
+##  [49] gtools_3.5.0         dendextend_1.8.0     dplyr_0.7.5          rgexf_0.15.3        
+##  [53] RCurl_1.95-4.10      magrittr_1.5         modeltools_0.2-21    Matrix_1.2-14       
+##  [57] S4Vectors_0.16.0     Rcpp_0.12.17         munsell_0.4.3        viridis_0.5.1       
+##  [61] stringi_1.2.2        whisker_0.3-2        MASS_7.3-50          pamr_1.55           
+##  [65] flexmix_2.3-14       gplots_3.0.1         Rtsne_0.13           plyr_1.8.4          
+##  [69] blob_1.1.1           parallel_3.4.4       gdata_2.18.0         crayon_1.3.4        
+##  [73] lattice_0.20-35      splines_3.4.4        annotate_1.56.2      hms_0.4.2           
+##  [77] pillar_1.2.3         igraph_1.2.1         rjson_0.2.20         fpc_2.1-11          
+##  [81] stats4_3.4.4         XML_3.98-1.11        glue_1.2.0           evaluate_0.10.1     
+##  [85] downloader_0.4       png_0.1-7            gtable_0.2.0         purrr_0.2.5         
+##  [89] tidyr_0.8.1          clue_0.3-55          kernlab_0.9-26       assertthat_0.2.0    
+##  [93] ggplot2_2.2.1        xtable_1.8-2         skmeans_0.2-11       class_7.3-14        
+##  [97] survival_2.42-3      viridisLite_0.3.0    tibble_1.4.2         IRanges_2.12.0      
+## [101] memoise_1.1.0        AnnotationDbi_1.40.0 bindrcpp_0.2.2       cluster_2.0.7-1     
+## [105] Rook_1.1-1           DiagrammeR_1.0.0     brew_1.0-6
 ```

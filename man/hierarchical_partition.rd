@@ -8,7 +8,7 @@ Hierarchical detection of subgroups
 }
 \usage{
 hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmeans",
-    concordance_cutoff = 0.8, min_samples = 6, max_k = 4, ...)
+    PAC_cutoff = 0.15, min_samples = 6, max_k = 4, ...)
 }
 \arguments{
 

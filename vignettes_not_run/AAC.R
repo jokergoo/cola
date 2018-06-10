@@ -7,7 +7,7 @@ AAC_definition = function() {
 	x = seq(0, 1, length = 100)
 	y = f(x)
 
-	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x", ylab = "P(X < x)")
+	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x", ylab = "P(X <= x)")
 	x2 = seq(0, 1, length = 100)
 	polygon(c(x2, rev(x2)), c(f(x2), rep(1, length(x2))), col = "#FF000040", border = NA)
 	polygon(c(x2, rev(x2)), c(f(x2), rep(0, length(x2))), col = "#00FF0040", border = NA)
@@ -37,7 +37,8 @@ AAC_simulation = function() {
 
 	mat = t(rbind(mat1, mat2, mat3))
 
-	par(mfrow = c(2, 2))
+	# par(mfrow = c(2, 2))
+	par(mfrow = c(1, 3))
 	par(mar = c(3, 5, 1, 1), cex = 0.8)
 	v = NULL
 	min_cor = 0
@@ -68,14 +69,14 @@ AAC_simulation = function() {
 	    dy_list = c(dy_list, list(d$y))
 	}
 	max_y = max(unlist(dy_list))
-	plot(NULL, xlim = c(0, 1), ylim = c(0, max_y), ylab = "density", xlab = "")
-	for(i in seq_along(dx_list)) {
-		lines(dx_list[[i]], dy_list[[i]], col = ifelse(i <= nr1, "#00000080", ifelse(i <= nr1+nr2, "#FF000080", "#00FF0080")))
-	}
-	legend("topright", lty = 1, col = 1:3, legend = c("nr = 100, cor = 0", "nr = 10, cor = 0.8", "nr = 50, cor = 0.5"))
+	# plot(NULL, xlim = c(0, 1), ylim = c(0, max_y), ylab = "density", xlab = "")
+	# for(i in seq_along(dx_list)) {
+	# 	lines(dx_list[[i]], dy_list[[i]], col = ifelse(i <= nr1, "#00000080", ifelse(i <= nr1+nr2, "#FF000080", "#00FF0080")))
+	# }
+	# legend("topright", lty = 1, col = 1:3, legend = c("nr = 100, cor = 0", "nr = 10, cor = 0.8", "nr = 50, cor = 0.5"))
 
 
-	plot(v, pch = 16, xlab = "", ylab = "AAC (|cor| in c(0, 1))", col = ifelse(seq_along(v) <= nr1, "#000000", ifelse(seq_along(v) <= nr1+nr2, "#FF0000", "#00FF00")))
+	plot(v, pch = 16, xlab = "", ylab = "AAC", col = ifelse(seq_along(v) <= nr1, "#000000", ifelse(seq_along(v) <= nr1+nr2, "#FF0000", "#00FF00")))
 	legend("topleft", pch = 16, col = 1:3, legend = c("nr = 100, cor = 0", "nr = 10, cor = 0.8", "nr = 50, cor = 0.5"))
 
 

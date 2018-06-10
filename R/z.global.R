@@ -269,21 +269,21 @@ register_partition_method(
 	mclust = function(mat, k, ...) {
 		pca = prcomp(t(mat))
 		Mclust(pca$x[, 1:3], G = k, verbose = FALSE, ...)$classification
-	},
-	som = function(mat, k, ...) {
-		kr = floor(sqrt(ncol(mat)))
-		somfit = som(t(mat), grid = somgrid(kr, kr, "hexagonal"), ...)
-		m = somfit$codes[[1]]
-		m = m[seq_len(nrow(m)) %in% somfit$unit.classif, ]
-		cl = cutree(hclust(dist(m)), k)
-		group = numeric(ncol(mat))
-		for(cl_unique in unique(cl)) {
-			ind = as.numeric(gsub("V", "", names(cl)[which(cl == cl_unique)]))
-			l = somfit$unit.classif %in% ind
-			group[l] = cl_unique
-		}
-		group
 	}
+	# som = function(mat, k, ...) {
+	# 	kr = floor(sqrt(ncol(mat)))
+	# 	somfit = som(t(mat), grid = somgrid(kr, kr, "hexagonal"), ...)
+	# 	m = somfit$codes[[1]]
+	# 	m = m[seq_len(nrow(m)) %in% somfit$unit.classif, ]
+	# 	cl = cutree(hclust(dist(m)), k)
+	# 	group = numeric(ncol(mat))
+	# 	for(cl_unique in unique(cl)) {
+	# 		ind = as.numeric(gsub("V", "", names(cl)[which(cl == cl_unique)]))
+	# 		l = somfit$unit.classif %in% ind
+	# 		group[l] = cl_unique
+	# 	}
+	# 	group
+	# }
 )
 
 # register_partition_method(

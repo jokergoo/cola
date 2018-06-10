@@ -15,7 +15,7 @@ Get signature rows
     anno = get_anno(object),
     anno_col = get_anno_col(object),
     internal = FALSE,
-    show_column_names = TRUE, use_raster = TRUE,
+    show_column_names = !internal, use_raster = TRUE,
     plot = TRUE, verbose = TRUE,
     top_k_genes = 5000,
     ...)

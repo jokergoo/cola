@@ -7,12 +7,13 @@ Collect classes from ConsensusPartition object
 Collect classes from ConsensusPartition object
 }
 \usage{
-\S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE)
+\S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE, show_row_names = !internal)
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object.}
   \item{internal}{used internally.}
+  \item{show_row_names}{whether show row names}
 
 }
 \details{

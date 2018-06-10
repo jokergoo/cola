@@ -16,6 +16,7 @@ library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "toc"), "base64_images"))
 options(width = 100)
+options(digits = 3)
 opts_chunk$set(
 	comment = "#>",
 	fig.path = "figure_cola/",

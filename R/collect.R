@@ -334,8 +334,13 @@ setMethod(f = "collect_classes",
 			col = object@list[[1]]@anno_col, show_annotation_name = TRUE,
 			annotation_name_side = "left")
 	}
-	ht = Heatmap(m, name = "class", col = brewer_pal_set2_col, column_order = column_order,
-		row_names_side = "left", show_row_dend = FALSE, cluster_columns = FALSE,
+	pl = lapply(object@list[paste(top_value_method_vec, partition_method_vec, sep = ":")], function(x) as.cl_partition(get_membership(x, k = k)))
+	clen = cl_ensemble(list = pl)
+	m_diss = cl_dissimilarity(clen, method = "comembership")
+
+	ht = Heatmap(m, name = "Class", col = brewer_pal_set2_col, column_order = column_order,
+		column_title = qq("classification from all methods, k = @{k}"),
+		row_names_side = "left", cluster_rows = hclust(m_diss), cluster_columns = FALSE,
 		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
 		cell_fun = function(j, i, x, y, w, h, fill) {
 			col = adjust_by_transparency(fill, 1 - silhouette_mat[j, i])
@@ -344,26 +349,16 @@ setMethod(f = "collect_classes",
 			col = list(consensus_class = brewer_pal_set2_col),
 			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE),
 		bottom_annotation = bottom_annotation, width = 1) + 
-		rowAnnotation(mean_silhouette = row_anno_barplot(get_stat(object, k = k)[, "mean_silhouette"], baseline = 0, axis = TRUE),
+		rowAnnotation(mean_silhouette = row_anno_barplot(get_stat(object, k = k)[colnames(class_mat), "mean_silhouette"], baseline = 0, axis = TRUE),
 			width = unit(2, "cm")) +
-		rowAnnotation(top_value_method = top_value_method_vec, 
-			partition_method = partition_method_vec,
-			show_annotation_name = TRUE, annotation_name_side = "bottom",
-			col = list(top_value_method = structure(names = top_value_method, brewer_pal_set1_col[seq_along(top_value_method)]),
-			           partition_method = structure(names = partition_method, brewer_pal_set2_col[seq_along(partition_method)])),
+		rowAnnotation("Top value method" = top_value_method_vec, 
+			"Partition method" = partition_method_vec,
+			show_annotation_name = FALSE, annotation_name_side = "bottom",
+			col = list("Top value method" = structure(names = top_value_method, brewer_pal_set1_col[seq_along(top_value_method)]),
+			           "Partition method" = structure(names = partition_method, brewer_pal_set2_col[seq_along(partition_method)])),
 			width = unit(10, "mm"))
 	
-	pl = lapply(object@list[paste(top_value_method_vec, partition_method_vec, sep = ":")], function(x) as.cl_partition(get_membership(x, k = k)))
-	clen = cl_ensemble(list = pl)
-	m_diss = cl_dissimilarity(clen, method = "comembership")
-	m_diss = as.matrix(m_diss)
-
-	ht = ht + Heatmap(m_diss, name = "comembership", show_row_names = FALSE, show_column_names = FALSE,
-		show_row_dend = FALSE, show_column_dend = FALSE, width = 1,
-		column_title = "comembership",
-		col = colorRamp2(quantile(m_diss, c(0, 0.5, 1)), c("red", "white", "blue")))
-
-	draw(ht, main_heatmap = "comembership", column_title = qq("classification from all methods, k = @{k}"))
+	draw(ht, padding = unit(c(15, 1, 1, 1), "mm"))
 	decorate_annotation("mean_silhouette", {
 		grid.text("mean_silhouette", y = unit(-1, "cm"))
 	})
@@ -376,6 +371,7 @@ setMethod(f = "collect_classes",
 # == param
 # -object a `ConsensusPartition-class` object.
 # -internal used internally.
+# -show_row_names whether show row names
 #
 # == details
 # Membership matrix and the classes with each k are plotted in the heatmap.
@@ -391,7 +387,7 @@ setMethod(f = "collect_classes",
 # collect_classes(cola_rl["sd", "kmeans"])
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",
-	definition = function(object, internal = FALSE) {
+	definition = function(object, internal = FALSE, show_row_names = !internal) {
 
 	all_k = object@k
 
@@ -404,18 +400,18 @@ setMethod(f = "collect_classes",
 
 		ht_list = ht_list + Heatmap(membership, col = colorRamp2(c(0, 1), c("white", "red")),
 			show_row_names = FALSE, cluster_columns = FALSE, cluster_rows = FALSE, show_heatmap_legend = i == 1,
-			heatmap_legend_param = list(title = "membership"),
+			heatmap_legend_param = list(title = "Prob"),
 			column_title = qq("k = @{all_k[i]}"),
 			name = paste0("membership_", all_k[i])) + 
 			Heatmap(class, col = brewer_pal_set2_col, 
 				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), 
-				heatmap_legend_param = list(title = "classes"),
+				heatmap_legend_param = list(title = "Class"),
 				name = paste(all_k[i], "_classes"))
 		gap = c(gap, c(0, 4))
 		class_mat = cbind(class_mat, as.numeric(class))
 	}
 
-	if(!internal) {
+	if(!internal & show_row_names) {
 		rn = rownames(membership)
 		ht_list = ht_list + rowAnnotation(nm = row_anno_text(rn, offset = unit(0, "npc"), just = "left"), width = max_text_width(rn))
 	}
