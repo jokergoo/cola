@@ -21,3 +21,7 @@ rh = hierarchical_partition(data, top_n = c(1000, 2000, 3000, 4000),
 	anno_col = list(subtype = structure(seq_len(4), names = unique(subtype)),
 		consensus = structure(brewer.pal(4, "Set1"), names = 1:4)))
 saveRDS(rh, file = "~/cola_test/TCGA_subgroup_hierarchical_partition.rds")
+
+
+cola_report(rl, output_dir = "~/cola_test/tcga_cola_rl_report")
+cola_report(rh, output_dir = "~/cola_test/tcga_cola_rh_report")

@@ -151,6 +151,10 @@ message(qq("* making signature heatmaps"))
 get_signatures(res_hc)
 ```
 
+```{r hc-signature, results = "hide"}
+get_signatures(res_hc, plot_type = "venneuler")
+```
+
 <% } -%>
 
 
