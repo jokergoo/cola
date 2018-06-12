@@ -1,10 +1,6 @@
 library(GetoptLong)
 
-tm = c("sd", "cv", "MAD", "AAC")
-pm = c("hclust", "kmeans", "skmeans", "pam", "mclust", "som")
-GetoptLong("pid=s", "pid",
-	"tm=s{1,}", "sd|cv|MAD|AAC",
-	"pm=s{1,}", "hclust|kmeans|skmeans|pam|mclust|som")
+GetoptLong("pid=s", "pid")
 
 library(SummarizedExperiment)
 
@@ -41,7 +37,7 @@ mat = log2(rpkm[gt[rownames(rpkm)] == "protein_coding", ] + 1)
 library(cola)
 mat = adjust_matrix(mat)
 
-res_list = run_all_consensus_partition_methods(mat, max_k = 8, mc.cores = 4, top_method = tm, partition_method = pm)
+res_list = run_all_consensus_partition_methods(mat, max_k = 8, mc.cores = 4, top_n = c(1000, 2000, 3000))
 saveRDS(res_list, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/recount2/@{pid}/@{pid}_cola_all.rds"))
 # res_hc = hierarchical_partition(mat)
 # saveRDS(res_hc, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/recount2/@{pid}/@{pid}_cola_hc.rds"))
