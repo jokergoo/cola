@@ -12,7 +12,7 @@ A General Framework for Consensus and Hierarchical Partition
 
 ## Consensus Partition
 
-<img width="980" alt="consensus_partition_workflow" src="https://user-images.githubusercontent.com/449218/41279038-b1d73680-6e2b-11e8-94eb-d0d53eae5d60.png">
+<img width="600" alt="consensus_partition_workflow" src="https://user-images.githubusercontent.com/449218/41279038-b1d73680-6e2b-11e8-94eb-d0d53eae5d60.png">
 
 
 ## Usage
@@ -30,13 +30,13 @@ cola_report(rl, output_dir = ...)
 
 Following plots compares consensus heatmap with k = 4 under all combination of methods.
 
-![image](https://user-images.githubusercontent.com/449218/41279146-f949b9f2-6e2b-11e8-902e-0715fe7b16fa.png)
+<img src="https://user-images.githubusercontent.com/449218/41279146-f949b9f2-6e2b-11e8-902e-0715fe7b16fa.png">
 
 ## Hierarchical Partition
 
 **cola** supports to look for subgroups in a hierarchical way, which is efficient to found secondary subgroups with small difference.
 
-![image](https://user-images.githubusercontent.com/449218/41279180-1060bb68-6e2c-11e8-8bb3-f6a197294f4d.png)
+<img width="600", src="https://user-images.githubusercontent.com/449218/41279180-1060bb68-6e2c-11e8-8bb3-f6a197294f4d.png">
 
 ## Usage
 
@@ -50,7 +50,7 @@ cola_report(rh, output_dir = ...)
 
 The hierarchy of the subgroups:
 
-![image](https://user-images.githubusercontent.com/449218/41279212-2362cb7a-6e2c-11e8-8afc-fea14013a95f.png)
+<img src="https://user-images.githubusercontent.com/449218/41279212-2362cb7a-6e2c-11e8-8afc-fea14013a95f.png">
 
 ## License
 
