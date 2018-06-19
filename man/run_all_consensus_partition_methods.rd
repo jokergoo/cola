@@ -8,7 +8,7 @@ Run subgroup classification from all methods
 }
 \usage{
 run_all_consensus_partition_methods(data,
-    top_value_method = setdiff("som", all_top_value_methods()),
+    top_value_method = all_top_value_methods(),
     partition_method = all_partition_methods(),
     max_k = 6,
     mc.cores = 1, anno = NULL, anno_col = NULL, ...)
