@@ -169,8 +169,6 @@ consensus_partition = function(data,
 
 	if(is.null(scale_rows)) {
 		scale_rows = TRUE
-	} else {
-		scale_rows = FALSE
 	}
 	if(scale_rows) {
 		scale_method = attr(partition_fun, "scale_method")
