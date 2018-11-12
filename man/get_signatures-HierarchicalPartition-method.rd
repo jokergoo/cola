@@ -12,7 +12,7 @@ Get signatures rows
     anno = get_anno(object[1]),
     anno_col = get_anno_col(object[1]),
     show_column_names = TRUE,
-    verbose = TRUE, plot = TRUE,
+    verbose = TRUE, plot = TRUE, plot_type = c("venneuler", "heatmap"),
     silhouette_cutoff = -Inf,
     ...)
 }
@@ -26,6 +26,7 @@ Get signatures rows
   \item{show_column_names}{whether show column names}
   \item{verbose}{whether print messages}
   \item{plot}{whether make the heatmap}
+  \item{plot_type}{type of the plot}
   \item{silhouette_cutoff}{cutoff for silhouette scores.}
   \item{...}{other arguments}
 

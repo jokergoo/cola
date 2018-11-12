@@ -10,7 +10,7 @@ Heatmap of membership of samples in each partition
 \usage{
 \S4method{membership_heatmap}{ConsensusPartition}(object, k, internal = FALSE,
     anno = get_anno(object), anno_col = get_anno_col(object),
-    show_column_names = TRUE, ...)
+    show_column_names = !internal, ...)
 }
 \arguments{
 
@@ -26,7 +26,7 @@ Heatmap of membership of samples in each partition
 \details{
 Each row in the heatmap is the membership of samples in one partition.
 
-Heatmap is split on rows by \code{top_n}. The value shown is \code{top_n*p_sampling}.
+Heatmap is split on rows by \code{top_n}..
 }
 \value{
 No value is returned.

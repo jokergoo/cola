@@ -9,8 +9,8 @@ Visualize columns after dimension reduction
 \usage{
 \S4method{dimension_reduction}{HierarchicalPartition}(object,
     depth = max_depth(object), parent_node,
-    top_n = NULL, method = c("pca", "mds", "tsne"),
-    silhouette_cutoff = 0.5, tsne_param = list())
+    top_n = NULL, method = c("PCA", "MDS"),
+    silhouette_cutoff = 0.5)
 }
 \arguments{
 
@@ -18,9 +18,8 @@ Visualize columns after dimension reduction
   \item{depth}{depth of the hierarchy.}
   \item{top_n}{top n genes to use.}
   \item{parent_node}{parent node. If it is set, the function calls is identical to \code{dimension_reduction(object[parent_node])}}
-  \item{method}{which method to reduce the dimension of the data. \code{mds} uses \code{\link[stats]{cmdscale}}, \code{pca} uses \code{\link[stats]{prcomp}} and \code{tsne} uses \code{\link[Rtsne]{Rtsne}}.}
+  \item{method}{which method to reduce the dimension of the data. \code{mds} uses \code{\link[stats]{cmdscale}}, \code{pca} uses \code{\link[stats]{prcomp}}.}
   \item{silhouette_cutoff}{silhouette cutoff}
-  \item{tsne_param}{parameters pass to \code{\link[Rtsne]{Rtsne}}}
 
 }
 \details{

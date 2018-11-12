@@ -49,7 +49,7 @@ try_and_trace = function(expr) {
 # data(cola_rl)
 # cola_rl
 run_all_consensus_partition_methods = function(data, 
-	top_value_method = all_top_value_methods(), 
+	top_value_method = setdiff(all_top_value_methods(), "som"), 
 	partition_method = all_partition_methods(), 
 	max_k = 6,
 	mc.cores = 1, anno = NULL, anno_col = NULL, ...) {
@@ -310,6 +310,7 @@ setMethod(f = "show",
 	qqcat("  Top rows are extracted by '@{paste(object@top_value_method, collapse = ', ')}' methods.\n")
 	qqcat("  Subgroups are detected by '@{paste(object@partition_method, collapse = ', ')}' method.\n")
 	qqcat("  Number of partitions are tried for k = @{paste(object@list[[1]]@k, collapse = ', ')}.\n")
+	qqcat("  Performed in total @{object@list[[1]]@n_partition*length(object@top_value_method)*length(object@partition_method)} partitions.\n")
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'ConsensusPartitionList' object:\n")
 	txt = showMethods(classes = "ConsensusPartitionList", where = topenv(), printTo = FALSE)
@@ -318,7 +319,7 @@ setMethod(f = "show",
 	print(fname)
 	cat("\n")
 
-	qqcat("You can get result for a single method by e.g. @{obj_name}[\"@{object@top_value_method[1]}\", \"@{object@partition_method[1]}\"] or @{obj_name}[\"@{object@top_value_method[1]}:@{object@partition_method[1]}\"]\n")
+	qqcat("You can get result for a single method by its node id, e.g. @{obj_name}[\"@{object@top_value_method[1]}\", \"@{object@partition_method[1]}\"] or @{obj_name}[\"@{object@top_value_method[1]}:@{object@partition_method[1]}\"]\n")
 	if(length(object@top_value_method) == 1) {
 		ri = qq("\"@{object@top_value_method[1]}\"")
 	} else {

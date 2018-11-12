@@ -31,30 +31,59 @@ message("* generating plots for <%=top_value_method%>:<%=partition_method%> (<%=
 ```
 <% } -%>
 
-The object which only contains results for a single top method and a single partition method,
-and the functions that can be applied to.
+The object with results only for a single top value method and a single partition method 
+can be extracted as:
 
 ```{r}
 <% if(is_hc) { -%>
 res = res_hc["<%=node%>"]
 <% } else { -%>
 res = res_list["<%=top_value_method%>", "<%=partition_method%>"]
+# you can also extract it by
+# res = res_list["<%=top_value_method%>:<%=partition_method%>"]
 <% } -%>
+```
+
+A summary of `res` and all the functions that can be applied to it:
+
+```{r}
 res
 ```
 
-Major plots made from `res` for different `k` (number of partitions). Individual plots can be found
-later in this section.
+`collect_plots()` function collects all the plots made from `res` for all `k` (number of partitions)
+into one single page to provide an easy and fast comparison between different `k`.
+
 
 ```{r, echo = FALSE, message = FALSE}
 message("  - collecting all plots (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
+The plots are:
+
+- The first row: a plot of the ECDF (Empirical cumulative distribution function) curves of the consensus matrix for each `k` and the heatmap of predicted
+  classes for each `k`.
+- The second row: heatmaps of the consensus matrix for each `k`.
+- The third row: heatmaps of the membership matrix for each `k`.
+- The fouth row: heatmaps of the signatures for each `k`.
+
+All the plots in panels can be made by individual functions and they are plotted later in this section.
+
 ```{r <%=chunk_prefix%>-collect-plots, fig.width = <%=fs*length(all_k)%>, fig.height = <%=fs*4%>, results = "hide"}
 collect_plots(res)
 ```
 
-Plots showing different statistics for choosing optimized `k`:
+`select_partition_number()` produces several plots showing different statistics for choosing "optimized" `k`. There are following statistics:
+
+- ECDF curves of the consensus matrix for each `k`;
+- cophenetic correlation coefficient. It measures if hierarchical clustering is applied on the consensus matrix, how good it correlates to the consensus matrix itself. 
+- PAC. This a variant of the orignial PAC (proportion of ambiguous clustering) method. For each $x_{1i}$ in `seq(0.1, 0.3, by = 0.02)` and $x_{2j}$ in `seq(0.7, 0.9, by = 0.02)`, $PAC_k = F(x_{2j}) - F(x_{1i})$ where $F(x)$ is the ECDF of the consensus matrix (the lower triangle matrix without diagnals). The final PAC is the mean of all $PAC_k$ by removing top 10 percent and bottom 10 percent of all values.
+- mean silhouette score.
+- concordance. The mean probability of fiting the consensus class ids in all partitions.
+- area increased. Denote $A_k$ as the area under the ECDF curve for current `k`, the area increased is defined as $A_k - A_{k-1}$.
+- Rand index. The percent of pairs of samples that are both in a same cluster or both are not in a same cluster in the partition of k and k-1.
+- Jaccard index. The ratio of pairs of samples are both in a same cluster in the partition of k and k-1 and the pairs of samples are both in a same cluster in the partition k or k-1.
+
+Generally speaking, higher cophenetic correlation coefficient, lower PAC score, higher mean silhouette score or higher concordance corresponds to better partition. Rand index and Jaccard index measure how similar the current partition is compared to partition with `k-1`. If they are too similar, we won't accept `k` is better than `k-1`.
 
 ```{r, echo = FALSE, message = FALSE}
 message("  - plotting various statistics for selecting best k")
@@ -64,23 +93,35 @@ message("  - plotting various statistics for selecting best k")
 select_partition_number(res)
 ```
 
-The values for different statistics for different `k`:
+The numeric values for all these statistics can be obtained by `get_stat()`.
 
 ```{r}
 get_stat(res)
 ```
 
-Guess the best `k`:
+Guess the best `k` based on these statistics. The rule is as follows:
+
+1. All `k` with Rand index larger than 0.95 are removed because the partition number increasement
+  does not provides enough extra information.
+2. For `k` with cophenetic correlation coefficient larger than 0.99 or PAC score less than 0.1 or oncordance larger than 0.95,
+  the maximum `k` is taken as the "best `k`".
+3. The `k` with highest cophenetic correlation coefficient, lowest PAC score, highest mean silhouette and highest
+   concordance. The `k` with highest occurance is taken as the "best `k`".
 
 ```{r}
 guess_best_k(res)
 ```
 
-The partitions:
+The table of the partitions. The membership matrix (columns with name `p*`) is inferred by [`clue::cl_consensus()`](https://www.rdocumentation.org/link/cl_consensus?package=clue)
+function with the `SE` method. Basically the value in the membership matrix represents the probability to belong
+to a certain group. The finall class label for an item is determined with the group with highest probability it belongs to.
+
+In `get_classes()` function, the entropy is calculated from the membership matrix and the silhouette score
+is calculated from the consensus matrix.
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('get_classes(res, k = <%=k%>)', 'k = <%=k%>')
+knitr_add_tab_item('cbind(get_classes(res, k = <%=k%>), get_membership(res, k = <%=k%>))', 'k = <%=k%>')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -91,7 +132,6 @@ Heatmaps for the consensus matrix:
 message("  - making consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
 ```
 
-
 ```{r <%=chunk_prefix%>-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
 knitr_add_tab_item('consensus_heatmap(res, k = <%=k%>)', 'k = <%=k%>')
@@ -99,7 +139,7 @@ knitr_add_tab_item('consensus_heatmap(res, k = <%=k%>)', 'k = <%=k%>')
 knitr_insert_tabs()
 ```
 
-Heatmaps for the membership of samples in each random sampling:
+Heatmaps for the membership of samples in all partitions to see how consistent they are:
 
 ```{r, echo = FALSE, message = FALSE}
 message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
@@ -111,6 +151,9 @@ knitr_add_tab_item('membership_heatmap(res, k = <%=k%>)', 'k = <%=k%>')
 <%}-%>
 knitr_insert_tabs()
 ```
+
+As soon as we have had the classes for columns, we can look for signatures which are significantly
+different between classes which can be candidate marks for certain classes.
 
 Heatmaps for signatures:
 

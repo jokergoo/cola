@@ -135,7 +135,7 @@ consensus_partition = function(data,
 	top_n = round(top_n)
 	l = top_n <= nrow(data)
 	if(sum(l) != length(top_n)) {
-		qqcat("* Following top_n (@{paste(top_n[!l], collapse=', ')}) are removed.\n")
+		qqcat("* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
 	}
 	top_n = top_n[l]
 	if(length(top_n) == 0) {
@@ -194,13 +194,22 @@ consensus_partition = function(data,
 		if(verbose) qqcat("* remove @{sum(l)} rows with NA values after row scaling.\n")
 		data = data[!l, , drop = FALSE]
 		all_top_value = all_top_value[!l]
-		top_n = top_n[top_n <= sum(!l)]
+		l = top_n <= nrow(data)
+		top_n = top_n[l]
+
+		if(sum(l) != length(top_n)) {
+			qqcat("* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
+		}
+		top_n = top_n[l]
+		if(length(top_n) == 0) {
+			stop("There is no valid top_n.\n")
+		}
 	}
 
 	# now we do repetitive clustering
 	sample_by = match.arg(sample_by)[1]
-	for(i in seq_along(top_n)) {
-		ind = order(all_top_value, decreasing = TRUE)[1:top_n[i]]
+	for(i in seq_len(length(top_n))) {
+		ind = order(all_top_value, decreasing = TRUE)[ 1:top_n[i] ]
 
 		if(length(ind) > 5000) {
 			ind = sample(ind, 5000)
@@ -222,15 +231,67 @@ consensus_partition = function(data,
 				if(interactive() && verbose) cat(strrep("\b", 100))
 				if(interactive() && verbose) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}th @{sample_by} sampling from top @{top_n[i]} rows.")
 				partition_list = c(partition_list, list(list(partition_fun(mat, y, column_ind_sub))))
-				param = rbind(param, data.frame(top_n = top_n[i], k = y, n_row = nrow(mat), n_col = ncol(mat)))
+				param = rbind(param, data.frame(top_n = top_n[i], k = y, n_row = nrow(mat), n_col = ncol(mat), stringsAsFactors = FALSE))
 			}
 		}
 		if(interactive() && verbose) cat("\n")
+	}
+	
+	construct_consensus_object_simple = function(param, partition_list) {
+
+		partition_list = do.call("c", partition_list)
+
+		partition_list = cl_ensemble(list = partition_list)
+		partition_consensus = cl_consensus(partition_list)
+
+		class_ids = as.vector(cl_class_ids(partition_consensus))
+		
+		membership_each = do.call("cbind", lapply(seq_along(partition_list), function(i) {
+			x = partition_list[[i]]
+			class = as.vector(cl_class_ids(x))
+			class
+		}))
+		rownames(membership_each) = colnames(data)
+
+		consensus_mat = matrix(1, nrow = nrow(membership_each), ncol = nrow(membership_each))
+		for(i in 1:(nrow(membership_each)-1)) {
+			for(j in (i+1):nrow(membership_each)) {
+				consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ])/ncol(membership_each)
+				consensus_mat[j, i] = consensus_mat[i, j]
+			}
+	 	}
+	 	rownames(consensus_mat) = rownames(membership_each)
+	 	colnames(consensus_mat) = rownames(membership_each)
+
+	 	class_df = data.frame(
+	 		class = class_ids,
+	 		stringsAsFactors = FALSE
+	 	)
+	 	rownames(class_df) = colnames(data)
+
+	 	if(length(unique(class_ids)) == 1) {
+	 		class_df$silhouette = rep(0, length(class_ids))
+	 	} else {
+			class_df$silhouette = silhouette(class_ids, dist(t(consensus_mat)))[, "sil_width"]
+		}
+
+		stat = list(
+			cophcor =  cophcor(consensus_mat),
+			mean_silhouette = mean(class_df$silhouette),
+			PAC = PAC(consensus_mat),
+			concordance = concordance(membership_each, class_ids)
+		)
+		
+		return(list(
+			consensus = consensus_mat, 
+			stat = stat
+		))
 	}
 
 	construct_consensus_object = function(param, partition_list, k, prefix = "  - ") {
 
 		partition_list = do.call("c", partition_list)
+
 		partition_list = cl_ensemble(list = partition_list)
 		if(verbose) qqcat("@{prefix}merging @{length(partition_list)} (@{partition_repeat}x@{length(top_n)}) partitions into a single ensemble object.\n")
 		partition_consensus = cl_consensus(partition_list)
@@ -296,7 +357,7 @@ consensus_partition = function(data,
 		consensus_mat = matrix(1, nrow = nrow(membership_mat), ncol = nrow(membership_mat))
 		for(i in 1:(nrow(membership_each)-1)) {
 			for(j in (i+1):nrow(membership_each)) {
-				consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ])/ncol(membership_each)
+				consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ] + 0)/ncol(membership_each)
 				consensus_mat[j, i] = consensus_mat[i, j]
 			}
 	 	}
@@ -317,8 +378,6 @@ consensus_partition = function(data,
 		}
 
 		if(verbose) qqcat("@{prefix}calculating metrics for the consensus matrix.\n")
-		ind = order(all_top_value, decreasing = TRUE)[1:max(top_n)]
-		if(length(ind) > 5000) ind = sample(ind, 5000)
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
 			cophcor =  cophcor(consensus_mat),
@@ -337,11 +396,13 @@ consensus_partition = function(data,
 		))
 	}
 
-	# for some method, number of classes detected may be less than k
 	object_list = lapply(k, function(y) {
 		l = param$k == y
+		
+		top_n_level = unique(param[l, "top_n"])
 		if(verbose) qqcat("* wrapping results for k = @{y}\n")
 		construct_consensus_object(param[l, ], partition_list[l], y)
+		
 	})
 	names(object_list) = as.character(k)
 
@@ -403,7 +464,6 @@ consensus_partition = function(data,
 		}
 	}
 	
-
 	# process the annotations so it can be shared in `run_all_consensus_partition_methods()` and `hierarchical_partitions()`
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
@@ -438,7 +498,7 @@ consensus_partition = function(data,
 		anno_col = NULL
 	}
 
-	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n),  
+	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n) * length(k),  
 		partition_method = partition_method, top_value_method = top_value_method, top_n = top_n,
 		anno = anno, anno_col = anno_col, scale_rows = scale_rows, column_index = .env$column_index, .env = .env)
 	
@@ -462,8 +522,10 @@ setMethod(f = "show",
 	definition = function(object) {
 	qqcat("A 'ConsensusPartition' object with k = @{paste(object@k, collapse = ', ')}.\n")
 	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
-	qqcat("  Top rows (@{paste(object@top_n, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
+	top_n_str = object@top_n
+	qqcat("  Top rows (@{paste(top_n_str, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
 	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")
+	qqcat("  Performed in total @{object@n_partition} partitions.\n")
 	qqcat("  Best k for subgroups seems to be @{guess_best_k(object)}.\n")
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'ConsensusPartition' object:\n")
@@ -559,6 +621,22 @@ setMethod(f = "select_partition_number",
 		plot(object@k, m[, i], type = "b", xlab = "k", ylab = nm[i])
 	}
 
+	plot(c(0, 1), c(0, 1), type = "n", axes = FALSE, ann = FALSE)
+	par(xpd = NA)
+	text(x = 0, y = 0.9,
+"Suggested rule:
+  Rand index < 0.95
+If cophcor >= 0.99 or 
+   PAC <= 0.1 or 
+   concordance >= 0.95,
+  take the maximum k,
+else take the k with max vote of
+  1. max cophcor,
+  2. min PAC,
+  3. max mean_silhouette,
+  4. max concordance.
+", cex = 0.9, adj = c(0, 1))
+
 	par(op)
 })
 
@@ -612,14 +690,14 @@ setMethod(f = "consensus_heatmap",
 
 	membership_mat = get_membership(object, k)
 
-	ht_list = Heatmap(membership_mat, name = "membership", cluster_columns = FALSE, show_row_names = FALSE, 
+	ht_list = Heatmap(membership_mat, name = "Prob", cluster_columns = FALSE, show_row_names = FALSE, 
 		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red"))) + 
-	Heatmap(class_df$silhouette, name = "silhouette", width = unit(5, "mm"), 
+	Heatmap(class_df$silhouette, name = "Silhouette", width = unit(5, "mm"), 
 		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple"))) +
-	Heatmap(class_ids, name = "class", col = brewer_pal_set2_col, 
+	Heatmap(class_ids, name = "Class", col = brewer_pal_set2_col, 
 		show_row_names = FALSE, width = unit(5, "mm"))
 	
-	ht_list = ht_list +	Heatmap(consensus_mat, name = "consensus", show_row_names = show_row_names, show_row_dend = FALSE,
+	ht_list = ht_list +	Heatmap(consensus_mat, name = "Consensus", show_row_names = show_row_names, show_row_dend = FALSE,
 		col = colorRamp2(c(0, 1), c("white", "blue")), row_order = mat_col_od, column_order = mat_col_od,
 		cluster_rows = FALSE, cluster_columns = FALSE, show_column_names = FALSE)
 
@@ -641,7 +719,7 @@ setMethod(f = "consensus_heatmap",
 				annotation_name_side = "bottom", width = unit(ncol(anno)*5, "mm"))
 		}
 	}
-	draw(ht_list, main_heatmap = "consensus", column_title = qq("consensus @{object@partition_method} with @{k} groups from @{object@n_partition} partitions"),
+	draw(ht_list, main_heatmap = "Consensus", column_title = qq("consensus @{object@partition_method} with @{k} groups from @{object@n_partition/length(object@k)} partitions"),
 		show_heatmap_legend = !internal, show_annotation_legend = !internal)
 })
 
@@ -660,7 +738,7 @@ setMethod(f = "consensus_heatmap",
 # == details
 # Each row in the heatmap is the membership of samples in one partition.
 #
-# Heatmap is split on rows by ``top_n``. The value shown is ``top_n*p_sampling``.
+# Heatmap is split on rows by ``top_n``..
 #
 # == value
 # No value is returned.
@@ -713,17 +791,17 @@ setMethod(f = "membership_heatmap",
 
 	param = get_param(object, k, unique = FALSE)
 
-	n_row_level = unique(param$n_row)
-	suppressWarnings(n_row_col <- structure(brewer.pal(length(n_row_level), "Accent"), names = n_row_level))
+	top_n_level = unique(param$top_n)
+	suppressWarnings(n_row_col <- structure(brewer.pal(length(top_n_level), "Accent"), names = top_n_level))
 	
-	ht = Heatmap(as.character(param$n_row), name = "n_row", col = n_row_col,
-		width = unit(5, "mm"), show_row_names = FALSE, show_heatmap_legend = FALSE,
+	ht = Heatmap(as.character(param$top_n), name = "top_n", col = n_row_col,
+		width = unit(10, "mm"), show_row_names = FALSE, show_heatmap_legend = FALSE,
 		show_column_names = FALSE) +
-	Heatmap(membership_each, name = "class", show_row_dend = FALSE, show_column_dend = FALSE, col = brewer_pal_set2_col,
+	Heatmap(membership_each, name = "Class", show_row_dend = FALSE, show_column_dend = FALSE, col = brewer_pal_set2_col,
 		column_title = qq("membership heatmap, k = @{k}"), column_order = mat_col_od, cluster_columns = FALSE,
-		split = param$n_row,
-		top_annotation = HeatmapAnnotation(prob = membership_mat,
-			class = class_ids, col = c(list(class = brewer_pal_set2_col), prob = col_fun),
+		split = param$top_n,
+		top_annotation = HeatmapAnnotation(Prob = membership_mat,
+			Class = class_ids, col = c(list(Class = brewer_pal_set2_col), Prob = col_fun),
 			show_annotation_name = TRUE, annotation_name_side = "right"),
 		top_annotation_height = unit(ncol(membership_mat)*5 + 5, "mm"),
 		bottom_annotation = bottom_anno,
@@ -731,11 +809,12 @@ setMethod(f = "membership_heatmap",
 		combined_name_fun = NULL
 		) 
 	
-	draw(ht, main_heatmap = "class", row_title = qq("@{round(object@n_partition/length(n_row_level))} x @{length(n_row_level)} random samplings"),
+	draw(ht, main_heatmap = "Class", row_title = qq("@{round(object@n_partition/length(object@k)/length(top_n_level))} x @{length(top_n_level)} random samplings"),
 		show_heatmap_legend = FALSE, show_annotation_legend = !internal)
-	for(i in seq_along(n_row_level)) {
-		decorate_heatmap_body("n_row", slice = i, {
-			grid.text(n_row_level[i], rot = 90, gp = gpar(fontsize = 10))
+	param2 = get_param(object, k)
+	for(i in seq_along(top_n_level)) {
+		decorate_heatmap_body("top_n", slice = i, {
+			grid.text(qq("top @{top_n_level[i]} rows"), rot = 90, gp = gpar(fontsize = 10))
 		})
 	}
 })
@@ -747,13 +826,12 @@ setMethod(f = "membership_heatmap",
 # -object a `ConsensusPartition-class` object.
 # -k number of partitions.
 # -top_n top n rows to use. By default it uses all rows in the original matrix.
-# -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
-#         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
+# -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
+#         ``PCA`` uses `stats::prcomp`.
 # -silhouette_cutoff cutoff of silhouette. Data points with values less
 #        than it will be mapped to small points.
 # -remove whether to remove columns which have less silhouette values than
 #        the cutoff.
-# -tsne_param parameters pass to `Rtsne::Rtsne`
 # -... other arguments
 #
 # == value
@@ -768,9 +846,8 @@ setMethod(f = "membership_heatmap",
 setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,
-	method = c("pca", "mds", "tsne"),
-	silhouette_cutoff = 0.5, remove = FALSE,
-	tsne_param = list(), ...) {
+	method = c("PCA", "MDS"),
+	silhouette_cutoff = 0.5, remove = FALSE, ...) {
 
 	method = match.arg(method)
 	data = object@.env$data[, object@column_index, drop = FALSE]
@@ -786,15 +863,30 @@ setMethod(f = "dimension_reduction",
 
 	l = class_df$silhouette >= silhouette_cutoff
 	
+	op = par(c("mar", "xpd"))
+	par(mar = c(4.1, 4.1, 4.1, 5.1), xpd = NA)
+
 	if(remove) {
 		dimension_reduction(data[, l], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
 			cex = 1, main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
-			method = method, tsne_param = tsne_param)
+			method = method)
+		legend(x = par("usr")[2], legend = unique(class_df$class[l]), 
+			col = brewer_pal_set2_col[as.character(unique(class_df$class[l]))], adj = c(0, 0.5))
 	} else {
 		dimension_reduction(data[, l], pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
 			cex = ifelse(l, 1, 0.7), main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
-			method = method, tsne_param = tsne_param)
+			method = method)
+		class_level = sort(as.character(unique(class_df$class[l])))
+		if(sum(!l)) {
+			legend(x = par("usr")[2], y = par("usr")[4], legend = paste0("group", class_level), pch = 16,
+				col = brewer_pal_set2_col[class_level], adj = c(0, 1))
+		} else {
+			legend(x = par("usr")[2], y = par("usr")[4], legend = paste0("group", class_level), pch = 16,
+				col = brewer_pal_set2_col[class_level], adj = c(0, 1))
+		}
 	}
+
+	par(op)
 })
 
 
@@ -803,8 +895,8 @@ setMethod(f = "dimension_reduction",
 #
 # == param
 # -object a numeric matrix.
-# -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
-#         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
+# -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
+#         ``PCA`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
 # -pch shape of points.
 # -col color of points.
 # -cex size of points.
@@ -821,7 +913,7 @@ setMethod(f = "dimension_reduction",
 	signature = "matrix",
 	definition = function(object, 
 	pch = 16, col = "black", cex = 1, main = "",
-	method = c("mds", "pca", "tsne"),
+	method = c("MDS", "PCA", "tsne"),
 	tsne_param = list()) {
 
 	data = object
@@ -830,15 +922,15 @@ setMethod(f = "dimension_reduction",
 	l = apply(data, 1, function(x) any(is.na(x)))
 	data = data[!l, ]
 
-	if(method == "mds") {
+	if(method == "MDS") {
 		loc = cmdscale(dist(t(data)))
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "PC1", ylab = "PC2")
-	} else if(method == "pca") {
+	} else if(method == "PCA") {
 		fit = prcomp(t(data))
 		sm = summary(fit)
 		prop = sm$importance[2, 1:2]
 		loc = fit$x[, 1:2]
-		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = qq("PC1 (@{round(prop[1]*100)}%)"), , ylab = qq("PC1 (@{round(prop[2]*100)}%)"))
+		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = qq("PC1 (@{round(prop[1]*100)}%)"), ylab = qq("PC2 (@{round(prop[2]*100)}%)"))
 	} else if(method == "tsne") {
 		if(require(Rtsne)) {
 			loc = do.call("Rtsne", c(list(X = as.matrix(t(data))), tsne_param))$Y

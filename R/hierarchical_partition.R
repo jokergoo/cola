@@ -51,7 +51,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
-	concordance_cutoff = 0.8, min_samples = 6, max_k = 4, ...) {
+	PAC_cutoff = 0.15, min_samples = 6, max_k = 4, ...) {
 
 	cl = match.call()
 	
@@ -101,9 +101,9 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	    .env$all_top_value_list = NULL
 
 	    qqcat("* best k = @{best_k}, the farthest subgroup: @{s}\n")
-		concordance_score = get_stat(part, k = best_k)[, "concordance"]
-	    if(concordance_score < concordance_cutoff) {
-	    	qqcat("* concordance score too small @{concordance_score}, stop.\n")
+		PAC_score = get_stat(part, k = best_k)[, "PAC"]
+	    if(PAC_score > PAC_cutoff) {
+	    	qqcat("* PAC score is too big @{sprintf('%.2f', PAC_score)}, stop.\n")
 	    	return(NULL)
 	    }
 
@@ -151,7 +151,11 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	names(hp@subgroup) = colnames(data)
 
 	le = unique(as.vector(hp@hierarchy))
-	hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
+	if(length(le) <= 16) {
+		hp@subgroup_col = structure(brewer_pal_set2_col[seq_along(le)], names = le)
+	} else {
+		hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
+	}
 	hp@calling = cl
 	hp@.env = .h_obj$list[[1]]@.env
 
@@ -378,6 +382,7 @@ setMethod(f = "show",
 
 	qqcat("A 'HierarchicalPartition' object with '@{object@list[[1]]@top_value_method}:@{object@list[[1]]@partition_method}' method.\n")
 	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
+	qqcat("  Performed in total @{object@list[[1]]@n_partition*length(object@list)} partitions.\n")
 	qqcat("  There are @{length(all_leaves(object))} groups.\n")
 	cat("\n")
 
@@ -397,7 +402,7 @@ setMethod(f = "show",
 		while(p != "0") {
 			p = parent[p]
 			if(!grepl("0$", p)) {
-				substr(lines[i], (nc[p] - 2)*4+1, (nc[p] - 2)*4+1) = "|"
+				substr(lines[i], (nc[p] - 2)*4+3, (nc[p] - 2)*4+3) = "|"
 			}
 		}
 	}
@@ -410,6 +415,8 @@ setMethod(f = "show",
 	txt = grep("Function", txt, value = TRUE)
 	fname = gsub("Function: (.*?) \\(package.*$", "\\1", txt)
 	print(fname)
+	cat("\n")
+	cat("You can get result for a single node by e.g. object[\"01\"]\n")
 })
 
 # == title
@@ -424,6 +431,7 @@ setMethod(f = "show",
 # -show_column_names whether show column names
 # -verbose whether print messages
 # -plot whether make the heatmap
+# -plot_type type of the plot
 # -silhouette_cutoff cutoff for silhouette scores.
 # -... other arguments
 # 
@@ -449,7 +457,7 @@ setMethod(f = "get_signatures",
 	anno = get_anno(object[1]), 
 	anno_col = get_anno_col(object[1]),
 	show_column_names = TRUE, 
-	verbose = TRUE, plot = TRUE,
+	verbose = TRUE, plot = TRUE, plot_type = c("venneuler", "heatmap"),
 	silhouette_cutoff = -Inf, 
 	...) {
 
@@ -478,10 +486,18 @@ setMethod(f = "get_signatures",
 		if(verbose) qqcat("  - find @{n_tb} signatures for @{names(n_tb)}\n")
 	}
 	sig = do.call("rbind", sig_lt)
+	rownames(sig) = NULL
 	
 	if(!plot) {
 		return(invisible(sig))
 	}
+
+	plot_type = match.arg(plot_type)[1]
+	if(plot_type == "venneuler") {
+		venn_euler(tapply(sig$which_row, sig$group, function(x) x))
+		return(invisible(sig))
+	}
+
 	sig_lt = split(sig, sig[, "group"])
 
 	all_sig = unique(unlist(lapply(sig_lt, function(x) x[, "which_row"])))
@@ -547,7 +563,7 @@ setMethod(f = "get_signatures",
 		use_mat1 = scaled_mat1
 		mat_range = quantile(abs(scaled_mat1), 0.95, na.rm = TRUE)
 		col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
-		heatmap_name = "scaled_expr"
+		heatmap_name = "z-score"
 	} else {
 		use_mat1 = mat1
 		mat_range = quantile(mat1, c(0.05, 0.95))
@@ -563,9 +579,9 @@ setMethod(f = "get_signatures",
 		class = class,
 		col = list(class = object@subgroup_col),
 		annotation_height = unit(5, "mm"),
-		show_annotation_name = TRUE,
+		show_annotation_name = FALSE,
 		annotation_name_side = "right",
-		show_legend = TRUE)
+		show_legend = FALSE)
 		
 	split = do.call("paste", as.data.frame(m_sig))
 	split = factor(split, levels = sort(unique(split)))
@@ -576,6 +592,7 @@ setMethod(f = "get_signatures",
 		use_raster = TRUE,
 		show_row_dend = FALSE,
 		split = split,
+		column_title = qq("@{length(unique(class))} groups, @{length(all_sig)} signatures"),
 		combined_name_fun = NULL)
 	
 	all_value_positive = !any(m < 0)
@@ -585,12 +602,16 @@ setMethod(f = "get_signatures",
 				show_row_names = FALSE, name = "rel_diff", width = unit(5, "mm"))
 	}
 
-	sig_iden_col_list = lapply(alf, function(x) structure(c("transparent", object@subgroup_col[x]), names = c("0", "1")))
-	names(sig_iden_col_list) = alf
-	ht_list = ht_list + rowAnnotation(df = m_sig, col = sig_iden_col_list, 
-		width = unit(0.5*length(sig_lt), "cm"), show_legend = FALSE, show_annotation_name = TRUE)
+	m_sig2 = matrix("", nrow = nrow(m_sig), ncol = ncol(m_sig))
+	for(i in seq_len(ncol(m_sig))) {
+		m_sig2[ m_sig[, i] == 1, i] = colnames(m_sig)[i]
+	}
+
+	ht_list = ht_list + Heatmap(m_sig2, name = "Class", width = unit(15, "mm"), 
+		column_title = "class",
+		col = object@subgroup_col, na_col = "transparent")
 	
-	draw(ht_list, column_title = qq("@{length(unique(class))} subgroups, @{length(all_sig)} signatures"))
+	draw(ht_list)
 	return(invisible(sig))
 })
 
@@ -634,7 +655,7 @@ setMethod(f = "collect_classes",
 	}
 	dend = calc_dend(object, hierarchy)
 
-	ht_list = Heatmap(cl, name = "subgroups", width = unit(1, "cm"), col = object@subgroup_col,
+	ht_list = Heatmap(cl, name = "Groups", width = unit(1, "cm"), col = object@subgroup_col,
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"))
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
@@ -774,9 +795,8 @@ setMethod(f = "test_to_known_factors",
 # -top_n top n genes to use.
 # -parent_node parent node. If it is set, the function calls is identical to ``dimension_reduction(object[parent_node])``
 # -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
-#         ``pca`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
+#         ``pca`` uses `stats::prcomp`.
 # -silhouette_cutoff silhouette cutoff
-# -tsne_param parameters pass to `Rtsne::Rtsne`
 #
 # == details
 # The classes is extract at depth ``depth``.
@@ -795,11 +815,14 @@ setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
 	definition = function(object,
 	depth = max_depth(object), parent_node,
-	top_n = NULL, method = c("pca", "mds", "tsne"),
-	silhouette_cutoff = 0.5, tsne_param = list()) {
+	top_n = NULL, method = c("PCA", "MDS"),
+	silhouette_cutoff = 0.5) {
 
 	method = match.arg(method)
 	data = object@list[[1]]@.env$data
+
+	op = par(c("mar", "xpd"))
+	par(mar = c(4.1, 4.1, 4.1, 5.1), xpd = NA)
 
 	if(missing(parent_node)) {
 		if(!is.null(top_n)) {
@@ -811,16 +834,21 @@ setMethod(f = "dimension_reduction",
 		class = get_classes(object, depth = depth)
 		dimension_reduction(data, pch = 16, col = object@subgroup_col[class],
 			cex = 1, main = qq("Dimension reduction by @{method}, @{ncol(data)} samples"),
-			method = method, tsne_param = tsne_param)
+			method = method)
+		class_level = sort(unique(class))
+		legend(x = par("usr")[2], y = par("usr")[4], legend = paste0("group", class_level), pch = 16,
+				col = object@subgroup_col[class_level], adj = c(0, 1))
 	} else {
 		if(!parent_node %in% setdiff(all_nodes(object), all_leaves(object))) {
 			stop(qq("@{parent_node} has no children nodes.\n"))
 		}
 		obj = object[parent_node]
 		dimension_reduction(obj, k = guess_best_k(obj), top_n = top_n, method = method,
-			silhouette_cutoff = silhouette_cutoff, tsne_param = tsne_param)
+			silhouette_cutoff = silhouette_cutoff)
 		legend("topleft", legend = qq("node @{parent_node}"))
 	}
+
+	par(op)
 })
 
 # == title

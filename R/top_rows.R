@@ -209,7 +209,7 @@ setMethod(f = "top_rows_heatmap",
 		if(scale_rows) {
 			mat_range = quantile(abs(mat), 0.95, na.rm = TRUE)
 			col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
-			heatmap_name = "scaled_expr"
+			heatmap_name = "Z-score"
 		} else {
 			mat_range = quantile(mat, c(0.05, 0.95))
 			col_fun = colorRamp2(c(mat_range[1], mean(mat_range), mat_range[2]), c("blue", "white", "red"))

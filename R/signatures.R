@@ -85,11 +85,19 @@ setMethod(f = "get_signatures",
 
 	tb = table(class)
 	if(sum(tb > 1) <= 1) {
-		cat("not enough samples.\n")
+		if(plot) {
+			grid.newpage()
+			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
+			grid.text("not enough samples", gp = gpar(fontsize = fontsize))
+		}
 		return(invisible(NULL))
 	}
 	if(length(unique(class)) <= 1) {
-		cat("not enough classes.\n")
+		if(plot) {
+			grid.newpage()
+			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
+			grid.text("not enough classes", gp = gpar(fontsize = fontsize))
+		}
 		return(invisible(NULL))
 	}
 
@@ -265,7 +273,7 @@ setMethod(f = "get_signatures",
 		use_mat2 = scaled_mat2
 		mat_range = quantile(abs(scaled_mat1), 0.95, na.rm = TRUE)
 		col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
-		heatmap_name = "scaled_expr"
+		heatmap_name = "z-score"
 	} else {
 		use_mat1 = mat1
 		use_mat2 = mat2
@@ -273,7 +281,6 @@ setMethod(f = "get_signatures",
 		col_fun = colorRamp2(c(mat_range[1], mean(mat_range), mat_range[2]), c("blue", "white", "red"))
 		heatmap_name = "expr"
 	}
-
 
 	mat_col_od1 = column_order_by_group(factor(class, levels = sort(unique(class))), use_mat1)
 
@@ -313,27 +320,27 @@ setMethod(f = "get_signatures",
 	if(verbose) qqcat("* making heatmaps for signatures\n")
 
 	group2 = factor(group2, levels = sort(unique(group2)))
-	ht_list = Heatmap(group2, name = "group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
+	ht_list = Heatmap(group2, name = "Group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
 
 	membership_mat = get_membership(object, k)
 	prop_col_fun = colorRamp2(c(0, 1), c("white", "red"))
 
 	if(internal) {
-		ha1 = HeatmapAnnotation(prop = membership_mat[column_used_logical, ],
-				class = class_df$class[column_used_logical],
-				col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
+		ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
+				Class = class_df$class[column_used_logical],
+				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
 				annotation_height = unit(c(ncol(membership_mat)*5, 5), "mm"),
 				show_annotation_name = !has_ambiguous,
 				annotation_name_side = "right",
 				show_legend = TRUE)
 	} else {
-		ha1 = HeatmapAnnotation(prop = membership_mat[column_used_logical, ],
-			class = class_df$class[column_used_logical],
+		ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
+			Class = class_df$class[column_used_logical],
 			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
 				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
 					      col = NA),
 				bar_width = 0.8, baseline = 0, axis = !has_ambiguous, axis_side = "right"),
-			col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
+			col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
 			annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
 			show_annotation_name = !has_ambiguous,
 			annotation_name_side = "right",
@@ -355,23 +362,23 @@ setMethod(f = "get_signatures",
 
 	if(has_ambiguous) {
 		if(internal) {
-			ha2 = HeatmapAnnotation(prop = membership_mat[!column_used_logical, ,drop = FALSE],
-				class = class_df$class[!column_used_logical],
-				col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
+			ha2 = HeatmapAnnotation(Prob = membership_mat[!column_used_logical, ,drop = FALSE],
+				Class = class_df$class[!column_used_logical],
+				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
 				annotation_height = unit(c(ncol(membership_mat)*5, 5), "mm"),
 				show_annotation_name = TRUE,
 				annotation_name_side = "right",
 				show_legend = FALSE)
 		} else {
-			ha2 = HeatmapAnnotation(prop = membership_mat[!column_used_logical, ,drop = FALSE],
-				class = class_df$class[!column_used_logical],
+			ha2 = HeatmapAnnotation(Prob = membership_mat[!column_used_logical, ,drop = FALSE],
+				Class = class_df$class[!column_used_logical],
 				silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
 					gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
 					      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
 					bar_width = 0.8, baseline = 0, axis = TRUE, axis_side = "right"), 
-				col = list(class = brewer_pal_set2_col, prop = prop_col_fun),
+				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
 				annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
-				show_annotation_name = TRUE,
+				show_annotation_name = c(TRUE, TRUE, FALSE),
 				annotation_name_side = "right",
 				show_legend = FALSE)
 		}
@@ -405,13 +412,13 @@ setMethod(f = "get_signatures",
 		decorate_annotation("silhouette", {
 			grid.rect(gp = gpar(fill = "transparent"))
 			grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
-			if(!has_ambiguous) grid.text("silhouette", x = unit(1, "npc") + unit(10, "mm"), just = "left")
+			if(!has_ambiguous) grid.text("Silhouette\nscore", x = unit(1, "npc") + unit(10, "mm"), just = "top", rot = 90, gp = gpar(fontsize = 8))
 		})
 		if(has_ambiguous) {
 			decorate_annotation("silhouette2", {
 				grid.rect(gp = gpar(fill = "transparent"))
 				grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
-				if(has_ambiguous) grid.text("silhouette", x = unit(1, "npc") + unit(10, "mm"), just = "left")
+				if(has_ambiguous) grid.text("Silhouette\nscore", x = unit(1, "npc") + unit(10, "mm"), just = "top", rot = 90, gp = gpar(fontsize = 8))
 			})
 		}
 	}

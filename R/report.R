@@ -71,7 +71,7 @@ message('@{message}')
 }
 
 # TEMPLATE_DIR = system.file("extdata", package = "cola")
-TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
+TEMPLATE_DIR = "~/project/cola/inst/extdata"
 
 # == title
 # Generate the HTML code for the JavaScript tabs.
@@ -228,7 +228,17 @@ make_report = function(var_name, object, output_dir, class) {
 	html_file = c("HierarchicalPartition" = "cola_hc.html",
 		          "ConsensusPartitionList" = "cola_report.html")
 
+	od = getOption("digits")
+	wd = getwd()
+	on.exit({
+		options(digits = od)
+		setwd(wd)
+	})
+
+	options(digits = 3)
+	
 	report_template = paste0(TEMPLATE_DIR, "/", template_file[class])
+	output_dir = normalizePath(output_dir, mustWork = FALSE)
 
 	if(file.exists(output_dir)) {
 		fileinfo = file.info(output_dir)
@@ -238,7 +248,7 @@ make_report = function(var_name, object, output_dir, class) {
 	}
 
 	message(qq("* generating cola report for `@{var_name}` (a @{class} object)"))
-	message(qq("* the report is available at @{output_dir}"))
+	message(qq("* the report is available at @{output_dir}/"))
 
 	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 	if(dir.exists(paste0(output_dir, "/figure_cola"))) {
@@ -260,7 +270,6 @@ make_report = function(var_name, object, output_dir, class) {
 	message("* rendering R markdown file to html by knitr")
 	knit(tempfile, md_file, quiet = TRUE)
 	markdownToHTML(md_file, paste0(output_dir, "/", html_file[class]))
-	# file.remove(c(tempfile, md_file))
 	options(markdown.HTML.options = op)
 	setwd(owd)
 
@@ -269,7 +278,7 @@ make_report = function(var_name, object, output_dir, class) {
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
 
 	message("* removing temporary files")
-	# file.remove(c(tempfile, md_file))
+	file.remove(c(tempfile, md_file))
 
 	message(qq("* report is at @{output_dir}/@{html_file[class]}"))
 

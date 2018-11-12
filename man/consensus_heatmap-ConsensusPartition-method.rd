@@ -10,7 +10,7 @@ Heatmap for the consensus matrix
 \usage{
 \S4method{consensus_heatmap}{ConsensusPartition}(object, k, internal = FALSE,
     anno = get_anno(object), anno_col = get_anno_col(object),
-    show_row_names = FALSE, ...)
+    show_row_names = !internal, ...)
 }
 \arguments{
 
