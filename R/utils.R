@@ -144,9 +144,4 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	m2[l, , drop = FALSE]
 }
 
-dev.off2 = function() {
-	i1 = dev.prev()
-	i2 = dev.cur()
-	if(i1 > 1) dev.set(i1)
-	dev.off(i2)
-}
+dev.off2 = ComplexHeatmap:::dev.off2

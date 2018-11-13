@@ -1,8 +1,4 @@
 
-add_transparency = function (col, transparency = 0) {
-    rgb(t(col2rgb(col)/255), alpha = 1 - transparency)
-}
-
 # == title
 # Correspond two rankings
 #

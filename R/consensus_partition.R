@@ -710,11 +710,9 @@ setMethod(f = "consensus_heatmap",
 			}
 		}
 		if(is.null(anno_col))
-			ht_list = ht_list + rowAnnotation(df = anno, show_annotation_name = TRUE,
-				annotation_name_side = "bottom", width = unit(ncol(anno)*5, "mm"))
+			ht_list = ht_list + rowAnnotation(df = anno)
 		else {
-			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col, show_annotation_name = TRUE,
-				annotation_name_side = "bottom", width = unit(ncol(anno)*5, "mm"))
+			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col)
 		}
 	}
 	draw(ht_list, main_heatmap = "Consensus", column_title = qq("consensus @{object@partition_method} with @{k} groups from @{object@n_partition/length(object@k)} partitions"),
@@ -797,14 +795,12 @@ setMethod(f = "membership_heatmap",
 		show_column_names = FALSE) +
 	Heatmap(membership_each, name = "Class", show_row_dend = FALSE, show_column_dend = FALSE, col = brewer_pal_set2_col,
 		column_title = qq("membership heatmap, k = @{k}"), column_order = mat_col_od, cluster_columns = FALSE,
-		split = param$top_n,
+		row_split = param$top_n,
 		top_annotation = HeatmapAnnotation(Prob = membership_mat,
-			Class = class_ids, col = c(list(Class = brewer_pal_set2_col), Prob = col_fun),
-			show_annotation_name = TRUE, annotation_name_side = "right"),
-		top_annotation_height = unit(ncol(membership_mat)*5 + 5, "mm"),
+			Class = class_ids, col = c(list(Class = brewer_pal_set2_col), Prob = col_fun)),
 		bottom_annotation = bottom_anno,
 		show_column_names = show_column_names,
-		combined_name_fun = NULL
+		row_title = NULL
 		) 
 	
 	draw(ht, main_heatmap = "Class", row_title = qq("@{round(object@n_partition/length(object@k)/length(top_n_level))} x @{length(top_n_level)} random samplings"),

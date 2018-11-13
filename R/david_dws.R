@@ -107,7 +107,7 @@ submit_to_david = function(genes, email,
 		query = list("args0" = 3,         # overlap, int
 			         "args1" = 3,         # initialSeed, int
 			         "args2" = 3,         # finalSeed, int
-			         "args3" = 0.5,         # linkage, double
+			         "args3" = 0.5,       # linkage, double
 			         "args4" = 1))        # kappa, int
 
 	message(qq("formatting results"))

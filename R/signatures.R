@@ -407,6 +407,7 @@ setMethod(f = "get_signatures",
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order)
 	}
+	# the cutoff
 	# https://www.stat.berkeley.edu/~s133/Cluster2a.html
 	if(!internal) {
 		decorate_annotation("silhouette", {
