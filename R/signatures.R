@@ -329,7 +329,6 @@ setMethod(f = "get_signatures",
 		ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
 				Class = class_df$class[column_used_logical],
 				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
-				annotation_height = unit(c(ncol(membership_mat)*5, 5), "mm"),
 				show_annotation_name = !has_ambiguous,
 				annotation_name_side = "right",
 				show_legend = TRUE)
@@ -339,9 +338,9 @@ setMethod(f = "get_signatures",
 			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
 				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
 					      col = NA),
-				bar_width = 0.8, baseline = 0, axis = !has_ambiguous, axis_side = "right"),
+				bar_width = 0.8, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+				height = unit(15, "mm")),
 			col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
-			annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
 			show_annotation_name = !has_ambiguous,
 			annotation_name_side = "right",
 			show_legend = TRUE)
@@ -350,8 +349,8 @@ setMethod(f = "get_signatures",
 		top_annotation = ha1,
 		cluster_columns = FALSE, column_order = mat_col_od1,
 		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
-		use_raster = use_raster, raster_quality = 2,
-		bottom_annotation = bottom_anno1, show_column_names = show_column_names, split = group2, combined_name_fun = NULL)
+		use_raster = use_raster,
+		bottom_annotation = bottom_anno1, show_column_names = show_column_names, row_split = group2, row_title = NULL)
  	
 	all_value_positive = !any(data < 0)
  	if(scale_rows && all_value_positive) {
@@ -365,7 +364,6 @@ setMethod(f = "get_signatures",
 			ha2 = HeatmapAnnotation(Prob = membership_mat[!column_used_logical, ,drop = FALSE],
 				Class = class_df$class[!column_used_logical],
 				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
-				annotation_height = unit(c(ncol(membership_mat)*5, 5), "mm"),
 				show_annotation_name = TRUE,
 				annotation_name_side = "right",
 				show_legend = FALSE)
@@ -375,9 +373,9 @@ setMethod(f = "get_signatures",
 				silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
 					gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
 					      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
-					bar_width = 0.8, baseline = 0, axis = TRUE, axis_side = "right"), 
+					bar_width = 0.8, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
+					height = unit(15, "mm")), 
 				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
-				annotation_height = unit(c(ncol(membership_mat)*5, 5, 15), "mm"),
 				show_annotation_name = c(TRUE, TRUE, FALSE),
 				annotation_name_side = "right",
 				show_legend = FALSE)
@@ -386,7 +384,7 @@ setMethod(f = "get_signatures",
 			top_annotation = ha2,
 			cluster_columns = FALSE, column_order = mat_col_od2,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
-			use_raster = use_raster, raster_quality = 2,
+			use_raster = use_raster,
 			bottom_annotation = bottom_anno2, show_column_names = show_column_names)
 	}
 

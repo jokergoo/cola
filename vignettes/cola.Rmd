@@ -643,10 +643,10 @@ It is based on following rules:
   the partition number does not provides enough extra information.
 - For $k$ with cophenetic correlation coefficient larger than 0.99 or PAC
   score less than 0.1 or concordance score larger than 0.95, the maximal $k$
-  is taken as the “best k”.
+  is taken as the "best k".
 - If it does not fit the second rule. The $k$ with maximal vote of highest
   cophenetic correlation coefficient, lowest PAC score, highest mean
-  silhouette and highest concordance is taken as the “best k”.
+  silhouette and highest concordance is taken as the "best k".
 
 ## Find signatures
 
