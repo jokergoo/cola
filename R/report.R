@@ -71,7 +71,7 @@ message('@{message}')
 }
 
 # TEMPLATE_DIR = system.file("extdata", package = "cola")
-TEMPLATE_DIR = "~/project/cola/inst/extdata"
+TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
 
 # == title
 # Generate the HTML code for the JavaScript tabs.
@@ -291,3 +291,5 @@ make_report = function(var_name, object, output_dir, class) {
 
 	return(invisible(NULL))
 }
+
+

@@ -1,5 +1,6 @@
 \name{[.HierarchicalPartition}
 \alias{[.HierarchicalPartition}
+\alias{Extract.HierarchicalPartition}
 \title{
 Subset the HierarchicalPartition object
 }

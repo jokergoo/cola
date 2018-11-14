@@ -78,7 +78,7 @@ library(ComplexHeatmap)
 <% if(is.null(res_hc@list[[1]]@anno)) { -%>
 densityHeatmap(mat, ylab = "value")
 <% } else { -%>
-densityHeatmap(mat, anno = HeatmapAnnotation(df = get_anno(res_hc), 
+densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hc), 
 	col = get_anno_col(res_hc)), ylab = "value")
 <% } -%>
 ```
@@ -107,7 +107,8 @@ Partitions for different depth:
 <% max_depth = max_depth(res_hc) -%>
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("* collecting classifications for each depth (2..@{max_depth})"))
+t1 = Sys.time()
+message(qq("* collecting classifications for each depth (2..@{max_depth})"), appendLF = FALSE)
 ```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
@@ -120,7 +121,8 @@ knitr_insert_tabs()
 MDS plot:
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("* making PCA plots"))
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message(qq("* making PCA plots"), appendLF = FALSE)
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
@@ -144,7 +146,8 @@ knitr_insert_tabs()
 Signature genes and the overlap:
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("* making signature heatmaps"))
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message(qq("* making signature heatmaps"), appendLF = FALSE)
 ```
 
 ```{r hc-signature, results = "hide"}
@@ -165,7 +168,8 @@ has_known_anno = TRUE -%>
 Test correlation between subgroups and known annotations:
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("* testing correlation of subgroups to known annotations"))
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message(qq("* testing correlation of subgroups to known annotations"), appendLF = FALSE)
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
@@ -173,6 +177,10 @@ message(qq("* testing correlation of subgroups to known annotations"))
 knitr_add_tab_item('test_to_known_factors(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
 <%}-%>
 knitr_insert_tabs()
+```
+
+```{r, echo = FALSE, message = FALSE}
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
 
 <% } -%>

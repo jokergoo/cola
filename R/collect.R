@@ -35,6 +35,15 @@ setMethod(f = "collect_plots",
 	top_value_method = object@top_value_method, 
 	partition_method = object@partition_method, ...) {
 
+	nv = length(dev.list())
+	on.exit({
+		nv2 = length(dev.list())
+		while(nv2 > nv) {
+			dev.off2()
+			nv2 = length(dev.list())
+		}
+	})
+
 	fun_name = deparse(substitute(fun))
 	grid.newpage()
 	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
@@ -129,6 +138,15 @@ setMethod(f = "collect_plots",
 setMethod(f = "collect_plots",
 	signature = "ConsensusPartition",
 	definition = function(object, verbose = TRUE) {
+
+	nv = length(dev.list())
+	on.exit({
+		nv2 = length(dev.list())
+		while(nv2 > nv) {
+			dev.off2()
+			nv2 = length(dev.list())
+		}
+	})
 
 	all_k = object@k
 	grid.newpage()

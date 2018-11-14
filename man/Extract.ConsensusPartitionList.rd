@@ -1,5 +1,6 @@
 \name{[.ConsensusPartitionList}
 \alias{[.ConsensusPartitionList}
+\alias{Extract.ConsensusPartitionList}
 \title{
 Subset a ConsensusPartitionList object
 }

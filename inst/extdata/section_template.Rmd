@@ -55,7 +55,8 @@ into one single page to provide an easy and fast comparison between different `k
 
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - collecting all plots (k = '<%=paste(all_k, collapse=', ')%>')")
+t1 = Sys.time()
+message("  - collecting all plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
 
 The plots are:
@@ -86,7 +87,8 @@ collect_plots(res)
 Generally speaking, higher cophenetic correlation coefficient, lower PAC score, higher mean silhouette score or higher concordance corresponds to better partition. Rand index and Jaccard index measure how similar the current partition is compared to partition with `k-1`. If they are too similar, we won't accept `k` is better than `k-1`.
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - plotting various statistics for selecting best k")
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message("  - plotting various statistics for selecting best k", appendLF = FALSE)
 ```
 
 ```{r <%=chunk_prefix%>-select-partition-number, results = "hide", fig.width = 10}
@@ -129,7 +131,8 @@ knitr_insert_tabs()
 Heatmaps for the consensus matrix:
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - making consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message("  - making consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
 
 ```{r <%=chunk_prefix%>-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
@@ -142,7 +145,8 @@ knitr_insert_tabs()
 Heatmaps for the membership of samples in all partitions to see how consistent they are:
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')")
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
 
 ```{r <%=chunk_prefix%>-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
@@ -158,7 +162,8 @@ different between classes which can be candidate marks for certain classes.
 Heatmaps for signatures:
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')")
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
 
 ```{r <%=chunk_prefix%>-signature, results = "asis", echo = FALSE, include = TRUE}
@@ -178,7 +183,8 @@ knitr_insert_tabs()
 PCA plots:
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - making PCA plots (k = '<%=paste(all_k, collapse=', ')%>')")
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message("  - making PCA plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
 
 ```{r <%=chunk_prefix%>-mds, results = "asis", echo = FALSE, include = TRUE}
@@ -189,7 +195,8 @@ knitr_insert_tabs()
 ```
 
 ```{r, echo = FALSE, message = FALSE}
-message("  - collecting classifications for all k")
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message("  - collecting classifications for all k", appendLF = FALSE)
 ```
 
 How subgroups split when increasing `k`:
@@ -201,13 +208,18 @@ collect_classes(res)
 <% if(has_known_anno) { %>
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("* testing correlation of subgroups to known annotations"))
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message(qq("* testing correlation of subgroups to known annotations"), appendLF)
 ```
 	
 Test to known annotations:
 
 ```{r, eval = !is.null(res@anno), echo = !is.null(res@anno)}
 test_to_known_factors(res)
+```
+
+```{r, echo = FALSE, message = FALSE}
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
 
 <%}-%>

@@ -8,10 +8,14 @@ Run subgroup classification from all methods
 }
 \usage{
 run_all_consensus_partition_methods(data,
-    top_value_method = all_top_value_methods(),
+    top_value_method = setdiff(all_top_value_methods(), "som"),
     partition_method = all_partition_methods(),
     max_k = 6,
-    mc.cores = 1, anno = NULL, anno_col = NULL, ...)
+    top_n = seq(min(1000, round(nrow(data)*0.1)),
+    min(5000, round(nrow(data)*0.5)),
+    length.out = 5),
+    mc.cores = 1, anno = NULL, anno_col = NULL,
+    p_sampling = 0.8, partition_repeat = 50, scale_rows = NULL)
 }
 \arguments{
 
@@ -19,10 +23,13 @@ run_all_consensus_partition_methods(data,
   \item{top_value_method}{method which are used to extract top n rows. Allowed methods are in \code{\link{all_top_value_methods}} and can be self-added by \code{\link{register_top_value_method}}.}
   \item{partition_method}{method which are used to do partition on samples.  Allowed methods are in \code{\link{all_partition_methods}} and can be self-added  by \code{\link{register_partition_method}}.}
   \item{max_k}{maximum number of partitions to try. It will use \code{2:max_k} partitions.}
+  \item{top_n}{number of rows with top values. The value can be a vector with length > 1. When n > 5000, the function only randomly sample 5000 rows from top n rows.}
   \item{mc.cores}{number of cores to use.}
   \item{anno}{a data frame with known annotation of samples}
   \item{anno_col}{a list of colors for the annotations in \code{known_anno}.}
-  \item{...}{other arguments passed to \code{\link{consensus_partition}}.}
+  \item{p_sampling}{proportion of the top n rows to sample.}
+  \item{partition_repeat}{number of repeats for the random sampling.}
+  \item{scale_rows}{whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_method}} is used.}
 
 }
 \details{

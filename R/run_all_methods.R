@@ -1,15 +1,4 @@
 
-try_and_trace = function(expr) {
-	env = new.env()
-	try(withCallingHandlers(expr, error = function(e) {
-		stack = sys.calls()
-		env$stack = stack
-	}), silent = TRUE)
-	return(env$stack)
-}
-
-
-
 # == title
 # Run subgroup classification from all methods
 #
@@ -21,10 +10,13 @@ try_and_trace = function(expr) {
 #        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_method`.
 # -max_k maximum number of partitions to try. It will use ``2:max_k`` partitions.
+# -top_n number of rows with top values. The value can be a vector with length > 1. When n > 5000, the function only randomly sample 5000 rows from top n rows.
 # -mc.cores number of cores to use.
 # -anno a data frame with known annotation of samples
 # -anno_col a list of colors for the annotations in ``known_anno``.
-# -... other arguments passed to `consensus_partition`.
+# -p_sampling proportion of the top n rows to sample.
+# -partition_repeat number of repeats for the random sampling.
+# -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_method` is used.
 #
 # == details
 # The function run consensus partitions for all combinations of top methods and parittion methods.
@@ -51,8 +43,12 @@ try_and_trace = function(expr) {
 run_all_consensus_partition_methods = function(data, 
 	top_value_method = setdiff(all_top_value_methods(), "som"), 
 	partition_method = all_partition_methods(), 
-	max_k = 6,
-	mc.cores = 1, anno = NULL, anno_col = NULL, ...) {
+	max_k = 6, 
+	top_n = seq(min(1000, round(nrow(data)*0.1)), 
+		        min(5000, round(nrow(data)*0.5)), 
+		        length.out = 5),
+	mc.cores = 1, anno = NULL, anno_col = NULL,
+	p_sampling = 0.8, partition_repeat = 50, scale_rows = NULL) {
 	
 	cl = match.call()
 
@@ -120,7 +116,8 @@ run_all_consensus_partition_methods = function(data,
 		pm = comb[i, 2]
 		qqcat("* running classification for @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
 		x = try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k,
-			anno = anno, anno_col = anno_col, .env = .env, verbose = interactive() & mc.cores == 1, ...))
+			anno = anno, anno_col = anno_col, .env = .env, verbose = interactive() & mc.cores == 1,
+			top_n = top_n, p_sampling = p_sampling, partition_repeat = partition_repeat, scale_rows = scale_rows))
 		
 		if(inherits(x, "pairlist")) {
 			print(x)

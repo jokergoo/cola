@@ -37,7 +37,8 @@ Imports: grDevices,
          impute,
          brew,
          samr,
-         pamr
+         pamr,
+         tracer
 Suggests: venneuler, 
           genefilter,
           mvtnorm
