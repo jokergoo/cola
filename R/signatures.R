@@ -393,6 +393,7 @@ setMethod(f = "get_signatures",
 			show_heatmap_legend = !internal, show_annotation_legend = !internal)
 		
 		row_order = row_order(ht_list)
+		if(!is.list(row_order)) row_order = list(row_order)
 		if(scale_rows) {
 			object@.env[[nm]]$row_order_scaled = do.call("c", row_order)
 		} else {

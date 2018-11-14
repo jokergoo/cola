@@ -222,6 +222,10 @@ test_to_known_factors(res)
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
 
+<%} else {-%>
+```{r, echo = FALSE, message = FALSE}
+message("")
+```
 <%}-%>
 
 

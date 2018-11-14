@@ -431,7 +431,7 @@ setMethod(f = "collect_classes",
 
 	if(!internal & show_row_names) {
 		rn = rownames(membership)
-		ht_list = ht_list + rowAnnotation(nm = row_anno_text(rn, offset = unit(0, "npc"), just = "left"), width = max_text_width(rn))
+		ht_list = ht_list + rowAnnotation(nm = row_anno_text(rn, location = unit(0, "npc"), just = "left"), width = max_text_width(rn))
 	}
 
     draw(ht_list, gap = unit(gap, "mm"), row_order = do.call("order", as.data.frame(class_mat)),
