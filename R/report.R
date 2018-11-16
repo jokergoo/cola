@@ -35,7 +35,7 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL, message = NUL
 	KNITR_TAB_ENV$current_tab_index = KNITR_TAB_ENV$current_tab_index + 1
 	tab = qq("tab-@{KNITR_TAB_ENV$random_str}-@{KNITR_TAB_ENV$current_tab_index}")
 	knitr_text = qq(
-"@{strrep('`', 3)}{r @{tab}-opt, echo = FALSE}
+"@{strrep('`', 3)}{r @{tab}-opt, echo = FALSE, fig.keep = 'none'}
 options(width = 100)
 @{strrep('`', 3)}
 
@@ -48,7 +48,7 @@ options(width = 100)
 
 	if(!is.null(message)) {
 		knitr_text = qq(
-"@{strrep('`', 3)}{r, echo = FALSE, message = FALSE}
+"@{strrep('`', 3)}{r, echo = FALSE, message = FALSE, fig.keep = 'none'}
 message('@{message}')
 @{strrep('`', 3)}
 
@@ -234,6 +234,10 @@ make_report = function(var_name, object, output_dir, class) {
 	on.exit({
 		options(digits = od)
 		setwd(wd)
+		if(!is.null(.ENV$TEMP_DIR)) {
+			unlink(.ENV$TEMP_DIR, recursive = TRUE, force = TRUE)
+			.ENV$TEMP_DIR = NULL
+		}
 	})
 
 	options(digits = 3)
@@ -262,7 +266,15 @@ make_report = function(var_name, object, output_dir, class) {
 	}
 
 	temp_dir = paste0(output_dir, "/_cola_temp")
+	if(file.exists(temp_dir)) {
+		fl = list.files(temp_dir, full.names = TRUE)
+		if(length(fl)) {
+			message(qq("* removing @{length(fl)} figures in the temp dir."))
+			file.remove(fl)
+		}
+	}
 	dir.create(temp_dir, showWarnings = FALSE)
+	.ENV$TEMP_DIR = temp_dir
 
 	message("* generating R markdown file based on template report")
 	tempfile = tempfile(tmpdir = output_dir, pattern = "cola_", fileext = ".Rmd")
@@ -296,7 +308,7 @@ make_report = function(var_name, object, output_dir, class) {
 
 	.t2 = Sys.time()
 
-	message(qq("In total used @{gsub('^ +, '', format(t2 - t1))}."))
+	message(qq("* In total, the report uses @{gsub('^ +', '', format(.t2 - .t1))}."))
 
 	return(invisible(NULL))
 }

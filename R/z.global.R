@@ -5,6 +5,8 @@
 .ENV$ALL_PARTITION_FUN = list()
 .ENV$ALL_PARTITION_METHODS = NULL
 
+.ENV$TEMP_DIR = NULL
+
 get_top_value_method = function(method) {
 	if(!method %in% .ENV$ALL_TOP_VALUE_METHODS) {
 		stop(qq("top value method @{method} has not been defined yet."))

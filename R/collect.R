@@ -79,17 +79,33 @@ setMethod(f = "collect_plots",
     		# image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
     		image_width = 800
     		image_height = 800
-			
-			file_name = tempfile(fileext = ".png", tmpdir = ".")
-	        png(file_name, width = image_width, height = image_height)
-	        oe = try(fun(res, k = k, internal = TRUE, use_raster = FALSE, ...))
-	        dev.off2()
-	        if(!inherits(oe, "try-error")) {
-				grid.raster(readPNG(file_name))
-		    } else {
-		    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}\n")
-		    }
-		    if(file.exists(file_name)) file.remove(file_name)
+			if(is.null(.ENV$TEMP_DIR)) {
+				file_name = tempfile(fileext = ".png", tmpdir = ".")
+		        png(file_name, width = image_width, height = image_height)
+		        oe = try(fun(res, k = k, internal = TRUE, use_raster = FALSE, ...))
+		        dev.off2()
+		        if(!inherits(oe, "try-error")) {
+					grid.raster(readPNG(file_name))
+			    } else {
+			    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}\n")
+			    }
+			    if(file.exists(file_name)) file.remove(file_name)
+			} else {
+				file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png"))
+				if(file.exists(file_name)) {
+					if(verbose) qqcat("  - use cache png: @{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png\n")
+					grid.raster(readPNG(file_name))
+				} else {
+					png(file_name, width = image_width, height = image_height)
+			        oe = try(fun(res, k = k, internal = TRUE, use_raster = FALSE, ...))
+			        dev.off2()
+			        if(!inherits(oe, "try-error")) {
+						grid.raster(readPNG(file_name))
+				    } else {
+				    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}\n")
+				    }
+				}
+			}
 			
 		    grid.rect(gp = gpar(fill = "transparent", col = "black"))
 		    upViewport()
