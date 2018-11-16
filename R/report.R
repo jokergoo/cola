@@ -223,6 +223,7 @@ setMethod(f = "cola_report",
 
 make_report = function(var_name, object, output_dir, class) {
 
+	.t1 = Sys.time()
 	template_file = c("HierarchicalPartition" = "cola_hc_template.Rmd",
 		              "ConsensusPartitionList" = "cola_report_template.Rmd")
 	html_file = c("HierarchicalPartition" = "cola_hc.html",
@@ -238,6 +239,8 @@ make_report = function(var_name, object, output_dir, class) {
 	options(digits = 3)
 	
 	report_template = paste0(TEMPLATE_DIR, "/", template_file[class])
+
+	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 	output_dir = normalizePath(output_dir, mustWork = FALSE)
 
 	if(file.exists(output_dir)) {
@@ -250,7 +253,6 @@ make_report = function(var_name, object, output_dir, class) {
 	message(qq("* generating cola report for `@{var_name}` (a @{class} object)"))
 	message(qq("* the report is available at @{output_dir}/"))
 
-	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 	if(dir.exists(paste0(output_dir, "/figure_cola"))) {
 		fl = list.files(paste0(output_dir, "/figure_cola"), pattern = "\\.png$", full.names = TRUE)
 		if(length(fl)) {
@@ -288,6 +290,10 @@ make_report = function(var_name, object, output_dir, class) {
 	KNITR_TAB_ENV$current_html = ""
 	KNITR_TAB_ENV$random_str = round(runif(1, min = 1, max = 1e8))
 	KNITR_TAB_ENV$css_added = FALSE
+
+	.t2 = Sys.time()
+
+	message(qq("In total used @{gsub('^ +, '', format(t2 - t1))}."))
 
 	return(invisible(NULL))
 }

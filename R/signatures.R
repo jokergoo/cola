@@ -57,7 +57,7 @@ setMethod(f = "get_signatures",
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
 	internal = FALSE,
-	show_column_names = !internal, use_raster = TRUE,
+	show_column_names = FALSE, use_raster = TRUE,
 	plot = TRUE, verbose = TRUE,
 	top_k_genes = 5000,
 	...) {
@@ -167,9 +167,11 @@ setMethod(f = "get_signatures",
 
 	if(scale_rows && !is.null(object@.env[[nm]]$row_order_scaled)) {
 		row_order = object@.env[[nm]]$row_order_scaled
+		if(verbose) qqcat("  - row order for the scaled matrix is extracted from cache\n")
 		do_row_clustering = FALSE
 	} else if(!scale_rows && !is.null(object@.env[[nm]]$row_order_unscaled)) {
 		row_order = object@.env[[nm]]$row_order_unscaled
+		if(verbose) qqcat("  - row order for the unscaled matrix is extracted from cache\n")
 		do_row_clustering = FALSE
 	}
 
@@ -220,7 +222,7 @@ setMethod(f = "get_signatures",
 		mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
 		mat2 = mat[order(fdr2)[1:top_k_genes], !column_used_logical, drop = FALSE]
 		group2 = group2[order(fdr2)[1:top_k_genes]]
-		if(verbose) cat(paste0("* Only take top ", top_k_genes, " signatures with highest fdr\n"))
+		if(verbose) cat(paste0("* Only take top ", top_k_genes, " signatures with highest fdr for the plot\n"))
 	} else {
 		mat1 = mat[, column_used_logical, drop = FALSE]
 		mat2 = mat[, !column_used_logical, drop = FALSE]
@@ -282,11 +284,9 @@ setMethod(f = "get_signatures",
 		heatmap_name = "expr"
 	}
 
-	mat_col_od1 = column_order_by_group(factor(class, levels = sort(unique(class))), use_mat1)
 
 	if(has_ambiguous) {
 		class2 = class_df$class[!column_used_logical]
-		mat_col_od2 = column_order_by_group(factor(class2, levels = sort(unique(class2))), use_mat2)
 
 		if(is.null(anno)) {
 			bottom_anno2 = NULL
@@ -338,7 +338,7 @@ setMethod(f = "get_signatures",
 			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
 				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
 					      col = NA),
-				bar_width = 0.8, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+				bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
 				height = unit(15, "mm")),
 			col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
 			show_annotation_name = !has_ambiguous,
@@ -347,7 +347,7 @@ setMethod(f = "get_signatures",
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = ha1,
-		cluster_columns = FALSE, column_order = mat_col_od1,
+		cluster_columns = FALSE, column_split = class_df$class[column_used_logical],
 		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
 		use_raster = use_raster,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, row_split = group2, row_title = NULL)
@@ -373,7 +373,7 @@ setMethod(f = "get_signatures",
 				silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
 					gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
 					      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
-					bar_width = 0.8, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
+					bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
 					height = unit(15, "mm")), 
 				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
 				show_annotation_name = c(TRUE, TRUE, FALSE),
@@ -382,7 +382,7 @@ setMethod(f = "get_signatures",
 		}
 		ht_list = ht_list + Heatmap(use_mat2, name = paste0(heatmap_name, 2), col = col_fun,
 			top_annotation = ha2,
-			cluster_columns = FALSE, column_order = mat_col_od2,
+			cluster_columns = TRUE, show_column_dend = FALSE,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
 			use_raster = use_raster,
 			bottom_annotation = bottom_anno2, show_column_names = show_column_names)

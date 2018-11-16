@@ -38,7 +38,7 @@ setMethod(f = "collect_plots",
 	nv = length(dev.list())
 	on.exit({
 		nv2 = length(dev.list())
-		while(nv2 > nv) {
+		while(nv2 > nv & nv2 > 1) {
 			dev.off2()
 			nv2 = length(dev.list())
 		}
@@ -82,7 +82,7 @@ setMethod(f = "collect_plots",
 
     		raster_name = qq("raster_@{top_value_method[i]}_@{partition_method[j]}_@{k}_@{fun_name}")
 			if(!is.null(object@.env[[raster_name]])) {
-				# qqcat("  read image from cache.\n")
+				qqcat("  read image 'raster_@{top_value_method[i]}_@{partition_method[j]}_@{k}_@{fun_name}' from cache.\n")
 				grid.raster(object@.env[[raster_name]])
 			} else {
 				file_name = tempfile(fileext = ".png", tmpdir = ".")
@@ -142,7 +142,7 @@ setMethod(f = "collect_plots",
 	nv = length(dev.list())
 	on.exit({
 		nv2 = length(dev.list())
-		while(nv2 > nv) {
+		while(nv2 > nv && nv2 > 1) {
 			dev.off2()
 			nv2 = length(dev.list())
 		}
@@ -405,7 +405,7 @@ setMethod(f = "collect_classes",
 # collect_classes(cola_rl["sd", "kmeans"])
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",
-	definition = function(object, internal = FALSE, show_row_names = !internal) {
+	definition = function(object, internal = FALSE, show_row_names = FALSE) {
 
 	all_k = object@k
 
