@@ -261,6 +261,9 @@ make_report = function(var_name, object, output_dir, class) {
 		}
 	}
 
+	temp_dir = paste0(output_dir, "/_cola_temp")
+	dir.create(temp_dir, showWarnings = FALSE)
+
 	message("* generating R markdown file based on template report")
 	tempfile = tempfile(tmpdir = output_dir, pattern = "cola_", fileext = ".Rmd")
 	brew(report_template, output = tempfile)
