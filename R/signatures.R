@@ -347,7 +347,7 @@ setMethod(f = "get_signatures",
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = ha1,
-		cluster_columns = FALSE, column_split = class_df$class[column_used_logical],
+		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
 		use_raster = use_raster,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, row_split = group2, row_title = NULL)

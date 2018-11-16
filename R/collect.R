@@ -79,24 +79,18 @@ setMethod(f = "collect_plots",
     		# image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
     		image_width = 800
     		image_height = 800
-
-    		raster_name = qq("raster_@{top_value_method[i]}_@{partition_method[j]}_@{k}_@{fun_name}")
-			if(!is.null(object@.env[[raster_name]])) {
-				qqcat("  read image 'raster_@{top_value_method[i]}_@{partition_method[j]}_@{k}_@{fun_name}' from cache.\n")
-				grid.raster(object@.env[[raster_name]])
-			} else {
-				file_name = tempfile(fileext = ".png", tmpdir = ".")
-		        png(file_name, width = image_width, height = image_height)
-		        oe = try(fun(res, k = k, internal = TRUE, use_raster = FALSE, ...))
-		        dev.off2()
-		        if(!inherits(oe, "try-error")) {
-			        object@.env[[raster_name]] = readPNG(file_name)
-					grid.raster(object@.env[[raster_name]])
-			    } else {
-			    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}\n")
-			    }
-			    if(file.exists(file_name)) file.remove(file_name)
-			}
+			
+			file_name = tempfile(fileext = ".png", tmpdir = ".")
+	        png(file_name, width = image_width, height = image_height)
+	        oe = try(fun(res, k = k, internal = TRUE, use_raster = FALSE, ...))
+	        dev.off2()
+	        if(!inherits(oe, "try-error")) {
+				grid.raster(readPNG(file_name))
+		    } else {
+		    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}\n")
+		    }
+		    if(file.exists(file_name)) file.remove(file_name)
+			
 		    grid.rect(gp = gpar(fill = "transparent", col = "black"))
 		    upViewport()
 	    }
