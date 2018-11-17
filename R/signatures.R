@@ -62,6 +62,8 @@ setMethod(f = "get_signatures",
 	top_k_genes = 5000,
 	...) {
 
+	raster_resize = cola_opt$raster_resize
+
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
 
@@ -178,16 +180,23 @@ setMethod(f = "get_signatures",
 	fdr[is.na(fdr)] = 1
 
 	group = character(nrow(data2))
-	for(i in seq_len(nrow(data2))) {
-		x = data2[i, ]
-		group_mean = tapply(x, class, mean)
-		od = order(group_mean)
-
-		if(group_mean[od[2]] - group_mean[od[1]] > group_mean[od[length(od)]] - group_mean[od[length(od)-1]]) {
-			group[i] = names(group_mean)[od[1]]
-		} else {
-			group[i] = names(group_mean)[od[length(od)]]
-		}
+	gm = do.call("cbind", tapply(1:ncol(data2), class, function(ind) rowMeans(data2[, ind, drop = FALSE])))
+	nclass = ncol(gm)
+	if(nclass == 2) {
+		group = ifelse(gm[, 1] > gm[, 2], colnames(gm)[1], colnames(gm)[2])
+	} else {
+		group = colnames(gm)[apply(gm, 1, function(x) {
+			od = order(x)
+			n = length(x)
+			diff_min = x[od[2]] - x[od[1]]
+			diff_max = x[od[n]] - x[od[n-1]]
+			# if the minimal is very small
+			if(diff_min > diff_max) {
+				od[1]
+			} else {
+				od[n]
+			}
+		})]
 	}
 
 	l_fdr = fdr < fdr_cutoff
@@ -349,7 +358,7 @@ setMethod(f = "get_signatures",
 		top_annotation = ha1,
 		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
-		use_raster = use_raster,
+		use_raster = use_raster, raster_resize = raster_resize,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, row_split = group2, row_title = NULL)
  	
 	all_value_positive = !any(data < 0)
@@ -384,7 +393,7 @@ setMethod(f = "get_signatures",
 			top_annotation = ha2,
 			cluster_columns = TRUE, show_column_dend = FALSE,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
-			use_raster = use_raster,
+			use_raster = use_raster, raster_resize = raster_resize,
 			bottom_annotation = bottom_anno2, show_column_names = show_column_names)
 	}
 

@@ -36,12 +36,15 @@ setMethod(f = "collect_plots",
 	partition_method = object@partition_method, ...) {
 
 	nv = length(dev.list())
+	op = cola_opt$raster_resize
+	cola_opt$raster_resize = TRUE
 	on.exit({
 		nv2 = length(dev.list())
 		while(nv2 > nv & nv2 > 1) {
 			dev.off2()
 			nv2 = length(dev.list())
 		}
+		cola_opt$raster_resize = op
 	})
 
 	fun_name = deparse(substitute(fun))
@@ -82,7 +85,7 @@ setMethod(f = "collect_plots",
 			if(is.null(.ENV$TEMP_DIR)) {
 				file_name = tempfile(fileext = ".png", tmpdir = ".")
 		        png(file_name, width = image_width, height = image_height)
-		        oe = try(fun(res, k = k, internal = TRUE, use_raster = FALSE, ...))
+		        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...))
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
 					grid.raster(readPNG(file_name))
@@ -97,7 +100,7 @@ setMethod(f = "collect_plots",
 					grid.raster(readPNG(file_name))
 				} else {
 					png(file_name, width = image_width, height = image_height)
-			        oe = try(fun(res, k = k, internal = TRUE, use_raster = FALSE, ...))
+			        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...))
 			        dev.off2()
 			        if(!inherits(oe, "try-error")) {
 						grid.raster(readPNG(file_name))
@@ -149,6 +152,8 @@ setMethod(f = "collect_plots",
 	signature = "ConsensusPartition",
 	definition = function(object, verbose = TRUE) {
 
+	op = cola_opt$raster_resize
+	cola_opt$raster_resize = TRUE
 	nv = length(dev.list())
 	on.exit({
 		nv2 = length(dev.list())
@@ -156,6 +161,7 @@ setMethod(f = "collect_plots",
 			dev.off2()
 			nv2 = length(dev.list())
 		}
+		cola_opt$raster_resize = op
 	})
 
 	all_k = object@k
@@ -229,59 +235,103 @@ setMethod(f = "collect_plots",
 
 		qqcat("* making consensus heatmap for k = @{all_k[i]}\n")
 		pushViewport(viewport(layout.pos.row = 4, layout.pos.col = i + 1))
-		raster_name = qq("raster_@{top_value_method}_@{partition_method}_@{all_k[i]}_consensus_heatmap")
-		if(!is.null(object@.env[[raster_name]])) {
-			# cat("  read image from cache.\n")
-			grid.raster(object@.env[[raster_name]])
-		} else {
-			file_name = tempfile(tmpdir = ".")
+
+		if(is.null(.ENV$TEMP_DIR)) {
+			file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height)
-	        oe = try(consensus_heatmap(object, k = all_k[i], internal = TRUE, show_row_names = FALSE))
+	        oe = try(consensus_heatmap(res, k = all_k[i], internal = TRUE, ...))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
-	        	object@.env[[raster_name]] = readPNG(file_name)
-				grid.raster(object@.env[[raster_name]])
+				grid.raster(readPNG(file_name))
+		    } else {
+		    	qqcat("* Caught an error for consensus_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}\n")
 		    }
 		    if(file.exists(file_name)) file.remove(file_name)
+		} else {
+			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}.png"))
+			if(file.exists(file_name)) {
+				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}.png\n")
+				grid.raster(readPNG(file_name))
+			} else {
+				png(file_name, width = image_width, height = image_height)
+		        oe = try(consensus_heatmap(res, k = all_k[i], internal = TRUE, ...))
+		        dev.off2()
+		        if(!inherits(oe, "try-error")) {
+					grid.raster(readPNG(file_name))
+			    } else {
+			    	qqcat("* Caught an error for consensus_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}\n")
+			    }
+			}
 		}
+
 		grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
 
 	    qqcat("* making membership heatmap for k = @{all_k[i]}\n")
 	    pushViewport(viewport(layout.pos.row = 5, layout.pos.col = i + 1))
-	    raster_name = qq("raster_@{top_value_method}_@{partition_method}_@{all_k[i]}_membership_heatmap")
-	    if(!is.null(object@.env[[raster_name]])) {
-			grid.raster(object@.env[[raster_name]])
-		} else {
-			file_name = tempfile()
-	        png(file_name, width = image_width*2, height=  image_height*2)
-	        oe = try(membership_heatmap(object, k = all_k[i], internal = TRUE, show_column_names = FALSE))
+	    
+	    if(is.null(.ENV$TEMP_DIR)) {
+			file_name = tempfile(fileext = ".png", tmpdir = ".")
+	        png(file_name, width = image_width, height = image_height)
+	        oe = try(membership_heatmap(res, k = all_k[i], internal = TRUE, ...))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
-		        object@.env[[raster_name]] = readPNG(file_name)
-				grid.raster(object@.env[[raster_name]])
+				grid.raster(readPNG(file_name))
+		    } else {
+		    	qqcat("* Caught an error for membership_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}\n")
 		    }
 		    if(file.exists(file_name)) file.remove(file_name)
+		} else {
+			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}.png"))
+			if(file.exists(file_name)) {
+				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}.png\n")
+				grid.raster(readPNG(file_name))
+			} else {
+				png(file_name, width = image_width, height = image_height)
+		        oe = try(membership_heatmap(res, k = all_k[i], internal = TRUE, ...))
+		        dev.off2()
+		        if(!inherits(oe, "try-error")) {
+					grid.raster(readPNG(file_name))
+			    } else {
+			    	qqcat("* Caught an error for membership_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}\n")
+			    }
+			}
 		}
+
 		grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
 
 	    qqcat("* making signature heatmap for k = @{all_k[i]}\n")
 	    pushViewport(viewport(layout.pos.row = 6, layout.pos.col = i + 1))
-	    raster_name = qq("raster_@{top_value_method}_@{partition_method}_@{all_k[i]}_get_signature")
-	    if(!is.null(object@.env[[raster_name]])) {
-			grid.raster(object@.env[[raster_name]])
-		} else {
-		    file_name = tempfile()
-	        png(file_name, width = image_width*2, height=  image_height*2)
-	        oe = try(sig_res <- get_signatures(object, k = all_k[i], internal = TRUE, show_column_names = FALSE, use_raster = FALSE))
+	    
+	    if(is.null(.ENV$TEMP_DIR)) {
+			file_name = tempfile(fileext = ".png", tmpdir = ".")
+	        png(file_name, width = image_width, height = image_height)
+	        oe = try(get_signatures(res, k = all_k[i], internal = TRUE, use_raster = TRUE, ...))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
-	        	object@.env[[raster_name]] = readPNG(file_name)
-				grid.raster(object@.env[[raster_name]])
+				grid.raster(readPNG(file_name))
+		    } else {
+		    	qqcat("* Caught an error for get_signatures:@{top_value_method}:@{partition_method}:\n@{oe}\n")
 		    }
 		    if(file.exists(file_name)) file.remove(file_name)
+		} else {
+			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}.png"))
+			if(file.exists(file_name)) {
+				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}.png\n")
+				grid.raster(readPNG(file_name))
+			} else {
+				png(file_name, width = image_width, height = image_height)
+		        oe = try(get_signatures(res, k = all_k[i], internal = TRUE, use_raster = TRUE, ...))
+		        dev.off2()
+		        if(!inherits(oe, "try-error")) {
+					grid.raster(readPNG(file_name))
+			    } else {
+			    	qqcat("* Caught an error for get_signatures:@{top_value_method}:@{partition_method}:\n@{oe}\n")
+			    }
+			}
 		}
+
 		grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
 	}

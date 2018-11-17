@@ -35,11 +35,11 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL, message = NUL
 	KNITR_TAB_ENV$current_tab_index = KNITR_TAB_ENV$current_tab_index + 1
 	tab = qq("tab-@{KNITR_TAB_ENV$random_str}-@{KNITR_TAB_ENV$current_tab_index}")
 	knitr_text = qq(
-"@{strrep('`', 3)}{r @{tab}-opt, echo = FALSE, fig.keep = 'none'}
+"@{strrep('`', 3)}{r, echo = FALSE}
 options(width = 100)
 @{strrep('`', 3)}
 
-@{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', paste0(', ', opt))}}
+@{strrep('`', 3)}{r, @{tab}@{ifelse(is.null(opt), '', paste0(', ', opt))}}
 @{code}
 @{strrep('`', 3)}
 
@@ -60,7 +60,7 @@ message('@{message}')
 
 	op1 = getOption("markdown.HTML.options")
 	op2 = getOption("width")
-	options(markdown.HTML.options = setdiff(op1, c("base64_images", "toc")))
+	options(markdown.HTML.options = setdiff(op1, c("base64_images", "toc")), width = 100)
 	md = knit(text = knitr_text, quiet = TRUE, envir = parent.frame())
 	html = markdownToHTML(text = md, fragment.only = TRUE)
 	html = qq("<div id='@{tab}'>\n@{html}\n</div>\n")
@@ -229,6 +229,8 @@ make_report = function(var_name, object, output_dir, class) {
 	html_file = c("HierarchicalPartition" = "cola_hc.html",
 		          "ConsensusPartitionList" = "cola_report.html")
 
+	cola_opt$raster_resize = TRUE
+
 	od = getOption("digits")
 	wd = getwd()
 	on.exit({
@@ -238,6 +240,7 @@ make_report = function(var_name, object, output_dir, class) {
 			unlink(.ENV$TEMP_DIR, recursive = TRUE, force = TRUE)
 			.ENV$TEMP_DIR = NULL
 		}
+		cola_opt$raster_resize = FALSE
 	})
 
 	options(digits = 3)
