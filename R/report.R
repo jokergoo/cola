@@ -35,11 +35,7 @@ knitr_add_tab_item = function(code, header, desc = "", opt = NULL, message = NUL
 	KNITR_TAB_ENV$current_tab_index = KNITR_TAB_ENV$current_tab_index + 1
 	tab = qq("tab-@{KNITR_TAB_ENV$random_str}-@{KNITR_TAB_ENV$current_tab_index}")
 	knitr_text = qq(
-"@{strrep('`', 3)}{r, echo = FALSE}
-options(width = 100)
-@{strrep('`', 3)}
-
-@{strrep('`', 3)}{r, @{tab}@{ifelse(is.null(opt), '', paste0(', ', opt))}}
+"@{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', paste0(', ', opt))}}
 @{code}
 @{strrep('`', 3)}
 

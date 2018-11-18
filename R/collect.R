@@ -239,7 +239,7 @@ setMethod(f = "collect_plots",
 		if(is.null(.ENV$TEMP_DIR)) {
 			file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height)
-	        oe = try(consensus_heatmap(res, k = all_k[i], internal = TRUE, ...))
+	        oe = try(consensus_heatmap(object, k = all_k[i], internal = TRUE))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
 				grid.raster(readPNG(file_name))
@@ -254,7 +254,7 @@ setMethod(f = "collect_plots",
 				grid.raster(readPNG(file_name))
 			} else {
 				png(file_name, width = image_width, height = image_height)
-		        oe = try(consensus_heatmap(res, k = all_k[i], internal = TRUE, ...))
+		        oe = try(consensus_heatmap(object, k = all_k[i], internal = TRUE))
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
 					grid.raster(readPNG(file_name))
@@ -273,7 +273,7 @@ setMethod(f = "collect_plots",
 	    if(is.null(.ENV$TEMP_DIR)) {
 			file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height)
-	        oe = try(membership_heatmap(res, k = all_k[i], internal = TRUE, ...))
+	        oe = try(membership_heatmap(object, k = all_k[i], internal = TRUE))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
 				grid.raster(readPNG(file_name))
@@ -288,7 +288,7 @@ setMethod(f = "collect_plots",
 				grid.raster(readPNG(file_name))
 			} else {
 				png(file_name, width = image_width, height = image_height)
-		        oe = try(membership_heatmap(res, k = all_k[i], internal = TRUE, ...))
+		        oe = try(membership_heatmap(object, k = all_k[i], internal = TRUE))
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
 					grid.raster(readPNG(file_name))
@@ -307,7 +307,7 @@ setMethod(f = "collect_plots",
 	    if(is.null(.ENV$TEMP_DIR)) {
 			file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height)
-	        oe = try(get_signatures(res, k = all_k[i], internal = TRUE, use_raster = TRUE, ...))
+	        oe = try(get_signatures(object, k = all_k[i], internal = TRUE, use_raster = TRUE))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
 				grid.raster(readPNG(file_name))
@@ -322,7 +322,7 @@ setMethod(f = "collect_plots",
 				grid.raster(readPNG(file_name))
 			} else {
 				png(file_name, width = image_width, height = image_height)
-		        oe = try(get_signatures(res, k = all_k[i], internal = TRUE, use_raster = TRUE, ...))
+		        oe = try(get_signatures(object, k = all_k[i], internal = TRUE, use_raster = TRUE))
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
 					grid.raster(readPNG(file_name))
