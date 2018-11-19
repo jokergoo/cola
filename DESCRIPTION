@@ -39,8 +39,7 @@ Imports: grDevices,
          brew,
          samr,
          pamr,
-         tracer,
-         fastcluster
+         tracer
 Suggests: venneuler, 
           genefilter,
           mvtnorm

@@ -30,7 +30,6 @@ options(width = 100)
 library(ComplexHeatmap)
 library(circlize)
 library(cola)
-library(gridBase)
 ```
 
 ## Introduction

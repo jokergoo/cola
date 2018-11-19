@@ -656,7 +656,8 @@ setMethod(f = "collect_classes",
 	dend = calc_dend(object, hierarchy)
 
 	ht_list = Heatmap(cl, name = "Groups", width = unit(1, "cm"), col = object@subgroup_col,
-		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"))
+		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
+		show_row_names = FALSE)
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
 			anno_nm = deparse(substitute(anno))
