@@ -677,7 +677,7 @@ setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
 	anno = get_anno(object), anno_col = get_anno_col(object), 
-	show_row_names = !internal, ...) {
+	show_row_names = FALSE, ...) {
 
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
@@ -688,11 +688,11 @@ setMethod(f = "consensus_heatmap",
 
 	membership_mat = get_membership(object, k)
 
-	ht_list = Heatmap(membership_mat, name = "Prob", cluster_columns = FALSE, show_row_names = FALSE, 
+	ht_list = Heatmap(membership_mat, name = "Prob", cluster_columns = FALSE, show_row_names = FALSE, show_column_names = !internal,
 		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red"))) + 
-	Heatmap(class_df$silhouette, name = "Silhouette", width = unit(5, "mm"), 
+	Heatmap(class_df$silhouette, name = "Silhouette", width = unit(5, "mm"), show_column_names = !internal,
 		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple"))) +
-	Heatmap(class_ids, name = "Class", col = brewer_pal_set2_col, 
+	Heatmap(class_ids, name = "Class", col = brewer_pal_set2_col, show_column_names = !internal,
 		show_row_names = FALSE, width = unit(5, "mm"))
 	
 	ht_list = ht_list +	Heatmap(consensus_mat, name = "Consensus", show_row_names = show_row_names, show_row_dend = FALSE,
@@ -715,7 +715,9 @@ setMethod(f = "consensus_heatmap",
 			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col)
 		}
 	}
-	draw(ht_list, main_heatmap = "Consensus", column_title = qq("consensus @{object@partition_method} with @{k} groups from @{object@n_partition/length(object@k)} partitions"),
+	column_title = qq("consensus @{object@partition_method} with @{k} groups from @{object@n_partition/length(object@k)} partitions")
+	if(internal) column_title = ""
+	draw(ht_list, main_heatmap = "Consensus", column_title = column_title,
 		show_heatmap_legend = !internal, show_annotation_legend = !internal)
 })
 
@@ -749,7 +751,7 @@ setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE, 
 	anno = get_anno(object), anno_col = get_anno_col(object),
-	show_column_names = !internal, ...) {
+	show_column_names = FALSE, ...) {
 
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
@@ -797,13 +799,15 @@ setMethod(f = "membership_heatmap",
 		column_title = qq("membership heatmap, k = @{k}"), column_order = mat_col_od, cluster_columns = FALSE,
 		row_split = param$top_n,
 		top_annotation = HeatmapAnnotation(Prob = membership_mat,
-			Class = class_ids, col = c(list(Class = brewer_pal_set2_col), Prob = col_fun)),
+			Class = class_ids, col = c(list(Class = brewer_pal_set2_col), Prob = col_fun),
+			show_annotation_name = !internal),
 		bottom_annotation = bottom_anno,
 		show_column_names = show_column_names,
 		row_title = NULL
 		) 
-	
-	draw(ht, main_heatmap = "Class", row_title = qq("@{round(object@n_partition/length(object@k)/length(top_n_level))} x @{length(top_n_level)} random samplings"),
+	row_title = qq("@{round(object@n_partition/length(object@k)/length(top_n_level))} x @{length(top_n_level)} random samplings")
+	if(internal) row_title = ""
+	draw(ht, main_heatmap = "Class", row_title = row_title,
 		show_heatmap_legend = FALSE, show_annotation_legend = !internal)
 	param2 = get_param(object, k)
 	for(i in seq_along(top_n_level)) {

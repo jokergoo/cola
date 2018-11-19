@@ -53,13 +53,13 @@ setMethod(f = "get_signatures",
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = ifelse(diff_method == "samr", 0.05, 0.1), 
 	scale_rows = object@scale_rows,
-	diff_method = c("ttest", "Ftest", "samr", "pamr"),
+	diff_method = c("Ftest", "ttest", "samr", "pamr"),
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
 	internal = FALSE,
 	show_column_names = FALSE, use_raster = TRUE,
 	plot = TRUE, verbose = TRUE,
-	top_k_genes = 5000,
+	top_k_genes = 2000,
 	...) {
 
 	raster_resize = cola_opt$raster_resize
@@ -179,33 +179,33 @@ setMethod(f = "get_signatures",
 
 	fdr[is.na(fdr)] = 1
 
-	group = character(nrow(data2))
-	gm = do.call("cbind", tapply(1:ncol(data2), class, function(ind) rowMeans(data2[, ind, drop = FALSE])))
-	nclass = ncol(gm)
-	if(nclass == 2) {
-		group = ifelse(gm[, 1] > gm[, 2], colnames(gm)[1], colnames(gm)[2])
-	} else {
-		group = colnames(gm)[apply(gm, 1, function(x) {
-			od = order(x)
-			n = length(x)
-			diff_min = x[od[2]] - x[od[1]]
-			diff_max = x[od[n]] - x[od[n-1]]
-			# if the minimal is very small
-			if(diff_min > diff_max) {
-				od[1]
-			} else {
-				od[n]
-			}
-		})]
-	}
+	# group = character(nrow(data2))
+	# gm = do.call("cbind", tapply(1:ncol(data2), class, function(ind) rowMeans(data2[, ind, drop = FALSE])))
+	# nclass = ncol(gm)
+	# if(nclass == 2) {
+	# 	group = ifelse(gm[, 1] > gm[, 2], colnames(gm)[1], colnames(gm)[2])
+	# } else {
+	# 	group = colnames(gm)[apply(gm, 1, function(x) {
+	# 		od = order(x)
+	# 		n = length(x)
+	# 		diff_min = x[od[2]] - x[od[1]]
+	# 		diff_max = x[od[n]] - x[od[n-1]]
+	# 		# if the minimal is very small
+	# 		if(diff_min > diff_max) {
+	# 			od[1]
+	# 		} else {
+	# 			od[n]
+	# 		}
+	# 	})]
+	# }
 
 	l_fdr = fdr < fdr_cutoff
 	mat = data[l_fdr, , drop = FALSE]
 	fdr2 = fdr[l_fdr]
-	group2 = group[l_fdr]
-	names(group2) = rownames(mat)
+	# group2 = group[l_fdr]
+	# names(group2) = rownames(mat)
 
-	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2, group = group2)
+	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2)
 	returned_df = returned_df[order(returned_df[, "fdr"]), ]
 	returned_obj = returned_df
 	attr(returned_obj, "sample_used") = column_used_logical
@@ -230,7 +230,7 @@ setMethod(f = "get_signatures",
 		more_than_5k = TRUE
 		mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
 		mat2 = mat[order(fdr2)[1:top_k_genes], !column_used_logical, drop = FALSE]
-		group2 = group2[order(fdr2)[1:top_k_genes]]
+		# group2 = group2[order(fdr2)[1:top_k_genes]]
 		if(verbose) cat(paste0("* Only take top ", top_k_genes, " signatures with highest fdr for the plot\n"))
 	} else {
 		mat1 = mat[, column_used_logical, drop = FALSE]
@@ -282,6 +282,10 @@ setMethod(f = "get_signatures",
 
 		use_mat1 = scaled_mat1
 		use_mat2 = scaled_mat2
+		use_mat1[is.infinite(use_mat1)] = 0
+		use_mat1[is.na(use_mat1)] = 0
+		use_mat2[is.infinite(use_mat2)] = 0
+		use_mat2[is.na(use_mat2)] = 0
 		mat_range = quantile(abs(scaled_mat1), 0.95, na.rm = TRUE)
 		col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
 		heatmap_name = "z-score"
@@ -292,7 +296,6 @@ setMethod(f = "get_signatures",
 		col_fun = colorRamp2(c(mat_range[1], mean(mat_range), mat_range[2]), c("blue", "white", "red"))
 		heatmap_name = "expr"
 	}
-
 
 	if(has_ambiguous) {
 		class2 = class_df$class[!column_used_logical]
@@ -328,8 +331,9 @@ setMethod(f = "get_signatures",
 
 	if(verbose) qqcat("* making heatmaps for signatures\n")
 
-	group2 = factor(group2, levels = sort(unique(group2)))
-	ht_list = Heatmap(group2, name = "Group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
+	# group2 = factor(group2, levels = sort(unique(group2)))
+	# ht_list = Heatmap(group2, name = "Group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
+	ht_list = NULL
 
 	membership_mat = get_membership(object, k)
 	prop_col_fun = colorRamp2(c(0, 1), c("white", "red"))
@@ -359,7 +363,7 @@ setMethod(f = "get_signatures",
 		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
 		use_raster = use_raster, raster_resize = raster_resize,
-		bottom_annotation = bottom_anno1, show_column_names = show_column_names, row_split = group2, row_title = NULL)
+		bottom_annotation = bottom_anno1, show_column_names = show_column_names, row_title = NULL)
  	
 	all_value_positive = !any(data < 0)
  	if(scale_rows && all_value_positive) {
@@ -434,10 +438,6 @@ setMethod(f = "get_signatures",
 
 	return(invisible(returned_obj))
 })
-
-get_signature_index = function(sig, group) {
-	which(sig$df$group == group)
-}
 
 compare_to_highest_subgroup = function(mat, class) {
 
@@ -531,6 +531,7 @@ ttest = function(mat, class) {
 	p = pmin(p1, p2, na.rm = TRUE)
 	fdr = p.adjust(p, method = "BH")
 	fdr[is.na(fdr)] = Inf
+	fdr[is.infinite(fdr)] = Inf
 	fdr
 }
 
