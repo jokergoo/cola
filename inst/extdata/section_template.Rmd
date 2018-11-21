@@ -214,7 +214,7 @@ message(qq("* testing correlation of subgroups to known annotations"), appendLF 
 	
 Test to known annotations:
 
-```{r, eval = !is.null(res@anno), echo = !is.null(res@anno)}
+```{r <%=chunk_prefix%>-test-to-known-factors}
 test_to_known_factors(res)
 ```
 
