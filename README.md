@@ -63,5 +63,5 @@ The hierarchy of the subgroups:
 
 ## License
 
-MIT
+MIT @ Zuguang Gu
 
