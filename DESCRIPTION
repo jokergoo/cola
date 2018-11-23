@@ -39,7 +39,8 @@ Imports: grDevices,
          brew,
          samr,
          pamr,
-         tracer
+         tracer,
+         clisymbols
 Suggests: venneuler, 
           genefilter,
           mvtnorm

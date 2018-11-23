@@ -9,6 +9,7 @@
 #        `plot_ecdf`, `membership_heatmap`, `get_signatures` and `dimension_reduction`.
 # -top_value_method a vector of top value methods.
 # -partition_method a vector of partition methods.
+# -verbose verbose
 # -... other arguments passed to corresponding ``fun``.
 #
 # == details
@@ -33,7 +34,7 @@ setMethod(f = "collect_plots",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k = 2, fun = consensus_heatmap,
 	top_value_method = object@top_value_method, 
-	partition_method = object@partition_method, ...) {
+	partition_method = object@partition_method, verbose = TRUE, ...) {
 
 	nv = length(dev.list())
 	op = cola_opt$raster_resize

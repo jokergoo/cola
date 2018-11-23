@@ -9,7 +9,7 @@ Collect plots from ConsensusPartitionList object
 \usage{
 \S4method{collect_plots}{ConsensusPartitionList}(object, k = 2, fun = consensus_heatmap,
     top_value_method = object@top_value_method,
-    partition_method = object@partition_method, ...)
+    partition_method = object@partition_method, verbose = TRUE, ...)
 }
 \arguments{
 
@@ -18,6 +18,7 @@ Collect plots from ConsensusPartitionList object
   \item{fun}{function used to generate plots. Valid functions are \code{\link{consensus_heatmap}}, \code{\link{plot_ecdf}}, \code{\link{membership_heatmap}}, \code{\link{get_signatures}} and \code{\link{dimension_reduction}}.}
   \item{top_value_method}{a vector of top value methods.}
   \item{partition_method}{a vector of partition methods.}
+  \item{verbose}{verbose}
   \item{...}{other arguments passed to corresponding \code{fun}.}
 
 }

@@ -37,6 +37,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -top_value_method a single top method. Available methods are in `all_top_value_methods`.
 # -partition_method a single partition method. Available ialble methods are in `all_partition_methods`.
 # -concordance_cutoff the cutoff of PAC scores to determine whether to continuou looking to subgroups.
+# -PAC_cutoff PAC_cutoff
 # -min_samples the cutoff of number of samples to determine whether to continuou looking to subgroups.
 # -max_k a list number of partitions.
 # -... pass to `consensus_partition`
@@ -51,7 +52,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
-	PAC_cutoff = 0.15, min_samples = 6, max_k = 4, ...) {
+	concordance_cutoff = 0.9, PAC_cutoff = 0.15, min_samples = 6, max_k = 4, ...) {
 
 	cl = match.call()
 	
@@ -161,6 +162,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 
 	return(hp)
 }
+
 subgroup_dend = function(object, hierarchy = object@hierarchy) {
 
 	lt = list()
@@ -419,8 +421,7 @@ setMethod(f = "show",
 # -show_column_names whether show column names
 # -verbose whether print messages
 # -plot whether make the heatmap
-# -plot_type type of the plot
-# -silhouette_cutoff cutoff for silhouette scores.
+# -silhouette_cutoff silhouette_cutoff
 # -... other arguments
 # 
 # == details

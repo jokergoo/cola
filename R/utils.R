@@ -153,14 +153,14 @@ try_and_trace = function(expr) {
 	oe = try(expr, silent = TRUE)
 	if(inherits(oe, "try-error")) {
 		cat("Caught an error. Following is the trace:\n")
-		format_trace(tracer:::data$last_dump)
+		format_trace(getFromNamespace("data", ns = "tracer")$last_dump)
 	}
 }
 
 format_trace <- function(data, style = NULL) {
 
   if (is.null(style)) {
-    style <- getOption("tracer.style", tracer:::tracer_default_style())
+    style <- getOption("tracer.style", getFromNamespace("tracer_default_style", ns = "tracer")())
   }
 
   if (length(data$calls) == 0) {
@@ -181,8 +181,8 @@ format_trace <- function(data, style = NULL) {
       nchar(data$fargs) <= arg_cols,
       data$fargs,
       paste(
-        substring(data$fargs, 1, arg_cols - nchar(symbol$ellipsis, "width")),
-        cyan(symbol$ellipsis)
+        substring(data$fargs, 1, arg_cols - nchar(clisymbols::symbol$ellipsis, "width")),
+        crayon::cyan(clisymbols::symbol$ellipsis)
       )
     )
 
@@ -192,7 +192,7 @@ format_trace <- function(data, style = NULL) {
     )
 
     col_nums  <- style$num(data$nums)
-    col_envs  <- vapply(envs, FUN.VALUE = "", tracer:::style_env, style = style)
+    col_envs  <- vapply(envs, FUN.VALUE = "", getFromNamespace("style_env", ns = "tracer"), style = style)
     col_args  <- style$arg(args)
     col_fnams <- style$fnam(data$fnams)
     col_locs  <- style$location(

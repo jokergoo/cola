@@ -721,7 +721,10 @@ different statistics along with different $k$, which helps to determine the
 "best k".
 
 ```{r, fig.width = 8, fig.height = 8}
-rl = readRDS("~/cola_test/TCGA_subgroup.rds")
+download.file("https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup.rds", 
+  destfile = "TCGA_GBM_subgroup.rds", quiet = TRUE)
+rl = readRDS("TCGA_GBM_subgroup.rds")
+file.remove("TCGA_GBM_subgroup.rds")
 res = rl["MAD:kmeans"] # the ConsensusPartition object
 select_partition_number(res)
 ```
@@ -801,11 +804,11 @@ The two files (`unifiedScaled.txt` and `TCGA_unified_CORE_ClaNC840.txt`) for use
 Following code is used to perform analysis of consensus partition.
 
 ```{r, eval = FALSE}
-data = read.table("~/cola_test/unifiedScaled.txt", header = TRUE, 
-    row.names = 1, check.names = FALSE)
+data = read.table("https://jokergoo.github.io/cola_examples/unifiedScaled.txt", 
+    header = TRUE, row.names = 1, check.names = FALSE)
 data = as.matrix(data)
 
-subtype = read.table("~/cola_test/TCGA_unified_CORE_ClaNC840.txt", 
+subtype = read.table("https://jokergoo.github.io/cola_examples/TCGA_unified_CORE_ClaNC840.txt", 
     sep = "\t", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE)
 subtype = structure(unlist(subtype[1, -(1:2)]), names = colnames(subtype)[-(1:2)])
 
@@ -824,10 +827,10 @@ rl
 ```
 
 `cola_report()` function generates a detailed report (with all the tables and
-plots) for this analysis which can be visited at https://jokergoo.github.io/cola_files/tcga_cola_rl_report/cola_report.html.
+plots) for this analysis which can be visited at https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_cola_report/cola_report.html.
 
 ```{r, eval = FALSE}
-cola_report(rl, output_dir = "~/cola_test/tcga_cola_rl_report")
+cola_report(rl, output_dir = "~/your-output-folder/tcga_cola_rl_report")
 ```
 
 ## Hierarchical partition
@@ -870,7 +873,10 @@ rh = hierarchical_partition(data, top_n = c(1000, 2000, 3000, 4000),
 ```
 
 ```{r, echo = FALSE}
-rh = readRDS("~/cola_test/TCGA_subgroup_hierarchical_partition.rds")
+download.file("https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_hierarchical_partition.rds", 
+  destfile = "TCGA_GBM_subgroup_hierarchical_partition.rds", quiet = TRUE)
+rh = readRDS("TCGA_GBM_subgroup_hierarchical_partition.rds")
+file.remove("TCGA_GBM_subgroup_hierarchical_partition.rds")
 ```
 
 Simply typing `rh` gives summary of the analysis.
@@ -914,10 +920,10 @@ get_signatures(rh["001"], k = 2, show_column_names = FALSE)
 
 Similar as the `ConsensusPartitionList` object, `cola_report()` function
 can also be applied to this `HierarchicalPartition` object. The full report
-for `rh` can be found at https://jokergoo.github.io/cola_files/tcga_cola_rh_report/cola_report.html.
+for `rh` can be found at https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_hierarchical_partition_cola_report/cola_hc.html.
 
 ```{r, eval = FALSE}
-cola_report(rh, output_dir = "~/cola_test/tcga_cola_rh_report")
+cola_report(rh, output_dir = "~/your-output-folder/tcga_cola_rh_report")
 ```
 
 ## Session info

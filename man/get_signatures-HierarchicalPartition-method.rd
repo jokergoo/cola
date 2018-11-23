@@ -26,8 +26,7 @@ Get signatures rows
   \item{show_column_names}{whether show column names}
   \item{verbose}{whether print messages}
   \item{plot}{whether make the heatmap}
-  \item{plot_type}{type of the plot}
-  \item{silhouette_cutoff}{cutoff for silhouette scores.}
+  \item{silhouette_cutoff}{silhouette_cutoff}
   \item{...}{other arguments}
 
 }

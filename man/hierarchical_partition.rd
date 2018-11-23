@@ -8,7 +8,7 @@ Hierarchical detection of subgroups
 }
 \usage{
 hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmeans",
-    PAC_cutoff = 0.15, min_samples = 6, max_k = 4, ...)
+    concordance_cutoff = 0.9, PAC_cutoff = 0.15, min_samples = 6, max_k = 4, ...)
 }
 \arguments{
 
@@ -16,6 +16,7 @@ hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmean
   \item{top_value_method}{a single top method. Available methods are in \code{\link{all_top_value_methods}}.}
   \item{partition_method}{a single partition method. Available ialble methods are in \code{\link{all_partition_methods}}.}
   \item{concordance_cutoff}{the cutoff of PAC scores to determine whether to continuou looking to subgroups.}
+  \item{PAC_cutoff}{PAC_cutoff}
   \item{min_samples}{the cutoff of number of samples to determine whether to continuou looking to subgroups.}
   \item{max_k}{a list number of partitions.}
   \item{...}{pass to \code{\link{consensus_partition}}}
