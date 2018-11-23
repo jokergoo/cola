@@ -30,7 +30,7 @@
 # test_between_factors(df)
 # x = runif(100)
 # test_between_factors(x, df)
-test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE) {
+test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALSE) {
 	
 	if(is.null(y)) {
 		df = x
@@ -125,6 +125,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 # -k number of partitions. It uses all ``k`` if it is not set.
 # -known a vector or a data frame with known factors.
 # -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
+# -verbose whether to print messages.
 #
 # == value
 # A data frame with columns:
@@ -144,12 +145,12 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = TRUE
 # test_to_known_factors(cola_rl[1, 1], known = 1:40)
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartition",
-	definition = function(object, k, known = get_anno(object), silhouette_cutoff = 0.5) {
+	definition = function(object, k, known = get_anno(object), silhouette_cutoff = 0.5, verbose = TRUE) {
 
 	if(missing(k)) {
 		all_k = object@k
 		m = do.call("rbind", lapply(all_k, function(k) test_to_known_factors(object, k, known = known, 
-			silhouette_cutoff = silhouette_cutoff)))
+			silhouette_cutoff = silhouette_cutoff, verbose = verbose)))
 		return(m)
 	}
 
@@ -169,7 +170,7 @@ setMethod(f = "test_to_known_factors",
 		known = known[l]
 	}
 
-	m = test_between_factors(class, known, verbose = TRUE)
+	m = test_between_factors(class, known, verbose = verbose)
 	rownames(m) = paste(object@top_value_method, object@partition_method, sep = ":")
 	colnames(m) = paste0(colnames(m), "(p-value)")
 	m = cbind(n = sum(l), m, k = k)
@@ -184,6 +185,7 @@ setMethod(f = "test_to_known_factors",
 # -k number of partitions. It uses all ``k`` if it is not set.
 # -known a vector or a data frame with known factors.
 # -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
+# -verbose whether to print messages.
 #
 # == details
 # The function basically sends each `ConsensusPartition-class` object to
@@ -208,15 +210,15 @@ setMethod(f = "test_to_known_factors",
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, known = object@list[[1]]@anno, 
-		silhouette_cutoff = 0.5) {
+		silhouette_cutoff = 0.5, verbose = TRUE) {
 
 	if(missing(k)) {
 		m_list = lapply(object@list, function(x) {
-			test_to_known_factors(x, known = known, silhouette_cutoff = silhouette_cutoff)
+			test_to_known_factors(x, known = known, silhouette_cutoff = silhouette_cutoff, verbose = verbose)
 		})
 	} else {
 		m_list = lapply(object@list, function(x) {
-			test_to_known_factors(x, k = k, known = known, silhouette_cutoff = silhouette_cutoff)
+			test_to_known_factors(x, k = k, known = known, silhouette_cutoff = silhouette_cutoff, verbose = verbose)
 		})
 	}
 	do.call("rbind", m_list)

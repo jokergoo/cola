@@ -8,7 +8,7 @@ Test correspondance between predicted and known classes
 }
 \usage{
 \S4method{test_to_known_factors}{ConsensusPartitionList}(object, k, known = object@list[[1]]@anno,
-    silhouette_cutoff = 0.5)
+    silhouette_cutoff = 0.5, verbose = TRUE)
 }
 \arguments{
 
@@ -16,6 +16,7 @@ Test correspondance between predicted and known classes
   \item{k}{number of partitions. It uses all \code{k} if it is not set.}
   \item{known}{a vector or a data frame with known factors.}
   \item{silhouette_cutoff}{cutoff for sihouette scores. Samples with value less than this are omit.}
+  \item{verbose}{whether to print messages.}
 
 }
 \details{

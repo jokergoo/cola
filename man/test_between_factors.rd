@@ -7,7 +7,7 @@ Test whether a list of factors are correlated
 Test whether a list of factors are correlated
 }
 \usage{
-test_between_factors(x, y = NULL, all_factors = FALSE, verbose = TRUE)
+test_between_factors(x, y = NULL, all_factors = FALSE, verbose = FALSE)
 }
 \arguments{
 

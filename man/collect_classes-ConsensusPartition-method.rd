@@ -7,7 +7,7 @@ Collect classes from ConsensusPartition object
 Collect classes from ConsensusPartition object
 }
 \usage{
-\S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE, show_row_names = !internal)
+\S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE, show_row_names = FALSE)
 }
 \arguments{
 

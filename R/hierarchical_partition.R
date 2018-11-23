@@ -161,81 +161,22 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 
 	return(hp)
 }
-
-calc_dend = function(object, hierarchy = object@hierarchy) {
+subgroup_dend = function(object, hierarchy = object@hierarchy) {
 
 	lt = list()
 	lt[["0"]] = Node$new("all samples")
 	cn = colnames(object@list[["0"]]@.env$data)
-	if(length(cn) == 0) {
-		cn = paste0("c", seq_len(ncol(object@list[["0"]]@.env$data)))
-	}
 	max_depth = max(nchar(hierarchy))
 	lt[["0"]]$node_height = max_depth + 1
 	for(i in seq_len(nrow(hierarchy))) {
 		lt[[ hierarchy[i, 2] ]] = lt[[ hierarchy[i, 1] ]]$AddChildNode({
 			node = Node$new(hierarchy[i, 2])
-			node$node_height = max_depth - nchar(hierarchy[i, 2]) + 1
+			node$node_height = max_depth - nchar(hierarchy[i, 2])
 			node
 		})
 		l = hierarchy[, 1] == hierarchy[i, 2]
-		if(sum(l) == 0) {
-			cn2 = cn[object@list[[ hierarchy[i, 2] ]]@column_index]
-
-			sample_node = lt[[ hierarchy[i, 2] ]]
-			sample_node$node_height = 0
-
-			sample_node$AddChildNode({
-				node = Node$new(cn2[1])
-				node$node_height = 0
-				node
-			})
-			if(length(cn2) == 2) {
-				sample_node$AddSiblingNode({
-					node = Node$new(cn2[2])
-					node$node_height = 0
-					node
-				})
-			} else {
-
-				foo = sample_node$AddChildNode({
-					node = Node$new(paste0(cn2[1], "_node"))
-					node$node_height = 0
-					node
-				})
-				for(k in seq_along(cn2)[-1]) {
-					nm = cn2[k]
-					if(k < length(cn2) - 1) {
-						foo$AddChildNode({
-							node = Node$new(nm)
-							node$node_height = 0
-							node
-						})
-						foo = foo$AddChildNode({
-							node = Node$new(paste0(nm, "_node"))
-							node$node_height = 0
-							node
-						})
-						
-					} else if(k == length(cn2) - 1) {
-						foo$AddChildNode({
-							node = Node$new(cn2[k])
-							node$node_height = 0
-							node
-						})$AddSiblingNode({
-							node = Node$new(cn2[k+1])
-							node$node_height = 0
-							node
-						})
-					}
-				}
-			}
-
-		}
 	}
 	dend = as.dendrogram(lt[["0"]], heightAttribute = "node_height")
-	od = structure(seq_along(cn), names = cn)
-	order.dendrogram(dend) = od[labels(dend)]
 
 	od = structure(1:nleaves(dend), names = labels(dend))
 	dend_env = new.env()
@@ -282,7 +223,54 @@ calc_dend = function(object, hierarchy = object@hierarchy) {
 	}
 	update_midpoint()
 
-	dend_env$dend
+	# reorder(dend_env$dend, wts = order(labels(dend_env$dend)))
+	dend = dend_env$dend
+	dendrapply(dend, function(d) {
+		if(is.leaf(d)) {
+			attr(d, "height") = 0
+		}
+		d
+	})
+}
+
+get_hierarchy = function(object, depth = max_depth(object)) {
+
+	hierarchy = object@hierarchy
+	if(!is.null(depth)) {
+		hierarchy = hierarchy[nchar(hierarchy[, 2]) <= depth , , drop = FALSE]
+	}
+
+	dend = subgroup_dend(object, hierarchy)
+	order.dendrogram(dend) = 1:nobs(dend)
+	dend
+}
+
+random_dend = function(n) {
+	x = rnorm(n)
+	dend = as.dendrogram(hclust(dist(1:n)))
+	# set height to zero
+
+	dendrapply(dend, function(x) {attr(x, "height") = 0; x})
+}
+
+
+calc_dend = function(object, depth = max_depth(object)) {
+
+	pd = get_hierarchy(object, depth = depth)
+	classes = get_classes(object, depth = depth)
+	tb = table(classes)
+	cd_list = lapply(tapply(names(classes), classes, function(x) x), function(x) {
+		d = random_dend(length(x))
+		labels(d) = x
+		d
+	})
+	cd_list = cd_list[labels(pd)]
+
+
+	dend = merge_dendrogram(pd, cd_list)
+	dend = adjust_dend_by_x(dend)
+	order.dendrogram(dend) = structure(1:length(classes), names = names(classes))[labels(dend)]
+	dend
 }
 
 tightest_subgroup = function(mat, subgroup, top_n) {
@@ -454,10 +442,10 @@ setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object), 
 	scale_rows = object[1]@scale_rows, 
-	anno = get_anno(object[1]), 
-	anno_col = get_anno_col(object[1]),
-	show_column_names = TRUE, 
-	verbose = TRUE, plot = TRUE, plot_type = c("venneuler", "heatmap"),
+	anno = get_anno(object), 
+	anno_col = get_anno_col(object),
+	show_column_names = FALSE, 
+	verbose = TRUE, plot = TRUE,
 	silhouette_cutoff = -Inf, 
 	...) {
 
@@ -473,55 +461,33 @@ setMethod(f = "get_signatures",
 		best_k = guess_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
 		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff, ...)
-		sig_tb$group = paste0(p, sig_tb$group)
-
-		ch = intersect(alf, paste0(p, 0:best_k))
-		if(any(grepl("0$", ch))) {
-			sig_tb[!sig_tb$group %in% ch, "group"] = grep("0$", ch, value = TRUE)
-		}
-
-		sig_tb = sig_tb[sig_tb$group %in% alf, , drop = FALSE]
+		
 		sig_lt[[p]] = sig_tb
-		n_tb = table(sig_tb$group)
-		if(verbose) qqcat("  - find @{n_tb} signatures for @{names(n_tb)}\n")
+		if(verbose) qqcat("  - find @{nrow(sig_tb)} signatures at node @{p}\n")
 	}
-	sig = do.call("rbind", sig_lt)
-	rownames(sig) = NULL
+
+	all_index = sort(unique(unlist(lapply(sig_lt, function(x) x[, 1]))))
+
+	sig = data.frame(which_row = all_index)
 	
 	if(!plot) {
 		return(invisible(sig))
 	}
 
-	plot_type = match.arg(plot_type)[1]
-	if(plot_type == "venneuler") {
-		venn_euler(tapply(sig$which_row, sig$group, function(x) x))
-		return(invisible(sig))
-	}
-
-	sig_lt = split(sig, sig[, "group"])
-
-	all_sig = unique(unlist(lapply(sig_lt, function(x) x[, "which_row"])))
+	all_sig = all_index
 	if(verbose) qqcat("* in total @{length(all_sig)} signatures in all classes found\n")
-
-	m_sig = matrix(0, nrow = length(all_sig), ncol = length(sig_lt))
-	rownames(m_sig) = all_sig
-	colnames(m_sig) = names(sig_lt)
-	for(i in seq_along(sig_lt)) {
-		m_sig[as.character(sig_lt[[i]][, "which_row"]), i] = 1
-	}
 
 	m = object@.env$data[all_sig, , drop = FALSE]
 
 	class = get_classes(object, depth = depth)
 
-	if(nrow(m) > 5000) {
-		if(verbose) qqcat("* randomly sample @{5000} rows from @{nrow(m)} total rows.\n")
-		ind = sample(nrow(m), 5000)
+	if(nrow(m) > 2000) {
+		if(verbose) qqcat("* randomly sample @{2000} rows from @{nrow(m)} total rows.\n")
+		ind = sample(nrow(m), 2000)
 	} else {
 		ind = seq_len(nrow(m))
 	}
 	mat1 = m[ind, , drop = FALSE]
-	m_sig = m_sig[ind, , drop = FALSE]
 
 	base_mean = rowMeans(mat1)
 	if(nrow(mat1) == 1) {
@@ -571,30 +537,21 @@ setMethod(f = "get_signatures",
 		heatmap_name = "expr"
 	}
 
-	col_order = column_order_by_group(factor(class, levels = sort(unique(class))), mat1)
-
 	if(verbose) qqcat("* making heatmaps for signatures\n")
 
 	ha1 = HeatmapAnnotation(
 		class = class,
-		col = list(class = object@subgroup_col),
-		annotation_height = unit(5, "mm"),
-		show_annotation_name = FALSE,
-		annotation_name_side = "right",
-		show_legend = FALSE)
-		
-	split = do.call("paste", as.data.frame(m_sig))
-	split = factor(split, levels = sort(unique(split)))
+		col = list(class = object@subgroup_col))
+
 	ht_list = Heatmap(use_mat1, top_annotation = ha1,
-		name = heatmap_name, show_row_names = FALSE, cluster_columns = FALSE, 
+		name = heatmap_name, show_row_names = FALSE, 
 		show_column_names = show_column_names,
-		column_order = col_order, col = col_fun,
+		column_split = class, col = col_fun,
 		use_raster = TRUE,
-		show_row_dend = FALSE,
-		split = split,
+		show_row_dend = FALSE, show_column_dend = FALSE,
 		column_title = qq("@{length(unique(class))} groups, @{length(all_sig)} signatures"),
-		combined_name_fun = NULL)
-	
+		bottom_annotation = bottom_anno1)
+
 	all_value_positive = !any(m < 0)
  	if(scale_rows && all_value_positive) {
 		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm")) +
@@ -602,15 +559,6 @@ setMethod(f = "get_signatures",
 				show_row_names = FALSE, name = "rel_diff", width = unit(5, "mm"))
 	}
 
-	m_sig2 = matrix("", nrow = nrow(m_sig), ncol = ncol(m_sig))
-	for(i in seq_len(ncol(m_sig))) {
-		m_sig2[ m_sig[, i] == 1, i] = colnames(m_sig)[i]
-	}
-
-	ht_list = ht_list + Heatmap(m_sig2, name = "Class", width = unit(15, "mm"), 
-		column_title = "class",
-		col = object@subgroup_col, na_col = "transparent")
-	
 	draw(ht_list)
 	return(invisible(sig))
 })
@@ -649,13 +597,9 @@ setMethod(f = "collect_classes",
 	}
 	cl = get_classes(object, depth = depth)
 
-	hierarchy = object@hierarchy
-	if(!is.null(depth)) {
-		hierarchy = hierarchy[nchar(hierarchy[, 2]) <= depth , , drop = FALSE]
-	}
-	dend = calc_dend(object, hierarchy)
+	dend = calc_dend(object, depth = depth)
 
-	ht_list = Heatmap(cl, name = "Groups", width = unit(1, "cm"), col = object@subgroup_col,
+	ht_list = Heatmap(cl, name = "Groups", width = ht_opt$anno_simple_size, col = object@subgroup_col,
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
 		show_row_names = FALSE)
 	if(!is.null(anno)) {

@@ -11,13 +11,13 @@ Get signature rows
     silhouette_cutoff = 0.5,
     fdr_cutoff = ifelse(diff_method == "samr", 0.05, 0.1),
     scale_rows = object@scale_rows,
-    diff_method = c("ttest", "Ftest", "samr", "pamr"),
+    diff_method = c("Ftest", "ttest", "samr", "pamr"),
     anno = get_anno(object),
     anno_col = get_anno_col(object),
     internal = FALSE,
-    show_column_names = !internal, use_raster = TRUE,
+    show_column_names = FALSE, use_raster = TRUE,
     plot = TRUE, verbose = TRUE,
-    top_k_genes = 5000,
+    top_k_genes = 2000,
     ...)
 }
 \arguments{

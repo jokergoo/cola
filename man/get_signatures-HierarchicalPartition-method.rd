@@ -9,10 +9,10 @@ Get signatures rows
 \usage{
 \S4method{get_signatures}{HierarchicalPartition}(object, depth = max_depth(object),
     scale_rows = object[1]@scale_rows,
-    anno = get_anno(object[1]),
-    anno_col = get_anno_col(object[1]),
-    show_column_names = TRUE,
-    verbose = TRUE, plot = TRUE, plot_type = c("venneuler", "heatmap"),
+    anno = get_anno(object),
+    anno_col = get_anno_col(object),
+    show_column_names = FALSE,
+    verbose = TRUE, plot = TRUE,
     silhouette_cutoff = -Inf,
     ...)
 }

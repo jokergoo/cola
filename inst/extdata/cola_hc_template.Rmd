@@ -18,7 +18,6 @@ options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "t
 options(width = 100)
 options(digits = 3)
 opts_chunk$set(
-	comment = "#>",
 	fig.path = "figure_cola/",
 	warning = FALSE,
 	message = FALSE
@@ -70,18 +69,25 @@ Global distribution for each sample:
 
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("* making density heatmap of global distribution in each sample (@{ncol(mat)} samples)"))
+t1 = Sys.time()
+message(qq("* making density heatmap of global distribution in each sample (@{ncol(mat)} samples)"), appendLF = FALSE)
 ```
 
 ```{r hc-density-heatmap}
 library(ComplexHeatmap)
 <% if(is.null(res_hc@list[[1]]@anno)) { -%>
-densityHeatmap(mat, ylab = "value")
+densityHeatmap(mat, ylab = "value", cluster_columns = TRUE, show_column_names = FALSE)
 <% } else { -%>
-densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hc), 
-	col = get_anno_col(res_hc)), ylab = "value")
+densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_list), 
+	col = get_anno_col(res_list)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE)
 <% } -%>
 ```
+
+
+```{r, echo = FALSE, message = FALSE}
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))))
+```
+
 
 About the hierarchy:
 
@@ -112,7 +118,7 @@ message(qq("* collecting classifications for each depth (2..@{max_depth})"), app
 ```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-<% for(depth in 2:max_depth) { -%>
+<% for(depth in max_depth:2) { -%>
 knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)\nget_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
 <% } -%>
 knitr_insert_tabs()
@@ -126,7 +132,7 @@ message(qq("* making PCA plots"), appendLF = FALSE)
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% for(depth in 2:max_depth) { -%>
+<% for(depth in max_depth:2) { -%>
 knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
 <%}-%>
 knitr_insert_tabs()
@@ -150,11 +156,11 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = S
 message(qq("* making signature heatmaps"), appendLF = FALSE)
 ```
 
-```{r hc-signature, results = "hide"}
+```{r hc-signature-1, results = "hide"}
 get_signatures(res_hc)
 ```
 
-```{r hc-signature, results = "hide"}
+```{r hc-signature-2, results = "hide"}
 get_signatures(res_hc, plot_type = "venneuler")
 ```
 
@@ -173,7 +179,7 @@ message(qq("* testing correlation of subgroups to known annotations"), appendLF 
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% for(depth in 2:max_depth) { -%>
+<% for(depth in max_depth:2) { -%>
 knitr_add_tab_item('test_to_known_factors(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
 <%}-%>
 knitr_insert_tabs()
