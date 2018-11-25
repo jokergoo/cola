@@ -59,7 +59,7 @@ cola_report(rh, output_dir = ...)
 
 The hierarchy of the subgroups:
 
-<img src="https://user-images.githubusercontent.com/449218/41279212-2362cb7a-6e2c-11e8-8afc-fea14013a95f.png">
+<img src="https://user-images.githubusercontent.com/449218/48982041-8be0bc00-f0dd-11e8-80ab-2732daedad94.png">
 
 ## License
 
