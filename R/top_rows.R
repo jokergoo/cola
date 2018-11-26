@@ -250,17 +250,8 @@ setMethod(f = "top_rows_heatmap",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-# == example
-# set.seed(123)
-# lt = list(foo = sample(100, 50), bar = sample(100, 50))
-# venn_euler(lt)
 venn_euler = function(lt, ...) {
 
-	oe = try(has_venneuler <- requireNamespace("venneuler"))
-	if(inherits(oe, "try-error")) {
-		message("You need to install venneuler package.")
-		return(invisible(NULL))
-	}
     df = venn(lt, show.plot = FALSE)
     df = df[-1, ]
     set = df[, "num"]
@@ -270,7 +261,7 @@ venn_euler = function(lt, ...) {
     })
     oe = try(fun <- getFromNamespace("venneuler", "venneuler"))
     if(inherits(oe, "try-error")) {
-		return(invisible(NULL))
+		stop("venneuler package needs to be installed.")
 	}
     plot(fun(set), ...)
 }

@@ -602,23 +602,23 @@ Ftest = function(mat, class) {
 	}
 }
 
-test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
-	set.seed(100)
-	x = matrix(rnorm(1000 * 20), ncol = 20)
-	rownames(x) = rep(paste0("gene1", 1:1000))
-	dd = sample(1:1000, size = 100)
-	u = matrix(2 * rnorm(100), ncol = 10, nrow = 100)
-	x[dd, 11:20] = x[dd, 11:20] + u
-	row_diff = rep("no", 1000)
-	row_diff[dd] = "yes"
-	y = c(rep(1, 10), rep(2, 10))
-	fdr = fun(x, y)
+# test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
+# 	set.seed(100)
+# 	x = matrix(rnorm(1000 * 20), ncol = 20)
+# 	rownames(x) = rep(paste0("gene1", 1:1000))
+# 	dd = sample(1:1000, size = 100)
+# 	u = matrix(2 * rnorm(100), ncol = 10, nrow = 100)
+# 	x[dd, 11:20] = x[dd, 11:20] + u
+# 	row_diff = rep("no", 1000)
+# 	row_diff[dd] = "yes"
+# 	y = c(rep(1, 10), rep(2, 10))
+# 	fdr = fun(x, y)
 
-	ht = Heatmap(x, top_annotation = HeatmapAnnotation(foo = as.character(y), col = list(foo = c("1" = "blue", "2" = "red"))), show_row_names = FALSE) +
-	Heatmap(row_diff, name = "diff", col = c("yes" = "red", "no" = "white"), width = unit(5, "mm")) +
-	Heatmap(fdr, name = "fdr", width = unit(5, "mm"), show_row_names = FALSE)
-	draw(ht, split = fdr < fdr_cutoff)
-}
+# 	ht = Heatmap(x, top_annotation = HeatmapAnnotation(foo = as.character(y), col = list(foo = c("1" = "blue", "2" = "red"))), show_row_names = FALSE) +
+# 	Heatmap(row_diff, name = "diff", col = c("yes" = "red", "no" = "white"), width = unit(5, "mm")) +
+# 	Heatmap(fdr, name = "fdr", width = unit(5, "mm"), show_row_names = FALSE)
+# 	draw(ht, split = fdr < fdr_cutoff)
+# }
 
 
 

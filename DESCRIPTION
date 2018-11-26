@@ -1,7 +1,7 @@
 Package: cola
 Type: Package
 Title: A Framework for Consensus and Hierarchical Partitioning
-Version: 0.99.1
+Version: 0.99.2
 Date: 2018-11-26
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
@@ -41,8 +41,7 @@ Imports: grDevices,
          pamr,
          tracer,
          clisymbols
-Suggests: venneuler, 
-          genefilter,
+Suggests: genefilter,
           mvtnorm,
           testthat (>= 0.3)
 Description: Subgroup classification is a basic task in genomic data analysis, 
@@ -61,5 +60,5 @@ Description: Subgroup classification is a basic task in genomic data analysis,
   reports for the complete analysis.
 URL: https://github.com/jokergoo/cola
 VignetteBuilder: knitr
-biocViews: Clustering, GeneExpression, Classification, Software
+biocViews: Clustering, GeneExpression, Classification
 License: MIT + file LICENSE
