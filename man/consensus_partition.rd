@@ -26,7 +26,7 @@ consensus_partition(data,
 \arguments{
 
   \item{data}{a numeric matrix where subgroups are found by columns.}
-  \item{top_value_method}{a single top value method. Available methods are in \code{\link{all_top_value_methods}}. Use \code{\link{register_top_value_method}} to add a new top value method.}
+  \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}. Use \code{\link{register_top_value_method}} to add a new top-value method.}
   \item{top_n}{number of rows with top values. The value can be a vector with length > 1. When n > 5000, the function only randomly sample 5000 rows from top n rows.}
   \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}. Use \code{\link{register_partition_method}} to add a new partition method.}
   \item{max_k}{maximum number of partitions to try. The function will try \code{2:max_k} partitions.}
@@ -44,7 +44,7 @@ consensus_partition(data,
 The function performs analysis in following steps:
 
 \itemize{
-  \item calculate scores for rows by top value method,
+  \item calculate scores for rows by top-value method,
   \item for each top_n value, take top n rows,
   \item randomly sample \code{p_sampling} rows from the top_n rows and perform partitioning for \code{partition_repeats} times,
   \item collect partitions from all partitions and calculate consensus partitions.

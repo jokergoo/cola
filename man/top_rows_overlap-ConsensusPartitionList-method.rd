@@ -1,10 +1,10 @@
 \name{top_rows_overlap-ConsensusPartitionList-method}
 \alias{top_rows_overlap,ConsensusPartitionList-method}
 \title{
-Overlap of top rows from different top value methods
+Overlap of top rows from different top-value methods
 }
 \description{
-Overlap of top rows from different top value methods
+Overlap of top rows from different top-value methods
 }
 \usage{
 \S4method{top_rows_overlap}{ConsensusPartitionList}(object, top_n = min(object@list[[1]]@top_n),

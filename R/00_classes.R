@@ -7,22 +7,22 @@
 # ConsensusPartitionList
 #
 # == details
-# The object contains results from all combinations of top methods
+# The object contains results from all combinations of top-value methods
 # and partition methods.
 #
 # == Methods
 # The `ConsensusPartitionList-class` provides following methods:
 #
 # -`run_all_consensus_partition_methods`: constructor method.
-# -`top_rows_overlap,ConsensusPartitionList-method`: plot the overlaps of top rows under different top methods.
-# -`top_rows_heatmap,ConsensusPartitionList-method`: plot the heatmap of top rows under different top methods.
+# -`top_rows_overlap,ConsensusPartitionList-method`: plot the overlaps of top rows under different top-value methods.
+# -`top_rows_heatmap,ConsensusPartitionList-method`: plot the heatmap of top rows under different top-value methods.
 # -`get_classes,ConsensusPartitionList-method`: get a consensus class IDs merging from all methods.
 # -`get_matrix,ConsensusPartition-method`: get the original matrix.
 # -`get_stat,ConsensusPartitionList-method`: get statistics for a specified k.
 # -`get_membership,ConsensusPartitionList-method`: get consensus membership matrix summarized from all methods.
 # -`guess_best_k,ConsensusPartitionList-method`: guess the best number of partitions.
-# -`collect_plots,ConsensusPartitionList-method`: collect plots from all combinations of top methods and partition methods with choosing a plotting function.
-# -`collect_classes,ConsensusPartitionList-method`: make a plot which contains predicted classes from all combination of top methods and partition methods.
+# -`collect_plots,ConsensusPartitionList-method`: collect plots from all combinations of top-value methods and partition methods with choosing a plotting function.
+# -`collect_classes,ConsensusPartitionList-method`: make a plot which contains predicted classes from all combination of top-value methods and partition methods.
 # -`test_to_known_factors,ConsensusPartitionList-method`: test correlation between predicted subgrouping and known annotations, if available.
 #
 # == seealso
@@ -52,11 +52,11 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 # == methods
 # The `ConsensusPartition-class` has following methods:
 #
-# -`consensus_partition`: constructor method, run consensus partition with a specified top method and a partition method.
+# -`consensus_partition`: constructor method, run consensus partition with a specified top-value method and a partition method.
 # -`select_partition_number,ConsensusPartition-method`: make a list of plots used to select optimized number of partitions.
 # -`consensus_heatmap,ConsensusPartition-method`: Heatmap of the consensus matrix.
 # -`membership_heatmap,ConsensusPartition-method`: Heatmap of the membership in each random sampling.
-# -`get_signatures,ConsensusPartition-method`: get the signature rows and make heatmaps.
+# -`get_signatures,ConsensusPartition-method`: get the signature rows and make heatmap.
 # -`dimension_reduction,ConsensusPartition-method`: dimension reduction plots.
 # -`collect_plots,ConsensusPartition-method`: Heatmaps for consensus matrix and membership matrix with different number of partitions.
 # -`collect_classes,ConsensusPartition-method`: Heatmap of classes with different number of partitions.

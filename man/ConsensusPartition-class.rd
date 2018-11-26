@@ -12,11 +12,11 @@ The ConsensusPartition class
 The \code{\link{ConsensusPartition-class}} has following methods:
 
 \describe{
-  \item{\code{\link{consensus_partition}}:}{constructor method, run consensus partition with a specified top method and a partition method.}
+  \item{\code{\link{consensus_partition}}:}{constructor method, run consensus partition with a specified top-value method and a partition method.}
   \item{\code{\link{select_partition_number,ConsensusPartition-method}}:}{make a list of plots used to select optimized number of partitions.}
   \item{\code{\link{consensus_heatmap,ConsensusPartition-method}}:}{Heatmap of the consensus matrix.}
   \item{\code{\link{membership_heatmap,ConsensusPartition-method}}:}{Heatmap of the membership in each random sampling.}
-  \item{\code{\link{get_signatures,ConsensusPartition-method}}:}{get the signature rows and make heatmaps.}
+  \item{\code{\link{get_signatures,ConsensusPartition-method}}:}{get the signature rows and make heatmap.}
   \item{\code{\link{dimension_reduction,ConsensusPartition-method}}:}{dimension reduction plots.}
   \item{\code{\link{collect_plots,ConsensusPartition-method}}:}{Heatmaps for consensus matrix and membership matrix with different number of partitions.}
   \item{\code{\link{collect_classes,ConsensusPartition-method}}:}{Heatmap of classes with different number of partitions.}

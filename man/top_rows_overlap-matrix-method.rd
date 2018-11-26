@@ -1,10 +1,10 @@
 \name{top_rows_overlap-matrix-method}
 \alias{top_rows_overlap,matrix-method}
 \title{
-Overlap of top rows from different top value methods
+Overlap of top rows from different top-value methods
 }
 \description{
-Overlap of top rows from different top value methods
+Overlap of top rows from different top-value methods
 }
 \usage{
 \S4method{top_rows_overlap}{matrix}(object, top_value_method = all_top_value_methods(),

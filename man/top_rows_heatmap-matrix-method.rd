@@ -1,10 +1,10 @@
 \name{top_rows_heatmap-matrix-method}
 \alias{top_rows_heatmap,matrix-method}
 \title{
-Heatmap of top rows from different top methods
+Heatmap of top rows from different top-value methods
 }
 \description{
-Heatmap of top rows from different top methods
+Heatmap of top rows from different top-value methods
 }
 \usage{
 \S4method{top_rows_heatmap}{matrix}(object, all_top_value_list = NULL,

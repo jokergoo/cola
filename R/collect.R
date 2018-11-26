@@ -438,9 +438,6 @@ setMethod(f = "collect_classes",
 			width = unit(10, "mm"))
 	
 	draw(ht, padding = unit(c(15, 1, 1, 1), "mm"))
-	decorate_annotation("mean_silhouette", {
-		grid.text("mean_silhouette", y = unit(-1, "cm"))
-	})
 })
 
 

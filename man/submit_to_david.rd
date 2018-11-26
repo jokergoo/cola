@@ -1,10 +1,10 @@
 \name{submit_to_david}
 \alias{submit_to_david}
 \title{
-Doing DAVID analysis
+Perform DAVID analysis
 }
 \description{
-Doing DAVID analysis
+Perform DAVID analysis
 }
 \usage{
 submit_to_david(genes, email,
@@ -22,7 +22,7 @@ submit_to_david(genes, email,
 }
 \details{
 This function just performed a quick DAVID analysis. Users are encouraged to use other
-gene set enrichment tools such as **clusterProfiler** (\url{http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html),}
+gene set enrichment tools such as **clusterProfiler** (\url{http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html} ),
 }
 \section{Fgsea}{
 If you want to run this function multiple times, please set time intervals between runs.}

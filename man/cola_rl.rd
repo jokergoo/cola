@@ -11,7 +11,7 @@ Example for ConsensusPartitionList object
 data(cola_rl)
 }
 \details{
-Following code was used to generate these two examples:
+Following code was used to generate \code{cola_rl}:
 
   \preformatted{
   set.seed(123)

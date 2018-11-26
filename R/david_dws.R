@@ -7,7 +7,7 @@ DAVID_ALL_CATALOGS = "BBID,BIND,BIOCARTA,BLOCKS,CGAP_EST_QUARTILE,CGAP_SAGE_QUAR
 DAVID_ALL_CATALOGS = strsplit(DAVID_ALL_CATALOGS, ",")[[1]]
 
 # == title
-# Doing DAVID analysis
+# Perform DAVID analysis
 #
 # == param
 # -genes a vector of gene identifiers.
@@ -18,7 +18,7 @@ DAVID_ALL_CATALOGS = strsplit(DAVID_ALL_CATALOGS, ",")[[1]]
 #
 # == details
 # This function just performed a quick DAVID analysis. Users are encouraged to use other
-# gene set enrichment tools such as **clusterProfiler** (http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html), 
+# gene set enrichment tools such as **clusterProfiler** (http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html ), 
 # **fgsea** (http://www.bioconductor.org/packages/release/bioc/html/fgsea.html).
 #
 # If you want to run this function multiple times, please set time intervals between runs.

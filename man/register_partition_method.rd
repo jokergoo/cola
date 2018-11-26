@@ -45,7 +45,6 @@ There are following default partition methods:
   \item{"skmeans"}{by \code{\link[skmeans]{skmeans}}.}
   \item{"pam"}{by \code{\link[cluster]{pam}}.}
   \item{"mclust"}{by \code{\link[mclust]{Mclust}}. mclust is applied to the first three principle components from rows.}
-  \item{"som"}{by \code{\link[kohonen]{som}}. The SOM map is organized as \code{kr x kr} grids where \code{kr = floor(sqrt(ncol(mat)))}.}
 }
 }
 \value{

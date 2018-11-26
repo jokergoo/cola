@@ -4,8 +4,8 @@
 #
 # == param
 # -data a numeric matrix where subgroups are found by columns.
-# -top_value_method a single top value method. Available methods are in `all_top_value_methods`.
-#                   Use `register_top_value_method` to add a new top value method.
+# -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
+#                   Use `register_top_value_method` to add a new top-value method.
 # -top_n number of rows with top values. The value can be a vector with length > 1. When n > 5000, the function only randomly sample 5000 rows from top n rows.
 # -partition_method a single partition method. Available methods are in `all_partition_methods`.
 #                   Use `register_partition_method` to add a new partition method.
@@ -23,7 +23,7 @@
 # == details
 # The function performs analysis in following steps:
 #
-# - calculate scores for rows by top value method,
+# - calculate scores for rows by top-value method,
 # - for each top_n value, take top n rows,
 # - randomly sample ``p_sampling`` rows from the top_n rows and perform partitioning for ``partition_repeats`` times,
 # - collect partitions from all partitions and calculate consensus partitions.

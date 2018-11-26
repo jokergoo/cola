@@ -1,10 +1,10 @@
 \name{top_rows_heatmap-ConsensusPartitionList-method}
 \alias{top_rows_heatmap,ConsensusPartitionList-method}
 \title{
-Heatmap of top rows from different top value methods
+Heatmap of top rows from different top-value methods
 }
 \description{
-Heatmap of top rows from different top value methods
+Heatmap of top rows from different top-value methods
 }
 \usage{
 \S4method{top_rows_heatmap}{ConsensusPartitionList}(object, top_n = min(object@list[[1]]@top_n),

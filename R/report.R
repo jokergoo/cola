@@ -66,14 +66,14 @@ message('@{message}')
 	return(invisible(NULL))
 }
 
-# TEMPLATE_DIR = system.file("extdata", package = "cola")
-TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
+TEMPLATE_DIR = system.file("extdata", package = "cola")
+# TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
 
 # == title
 # Generate the HTML code for the JavaScript tabs.
 #
 # == details
-# The jQuery UI is used to generate html tabs (https://jqueryui.com/tabs/).
+# The jQuery UI is used to generate html tabs (https://jqueryui.com/tabs/ ).
 #
 # ``knitr_insert_tabs`` should be used after several callings of `knitr_add_tab_item`
 # to generate a complete HTML fragment for all tabs with all necessary Javascript and css code.
@@ -130,9 +130,9 @@ $( function() {
 # -env where the objects in the report are found, internally used.
 #
 # == details
-# The `ConsensusPartitionList-class` object contains results for all top value methods and all partition methods.
+# The `ConsensusPartitionList-class` object contains results for all top-value methods and all partition methods.
 # This function generates a HTML report which contains all plots for every combination
-# of top value method and partition method. The report generation may take a while.
+# of top-value method and partition method. The report generation may take a while.
 #
 # == value
 # No value is returned.
@@ -164,6 +164,12 @@ setMethod(f = "cola_report",
 #
 # == details
 # Please generate report on the `ConsensusPartitionList-class` object directly.
+#
+# If you want to make report only for one single method, you can subset the 
+# `ConsensusPartitionList-class` object and then call ``cola_report``, e.g.
+#
+#     cola_report(res_list["sd", "hclust"], output_dir = ...)
+#
 #
 # == value
 # No value is returned.

@@ -17,6 +17,12 @@ Make report for the ConsensusPartition object
 }
 \details{
 Please generate report on the \code{\link{ConsensusPartitionList-class}} object directly.
+
+If you want to make report only for one single method, you can subset the 
+\code{\link{ConsensusPartitionList-class}} object and then call \code{cola_report}, e.g.
+
+  \preformatted{
+    cola_report(res_list["sd", "hclust"], output_dir = ...)  }
 }
 \value{
 No value is returned.

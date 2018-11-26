@@ -1,17 +1,17 @@
 \name{remove_top_value_method}
 \alias{remove_top_value_method}
 \title{
-Remove top value methods
+Remove top-value methods
 }
 \description{
-Remove top value methods
+Remove top-value methods
 }
 \usage{
 remove_top_value_method(method)
 }
 \arguments{
 
-  \item{method}{name of the top value methods to be removed.}
+  \item{method}{name of the top-value methods to be removed.}
 
 }
 \value{

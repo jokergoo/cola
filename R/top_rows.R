@@ -1,6 +1,6 @@
 
 # == title
-# Overlap of top rows from different top value methods
+# Overlap of top rows from different top-value methods
 #
 # == param
 # -object a `ConsensusPartitionList-class` object.
@@ -32,7 +32,7 @@ setMethod(f = "top_rows_overlap",
 })
 
 # == title
-# Overlap of top rows from different top value methods
+# Overlap of top rows from different top-value methods
 #
 # == param
 # -object a numeric matrix.
@@ -72,7 +72,7 @@ setMethod(f = "top_rows_overlap",
 
 
 # == title
-# Overlap of top rows from different top value methods
+# Overlap of top rows from different top-value methods
 #
 # == param
 # -object a list which contains rankings from different metrics.
@@ -111,7 +111,7 @@ setMethod(f = "top_rows_overlap",
 })
 
 # == title
-# Heatmap of top rows from different top value methods
+# Heatmap of top rows from different top-value methods
 #
 # == param
 # -object a `ConsensusPartitionList-class` object.
@@ -142,7 +142,7 @@ setMethod(f = "top_rows_heatmap",
 })
 
 # == title
-# Heatmap of top rows from different top methods
+# Heatmap of top rows from different top-value methods
 #
 # == param
 # -object a numeric matrix.

@@ -15,7 +15,7 @@ get_top_value_method = function(method) {
 }
 
 # == title
-# Register user-defined top value methods
+# Register user-defined top-value methods
 #
 # == param
 # -... a named list of functions.
@@ -23,7 +23,7 @@ get_top_value_method = function(method) {
 # == details 
 # The user-defined function should accept one argument which is the data
 # matrix and the scores are calculated by rows. Rows with top scores are treated
-# as "top rows". Follow is how we register "sd" top value method:
+# as "top rows". Follow is how we register "sd" top-value method:
 #
 #   register_top_value_method(sd = function(mat), apply(mat, 1, sd))
 #
@@ -31,22 +31,22 @@ get_top_value_method = function(method) {
 #
 #   register_top_value_method(sd = rowSds)
 #
-# The registered top value method will be used as defaults in `run_all_consensus_partition_methods`.
+# The registered top-value method will be used as defaults in `run_all_consensus_partition_methods`.
 # 
-# To remove a top value method, use `remove_top_value_method`.
+# To remove a top-value method, use `remove_top_value_method`.
 #
-# There are four default top value methods:
+# There are four default top-value methods:
 #
-# -"sd" standard deviation, by `rowSds`
-# -"cv" coefficient variance, calculated as ``sd/(mean+s)`` where ``s`` is the 10th quantile of all row means
-# -"MAD" median absolute deviation, by `matrixStats::rowMads`
-# -"AAC" the `AAC` method 
+# -"sd" standard deviation, by `rowSds`.
+# -"cv" coefficient variance, calculated as ``sd/(mean+s)`` where ``s`` is the 10th quantile of all row means.
+# -"MAD" median absolute deviation, by `matrixStats::rowMads`.
+# -"AAC" the `AAC` method.
 #
 # == return
 # No value is returned.
 #
 # == seealso
-# `all_top_value_methods` lists all registered top value methods.
+# `all_top_value_methods` lists all registered top-value methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -69,10 +69,10 @@ register_top_value_method = function(...) {
 }
 
 # == title
-# All supported top value methods
+# All supported top-value methods
 #
 # == return 
-# A vector of supported top value methods.
+# A vector of supported top-value methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -167,7 +167,6 @@ get_partition_method = function(method, partition_param = list()) {
 # -"skmeans" by `skmeans::skmeans`.
 # -"pam" by `cluster::pam`.
 # -"mclust" by `mclust::Mclust`. mclust is applied to the first three principle components from rows.
-# -"som" by `kohonen::som`. The SOM map is organized as ``kr x kr`` grids where ``kr = floor(sqrt(ncol(mat)))``.
 #
 # == value
 # No value is returned.
@@ -296,10 +295,10 @@ register_partition_method(
 # )
 
 # == title
-# Remove top value methods
+# Remove top-value methods
 #
 # == param
-# -method name of the top value methods to be removed.
+# -method name of the top-value methods to be removed.
 #
 # == value
 # No value is returned.

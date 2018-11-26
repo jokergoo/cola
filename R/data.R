@@ -2,7 +2,7 @@
 # Example for ConsensusPartitionList object
 #
 # == details
-# Following code was used to generate these two examples:
+# Following code was used to generate ``cola_rl``:
 #
 #   set.seed(123)
 #   m = cbind(rbind(matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
@@ -29,7 +29,7 @@
 # Example for HierarchicalPartition object
 #
 # == details
-# Following code was used to generate these two examples:
+# Following code was used to generate ``cola_rh``:
 #
 #   set.seed(123)
 #   m = cbind(rbind(matrix(rnorm(20*20, mean = 2, sd = 0.3), nr = 20),

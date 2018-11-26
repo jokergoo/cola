@@ -1,14 +1,19 @@
 # cola
-A General Framework for Consensus and Hierarchical Partition
+
+A General Framework for Consensus and Hierarchical Partitioning
 
 ## Features
 
-1. It modulizes the consensus clustering processes that new methods can be easily integrated.
+1. It modularize the consensus clustering processes that various methods can
+   be easily integrated.
 2. It provides rich visualizations for intepreting the results.
-3. It allows running multiple methods at the same time and provides functionalities to compare results in a straightforward way.
-4. It provides a new method to extract features which are more efficient to separate subgroups.
-5. It allows doing partition in a hierarchical way to detect subgroups with relatively smaller difference.
-6. It generates detailed reports for the whole analysis.
+3. It allows running multiple methods at the same time and provides
+   functionalities to compare results in a straightforward way.
+4. It provides a new method to extract features which are more efficient to
+   separate subgroups.
+5. It allows doing partitioning in a hierarchical way to detect subgroups
+   with relatively smaller difference.
+6. It generates detailed reports for the complete analysis.
 
 ## Consensus Partition
 
@@ -16,10 +21,14 @@ A General Framework for Consensus and Hierarchical Partition
 
 The steps of consensus partition is always like follows:
 
-1. Extract top `k` rows from the original matrix by a certain method, e.g. standard deviation.
-2. Randomly sample a subset of rows and apply partition with a certain clustering method, e.g. k-means clustering.
-3. Repeat step 2 for `n` times and summarize the consensus partition from the `n` partitions.
-4. With the stable consensus partition, look for signatures that are specificly high or low in one subgroup.
+1. Extract top `k` rows from the original matrix by a certain method, e.g.
+   standard deviation.
+2. Randomly sample a subset of rows and apply partition with a certain
+   clustering method, e.g. k-means clustering.
+3. Repeat step 2 for `n` times and summarize the consensus partition from the
+   `n` partitions.
+4. With the stable consensus partition, look for signatures that are
+   specificly high or low in one subgroup.
 5. Check biological functions for the signatures in each subgroup.
 
 ### Usage
