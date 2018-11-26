@@ -202,7 +202,7 @@ n_section = length(all_parents)
 i_section = 0
 for(node in all_parents) {
 	i_section = i_section + 1 -%>
-	<% brew(paste0(TEMPLATE_DIR, "/section_template.Rmd")) %>
+	<% brew(paste0(TEMPLATE_DIR, "/section_template.Rmd-template")) %>
 <%} -%>
 
 ## Session info

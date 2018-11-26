@@ -8,6 +8,3 @@ attr(map, "df") = NULL
 test_that("test relabel", {
 	expect_equal(map, c("a" = "b", "b" = "a"))
 })
-
-
-	

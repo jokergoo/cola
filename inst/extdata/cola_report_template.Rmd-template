@@ -303,7 +303,7 @@ i_section = 0
 for(top_value_method in res_list@top_value_method) {
     for(partition_method in res_list@partition_method) { 
     	i_section = i_section + 1 -%>
-    	<% brew(paste0(TEMPLATE_DIR, "/section_template.Rmd")) %>
+    	<% brew(paste0(TEMPLATE_DIR, "/section_template.Rmd-template")) %>
 
 <% }} -%>
 

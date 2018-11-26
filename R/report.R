@@ -226,8 +226,8 @@ setMethod(f = "cola_report",
 make_report = function(var_name, object, output_dir, class) {
 
 	.t1 = Sys.time()
-	template_file = c("HierarchicalPartition" = "cola_hc_template.Rmd",
-		              "ConsensusPartitionList" = "cola_report_template.Rmd")
+	template_file = c("HierarchicalPartition" = "cola_hc_template.Rmd-template",
+		              "ConsensusPartitionList" = "cola_report_template.Rmd-template")
 	html_file = c("HierarchicalPartition" = "cola_hc.html",
 		          "ConsensusPartitionList" = "cola_report.html")
 
