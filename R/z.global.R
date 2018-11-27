@@ -27,7 +27,7 @@ get_top_value_method = function(method) {
 #
 #   register_top_value_method(sd = function(mat), apply(mat, 1, sd))
 #
-# Of course, you can use `rowSds` to give a faster calculation of row sd:
+# Of course, you can use `matrixStats::rowSds` to give a faster calculation of row sd:
 #
 #   register_top_value_method(sd = rowSds)
 #
@@ -37,7 +37,7 @@ get_top_value_method = function(method) {
 #
 # There are four default top-value methods:
 #
-# -"sd" standard deviation, by `rowSds`.
+# -"sd" standard deviation, by `matrixStats::rowSds`.
 # -"cv" coefficient variance, calculated as ``sd/(mean+s)`` where ``s`` is the 10th quantile of all row means.
 # -"MAD" median absolute deviation, by `matrixStats::rowMads`.
 # -"AAC" the `AAC` method.

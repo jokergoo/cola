@@ -1,8 +1,8 @@
 Package: cola
 Type: Package
 Title: A Framework for Consensus and Hierarchical Partitioning
-Version: 0.99.3
-Date: 2018-11-26
+Version: 0.99.4
+Date: 2018-11-27
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.6.0)
