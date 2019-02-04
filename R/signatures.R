@@ -543,9 +543,9 @@ samr = function(mat, class, ...) {
 	tempf = tempfile()
 	sink(tempf)
 	if(n_class == 2) {
-		samfit = SAM(mat, class, resp.type = "Two class unpaired", nperms = 1000, ...)
+		samfit = samr::SAM(mat, class, resp.type = "Two class unpaired", nperms = 1000, ...)
 	} else {
-		samfit = SAM(mat, class, resp.type = "Multiclass", nperms = 1000, ...)
+		samfit = samr::SAM(mat, class, resp.type = "Multiclass", nperms = 1000, ...)
 	}
 	sink(NULL)
 	file.remove(tempf)
@@ -576,11 +576,11 @@ pamr = function(mat, class, fdr.cutoff = 0.1, ...) {
 	tempf = tempfile()
 	sink(tempf)
 	mydata <- list(x=mat, y=class, geneid = rownames(mat))
-	mydata.fit <- pamr.train(mydata)
-	mydata.cv <- pamr.cv(mydata.fit, mydata)
-	mydata.fdr <- pamr.fdr(mydata.fit, mydata)
+	mydata.fit <- pamr::pamr.train(mydata)
+	mydata.cv <- pamr::pamr.cv(mydata.fit, mydata)
+	mydata.fdr <- pamr::pamr.fdr(mydata.fit, mydata)
 	threshold = min(mydata.fdr$results[mydata.fdr$results[,"Median FDR"] < fdr.cutoff, "Threshold"])
-	mydata.genelist <- pamr.listgenes(mydata.fit, mydata, threshold = threshold, fitcv=mydata.cv)
+	mydata.genelist <- pamr::pamr.listgenes(mydata.fit, mydata, threshold = threshold, fitcv=mydata.cv)
 	sink(NULL)
 	file.remove(tempf)
 

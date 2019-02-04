@@ -165,14 +165,17 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 
 subgroup_dend = function(object, hierarchy = object@hierarchy) {
 
+	if(!requireNamespace("data.tree")) {
+		stop("You need to install data.tree package.")
+	}
 	lt = list()
-	lt[["0"]] = Node$new("all samples")
+	lt[["0"]] = data.tree::Node$new("all samples")
 	cn = colnames(object@list[["0"]]@.env$data)
 	max_depth = max(nchar(hierarchy))
 	lt[["0"]]$node_height = max_depth + 1
 	for(i in seq_len(nrow(hierarchy))) {
 		lt[[ hierarchy[i, 2] ]] = lt[[ hierarchy[i, 1] ]]$AddChildNode({
-			node = Node$new(hierarchy[i, 2])
+			node = data.tree::Node$new(hierarchy[i, 2])
 			node$node_height = max_depth - nchar(hierarchy[i, 2])
 			node
 		})
@@ -180,7 +183,7 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 	}
 	dend = as.dendrogram(lt[["0"]], heightAttribute = "node_height")
 
-	od = structure(1:nleaves(dend), names = labels(dend))
+	od = structure(1:length(order.dendrogram(dend)), names = labels(dend))
 	dend_env = new.env()
 	dend_env$dend = dend
 
@@ -243,7 +246,7 @@ get_hierarchy = function(object, depth = max_depth(object)) {
 	}
 
 	dend = subgroup_dend(object, hierarchy)
-	order.dendrogram(dend) = 1:nobs(dend)
+	dend = dendextend::`order.dendrogram<-`(dend, 1:nobs(dend))
 	dend
 }
 
@@ -263,7 +266,7 @@ calc_dend = function(object, depth = max_depth(object)) {
 	tb = table(classes)
 	cd_list = lapply(tapply(names(classes), classes, function(x) x), function(x) {
 		d = random_dend(length(x))
-		labels(d) = x
+		d = dendextend::`labels<-`(d, x)
 		d
 	})
 	cd_list = cd_list[labels(pd)]
@@ -271,7 +274,7 @@ calc_dend = function(object, depth = max_depth(object)) {
 
 	dend = merge_dendrogram(pd, cd_list)
 	dend = adjust_dend_by_x(dend)
-	order.dendrogram(dend) = structure(1:length(classes), names = names(classes))[labels(dend)]
+	dend = dendextend::`order.dendrogram<-`(dend, structure(1:length(classes), names = names(classes))[labels(dend)])
 	dend
 }
 

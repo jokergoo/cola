@@ -1,11 +1,11 @@
 Package: cola
 Type: Package
 Title: A Framework for Consensus and Hierarchical Partitioning
-Version: 0.99.4
-Date: 2018-11-27
+Version: 0.99.5
+Date: 2019-02-04
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
-Depends: R (>= 3.6.0)
+Depends: R (>= 3.3.0)
 Imports: grDevices, 
          graphics, 
          grid, 
@@ -32,18 +32,18 @@ Imports: grDevices,
          httr,
          knitr,
          markdown,
-         data.tree,
-         dendextend,
          digest,
          impute,
          brew,
-         samr,
-         pamr,
          tracer,
          clisymbols
 Suggests: genefilter,
           mvtnorm,
-          testthat (>= 0.3)
+          testthat (>= 0.3),
+          data.tree,
+          dendextend,
+          samr,
+          pamr
 Description: Subgroup classification is a basic task in genomic data analysis, 
   especially for gene expression data and methylation data. It can predict
   novel subgroups when there is nothing known about the data or it can test
