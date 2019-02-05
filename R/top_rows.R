@@ -57,7 +57,8 @@ setMethod(f = "top_rows_overlap",
 setMethod(f = "top_rows_overlap",
 	signature = "matrix",
 	definition = function(object, top_value_method = all_top_value_methods(), 
-		top_n = round(0.25*nrow(object)), method = c("venn", "venneuler", "correspondance"), ...) {
+		top_n = round(0.25*nrow(object)), 
+		method = c("venn", "venneuler", "correspondance"), ...) {
 
 	all_top_value_list = lapply(top_value_method, function(x) {
 		get_top_value_fun = get_top_value_method(x)

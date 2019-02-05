@@ -8,7 +8,8 @@ Collect classes from ConsensusPartitionList object
 }
 \usage{
 \S4method{collect_classes}{ConsensusPartitionList}(object, k,
-    top_value_method = object@top_value_method, partition_method = object@partition_method)
+    top_value_method = object@top_value_method,
+    partition_method = object@partition_method)
 }
 \arguments{
 

@@ -145,7 +145,8 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 # test_to_known_factors(cola_rl[1, 1], known = 1:40)
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartition",
-	definition = function(object, k, known = get_anno(object), silhouette_cutoff = 0.5, verbose = TRUE) {
+	definition = function(object, k, known = get_anno(object), 
+	silhouette_cutoff = 0.5, verbose = TRUE) {
 
 	if(missing(k)) {
 		all_k = object@k

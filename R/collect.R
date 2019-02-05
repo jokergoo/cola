@@ -373,7 +373,8 @@ setMethod(f = "collect_plots",
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, 
-	top_value_method = object@top_value_method, partition_method = object@partition_method) {
+	top_value_method = object@top_value_method, 
+	partition_method = object@partition_method) {
 
 	top_value_method_vec = NULL
 	partition_method_vec = NULL
