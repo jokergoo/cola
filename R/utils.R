@@ -107,6 +107,7 @@ adjust_outlier = function(x, q = 0.05) {
 #
 # == example
 # m = matrix(rnorm(200), 10)
+# rownames(m) = letters[1:10]
 # m[1, 1] = 1000
 # range(m)
 # m2 = adjust_matrix(m)
@@ -129,11 +130,11 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	}
 	m = t(apply(m, 1, adjust_outlier))
 	row_sd = rowSds(m, na.rm = TRUE)
-	l = abs(row_sd) < 1e-6
+	l = abs(row_sd) == 0
 	m2 = m[!l, , drop = FALSE]
 	row_sd = row_sd[!l]
 	if(sum(l)) {
-		qqcat("@{sum(l)} rows have been removed with zero variance (sd < 1e-6).\n")
+		qqcat("@{sum(l)} rows have been removed with zero variance.\n")
 	}
 
 	qa = quantile(row_sd, sd_quantile, na.rm = TRUE)

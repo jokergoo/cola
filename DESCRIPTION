@@ -43,7 +43,10 @@ Suggests: genefilter,
           data.tree,
           dendextend,
           samr,
-          pamr
+          pamr,
+          venneuler,
+          kohonen,
+          NNLM
 Description: Subgroup classification is a basic task in genomic data analysis, 
   especially for gene expression data and methylation data. It can predict
   novel subgroups when there is nothing known about the data or it can test

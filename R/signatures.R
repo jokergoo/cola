@@ -439,7 +439,7 @@ setMethod(f = "get_signatures",
 	return(invisible(returned_obj))
 })
 
-compare_to_highest_subgroup = function(mat, class) {
+compare_to_subgroup = function(mat, class, which = "highest") {
 
 	od = order(class)
 	class = class[od]
@@ -448,50 +448,11 @@ compare_to_highest_subgroup = function(mat, class) {
 
 	group = apply(mat, 1, function(x) {
 		group_mean = tapply(x, class, mean)
-		which.max(group_mean)
-	})
-
-	if(requireNamespace("genefilter")) {
-		rowttests = getFromNamespace("rowttests", "genefilter")
-	} else {
-		stop("Cannot find 'genefilter' package.")
-	}
-
-	# class and subgroup_index are all numeric
-	compare_to_one_subgroup = function(mat, class, subgroup_index) {
-		
-		oc = setdiff(class, subgroup_index)
-		pmat = matrix(NA, nrow = nrow(mat), ncol = length(oc))
-		for(i in seq_along(oc)) {
-			l = class == subgroup_index | class == oc[i]
-			m2 = mat[, l, drop = FALSE]
-			fa = factor(class[l])
-			pmat[, i] = rowttests(m2, fa)[, "p.value"]
+		if(which == "highest") {
+			which.max(group_mean)
+		} else {
+			which.min(group_mean)
 		}
-		rowMaxs(pmat, na.rm = TRUE)
-	}
-
-	p = tapply(seq_len(nrow(mat)), group, function(ind) {
-		compare_to_one_subgroup(mat[ind, , drop = FALSE], class, group[ind][1])
-	})
-	p2 = numeric(length(group))
-	for(i in seq_along(p)) {
-		p2[group == i] = p[[i]]
-	}
-
-	return(p2)
-}
-
-compare_to_lowest_subgroup = function(mat, class) {
-
-	od = order(class)
-	class = class[od]
-	mat = mat[, od, drop = FALSE]
-	class = as.numeric(factor(class))
-
-	group = apply(mat, 1, function(x) {
-		group_mean = tapply(x, class, mean)
-		which.min(group_mean)
 	})
 
 	if(requireNamespace("genefilter")) {
@@ -526,8 +487,8 @@ compare_to_lowest_subgroup = function(mat, class) {
 }
 
 ttest = function(mat, class) {
-	p1 = compare_to_highest_subgroup(mat, class)
-	p2 = compare_to_lowest_subgroup(mat, class)
+	p1 = compare_to_subgroup(mat, class, "highest")
+	p2 = compare_to_subgroup(mat, class, "lowest")
 	p = pmin(p1, p2, na.rm = TRUE)
 	fdr = p.adjust(p, method = "BH")
 	fdr[is.na(fdr)] = Inf

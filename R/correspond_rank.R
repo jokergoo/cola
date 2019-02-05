@@ -138,7 +138,7 @@ correspond_between_rankings = function(lt, top_n = length(lt[[1]]),
 	grid.newpage()
 	pushViewport(viewport(layout = grid.layout(nrow = 1, ncol = n_plots)))
 	k = 0
-	for(i in 1:(n-1)) {
+	for(i in seq_len(n-1)) {
 		for(j in (i+1):n) {
 			k = k + 1
 			pushViewport(viewport(layout.pos.row = 1, layout.pos.col = k))

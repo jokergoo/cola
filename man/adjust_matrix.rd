@@ -29,6 +29,7 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 m = matrix(rnorm(200), 10)
+rownames(m) = letters[1:10]
 m[1, 1] = 1000
 range(m)
 m2 = adjust_matrix(m)

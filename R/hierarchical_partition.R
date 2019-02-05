@@ -246,7 +246,7 @@ get_hierarchy = function(object, depth = max_depth(object)) {
 	}
 
 	dend = subgroup_dend(object, hierarchy)
-	dend = dendextend::`order.dendrogram<-`(dend, 1:nobs(dend))
+	dend = dendextend::`order.dendrogram<-`(dend, value = 1:nobs(dend))
 	dend
 }
 
@@ -266,7 +266,7 @@ calc_dend = function(object, depth = max_depth(object)) {
 	tb = table(classes)
 	cd_list = lapply(tapply(names(classes), classes, function(x) x), function(x) {
 		d = random_dend(length(x))
-		d = dendextend::`labels<-`(d, x)
+		d = dendextend::`labels<-`(d, value = x)
 		d
 	})
 	cd_list = cd_list[labels(pd)]
@@ -274,7 +274,7 @@ calc_dend = function(object, depth = max_depth(object)) {
 
 	dend = merge_dendrogram(pd, cd_list)
 	dend = adjust_dend_by_x(dend)
-	dend = dendextend::`order.dendrogram<-`(dend, structure(1:length(classes), names = names(classes))[labels(dend)])
+	dend = dendextend::`order.dendrogram<-`(dend, value = structure(1:length(classes), names = names(classes))[labels(dend)])
 	dend
 }
 

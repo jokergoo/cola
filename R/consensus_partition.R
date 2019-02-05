@@ -59,6 +59,10 @@ consensus_partition = function(data,
 		data = .env$data
 	}
 
+	if(max_k < 2) {
+		stop("max_k should be no less than 2.")
+	}
+
 	t = system.time(res <- .consensus_partition(
 		data = data,
 		top_value_method = top_value_method,
@@ -216,7 +220,7 @@ consensus_partition = function(data,
 			if(verbose) qqcat("* getting top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
-		for(j in 1:partition_repeat) {
+		for(j in seq_len(partition_repeat)) {
 			if(sample_by == "rows") {
 				ind_sub = sample(ind, round(p_sampling*length(ind)))
 				mat = data[ind_sub, , drop = FALSE]
@@ -252,7 +256,7 @@ consensus_partition = function(data,
 		rownames(membership_each) = colnames(data)
 
 		consensus_mat = matrix(1, nrow = nrow(membership_each), ncol = nrow(membership_each))
-		for(i in 1:(nrow(membership_each)-1)) {
+		for(i in seq_len(nrow(membership_each)-1)) {
 			for(j in (i+1):nrow(membership_each)) {
 				consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ])/ncol(membership_each)
 				consensus_mat[j, i] = consensus_mat[i, j]
@@ -353,7 +357,7 @@ consensus_partition = function(data,
 
 		if(verbose) qqcat("@{prefix}calculate consensus matrix for samples clustered in a same group.\n")
 		consensus_mat = matrix(1, nrow = nrow(membership_mat), ncol = nrow(membership_mat))
-		for(i in 1:(nrow(membership_each)-1)) {
+		for(i in seq_len(nrow(membership_each)-1)) {
 			for(j in (i+1):nrow(membership_each)) {
 				consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ] + 0)/ncol(membership_each)
 				consensus_mat[j, i] = consensus_mat[i, j]

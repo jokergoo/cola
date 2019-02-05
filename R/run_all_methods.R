@@ -270,7 +270,7 @@ get_consensus_from_multiple_methods = function(object, k) {
 	}))
 
 	consensus_mat = matrix(1, nrow = nrow(m), ncol = nrow(m))
-	for(i in 1:(nrow(membership_each)-1)) {
+	for(i in seq_len(nrow(membership_each)-1)) {
 		for(j in (i+1):nrow(membership_each)) {
 			consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ])/ncol(membership_each)
 			consensus_mat[j, i] = consensus_mat[i, j]

@@ -45,7 +45,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 		nm = colnames(df)
 		n = ncol(df)
 		p.value = matrix(NA, nrow = n, ncol = n, dimnames = list(nm, nm))
-		for(i in 1:(n-1)) {
+		for(i in seq_len(n-1)) {
 			for(j in (i+1):n) {
 				if(is.numeric(df[[i]]) && is.numeric(df[[j]])) {
 					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: correlation test\n")
@@ -96,8 +96,8 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 		n1 = ncol(df1)
 		n2 = ncol(df2)
 		p.value = matrix(NA, nrow = n1, ncol = n2, dimnames = list(nm1, nm2))
-		for(i in 1:n1) {
-			for(j in 1:n2) {
+		for(i in seq_len(n1)) {
+			for(j in seq_len(n2)) {
 				if(is.numeric(df1[[i]]) && is.numeric(df2[[j]])) {
 					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: correlation test\n")
 					p.value[i, j] = cor.test(df1[[i]], df2[[j]])$p.value

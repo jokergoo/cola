@@ -259,9 +259,6 @@ venn_euler = function(lt, ...) {
     names(set) = apply(category, 1, function(x) {
         paste(colnames(category)[as.logical(x)], collapse = "&")
     })
-    oe = try(fun <- getFromNamespace("venneuler", "venneuler"))
-    if(inherits(oe, "try-error")) {
-		stop("venneuler package needs to be installed.")
-	}
-    plot(fun(set), ...)
+
+    venneuler::venneuler(set, ...)
 }

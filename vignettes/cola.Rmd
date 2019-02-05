@@ -42,13 +42,13 @@ tests the consistency with known clinical annotations.
 To get a stable classification of subgroups, [consensus
 clustering](https://en.wikipedia.org/wiki/Consensus_clustering) or consensus
 partitioning is always performed. It repeatedly clusters samples with a randomly
-sampled subset of data and checks the robustness of the clustering, finally
+sampled subset of data and checks the robustness of the clustering, and finally it
 gives a consensus classification of all samples.
 
 Here we present the **cola** package which provides a general framework for
 consensus partitioning. It has following advantages:
 
-1. It modularize the consensus clustering processes that various methods can
+1. It modularizes the consensus clustering processes that various methods can
    be easily integrated.
 2. It provides rich visualizations for intepreting the results.
 3. It allows running multiple methods at the same time and provides
@@ -57,29 +57,28 @@ consensus partitioning. It has following advantages:
    separate subgroups.
 5. It allows doing partitioning in a hierarchical way to detect subgroups
    with relatively smaller difference.
-6. It generates detailed reports for the complete analysis.
+6. It generates detailed HTML reports for the complete analysis.
 
-Following flowchart lists the general steps of consensus partitioning implemented by **cola**:
+Following flowchart lists the general steps of consensus partitioning
+implemented by **cola**:
 
 <img src="consensus_partition_workflow.png", width="600"/>
 
 The steps are:
 
-1. Clean the input matrix, such as adjusting outliers and imputing missing
-   values.
+1. Clean the input matrix. The processing are: adjusting outliers, imputing missing
+   values and removing rows with very small variance.
 2. Extract subset of rows with highest scores. Here "scores" are calculated by
    a certain method. For gene expression analysis or methylation data
    analysis, $n$ rows with highest variance are used in most analysis, where
    the "method", or let's call it **"the top-value method"** is the variance (by
-   `var()` or `sd()`). However the choice of "the top-value method" can be
+   `var()` or `sd()`). Note the choice of "the top-value method" can be
    general. It can be e.g. MAD (median absolute deviation) or any user-defined
    method.
-3. Rows in the matrix with top rows are scaled (e.g. gene expression) or not
-   scaled (e.g. methylation data).
+3. Scale the rows in the matrix (e.g. gene expression) or not (e.g. methylation data).
 4. Randomly sample a subset of rows from the matrix with probability $p$ and
    perform partition on the columns of the matrix by a certain partition
-   method, with trying different numbers of subgroups. Note the random sampling
-   can also be applied on columns.
+   method, with trying different numbers of subgroups.
 5. Repeat step 4 several times and collect all the partitions.
 6. Perform consensus partitioning analysis and determine the best number of
    subgroups which gives the most stable subgrouping.
@@ -90,7 +89,23 @@ The steps are:
 
 All the steps will be discussed in detail in following sections.
 
-## Clean the matrix
+First of all, we load the **cola** package.
+
+```{r}
+library(cola)
+```
+
+## The input matrix
+
+In most of the analysis tasks, the input matrix contains values of gene
+expression or DNA methylation (from methylation array or whole genome
+bisulfite sequencing). If it is an expression matrix, rows correspond to genes,
+and if it is a methylation matrix, rows correspond to CpG sites. For both
+types of matrices, columns should always correspond to samples and subgroups
+are detected on samples. More general, the input matrix can be any type of 
+measurements as long as they represent in a form of matrix, e.g. a matrix
+where rows are genomic regions and values are the histone modification intensities
+in the regions, measured from a ChIP-Seq experiment.
 
 In following part of this vignette, we call the columns in the matrix as
 "samples".
@@ -99,7 +114,8 @@ Before doing consensus partition, a simple but important step is to clean the
 input matrix:
 
 ```{r, eval = FALSE}
-data = adjust_matrix(data)
+# code is only for demonstration
+mat = adjust_matrix(mat)
 ```
 
 `adjust_matrix()` does following preprocessings:
@@ -125,7 +141,8 @@ method and a single partition method. The major arguments for
 `consensus_partition()` are:
 
 ```{r, eval = FALSE}
-res = consensus_partition(data,
+# code is only for demonstration
+res = consensus_partition(mat,
     top_value_method = "MAD",
     top_n = c(1000, 2000, 3000, 4000, 5000),
     partition_method = "kmeans",
@@ -135,7 +152,7 @@ res = consensus_partition(data,
     anno = NULL)
 ``` 
 
-- `data`: a data matrix where subgroups are found by columns.
+- `mat`: a data matrix where subgroups are found by columns.
 - `top_value_method`: name of the method to assign scores to rows in the
   matrix. Later these scores are used to order and extract rows with top
   values.
@@ -170,7 +187,8 @@ top-value methods and different partition methods to see which combination of
 methods gives the best prediction of subgroups.
 
 ```{r, eval = FALSE}
-rl = run_all_consensus_partition_methods(data, 
+# code is only for demonstration
+rl = run_all_consensus_partition_methods(mat, 
 	top_value_method = c("sd", "MAD", ...),
 	partition_method = c("hclust", "kmeans", ...),
 	mc.cores = ...)
@@ -344,7 +362,7 @@ remove_partition_method("random")
 Following code registers SOM and NMF partition methods:
 
 ```{r, eval = FALSE}
-# code only for demonstration
+# code is only for demonstration
 library(kohonen)
 register_partition_method(
     som = function(mat, k, ...) {
@@ -804,6 +822,7 @@ of top-value method and partition method gives better results. Here
 methods:
 
 ```{r, eval = FALSE}
+# code is only for demonstration
 rl = run_all_consensus_partition_methods(...)
 ```
 
@@ -814,6 +833,7 @@ By default it runs analysis for all combinations of top-value methods in
 methods for straightforward comparisons.
 
 ```{r, eval = FALSE}
+# code is only for demonstration
 collect_plots(rl, fun = consensus_heatmap, k = ...)
 collect_plots(rl, fun = membership_heatmap, k = ...)
 collect_plots(rl, fun = get_signatures, k = ...)
@@ -822,6 +842,7 @@ collect_plots(rl, fun = get_signatures, k = ...)
 And `collect_classes()` compares consensus partition from all methos:
 
 ```{r, eval = FALSE}
+# code is only for demonstration
 collect_classes(rl, k = ...)
 ```
 
@@ -924,6 +945,7 @@ automatically. Normally, applying **cola** analysis, following three lines of co
 are enough for you.
 
 ```{r, eval = FALSE}
+# code is only for demonstration
 mat = adjust_matrix(mat) # in some datasets, you don't even need this line.
 rl = run_all_consensus_partition_methods(mat, mc.cores = ...)
 cola_report(rl, output_dir = ...) # Alles ist da!
@@ -940,18 +962,19 @@ https://jokergoo.github.io/cola_examples/.
 Following code is used to perform analysis of consensus partition.
 
 ```{r, eval = FALSE}
-data = read.table("https://jokergoo.github.io/cola_examples/unifiedScaled.txt", 
+# code is only for demonstration
+mat = read.table("https://jokergoo.github.io/cola_examples/unifiedScaled.txt", 
     header = TRUE, row.names = 1, check.names = FALSE)
-data = as.matrix(data)
+mat = as.matrix(mat)
 
 subtype = read.table("https://jokergoo.github.io/cola_examples/TCGA_unified_CORE_ClaNC840.txt", 
     sep = "\t", header = TRUE, check.names = FALSE, stringsAsFactors = FALSE)
 subtype = structure(unlist(subtype[1, -(1:2)]), names = colnames(subtype)[-(1:2)])
 
-data = data[, names(subtype)]
+mat = mat[, names(subtype)]
 
-data = adjust_matrix(data)
-rl = run_all_consensus_partition_methods(data, top_n = c(1000, 2000, 3000, 4000), 
+mat = adjust_matrix(mat)
+rl = run_all_consensus_partition_methods(mat, top_n = c(1000, 2000, 3000, 4000), 
     max_k = 6, mc.cores = 4, anno = data.frame(subtype = subtype), 
     anno_col = list(subtype = structure(seq_len(4), names = unique(subtype))))
 ```
@@ -974,7 +997,7 @@ subgroups are found first, later secondary subgroups are detected.
 
 **cola** package implements hierarchical partition and the flowchart is as follows.
 
-<img src="hierarchical_partition_workflow.png" width="600" />
+<img src="hierarchical_partition_workflow.png" width="460" />
 
 Generally, at each recursive step, the consensus partition is performed for a
 small set of $k$ (because the final larger number of subgroups will be
@@ -995,7 +1018,8 @@ consensus partition which is summarized from all methods are added as an
 annotation to compare to the subgroups predicted by hierarchical partition.
 
 ```{r, eval = FALSE}
-rh = hierarchical_partition(data, top_n = c(1000, 2000, 3000, 4000),
+# code is only for demonstration
+rh = hierarchical_partition(mat, top_n = c(1000, 2000, 3000, 4000),
     top_value_method = "MAD", partition_method = "kmeans",
     anno = data.frame(subtype = subtype,
         consensus = get_classes(rl, k = 4)$class), 
@@ -1054,6 +1078,7 @@ can also be applied to this `HierarchicalPartition` object. The full report
 for `rh` can be found at https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_hierarchical_partition_cola_report/cola_hc.html.
 
 ```{r, eval = FALSE}
+# code is only for demonstration
 cola_report(rh, output_dir = "~/your-output-folder/tcga_cola_rh_report")
 ```
 
