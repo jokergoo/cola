@@ -422,7 +422,7 @@ calculated as:
 $$c_{ij} = \sum_a^{N_p}I(s_{ia}, s_{ja})/N_P$$
 
 where $s_{ia}$ is the subgroup label for sample $i$ in partition $a$ and $I()$
-is the identity function there $I(x = y) = 1$ and $I(x \neq y) = 0$.
+is the indicator function there $I(x = y) = 1$ and $I(x \neq y) = 0$.
 
 Following two heatmaps visualize two consensus matrices. The left one shows
 less stability of subgrouping than the right one, while for the right one,
