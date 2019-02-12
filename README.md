@@ -77,7 +77,7 @@ Following plots compares consensus heatmaps with k = 4 under all combinations of
 ### Usage
 
 ```{r}
-rh = hierarchical_partition(data, top_n = c(1000, 2000, 3000, 4000),
+rh = hierarchical_partition(mat, top_n = c(1000, 2000, 3000, 4000),
     top_value_method = "MAD", partition_method = "kmeans")
 cola_report(rh, output_dir = ...)
 ```
