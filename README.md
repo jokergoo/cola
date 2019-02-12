@@ -34,7 +34,7 @@ install_github("jokergoo/cola")
 
 ## Consensus Partition
 
-<img width="600" alt="consensus_partition_workflow" src="https://user-images.githubusercontent.com/449218/41279038-b1d73680-6e2b-11e8-94eb-d0d53eae5d60.png">
+<img width="700" src="https://user-images.githubusercontent.com/449218/52628723-86af3400-2eb8-11e9-968d-b7f47a408818.png" />
 
 The steps of consensus partition is always like follows:
 
@@ -65,13 +65,14 @@ cola_report(rl, output_dir = ...)
 
 Following plots compares consensus heatmaps with k = 4 under all combinations of methods.
 
-![consensus_partition_workflow](https://user-images.githubusercontent.com/449218/52628723-86af3400-2eb8-11e9-968d-b7f47a408818.png)
+<img src="https://user-images.githubusercontent.com/449218/52631118-3a66f280-2ebe-11e9-8dea-0172d9beab91.png" />
+
 
 ## Hierarchical Partition
 
 **cola** supports to look for subgroups in a hierarchical way, which is efficient to found secondary subgroups with small difference.
 
-![hierarchical_partition_workflow](https://user-images.githubusercontent.com/449218/52628768-9a5a9a80-2eb8-11e9-9de1-974afd10bfc2.png)
+<img width="500" src="https://user-images.githubusercontent.com/449218/52628768-9a5a9a80-2eb8-11e9-9de1-974afd10bfc2.png" />
 
 ### Usage
 
