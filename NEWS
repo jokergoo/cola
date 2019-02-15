@@ -1,3 +1,6 @@
+Changes in version 0.99.9
++ move TEMPLATE_DIR to `.onLoad()`.
+
 Changes in version 0.99.5
 + reduce the number of packages loaded
 + improve the package according to comments in https://github.com/Bioconductor/Contributions/issues/941#issuecomment-452728439

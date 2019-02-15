@@ -341,3 +341,8 @@ names(brewer_pal_set2_col) = 1:16
 cola_opt = setGlobalOptions(
 	raster_resize = FALSE
 )
+
+
+.onLoad = function(...) {
+	TEMPLATE_DIR <<- system.file("extdata", package = "cola")
+}
