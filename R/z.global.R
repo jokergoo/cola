@@ -294,12 +294,37 @@ register_partition_method(
 	# }
 )
 
-# register_partition_method(
-# 	nnmf = function(mat, k, ...) {
-# 		fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
-# 		apply(fit$H, 2, which.max)
-# 	}, scale_method = "rescale"
-# )
+register_partition_method(
+	nnmf = function(mat, k, ...) {
+		fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
+		apply(fit$H, 2, which.max)
+	}, scale_method = "rescale"
+)
+
+# == title
+# Register NMF partition method
+#
+# == details
+# It actually runs following code:
+#
+#     register_partition_method(
+#         nnmf = function(mat, k, ...) {
+#             fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
+#             apply(fit$H, 2, which.max)
+#         }, scale_method = "rescale"
+#     )
+#
+register_NMF = function() {
+	if(!requireNamespace("NNLM")) {
+		stop("You need to install NNLM package to support NMF.")
+	}
+	register_partition_method(
+		nnmf = function(mat, k, ...) {
+			fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
+			apply(fit$H, 2, which.max)
+		}, scale_method = "rescale"
+	)
+}
 
 # == title
 # Remove top-value methods
