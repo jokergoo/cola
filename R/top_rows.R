@@ -261,5 +261,5 @@ venn_euler = function(lt, ...) {
         paste(colnames(category)[as.logical(x)], collapse = "&")
     })
 
-    venneuler::venneuler(set, ...)
+    plot(venneuler::venneuler(set), ...)
 }

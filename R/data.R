@@ -1,5 +1,5 @@
 # == title (data:cola_rl)
-# Example for ConsensusPartitionList object
+# Example ConsensusPartitionList object
 #
 # == details
 # Following code was used to generate ``cola_rl``:
@@ -26,7 +26,7 @@
 
 
 # == title (data:cola_rh)
-# Example for HierarchicalPartition object
+# Example HierarchicalPartition object
 #
 # == details
 # Following code was used to generate ``cola_rh``:

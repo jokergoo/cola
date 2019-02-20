@@ -159,9 +159,9 @@ setMethod(f = "get_membership",
 # == example
 # data(cola_rl)
 # obj = cola_rl["sd", "kmeans"]
-# get_stat(obj)
-# get_stat(obj, k = 2)
-setMethod(f = "get_stat",
+# get_stats(obj)
+# get_stats(obj, k = 2)
+setMethod(f = "get_stats",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k) {
 	m = matrix(nrow = length(object@k), ncol = length(object@object_list[[1]]$stat) - 1)
@@ -192,8 +192,8 @@ setMethod(f = "get_stat",
 #
 # == example
 # data(cola_rl)
-# get_stat(cola_rl, k = 2)
-setMethod(f = "get_stat",
+# get_stats(cola_rl, k = 2)
+setMethod(f = "get_stats",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
 	m = matrix(nrow = length(object@list), ncol = length(object@list[[1]]@object_list[[1]]$stat) - 1)
@@ -291,7 +291,7 @@ setMethod(f = "guess_best_k",
 	signature = "ConsensusPartition",
 	definition = function(object, rand_index_cutoff = 0.95) {
 
-	stat = get_stat(object)
+	stat = get_stats(object)
 	stat = stat[stat[, "Rand"] < rand_index_cutoff, , drop = FALSE]
 
 	l = stat[, "cophcor"] >= 0.99 | stat[, "PAC"] <= 0.1 | stat[, "concordance"] >= 0.95
@@ -344,7 +344,7 @@ setMethod(f = "guess_best_k",
 			nm = paste0(tm, ":", pm)
 			obj = object@list[[nm]]
 			best_k[nm] = guess_best_k(obj, rand_index_cutoff)
-			stat = get_stat(obj, k = best_k[nm])
+			stat = get_stats(obj, k = best_k[nm])
 			cophcor[nm] = stat[1, "cophcor"]
 			PAC[nm] = stat[1, "PAC"]
 			mean_silhouette[nm] = stat[1, "mean_silhouette"]

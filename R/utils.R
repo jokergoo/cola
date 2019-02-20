@@ -6,7 +6,32 @@ if(!exists("strrep")) {
 	}
 }
 
-# change the label of `class` to let `class` fits `ref` more, maximize sum(class ==ref)
+# == title
+# Relabel class IDs according to the reference ID
+#
+# == param
+# -class a vector of class IDs.
+# -ref a vector of reference IDs.
+# -full_set the full set of levels. 
+#
+# == details
+# In partition, the exact value of the class ID is not of importance. E.g. for two partitions
+# `a, a, a, b, b, b, b` and `b, b, b, a, a, a, a`, they are the same partitions although the labels
+# of `a` and `b` are switched in the two partitions. Here `relabel_class` function switches the labels
+# in ``class`` vector accoring to the labels in ``ref`` vector to maximize ``sum(class == ref)``.
+#
+# Mathematically, this is called linear sum assignment problem and is solved by `clue::solve_LSAP`.
+#
+# == value
+# A data frame with three columns:
+#
+# - original IDs
+# - adjusted IDs
+# - reference IDs
+#
+# The mapping between adjusted IDs and original IDs are stored as the ``map`` attribute of the data frame.
+#
+# == example
 # class = c(rep("a", 10), rep("b", 3))
 # ref = c(rep("b", 4), rep("a", 9))
 # relabel_class(class, ref)
@@ -91,13 +116,13 @@ adjust_outlier = function(x, q = 0.05) {
 #
 # == param
 # -m a numeric matrix.
-# -sd_quantile cutoff the quantile of standard variation. Rows with variance less than it are removed.
-# -max_na maximum NA rate in each row. Rows with NA rate larger than it are removed.
+# -sd_quantile cutoff the quantile of standard variation. Rows with standard deviation less than it are removed.
+# -max_na maximum NA rate in each row. Rows with NA rate larger than this value are removed.
 #
 # == details
 # The function uses `impute::impute.knn` to impute missing data, then
 # uses `adjust_outlier` to adjust outliers and 
-# removes rows with low standard variation.
+# removes rows with low standard deviations.
 #
 # == value
 # A numeric matrix.
@@ -119,13 +144,13 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 
 	l = apply(m, 1, function(x) sum(is.na(x))/length(x)) < max_na
 	if(sum(!l)) {
-		qqcat("removed @{sum(!l)} rows where more than @{round(max_na*100)}% of samples have NA values.\n")
+		message_wrap(qq("removed @{sum(!l)} rows where more than @{round(max_na*100)}% of samples have NA values."))
 	}
 	m = m[l, , drop = FALSE]
 
 	n_na = sum(is.na(m))
 	if(n_na > 0) {
-		qqcat("There are NA values in the data, now impute missing data.\n")
+		message_wrap(qq("There are NA values in the data, now impute missing data."))
 		m = impute.knn(m)$data
 	}
 	m = t(apply(m, 1, adjust_outlier))
@@ -134,20 +159,18 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	m2 = m[!l, , drop = FALSE]
 	row_sd = row_sd[!l]
 	if(sum(l)) {
-		qqcat("@{sum(l)} rows have been removed with zero variance.\n")
+		message_wrap(qq("@{sum(l)} rows have been removed with zero variance."))
 	}
 
 	qa = quantile(row_sd, sd_quantile, na.rm = TRUE)
 	l = row_sd >= qa
 	if(sum(!l)) {
-		qqcat("@{sum(!l)} rows have been removed with too low variance (sd < @{sd_quantile} quantile)\n")
+		message_wrap(qq("@{sum(!l)} rows have been removed with too low variance (sd < @{sd_quantile} quantile)"))
 	}
 	m2[l, , drop = FALSE]
 }
 
 dev.off2 = ComplexHeatmap:::dev.off2
-
-
 
 ############### tracer
 try_and_trace = function(expr) {
@@ -216,3 +239,21 @@ format_trace <- function(data, style = NULL) {
   invisible(NULL)
 }
 
+
+stop_wrap = function (...) {
+    x = paste0(...)
+    x = paste(strwrap(x), collapse = "\n")
+    stop(x, call. = FALSE)
+}
+
+warning_wrap = function (...) {
+    x = paste0(...)
+    x = paste(strwrap(x), collapse = "\n")
+    warning(x, call. = FALSE)
+}
+
+message_wrap = function (...) {
+    x = paste0(...)
+    x = paste(strwrap(x), collapse = "\n")
+    message(x)
+}

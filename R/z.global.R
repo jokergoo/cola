@@ -9,7 +9,7 @@
 
 get_top_value_method = function(method) {
 	if(!method %in% .ENV$ALL_TOP_VALUE_METHODS) {
-		stop(qq("top value method @{method} has not been defined yet."))
+		stop_wrap(qq("top-value method '@{method}' has not been defined yet."))
 	}
 	.ENV$ALL_TOP_VALUE_FUN[[method]]
 }
@@ -23,13 +23,13 @@ get_top_value_method = function(method) {
 # == details 
 # The user-defined function should accept one argument which is the data
 # matrix and the scores are calculated by rows. Rows with top scores are treated
-# as "top rows". Follow is how we register "sd" top-value method:
+# as "top rows" in cola analysis. Following is how we register "sd" (standard deviation) top-value method:
 #
-#   register_top_value_method(sd = function(mat), apply(mat, 1, sd))
+#   register_top_value_methods(sd = function(mat) apply(mat, 1, sd))
 #
 # Of course, you can use `matrixStats::rowSds` to give a faster calculation of row sd:
 #
-#   register_top_value_method(sd = rowSds)
+#   register_top_value_methods(sd = rowSds)
 #
 # The registered top-value method will be used as defaults in `run_all_consensus_partition_methods`.
 # 
@@ -38,9 +38,9 @@ get_top_value_method = function(method) {
 # There are four default top-value methods:
 #
 # -"sd" standard deviation, by `matrixStats::rowSds`.
-# -"cv" coefficient variance, calculated as ``sd/(mean+s)`` where ``s`` is the 10th quantile of all row means.
+# -"cv" coefficient variance, calculated as ``sd/(mean+s)`` where ``s`` is the 10th percentile of all row means.
 # -"MAD" median absolute deviation, by `matrixStats::rowMads`.
-# -"AAC" the `AAC` method.
+# -"ATC" the `ATC` method.
 #
 # == return
 # No value is returned.
@@ -53,13 +53,13 @@ get_top_value_method = function(method) {
 # 
 # == examples 
 # all_top_value_methods()
-# register_top_value_method(
-#     AAC_spearman = function(mat) AAC(mat, cor_method = "spearman"),
-#     AAC_multicore = function(mat) AAC(mat, mc.cores = 2)
+# register_top_value_methods(
+#     ATC_spearman = function(mat) ATC(mat, method = "spearman"),
+#     ATC_multicore = function(mat) ATC(mat, mc.cores = 2)
 # )
 # all_top_value_methods()
-# remove_top_value_method(c("AAC_spearman", "AAC_multicore"))
-register_top_value_method = function(...) {
+# remove_top_value_method(c("ATC_spearman", "ATC_multicore"))
+register_top_value_methods = function(...) {
 	lt = list(...)
 	lt1 = lt[intersect(names(lt), .ENV$ALL_TOP_VALUE_METHODS)]
 	lt2 = lt[setdiff(names(lt), .ENV$ALL_TOP_VALUE_METHODS)]
@@ -70,6 +70,9 @@ register_top_value_method = function(...) {
 
 # == title
 # All supported top-value methods
+#
+# == details
+# New top-value methods can be registered by `register_top_value_methods`.
 #
 # == return 
 # A vector of supported top-value methods.
@@ -83,19 +86,19 @@ all_top_value_methods = function() {
 	.ENV$ALL_TOP_VALUE_METHODS
 }
 
-register_top_value_method(
+register_top_value_methods(
 	sd = rowSds,
 	cv = function(mat) {
 		s = rowMeans(mat)
 		rowSds(mat)/(s + quantile(s, 0.1))
 	},
 	MAD = matrixStats::rowMads,
-	AAC = AAC
+	ATC = ATC
 )
 
 get_partition_method = function(method, partition_param = list()) {
 	if(!method %in% .ENV$ALL_PARTITION_METHODS) {
-		stop(qq("partition method '@{method}' has not been defined yet."))
+		stop_wrap(qq("partition method '@{method}' has not been defined yet."))
 	}
 	fun = .ENV$ALL_PARTITION_FUN[[method]]
 
@@ -128,7 +131,7 @@ get_partition_method = function(method, partition_param = list()) {
 #
 # == param
 # -... a named list of functions.
-# -scale_method normally, data matrix are scaled by rows before sent to
+# -scale_method normally, data matrix is scaled by rows before sent to
 #        the partition function. The default scaling is applied by `base::scale`.
 #        However, some partition functions may not accept negative values which 
 #        are produced by `base::scale`. Here ``scale_method`` can be set to ``rescale``
@@ -141,27 +144,28 @@ get_partition_method = function(method, partition_param = list()) {
 # The user-defined function should accept at least two arguments. The first two arguments are the data
 # matrix and the number of partitions. The third optional argument should always be ``...`` so that parameters
 # for the partition function can be passed by ``partition_param`` from `consensus_partition` or `run_all_consensus_partition_methods`.
-# If users forget to add ``...`` in the end, it is added internally.
+# If users forget to add ``...``, it is added internally.
 #
 # The function should return a vector of partitions (or class labels) or an object which can be recognized by `clue::cl_membership`.
 # 
 # The partition function should be applied on columns (Users should be careful with this because some of the R functions apply on rows and
-# some of the R functions apply on columns). E.g. following is how we register kmeans partition method:
+# some of the R functions apply on columns). E.g. following is how we register `stats::kmeans` partition method:
 #
 #   register_partition_method(
 #       kmeans = function(mat, k, ...) {
+#           # mat is transposed because kmeans() applies on rows
 #           kmeans(t(mat), centers = k, ...)$centers
 #       }
 #   )
 #
 # The registered partition methods will be used as defaults in `run_all_consensus_partition_methods`.
 # 
-# To remove a partition method, use `remove_partition_method`.
+# To remove a partition method, use `remove_partition_methods`.
 #
 # There are following default partition methods:
 #
 # -"hclust" hierarchcial clustering with Euclidean distance, later columns are partitioned by `stats::cutree`.
-#           If users want to use another distance metric, consider to register a new partition method. E.g.
+#           If users want to use another distance metric or clustering method, consider to register a new partition method. E.g.
 #           ``register_partition_method(hclust_cor = function(mat, k) hc = cutree(hclust(as.dist(cor(mat)))))``.
 # -"kmeans" by `stats::kmeans`.
 # -"skmeans" by `skmeans::skmeans`.
@@ -183,7 +187,7 @@ get_partition_method = function(method, partition_param = list()) {
 #     random = function(mat, k) sample(k, ncol(mat), replace = TRUE)
 # )
 # all_partition_methods()
-# remove_partition_method("random")
+# remove_partition_methods("random")
 register_partition_method = function(..., scale_method = c("standardization", "rescale", "none")) {
 	
 	scale_method = match.arg(scale_method)[1]
@@ -226,6 +230,9 @@ register_partition_method = function(..., scale_method = c("standardization", "r
 
 # == title
 # All supported partition methods
+#
+# == details
+# New partition methods can be registered by `register_partition_methods`.
 #
 # == return 
 # A vector of supported partition methods.
@@ -306,7 +313,7 @@ register_partition_method(
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-remove_top_value_method = function(method) {
+remove_top_value_methods = function(method) {
 	nm_keep = setdiff(.ENV$ALL_TOP_VALUE_METHODS, method)
 	.ENV$ALL_TOP_VALUE_FUN = .ENV$ALL_TOP_VALUE_FUN[nm_keep]
 	.ENV$ALL_TOP_VALUE_METHODS = nm_keep
@@ -325,7 +332,7 @@ remove_top_value_method = function(method) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-remove_partition_method = function(method) {
+remove_partition_methods = function(method) {
 	nm_keep = setdiff(.ENV$ALL_PARTITION_METHODS, method)
 	.ENV$ALL_PARTITION_FUN = .ENV$ALL_PARTITION_FUN[nm_keep]
 	.ENV$ALL_PARTITION_METHODS = nm_keep

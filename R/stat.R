@@ -1,26 +1,36 @@
 
 
 # == title
-# AAC score
+# Ability to correlate other rows in the matrix (ATC score)
 #
 # == param
-# -mat a numeric matrix. AAC score is calculated by rows.
-# -cor_method pass to `stats::cor`.
+# -mat a numeric matrix. ATC score is calculated by rows.
+# -cor_fun a function which calculates correlation.
 # -min_cor minimal absolute correlation.
 # -max_cor maximal absolute correlation.
 # -mc.cores number of cores.
-# -n_sampling when the number of columns are too big, to get the curmulative
-#           distribution, actually we don't need to use all the rows, e.g. 1000
-#           rows can already give a farely nice estimation for the distribution.
-# -q_sd percential of the sd for the rows to ignore.
+# -n_sampling when there are too many rows in the matrix, to get the curmulative
+#           distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000
+#           rows can already give a farely nice estimation.
+# -q_sd percentile of the standard deviation for the rows. Rows with values less than it are ignored.
+# -... pass to ``cor_fun``, e.g. ``method = 'spearman'`` can be passed to ``cor_fun`` if the correlation function is `stats::cor`.
 # 
 # == details 
-# For a given row in a matrix, the AAC score is the area above the curve of the curmulative density
+# For a given row in a matrix, the ATC score is the area above the curve of the curmulative density
 # distribution of the absolute correlation to all other rows. Formally, if ``F_i(x)`` is the 
-# CDF of the absolute correlation for row i, ``AAC_i = 1 - \\int_{min_cor}^{max_cor} F_i(x)``.
+# cumulative distribution function of the absolute correlation for row i, ``ATC_i = 1 - \\int_{min_cor}^{max_cor} F_i(x)``.
+#
+# By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
+# the top-value method by:
+#
+#     register_top_value_method("ATC_spearman" = function(m) ATC(m, method = "spearman"))
+#
+# Similarly, to use a robust correlation method, e.g. `WGCNA::bicor` function, you can do like:
+#
+#     register_top_value_method("ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor))
 #
 # == return 
-# A vector of numeric values.
+# A vector of numeric values with the same order as rows in the input matrix.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -40,10 +50,10 @@
 # mat3 = t(rmvnorm(100, mean = rep(0, nr3), sigma = sigma))
 # 
 # mat = rbind(mat1, mat2, mat3)
-# AAC_score = AAC(mat)
-# plot(AAC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
-AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1, 
-	mc.cores = 1, n_sampling = 1000, q_sd = 0) {
+# ATC_score = ATC(mat)
+# plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
+ATC = function(mat, cor_fun = stat::cor, min_cor = 0, max_cor = 1, 
+	mc.cores = 1, n_sampling = 1000, q_sd = 0, ...) {
 
 	# internally we do it by columns to avoid too many t() callings
 	mat = t(mat)
@@ -63,10 +73,6 @@ AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
 		ind_list = list(1:n)
 	}
 
-	if(cor_method == "KNN_weighted") {
-		mat = scale(mat)
-	}
-
 	v_list = mclapply(ind_list, function(ind) {
 		v = numeric(length(ind))
 		for(i in seq_along(ind)) {
@@ -74,12 +80,8 @@ AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
 			if(length(ind2) > n_sampling) {
 				ind2 = sample(ind2, n_sampling)
 			}
-			# if(cor_method == "KNN_weighted") {
-			# 	cor_v = cor_KNN_weighted(mat, ind[i], ind2)
-			# } else {
-				suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], method = cor_method)))
-			# }
-
+			suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
+			
 			cor_v = cor_v[cor_v >= min_cor & cor_v <= max_cor]
 
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
@@ -102,31 +104,6 @@ AAC = function(mat, cor_method = "pearson", min_cor = 0, max_cor = 1,
 	return(v2)
 }
 
-# cor_KNN_weighted = function(mat, ind1, ind2, k = 5) {
-
-# 	nx = length(ind1)
-# 	ny = length(ind2)
-# 	cm = matrix(nrow = nx, ncol = ny)
-# 	for(i in seq_along(ind1)) {
-# 		for(j in seq_along(ind2)) {
-# 			cm[i, j] = cor_KNN_weighted_with_two_vectors(mat[, c(ind1[i], ind2[j])], k = k)
-# 		}
-# 	}
-	
-# 	return(cm)
-# }
-
-# # m: 2 column matrix
-# cor_KNN_weighted_with_two_vectors = function(m, k = 5) {
-# 	dist_m = base::as.matrix(dist(m, diag = TRUE, upper = TRUE))
-# 	wt = apply(dist_m, 1, function(x) {
-# 		sum(.Internal(qsort(x, FALSE))[1:(k+1)])/k
-# 	})
-# 	wt = max(wt) - wt
-# 	weightedCorr(m[, 1], m[, 2], weights = wt, method = "pearson")
-# }
-
-
 entropy = function(p) {
 	n = length(p)
 	p = p[p > 0]
@@ -135,7 +112,7 @@ entropy = function(p) {
 }
 
 # == title
-# PAC score
+# The proportion of ambiguous clustering (PAC score)
 #
 # == param
 # -consensus_mat a consensus matrix.
@@ -144,14 +121,14 @@ entropy = function(p) {
 # -trim percent of extreme values to trim if combinations of ``x1`` and ``x2`` are more than 10.
 # 
 # == details
-# This a variant of the orignial PAC (proportion of ambiguous clustering) method.
+# This a variant of the orignial PAC method.
 # 
 # For each ``x_1i`` in ``x1`` and ``x_2j`` in ``x2``, ``PAC_k = F(x_2j) - F(x_1i)``
-# where ``F(x)`` is the ecdf of the consensus matrix (the lower triangle matrix without diagnals). 
+# where ``F(x)`` is the cumulative distribution function of the consensus matrix (the lower triangle matrix without diagnals is only used). 
 # The final PAC is the mean of all ``PAC_k`` by removing top ``trim/2`` percent and bottom ``trim/2`` percent of all values.
 # 
 # == return 
-# A single numeric score.
+# A single numeric vaule.
 #
 # == see also
 # See https://www.nature.com/articles/srep06207 for explanation of PAC score.
@@ -204,46 +181,6 @@ tot_withinss = function(class_id, mat) {
 }
 
 
-# pairwise_concordance_to_class = function(consensus_mat, class, reverse = FALSE) {
-# 	class_level = unique(class)
-# 	mat_logi = matrix(FALSE, nrow = nrow(consensus_mat), ncol = ncol(consensus_mat))
-# 	for(cl in class_level) {
-# 		l = class == cl
-# 		mat_logi[l, l] = TRUE
-# 	}
-# 	diag(mat_logi) = FALSE
-# 	if(reverse) {
-# 		mat_logi2 = !mat_logi
-# 		diag(mat_logi2) = FALSE
-# 		mean(consensus_mat[mat_logi2])
-# 	} else {
-# 		mean(consensus_mat[mat_logi])
-# 	}
-# }
-
-# concordance = function(consensus_mat, class) {
-# 	pairwise_concordance_to_class(consensus_mat, class) - pairwise_concordance_to_class(consensus_mat, class, reverse = TRUE)
-# }
-
-# separation_rate = function(object, k = 3) {
-	
-# 	cl2 = get_classes(object, k)$class
-# 	if(k == 2) {
-# 		cl1 = rep(1, length(cl2))
-# 	} else {
-# 		cl1 = get_classes(object, k - 1)$class
-# 	}
-
-# 	m1 = outer(cl1, cl1, "==")
-# 	m2 = outer(cl2, cl2, "==")
-
-# 	m1[lower.tri(m1, diag = TRUE)] = FALSE
-# 	m2[lower.tri(m2, diag = TRUE)] = FALSE
-
-# 	sum(m1 & !m2)/sum(m1)
-# }
-
-
 cophcor = function(consensus_mat) {
 	dis_consensus = as.dist(1 - consensus_mat)
 	hc = hclust(dis_consensus, method = "average")
@@ -254,14 +191,14 @@ cophcor = function(consensus_mat) {
 # Concordance of partitions to the consensus partition
 #
 # == param
-# -membership_each all repetetive parititions.
-# -class consensus class ids.
+# -membership_each a matrix which contains partitions in every single runs.
+# -class consensus class IDs.
 #
 # == details
-# Class ids in ``membership_meach`` have already be adjusted to the consensus class ids
-# to let ``sum(x1 == x_consensus)`` to get maximum.
+# Class IDs in ``membership_meach`` have already be adjusted to the consensus class IDs
+# to let ``sum(x_single == x_consensus)`` reach maximum.
 #
-# The concordance score is the mean probability of fiting the consensus class ids in all
+# The concordance score is the mean probability of fitting the consensus class IDs in all
 # partitions.
 #
 # This function is used internally.
@@ -272,6 +209,11 @@ cophcor = function(consensus_mat) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(cola_rl)
+# membership_each = get_membership(cola_rl["sd", "kmeans"], each = TRUE, k = 3)
+# consensus_classes = get_classes(cola_rl["sd", "kmeans"], k = 3)$class
+# concordance(membership_each, consensus_classes)
 concordance = function(membership_each, class) {
 	mean(apply(membership_each, 2, function(x) sum(x == class, na.rm = TRUE)/length(x)))
 }

@@ -80,7 +80,12 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2, xscale = c(0, 1), yscale = c(0, n + 1)))
 	l = r1 >= n - top_n | r2 >= n - top_n
 	# if(sum(!l)) grid.segments(0, r1[!l], 1, r2[!l], default.units = "native", gp = gpar(col = "#EEEEEE80"))
-	if(sum(l)) grid.segments(0, r1[l], 1, r2[l], default.units = "native", gp = gpar(col = add_transparency("#000000", transparency)))
+	if(sum(l)) {
+		grid.segments(0, r1[l], 1, r2[l], default.units = "native", gp = gpar(col = add_transparency("#000000", transparency)))
+		# for(ind in which(l)) {
+		# 	grid.bezier(c(0, 1, 0, 1), c(r1[ind], r1[ind], r2[ind], r2[ind]), default.units = "native", gp = gpar(col = add_transparency("#000000", transparency)))
+		# }
+	}
 	grid.segments(c(0, 1), c(1, 1), c(0, 1), c(n - top_n, n - top_n), default.units = "native", gp = gpar(col = "#EEEEEE"))
 	grid.segments(c(0, 1), c(n - top_n, n - top_n), c(0, 1), c(n, n), default.units = "native", gp = gpar(lwd = 4, col = c(col1, col2)))
 	upViewport()

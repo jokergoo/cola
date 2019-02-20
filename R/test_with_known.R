@@ -46,21 +46,25 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 		n = ncol(df)
 		p.value = matrix(NA, nrow = n, ncol = n, dimnames = list(nm, nm))
 		for(i in seq_len(n-1)) {
-			for(j in (i+1):n) {
-				if(is.numeric(df[[i]]) && is.numeric(df[[j]])) {
-					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: correlation test\n")
-					p.value[i, j] = cor.test(df[[i]], df[[j]])$p.value
-				} else if(is.numeric(df[[i]]) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
-					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
-					try({p.value[i, j] = oneway.test(df[[i]] ~ df[[j]])$p.value}, silent = TRUE)
-				} else if(is.numeric(df[[j]]) && (is.character(df[[i]]) || is.factor(df[[i]]))) {
-					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
-					try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value}, silent = TRUE)
-				} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
-					if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Fisher's exact test\n")
-					try({p.value[i, j] = fisher.test(df[[i]], df[[j]], alternative = "greater")$p.value}, silent = TRUE)
+			if(length(df[[i]]) < 2) {
+				p.value[i, ] = NA
+			} else {
+				for(j in (i+1):n) {
+					if(is.numeric(df[[i]]) && is.numeric(df[[j]])) {
+						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: correlation test\n")
+						p.value[i, j] = cor.test(df[[i]], df[[j]])$p.value
+					} else if(is.numeric(df[[i]]) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
+						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
+						try({p.value[i, j] = oneway.test(df[[i]] ~ df[[j]])$p.value}, silent = TRUE)
+					} else if(is.numeric(df[[j]]) && (is.character(df[[i]]) || is.factor(df[[i]]))) {
+						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
+						try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value}, silent = TRUE)
+					} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
+						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Fisher's exact test\n")
+						try({p.value[i, j] = fisher.test(df[[i]], df[[j]], alternative = "greater")$p.value}, silent = TRUE)
+					}
+					p.value[j, i] = p.value[i, j]
 				}
-				p.value[j, i] = p.value[i, j]
 			}
 		}
 		diag(p.value) = 0
@@ -97,19 +101,23 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 		n2 = ncol(df2)
 		p.value = matrix(NA, nrow = n1, ncol = n2, dimnames = list(nm1, nm2))
 		for(i in seq_len(n1)) {
-			for(j in seq_len(n2)) {
-				if(is.numeric(df1[[i]]) && is.numeric(df2[[j]])) {
-					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: correlation test\n")
-					p.value[i, j] = cor.test(df1[[i]], df2[[j]])$p.value
-				} else if(is.numeric(df1[[i]]) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
-					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: oneway ANOVA test\n")
-					try({p.value[i, j] = oneway.test(df1[[i]] ~ df2[[j]])$p.value}, silent = TRUE)
-				} else if((is.character(df1[[i]]) || is.factor(df1[[i]])) && is.numeric(df2[[j]])) {
-					if(verbose) qqcat("@{nm2[j]} ~ @{nm1[i]}: oneway ANOVA test\n")
-					try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value}, silent = TRUE)
-				} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
-					if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Fisher's exact test\n")
-					try({p.value[i, j] = fisher.test(df1[[i]], df2[[j]], alternative = "greater")$p.value}, silent = TRUE)
+			if(length(df1[[i]]) < 2) {
+				p.value[i, ] = NA
+			} else {
+				for(j in seq_len(n2)) {
+					if(is.numeric(df1[[i]]) && is.numeric(df2[[j]])) {
+						if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: correlation test\n")
+						p.value[i, j] = cor.test(df1[[i]], df2[[j]])$p.value
+					} else if(is.numeric(df1[[i]]) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
+						if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: oneway ANOVA test\n")
+						try({p.value[i, j] = oneway.test(df1[[i]] ~ df2[[j]])$p.value}, silent = TRUE)
+					} else if((is.character(df1[[i]]) || is.factor(df1[[i]])) && is.numeric(df2[[j]])) {
+						if(verbose) qqcat("@{nm2[j]} ~ @{nm1[i]}: oneway ANOVA test\n")
+						try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value}, silent = TRUE)
+					} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
+						if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Fisher's exact test\n")
+						try({p.value[i, j] = fisher.test(df1[[i]], df2[[j]], alternative = "greater")$p.value}, silent = TRUE)
+					}
 				}
 			}
 		}
@@ -118,12 +126,12 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 }
 
 # == title
-# Test correspondance between predicted and known classes
+# Test correspondance between predicted classes and known factors
 #
 # == param
 # -object a `ConsensusPartition-class` object.
 # -k number of partitions. It uses all ``k`` if it is not set.
-# -known a vector or a data frame with known factors.
+# -known a vector or a data frame with known factors. By default it is the annotation table set in `consensus_partition` or `run_all_consensus_partition_methods`.
 # -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
 # -verbose whether to print messages.
 #
@@ -146,7 +154,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartition",
 	definition = function(object, k, known = get_anno(object), 
-	silhouette_cutoff = 0.5, verbose = TRUE) {
+	silhouette_cutoff = 0.5, verbose = FALSE) {
 
 	if(missing(k)) {
 		all_k = object@k
@@ -160,7 +168,7 @@ setMethod(f = "test_to_known_factors",
 	class = as.character(class_df$class)[l]
 
 	if(is.null(known)) {
-		stop("`known` should not be NULL.")
+		stop_wrap("`known` should not be NULL.")
 	}
 
 	if(is.data.frame(known)) {
@@ -179,12 +187,12 @@ setMethod(f = "test_to_known_factors",
 })
 
 # == title
-# Test correspondance between predicted and known classes
+# Test correspondance between predicted classes and known factors
 #
 # == param
 # -object a `ConsensusPartitionList-class` object.
 # -k number of partitions. It uses all ``k`` if it is not set.
-# -known a vector or a data frame with known factors.
+# -known a vector or a data frame with known factors. By default it is the annotation table set in `consensus_partition` or `run_all_consensus_partition_methods`.
 # -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
 # -verbose whether to print messages.
 #
@@ -210,8 +218,8 @@ setMethod(f = "test_to_known_factors",
 # test_to_known_factors(cola_rl, known = 1:40)
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartitionList",
-	definition = function(object, k, known = object@list[[1]]@anno, 
-		silhouette_cutoff = 0.5, verbose = TRUE) {
+	definition = function(object, k, known = get_anno(object), 
+		silhouette_cutoff = 0.5, verbose = FALSE) {
 
 	if(missing(k)) {
 		m_list = lapply(object@list, function(x) {

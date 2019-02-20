@@ -73,7 +73,7 @@ setMethod(f = "collect_plots",
 	    	qqcat("* applying @{fun_name} for @{top_value_method[i]}:@{partition_method[j]}\n")
 	    	res = object[top_value_method[i], partition_method[j]]
 	    	# if(!missing(k)) {
-		    # 	if(get_stat(res, k = k)[, "PAC"] < 0.05) {
+		    # 	if(get_stats(res, k = k)[, "PAC"] < 0.05) {
 		    # 		highlight_row = c(highlight_row, i + 1)
 		    # 		highlight_col = c(highlight_col, j + 1)
 		    # 	}
@@ -213,7 +213,7 @@ setMethod(f = "collect_plots",
     upViewport()
     if(file.exists(file_name)) file.remove(file_name)
 
-    # pac = get_stat(object, k = all_k)[, "PAC"]
+    # pac = get_stats(object, k = all_k)[, "PAC"]
     # border_color = ifelse(pac < 0.1, "red", "black")
     border_color = rep("black", length(all_k))
 	
@@ -403,7 +403,7 @@ setMethod(f = "collect_classes",
 		rgb( 1 - (1 - t(col2rgb(col)/255)) * (1 - transparency))
 	}
 
-	pac = get_stat(object, k)[, "PAC"][colnames(class_mat)]
+	pac = get_stats(object, k)[, "PAC"][colnames(class_mat)]
 	consensus_class = get_classes(object, k = k)$class
 	m = t(class_mat)
 	column_order = column_order_by_group(consensus_class, m)
@@ -429,7 +429,7 @@ setMethod(f = "collect_classes",
 			col = list(consensus_class = brewer_pal_set2_col),
 			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE),
 		bottom_annotation = bottom_annotation, width = 1) + 
-		rowAnnotation(mean_silhouette = row_anno_barplot(get_stat(object, k = k)[colnames(class_mat), "mean_silhouette"], baseline = 0, axis = TRUE),
+		rowAnnotation(mean_silhouette = row_anno_barplot(get_stats(object, k = k)[colnames(class_mat), "mean_silhouette"], baseline = 0, axis = TRUE),
 			width = unit(2, "cm")) +
 		rowAnnotation("Top value method" = top_value_method_vec, 
 			"Partition method" = partition_method_vec,

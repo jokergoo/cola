@@ -102,7 +102,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	    .env$all_top_value_list = NULL
 
 	    qqcat("* best k = @{best_k}, the farthest subgroup: @{s}\n")
-		PAC_score = get_stat(part, k = best_k)[, "PAC"]
+		PAC_score = get_stats(part, k = best_k)[, "PAC"]
 	    if(PAC_score > PAC_cutoff) {
 	    	qqcat("* PAC score is too big @{sprintf('%.2f', PAC_score)}, stop.\n")
 	    	return(NULL)

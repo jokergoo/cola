@@ -66,6 +66,8 @@ mat = get_matrix(res_list)
 dim(mat)
 ```
 
+### Density distribution
+
 The density distribution for each sample is visualized as heatmap as one column in follwing plot:
 
 ```{r, echo = FALSE, message = FALSE}
@@ -96,7 +98,7 @@ message(qq("* subgroups are detected by '@{paste(res_list@partition_method, coll
 message(qq("  - in total @{n_method} combinations of methods"))
 ```
 
-`res_list` contains results for 	
+### Guess best k
 
 ```{r, echo = FALSE, message = FALSE}
 t1 = Sys.time()
@@ -122,6 +124,8 @@ kable(tb)
 fs = min(c(3*n_top_value_method, 14))/n_partition_method
 ```
 
+### CDF of consensus matrices
+
 CDF of consensus matrix for all methods:
 
 ```{r, echo = FALSE, message = FALSE}
@@ -137,6 +141,8 @@ collect_plots(res_list, fun = plot_ecdf)
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making consensus heatmaps for all methods"), appendLF = FALSE)
 ```
+
+### Consensus heatmap
 
 Consensus heatmaps for all methods:
 
@@ -159,6 +165,8 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = S
 message(qq("* making membership heatmaps for all methods"), appendLF = FALSE)
 ```
 
+### Membership heatmap
+
 Membership heatmaps for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
@@ -174,6 +182,8 @@ knitr_insert_tabs()
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making signature heatmaps for all methods"), appendLF = FALSE)
 ```
+
+### Signature heatmap
 
 Signature heatmaps for all methods:
 
@@ -191,6 +201,8 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = S
 message(qq("* getting statistics for all methods"), appendLF = FALSE)
 ```
 
+### Statistics table
+
 Get statistics for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
@@ -200,6 +212,7 @@ knitr_add_tab_item('get_stat(res_list, k = <%=k%>)', 'k = <%=k%>')
 knitr_insert_tabs()
 ```
 
+### Partition from all methods
 
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
@@ -221,6 +234,8 @@ knitr_insert_tabs()
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* overlaping top rows from different top value methods"), appendLF = FALSE)
 ```
+
+### Top rows overlap
 
 Overlap of top rows in different top methods:
 

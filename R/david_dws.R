@@ -12,14 +12,19 @@ DAVID_ALL_CATALOGS = strsplit(DAVID_ALL_CATALOGS, ",")[[1]]
 # == param
 # -genes a vector of gene identifiers.
 # -email the email that user registered on DAVID web service (https://david.ncifcrf.gov/content.jsp?file=WS.html ).
-# -catalog a vector of function catalogs. Valid values are in ``cola:::DAVID_ALL_CATALOGS``.
-# -idtype id types for the input gene list. Valid values are in ``cola:::DAVID_ALL_ID_TYPES``.
-# -species full species name if the id type is not uniquely mapped to one single species
+# -catalog a vector of function catalogs. Valid values should be in ``cola:::DAVID_ALL_CATALOGS``.
+# -idtype ID types for the input gene list. Valid values should be in ``cola:::DAVID_ALL_ID_TYPES``.
+# -species full species name if the ID type is not uniquely mapped to one single species.
 #
 # == details
-# This function just performed a quick DAVID analysis. Users are encouraged to use other
-# gene set enrichment tools such as **clusterProfiler** (http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html ), 
-# **fgsea** (http://www.bioconductor.org/packages/release/bioc/html/fgsea.html).
+# This function directly sends the HTTP request to DAVID web service (https://david.ncifcrf.gov/content.jsp?file=WS.html )
+# and parses the returned XML. The reason of writing this function is I have problems with other
+# R packages doing DAVID analysis (e.g. RDAVIDWebService, https://bioconductor.org/packages/devel/bioc/html/RDAVIDWebService.html)
+# because the rJava package RDAVIDWebService depends on can not be installed on our cluster.
+#
+# Users are encouraged to use more advanced
+# gene set enrichment tools such as clusterProfiler (http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html ), 
+# or fgsea (http://www.bioconductor.org/packages/release/bioc/html/fgsea.html).
 #
 # If you want to run this function multiple times, please set time intervals between runs.
 # 
@@ -37,18 +42,18 @@ submit_to_david = function(genes, email,
 	idtype = "ENSEMBL_GENE_ID", species = "Homo sapiens") {
 
 	if(missing(email)) {
-		stop("You need to register to DAVID web service.")
+		stop_wrap("You need to register to DAVID web service.")
 	}
 
 	if(!idtype %in% DAVID_ALL_ID_TYPES) {
 		cat("idtype is wrong, it should be in:\n")
 		print(DAVID_ALL_ID_TYPES)
-		stop("You have an error.")
+		stop_wrap("You have an error.")
 	}
 	if(!all(catalog %in% DAVID_ALL_CATALOGS)) {
 		cat("catalog is wrong, it should be in:\n")
 		print(DAVID_ALL_CATALOGS)
-		stop("You have an error.")
+		stop_wrap("You have an error.")
 	}
 
 	if(grepl("ENSEMBL", idtype)) {
@@ -56,25 +61,25 @@ submit_to_david = function(genes, email,
 		genes = names(map)
 	}
 
-	message(qq("Idtype: @{idtype}"))
-	message(qq("Catalog: @{paste(catalog, collapse = ' ')}"))
+	message_wrap(qq("Idtype: @{idtype}"))
+	message_wrap(qq("Catalog: @{paste(catalog, collapse = ' ')}"))
 	
 	DAVID_DWS = "https://david-d.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap11Endpoint"
 
 	# login
-	message(qq("log to DAVID web service with @{email}"))
+	message_wrap(qq("log to DAVID web service with @{email}"))
 	response = GET(qq("@{DAVID_DWS}/authenticate"),
 		query = list("args0" = email)
 	)
 	if(xml_text(httr::content(response)) != "true") {
-		stop(qq("@{email} has not been registed."))
+		stop_wrap(qq("@{email} has not been registed."))
 	}
 
 	# add gene list
-	message(qq("add gene list (@{length(genes)} genes)"))
+	message_wrap(qq("add gene list (@{length(genes)} genes)"))
 	if(length(genes) > 2500) {
 		genes = sample(genes, 2500)
-		message("There are more than 2500 genes, only randomly sample 2500 from them.")
+		message_wrap("There are more than 2500 genes, only randomly sample 2500 from them.")
 	}
 	response = POST(qq("@{DAVID_DWS}/addList"),
 		body = list("args0" = paste(genes, collapse = ","),  # inputIds
@@ -89,20 +94,20 @@ submit_to_david = function(genes, email,
 		if(length(i) != 1) {
 			cat("check your species, mapped species are:\n")
 			print(all_species)
-			stop("you have an error.")
+			stop_wrap("you have an error.")
 		}
 		GET(qq("@{DAVID_DWS}/getSpecies"),
 			query = list("arg0" = i))
 	} else {
-		message(qq("There is one unique species (@{all_species}) mapped, no need to check species."))
+		message_wrap(qq("There is one unique species (@{all_species}) mapped, no need to check species."))
 	}
 
-	message("set catalogs")
+	message_wrap("set catalogs")
 	response = GET(qq("@{DAVID_DWS}/setCategories"),
 		query = list("args0" = paste(catalog, collapse = ","))
 	)
 
-	message(qq("doing enrichment"))
+	message_wrap(qq("doing enrichment"))
 	response = GET(qq("@{DAVID_DWS}/getTermClusterReport"),
 		query = list("args0" = 3,         # overlap, int
 			         "args1" = 3,         # initialSeed, int
@@ -110,7 +115,7 @@ submit_to_david = function(genes, email,
 			         "args3" = 0.5,       # linkage, double
 			         "args4" = 1))        # kappa, int
 
-	message(qq("formatting results"))
+	message_wrap(qq("formatting results"))
 	xml = httr::content(response)
 	clusters = xml_children(xml)
 	lt = lapply(clusters, function(x) {
