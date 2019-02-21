@@ -5,20 +5,20 @@
 # == param
 # -data a numeric matrix where subgroups are found by columns.
 # -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
-#                   Use `register_top_value_method` to add a new top-value method.
+#                   Use `register_top_value_methods` to add a new top-value method.
 # -top_n number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
 #        the function only randomly sample 5000 rows from top n rows. If ``top_n`` is a vector, paritition
 #        will be applied to every values in ``top_n`` and consensus partition is summarized from all partitions.
 # -partition_method a single partition method. Available methods are in `all_partition_methods`.
-#                   Use `register_partition_method` to add a new partition method.
+#                   Use `register_partition_methods` to add a new partition method.
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions.
 # -p_sampling proportion of the top n rows to sample.
 # -partition_repeat number of repeats for the random sampling.
-# -partition_param parameters for the partition method which are passed to ``...`` in a registered partition method. See `register_partition_method` for detail.
+# -partition_param parameters for the partition method which are passed to ``...`` in a registered partition method. See `register_partition_methods` for detail.
 # -anno a data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation
 #       to predicted subgroups will be tested.
 # -anno_col a list of colors (a named vector) for the annotations in ``anno``. If not specified, random colors are used.
-# -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_method` is used.
+# -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
 # -verbose whether print messages.
 # -.env an environment, internally used.
 #

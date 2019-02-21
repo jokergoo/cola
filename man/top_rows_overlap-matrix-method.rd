@@ -21,7 +21,7 @@ Overlap of top rows from different top-value methods
 
 }
 \details{
-It first calculates scores for every top-value method and make plot by \code{\link{top_row_overlap,list-method}}.
+It first calculates scores for every top-value method and make plot by \code{\link{top_elements_overlap}}.
 }
 \value{
 No value is returned.

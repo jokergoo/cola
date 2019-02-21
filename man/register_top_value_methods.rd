@@ -29,7 +29,7 @@ Of course, you can use \code{\link[matrixStats]{rowSds}} to give a faster calcul
 
 The registered top-value method will be used as defaults in \code{\link{run_all_consensus_partition_methods}}.
 
-To remove a top-value method, use \code{\link{remove_top_value_method}}.
+To remove a top-value method, use \code{\link{remove_top_value_methods}}.
 
 There are four default top-value methods:
 

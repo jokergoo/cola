@@ -42,7 +42,7 @@ setMethod(f = "top_rows_overlap",
 # -... additional arguments passed to `venn_euler` or `correspond_between_rankings`.
 #
 # == details
-# It first calculates scores for every top-value method and make plot by `top_row_overlap,list-method`.
+# It first calculates scores for every top-value method and make plot by `top_elements_overlap`.
 #
 # == value
 # No value is returned.

@@ -26,16 +26,16 @@ consensus_partition(data,
 \arguments{
 
   \item{data}{a numeric matrix where subgroups are found by columns.}
-  \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}. Use \code{\link{register_top_value_method}} to add a new top-value method.}
+  \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}. Use \code{\link{register_top_value_methods}} to add a new top-value method.}
   \item{top_n}{number of rows with top values. The value can be a vector with length > 1. When n > 5000,  the function only randomly sample 5000 rows from top n rows. If \code{top_n} is a vector, paritition will be applied to every values in \code{top_n} and consensus partition is summarized from all partitions.}
-  \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}. Use \code{\link{register_partition_method}} to add a new partition method.}
+  \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}. Use \code{\link{register_partition_methods}} to add a new partition method.}
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions.}
   \item{p_sampling}{proportion of the top n rows to sample.}
   \item{partition_repeat}{number of repeats for the random sampling.}
-  \item{partition_param}{parameters for the partition method which are passed to \code{...} in a registered partition method. See \code{\link{register_partition_method}} for detail.}
+  \item{partition_param}{parameters for the partition method which are passed to \code{...} in a registered partition method. See \code{\link{register_partition_methods}} for detail.}
   \item{anno}{a data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation to predicted subgroups will be tested.}
   \item{anno_col}{a list of colors (a named vector) for the annotations in \code{anno}. If not specified, random colors are used.}
-  \item{scale_rows}{whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_method}} is used.}
+  \item{scale_rows}{whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
   \item{verbose}{whether print messages.}
   \item{.env}{an environment, internally used.}
 

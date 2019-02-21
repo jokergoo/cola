@@ -56,8 +56,9 @@ and the predicted classes. The function should returns a vector of FDR from the 
 A data frame with more than two columns:
 
 \describe{
-  \item{\code{\link{which_row}}:}{row index corresponding to the original matrix.}
-  \item{\code{\link{fdr}}:}{the FDR. - other columns are the mean expression (depending rows are scaled or not) in each subgroup.}
+  \item{\code{which_row}:}{row index corresponding to the original matrix.}
+  \item{\code{fdr}:}{the FDR.}
+  \item{other_columns:}{the mean expression (depending rows are scaled or not) in each subgroup.}
 }
 }
 \author{
@@ -66,4 +67,5 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
+
 }

@@ -18,8 +18,8 @@ relabel_class(class, ref, full_set = union(class, ref))
 }
 \details{
 In partition, the exact value of the class ID is not of importance. E.g. for two partitions
-\code{\link{a, a, a, b, b, b, b}} and \code{\link{b, b, b, a, a, a, a}}, they are the same partitions although the labels
-of \code{\link{a}} and \code{\link{b}} are switched in the two partitions. Here \code{\link{relabel_class}} function switches the labels
+\code{a, a, a, b, b, b, b} and \code{b, b, b, a, a, a, a}, they are the same partitions although the labels
+of \code{a} and \code{b} are switched in the two partitions. Here \code{\link{relabel_class}} function switches the labels
 in \code{class} vector accoring to the labels in \code{ref} vector to maximize \code{sum(class == ref)}.
 
 Mathematically, this is called linear sum assignment problem and is solved by \code{\link[clue]{solve_LSAP}}.

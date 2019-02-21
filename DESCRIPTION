@@ -65,3 +65,4 @@ URL: https://github.com/jokergoo/cola
 VignetteBuilder: knitr
 biocViews: Clustering, GeneExpression, Classification, Software
 License: MIT + file LICENSE
+RoxygenNote: 6.1.1

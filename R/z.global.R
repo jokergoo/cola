@@ -33,7 +33,7 @@ get_top_value_method = function(method) {
 #
 # The registered top-value method will be used as defaults in `run_all_consensus_partition_methods`.
 # 
-# To remove a top-value method, use `remove_top_value_method`.
+# To remove a top-value method, use `remove_top_value_methods`.
 #
 # There are four default top-value methods:
 #
@@ -151,7 +151,7 @@ get_partition_method = function(method, partition_param = list()) {
 # The partition function should be applied on columns (Users should be careful with this because some of the R functions apply on rows and
 # some of the R functions apply on columns). E.g. following is how we register `stats::kmeans` partition method:
 #
-#   register_partition_method(
+#   register_partition_methods(
 #       kmeans = function(mat, k, ...) {
 #           # mat is transposed because kmeans() applies on rows
 #           kmeans(t(mat), centers = k, ...)$centers
@@ -166,7 +166,7 @@ get_partition_method = function(method, partition_param = list()) {
 #
 # -"hclust" hierarchcial clustering with Euclidean distance, later columns are partitioned by `stats::cutree`.
 #           If users want to use another distance metric or clustering method, consider to register a new partition method. E.g.
-#           ``register_partition_method(hclust_cor = function(mat, k) hc = cutree(hclust(as.dist(cor(mat)))))``.
+#           ``register_partition_methods(hclust_cor = function(mat, k) hc = cutree(hclust(as.dist(cor(mat)))))``.
 # -"kmeans" by `stats::kmeans`.
 # -"skmeans" by `skmeans::skmeans`.
 # -"pam" by `cluster::pam`.
@@ -183,12 +183,12 @@ get_partition_method = function(method, partition_param = list()) {
 #
 # == examples
 # all_partition_methods()
-# register_partition_method(
+# register_partition_methods(
 #     random = function(mat, k) sample(k, ncol(mat), replace = TRUE)
 # )
 # all_partition_methods()
 # remove_partition_methods("random")
-register_partition_method = function(..., scale_method = c("standardization", "rescale", "none")) {
+register_partition_methods = function(..., scale_method = c("standardization", "rescale", "none")) {
 	
 	scale_method = match.arg(scale_method)[1]
 	lt = list(...)
@@ -246,7 +246,7 @@ all_partition_methods = function() {
 	.ENV$ALL_PARTITION_METHODS
 }
 
-register_partition_method(
+register_partition_methods(
 	hclust = function(mat, k, ...) {
 		hc = hclust(d = dist(t(mat)), ...)
 		cutree(hc, k)
@@ -300,7 +300,7 @@ register_partition_method(
 # == details
 # It actually runs following code:
 #
-#     register_partition_method(
+#     register_partition_methods(
 #         nnmf = function(mat, k, ...) {
 #             fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
 #             apply(fit$H, 2, which.max)
@@ -313,7 +313,7 @@ register_NMF = function() {
 	if(!requireNamespace("NNLM")) {
 		stop("You need to install NNLM package to support NMF.")
 	}
-	register_partition_method(
+	register_partition_methods(
 		nnmf = function(mat, k, ...) {
 			fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
 			apply(fit$H, 2, which.max)

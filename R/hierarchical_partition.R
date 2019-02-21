@@ -52,7 +52,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 #
 # There is a special way to encode the node in the hierarchy. The length of the node name
 # is the depth of the node in the hierarchy and the substring excluding the last digit is the name
-# node of the parent node. E.g. for the node `0011`, the depth is 4 and the parent node is `001`.
+# node of the parent node. E.g. for the node ``0011``, the depth is 4 and the parent node is ``001``.
 #
 # == return
 # A `HierarchicalPartition-class` object. Simply type object in the interactive R session
@@ -631,7 +631,7 @@ setMethod(f = "collect_classes",
 
 	dend = calc_dend(object, depth = depth)
 
-	ht_list = Heatmap(cl, name = "Groups", col = object@subgroup_col,
+	ht_list = Heatmap(cl, name = "Groups", col = object@subgroup_col, width = unit(5, "mm"),
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
 		show_row_names = FALSE)
 	if(!is.null(anno)) {

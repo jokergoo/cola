@@ -39,9 +39,9 @@
 # == return 
 # A data frame with more than two columns:
 #
-# -`which_row`: row index corresponding to the original matrix.
-# -`fdr`: the FDR.
-# - other columns are the mean expression (depending rows are scaled or not) in each subgroup.
+# -``which_row``: row index corresponding to the original matrix.
+# -``fdr``: the FDR.
+# -other_columns: the mean expression (depending rows are scaled or not) in each subgroup.
 # 
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -205,11 +205,17 @@ setMethod(f = "get_signatures",
 	# names(group2) = rownames(mat)
 
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2)
-	mean_mat = tapply(seq_len(ncol(mat)), class, function(ind) {
-		rowMeans(mat[, ind, drop = FALSE])
-	})
-	colnames(mean_mat) = paste0("mean_", unique(class))
-	returned_df = cbind(returned_df, mean_mat)
+	mat1 = mat[, column_used_logical, drop = FALSE]
+	if(nrow(mat) == 1) {
+		group_mean = matrix(tapply(mat1, class, mean), nrow = 1)
+	} else {
+		group_mean = do.call("cbind", tapply(seq_len(ncol(mat1)), class, function(ind) {
+			rowMeans(mat1[, ind, drop = FALSE])
+		}))
+	}
+
+	colnames(group_mean) = paste0("mean_", unique(class))
+	returned_df = cbind(returned_df, group_mean)
 	returned_df = returned_df[order(returned_df[, "fdr"]), ]
 	returned_obj = returned_df
 	attr(returned_obj, "sample_used") = column_used_logical

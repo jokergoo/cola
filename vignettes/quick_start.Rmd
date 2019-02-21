@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr}
-%\VignetteIndexEntry{A Quick Start of Using cola Package}
+%\VignetteIndexEntry{1. A Quick Start of Using cola Package}
 -->
 
 A Quick Start of Using cola Package

@@ -27,7 +27,7 @@ The function looks for subgroups in a hierarchical way.
 
 There is a special way to encode the node in the hierarchy. The length of the node name
 is the depth of the node in the hierarchy and the substring excluding the last digit is the name
-node of the parent node. E.g. for the node \code{\link{0011}}, the depth is 4 and the parent node is \code{\link{001}}.
+node of the parent node. E.g. for the node \code{0011}, the depth is 4 and the parent node is \code{001}.
 }
 \value{
 A \code{\link{HierarchicalPartition-class}} object. Simply type object in the interactive R session

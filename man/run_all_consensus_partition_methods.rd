@@ -20,8 +20,8 @@ run_all_consensus_partition_methods(data,
 \arguments{
 
   \item{data}{a numeric matrix where subgroups are found by columns.}
-  \item{top_value_method}{method which are used to extract top n rows. Allowed methods are in \code{\link{all_top_value_methods}} and can be self-added by \code{\link{register_top_value_method}}.}
-  \item{partition_method}{method which are used to do partition on samples.  Allowed methods are in \code{\link{all_partition_methods}} and can be self-added  by \code{\link{register_partition_method}}.}
+  \item{top_value_method}{method which are used to extract top n rows. Allowed methods are in \code{\link{all_top_value_methods}} and can be self-added by \code{\link{register_top_value_methods}}.}
+  \item{partition_method}{method which are used to do partition on samples.  Allowed methods are in \code{\link{all_partition_methods}} and can be self-added  by \code{\link{register_partition_methods}}.}
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions.}
   \item{top_n}{number of rows with top values. The value can be a vector with length > 1. When n > 5000,  the function only randomly sample 5000 rows from top n rows. If \code{top_n} is a vector, paritition will be applied to every values in \code{top_n} and consensus partition is summarized from all partitions.}
   \item{mc.cores}{number of cores to use.}
@@ -29,7 +29,7 @@ run_all_consensus_partition_methods(data,
   \item{anno_col}{a list of colors for the annotations in \code{anno}.}
   \item{p_sampling}{proportion of the top n rows to sample.}
   \item{partition_repeat}{number of repeats for the random sampling.}
-  \item{scale_rows}{whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_method}} is used.}
+  \item{scale_rows}{whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
 
 }
 \details{

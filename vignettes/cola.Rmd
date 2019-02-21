@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr}
-%\VignetteIndexEntry{A Framework for Consensus and Hierarchical Partitioning}
+%\VignetteIndexEntry{2. A Framework for Consensus and Hierarchical Partitioning}
 -->
 
 cola: A General Framework for Consensus and Hierarchical Partitioning
@@ -221,12 +221,12 @@ These top methods are:
   giving large values.
 - `MAD`: [Median absolute
   deviation](https://en.wikipedia.org/wiki/Median_absolute_deviation).
-- `AAC`: A new method proposed in **cola** package and it will be explained later
+- `ATC`: A new method proposed in **cola** package and it will be explained later
   in this section.
 
 These methods can be used in consensus partition by providing the name.
 
-You can register a new top-value method by `register_top_value_method()`. The
+You can register a new top-value method by `register_top_value_methods()`. The
 value should be functions. For each function, it should only have one
 argument which is the matrix for analysis and it must return a vector with
 scores for rows. In following example, the "max" method uses the row maximum
@@ -235,7 +235,7 @@ dispersion](https://en.wikipedia.org/wiki/Quartile_coefficient_of_dispersion))
 method as a second method here.
 
 ```{r}
-register_top_value_method(
+register_top_value_methods(
 	max = function(mat) rowMaxs(mat),
 	QCD = function(mat) {
 		qa = matrixStats::rowQuantile(mat, probs = c(0.25, 0.75))
@@ -247,15 +247,15 @@ all_top_value_methods()
 By default, the consensus partition functions
 `run_all_consensus_partition_methods()` use all registered top-value methods,
 but still you can explicitly specify a subset of top-value methods. To remove
-registered top-value methods, simply use `remove_top_value_method()` by
+registered top-value methods, simply use `remove_top_value_methods()` by
 providing a vector of names.
 
 ```{r}
-remove_top_value_method(c("max", "QCD"))
+remove_top_value_methods(c("max", "QCD"))
 all_top_value_methods()
 ```
 
-### The AAC method
+### The ATC method
 
 Choosing the top rows in the matrix is important for the subgroup
 classification. In most of the cases, we extract the most variable rows which
@@ -269,26 +269,26 @@ there must be groups of rows showing similar pattern to support the
 subgrouping, in other words, rows in the same groups should have high
 correlations to each other. Thus, if we can get rows that more correlate to
 others, they are more strong to form a stable subgroup for the samples.
-According to this thought, we designed the AAC method.
+According to this thought, we designed the ATC method.
 
 For row $i$ in a matrix, $X$ is a vector of the absolute correlation to all other rows,
-the AAC (area above the correlation CDF curve) for row $i$ is defined as:
+the ATC (area above the correlation CDF curve) for row $i$ is defined as:
 
-$$AAC_i = 1 - \int_0^1F(x)$$
+$$ATC_i = 1 - \int_0^1F(x)$$
 
 where $F(x)$ is the empirical CDF (cumulative distribution function) of $X$.
 
-In following plot, the line is the CDF curve. AAC is the area above the CDF
+In following plot, the line is the CDF curve. ATC is the area above the CDF
 curve. It can be imagined that when row $i$ correlates with more other rows,
-the CDF curve shifts more to the right, thus with higher AAC scores.
+the CDF curve shifts more to the right, thus with higher ATC scores.
 
 ```{r, echo = FALSE, fig.width = 5, fig.height = 5}
-source("AAC.R")
+source("ATC.R")
 par(mar = c(4, 4, 1, 1))
-AAC_definition()
+ATC_definition()
 ```
 
-Next we perform a simulation test to show the attributes of AAC. A matrix with
+Next we perform a simulation test to show the attributes of ATC. A matrix with
 160 rows with random values are generated as follows:
 
 1. 100 rows with mean of 0, covariance of 0 with 1 on the diagnal;
@@ -298,18 +298,18 @@ Next we perform a simulation test to show the attributes of AAC. A matrix with
    (intemediate correlation but a large group of rows).
 
 In the left figure in following, they are ECDF curves of the correlation when
-calculating AAC scores. The middle figure is the AAC for all 160 rows and the
+calculating ATC scores. The middle figure is the ATC for all 160 rows and the
 right figure is the standard deviation for the 160 rows.
 
 ```{r, echo = FALSE, fig.width = 12, fig.height = 4}
-AAC_simulation()
+ATC_simulation()
 ```
 
 All the 160 rows have theretical variance of 1 that they cannot be
 distinguished very well by using variance. As a contrast, the rows with
-covariance have higher AAC values, even higher when the number of correlated
+covariance have higher ATC values, even higher when the number of correlated
 rows increases (although the correlation value itself is small). This shows
-AAC method can assign higher values for rows which have wide-range correlation
+ATC method can assign higher values for rows which have wide-range correlation
 patterns.
 
 ## Partition methods
@@ -331,7 +331,7 @@ These partition methods are:
   the first three principle dimension from the original matrix.
 
 Similarly, you can register a new partition method by
-`register_partition_method()`. The value is should be functions with two
+`register_partition_methods()`. The value is should be functions with two
 arguments which are the input matrix and number of partitions. There can be a
 third argument for the function which is  `...` used for passing more
 arguments from the main partition functions. The function should only return a
@@ -344,19 +344,21 @@ Following example registers a partition method which randomly assign subgroup
 labels to samples:
 
 ```{r}
-register_partition_method(random = function(mat, k) {
-	sample(letters[1:k], ncol(mat), replace = TRUE)
-})
+register_partition_methods(
+    random = function(mat, k) {
+        sample(letters[1:k], ncol(mat), replace = TRUE)
+    }
+)
 ```
 
 Here the subgroup labels can be in any types (numbers, characters). They only
 need to be different for different classes. These labels will be re-encoded
 with numeric indices internally.
 
-To remove a partition method, use `remove_partition_method()`:
+To remove a partition method, use `remove_partition_methods()`:
 
 ```{r}
-remove_partition_method("random")
+remove_partition_methods("random")
 ```
 
 Following code registers SOM and NMF partition methods:
@@ -364,7 +366,7 @@ Following code registers SOM and NMF partition methods:
 ```{r, eval = FALSE}
 # code is only for demonstration
 library(kohonen)
-register_partition_method(
+register_partition_methods(
     som = function(mat, k, ...) {
         kr = floor(sqrt(ncol(mat)))
         somfit = som(t(mat), grid = somgrid(kr, kr, "hexagonal"), ...)
@@ -381,7 +383,7 @@ register_partition_method(
     }
 )
 library(NNLM)
-register_partition_method(
+register_partition_methods(
     nnmf = function(mat, k, ...) {
         fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
         apply(fit$H, 2, which.max)
@@ -528,7 +530,7 @@ it as $k$). Normally, a list of $k$ are tried to find the best $k$. **cola**
 provides metrics introduced later to help to determine the best number of subgroups.
 For the topic of determining best number of clustering, please refer to [the NbClust package](https://cran.r-project.org/web/packages/NbClust/index.html).
 
-The `get_stat()` function returns statistics for all metrics mentioned below
+The `get_stats()` function returns statistics for all metrics mentioned below
 and `select_partition_number()` plots the statistics with the number of
 subgroups.
 
@@ -664,7 +666,7 @@ The corresponding CDF curves and the area increased are:
 ```{r, echo = FALSE, fig.width = 10, fig.height = 5}
 par(mfrow = c(1, 2))
 plot_ecdf(cola_rl["sd:kmeans"], lwd = 1)
-area_increased = get_stat(cola_rl["sd:kmeans"])[, "area_increased"]
+area_increased = get_stats(cola_rl["sd:kmeans"])[, "area_increased"]
 plot(2:6, area_increased, type = "b", xlab = "k", ylab = "area increased")
 ```
 
@@ -790,7 +792,7 @@ Functions on `ConsensusPartitionList` class that are important or users might us
 - `get_anno()`: Extract the self-defined annotation if it is available.
 - `get_classes()`: The global consensus subgroup by taking subgroups from all methods together.
 - `get_matrix()`: Extract the input data matrix.
-- `get_stat()`: Extract the statistics for determining best number of subgroups.
+- `get_stats()`: Extract the statistics for determining best number of subgroups.
 - `guess_best_k()`: Guess the best $k$ for each method.
 - `test_to_known_factors()`: Apply tests to the annotations if provides. The test will be Fisher's exact test or ANOVA depending on the data type of the annotation.
 - `top_rows_heatmap()`: Make heatmaps for `top_n` rows under different top-value methods.
@@ -808,7 +810,7 @@ Functions on `ConsensusPartition` class:
 - `get_consensus()`: Get the consensus matrix for a specific $k$.
 - `get_matrix()`: Extract the input data matrix.
 - `get_signatures()`: Make the heatmap for the signatures. 
-- `get_stat()`: Extract the statistics for determining best number of subgroups.
+- `get_stats()`: Extract the statistics for determining best number of subgroups.
 - `guess_best_k()`: Guess the best $k$.
 - `membership_heatmap()`: Make the membership heatmap.
 - `plot_ecdf()`: Plot the ECDF of the consensus matrix for all $k$.

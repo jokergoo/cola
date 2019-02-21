@@ -5,10 +5,10 @@
 # == param
 # -data a numeric matrix where subgroups are found by columns.
 # -top_value_method method which are used to extract top n rows. Allowed methods
-#        are in `all_top_value_methods` and can be self-added by `register_top_value_method`.
+#        are in `all_top_value_methods` and can be self-added by `register_top_value_methods`.
 # -partition_method method which are used to do partition on samples. 
 #        Allowed methods are in `all_partition_methods` and can be self-added 
-#        by `register_partition_method`.
+#        by `register_partition_methods`.
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions.
 # -top_n number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
 #        the function only randomly sample 5000 rows from top n rows. If ``top_n`` is a vector, paritition
@@ -18,7 +18,7 @@
 # -anno_col a list of colors for the annotations in ``anno``.
 # -p_sampling proportion of the top n rows to sample.
 # -partition_repeat number of repeats for the random sampling.
-# -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_method` is used.
+# -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
 #
 # == details
 # The function runs consensus partitions by `consensus_partition` for all combinations of top methods and parittion methods.

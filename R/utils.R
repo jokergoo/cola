@@ -16,8 +16,8 @@ if(!exists("strrep")) {
 #
 # == details
 # In partition, the exact value of the class ID is not of importance. E.g. for two partitions
-# `a, a, a, b, b, b, b` and `b, b, b, a, a, a, a`, they are the same partitions although the labels
-# of `a` and `b` are switched in the two partitions. Here `relabel_class` function switches the labels
+# ``a, a, a, b, b, b, b`` and ``b, b, b, a, a, a, a``, they are the same partitions although the labels
+# of ``a`` and ``b`` are switched in the two partitions. Here `relabel_class` function switches the labels
 # in ``class`` vector accoring to the labels in ``ref`` vector to maximize ``sum(class == ref)``.
 #
 # Mathematically, this is called linear sum assignment problem and is solved by `clue::solve_LSAP`.

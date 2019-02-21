@@ -1,5 +1,5 @@
-\name{register_partition_method}
-\alias{register_partition_method}
+\name{register_partition_methods}
+\alias{register_partition_methods}
 \title{
 Register user-defined partition functions
 }
@@ -7,7 +7,7 @@ Register user-defined partition functions
 Register user-defined partition functions
 }
 \usage{
-register_partition_method(..., scale_method = c("standardization", "rescale", "none"))
+register_partition_methods(..., scale_method = c("standardization", "rescale", "none"))
 }
 \arguments{
 
@@ -27,7 +27,7 @@ The partition function should be applied on columns (Users should be careful wit
 some of the R functions apply on columns). E.g. following is how we register \code{\link[stats]{kmeans}} partition method:
 
   \preformatted{
-  register_partition_method(
+  register_partition_methods(
       kmeans = function(mat, k, ...) \{
           # mat is transposed because kmeans() applies on rows
           kmeans(t(mat), centers = k, ...)$centers
@@ -41,7 +41,7 @@ To remove a partition method, use \code{\link{remove_partition_methods}}.
 There are following default partition methods:
 
 \describe{
-  \item{"hclust"}{hierarchcial clustering with Euclidean distance, later columns are partitioned by \code{\link[stats]{cutree}}. If users want to use another distance metric or clustering method, consider to register a new partition method. E.g. \code{register_partition_method(hclust_cor = function(mat, k) hc = cutree(hclust(as.dist(cor(mat)))))}.}
+  \item{"hclust"}{hierarchcial clustering with Euclidean distance, later columns are partitioned by \code{\link[stats]{cutree}}. If users want to use another distance metric or clustering method, consider to register a new partition method. E.g. \code{register_partition_methods(hclust_cor = function(mat, k) hc = cutree(hclust(as.dist(cor(mat)))))}.}
   \item{"kmeans"}{by \code{\link[stats]{kmeans}}.}
   \item{"skmeans"}{by \code{\link[skmeans]{skmeans}}.}
   \item{"pam"}{by \code{\link[cluster]{pam}}.}
@@ -59,7 +59,7 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 all_partition_methods()
-register_partition_method(
+register_partition_methods(
     random = function(mat, k) sample(k, ncol(mat), replace = TRUE)
 )
 all_partition_methods()
