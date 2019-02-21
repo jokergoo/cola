@@ -1,10 +1,10 @@
 \name{cola_report-HierarchicalPartition-method}
 \alias{cola_report,HierarchicalPartition-method}
 \title{
-Make report for the HierarchicalPartition object
+Make report from the HierarchicalPartition object
 }
 \description{
-Make report for the HierarchicalPartition object
+Make report from the HierarchicalPartition object
 }
 \usage{
 \S4method{cola_report}{HierarchicalPartition}(object, output_dir, env = parent.frame())

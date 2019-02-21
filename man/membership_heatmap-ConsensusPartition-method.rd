@@ -1,11 +1,10 @@
 \name{membership_heatmap-ConsensusPartition-method}
 \alias{membership_heatmap,ConsensusPartition-method}
-\alias{membership_heatmap}
 \title{
-Heatmap of membership of samples in each partition
+Heatmap of membership in each partition
 }
 \description{
-Heatmap of membership of samples in each partition
+Heatmap of membership in each partition
 }
 \usage{
 \S4method{membership_heatmap}{ConsensusPartition}(object, k, internal = FALSE,
@@ -17,14 +16,14 @@ Heatmap of membership of samples in each partition
   \item{object}{a \code{\link{ConsensusPartition-class}} object.}
   \item{k}{number of partitions.}
   \item{internal}{used internally.}
-  \item{anno}{a data frame with column annotations.}
-  \item{anno_col}{colors for the annotations.}
+  \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
+  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations.}
   \item{show_column_names}{whether show column names in the heatmap (which is the column name in the original matrix).}
   \item{...}{other arguments}
 
 }
 \details{
-Each row in the heatmap is the membership of samples in one partition.
+Each row in the heatmap is the membership in one partition.
 
 Heatmap is split on rows by \code{top_n}..
 }
@@ -38,3 +37,4 @@ Zuguang Gu <z.gu@dkfz.de>
 data(cola_rl)
 membership_heatmap(cola_rl["sd", "hclust"], k = 3)
 }
+\alias{membership_heatmap}

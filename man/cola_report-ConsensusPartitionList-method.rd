@@ -1,10 +1,10 @@
 \name{cola_report-ConsensusPartitionList-method}
 \alias{cola_report,ConsensusPartitionList-method}
 \title{
-Make report for the ConsensusPartitionList object
+Make report from the ConsensusPartitionList object
 }
 \description{
-Make report for the ConsensusPartitionList object
+Make report from the ConsensusPartitionList object
 }
 \usage{
 \S4method{cola_report}{ConsensusPartitionList}(object, output_dir = getwd(), env = parent.frame())
@@ -18,8 +18,10 @@ Make report for the ConsensusPartitionList object
 }
 \details{
 The \code{\link{ConsensusPartitionList-class}} object contains results for all top-value methods and all partition methods.
-This function generates a HTML report which contains all plots for every combination
-of top-value method and partition method. The report generation may take a while.
+This function generates a HTML report which contains all plots and tables for every combination
+of top-value method and partition method.
+
+The report generation may take a while.
 }
 \value{
 No value is returned.

@@ -13,20 +13,20 @@ Get signatures rows
     anno_col = get_anno_col(object),
     show_column_names = FALSE,
     verbose = TRUE, plot = TRUE,
-    silhouette_cutoff = -Inf,
+    silhouette_cutoff = 0.5,
     ...)
 }
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{minimal depth of the hierarchy}
-  \item{scale_rows}{whether scale rows}
-  \item{anno}{annotation}
-  \item{anno_col}{annotation color}
-  \item{show_column_names}{whether show column names}
-  \item{verbose}{whether print messages}
-  \item{plot}{whether make the heatmap}
-  \item{silhouette_cutoff}{silhouette_cutoff}
+  \item{depth}{depth of the hierarchy.}
+  \item{scale_rows}{whether apply row scaling when making the heatmap.}
+  \item{anno}{a data frame with known annotation of samples.}
+  \item{anno_col}{a list of colors for the annotations in \code{anno}.}
+  \item{show_column_names}{whether show column names in the heatmap.}
+  \item{verbose}{whether to print messages.}
+  \item{plot}{whether to make the plot.}
+  \item{silhouette_cutoff}{cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
   \item{...}{other arguments}
 
 }
@@ -35,7 +35,7 @@ The function called \code{\link{get_signatures,ConsensusPartition-method}} to fi
 each level of the partition hierarchy.
 }
 \value{
-A list of signature names (row names of the original data matrix)
+A list of signature indices (row indices of the original data matrix).
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

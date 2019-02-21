@@ -22,6 +22,9 @@ and \code{\link{get_signatures}} are arranged in one single page, for all avaial
 \value{
 No value is returned.
 }
+\seealso{
+\code{\link{collect_plots,ConsensusPartitionList-method}} collects plots for the \code{\link{ConsensusPartitionList-class}} object.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

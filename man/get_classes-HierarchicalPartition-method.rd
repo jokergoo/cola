@@ -1,22 +1,22 @@
 \name{get_classes-HierarchicalPartition-method}
 \alias{get_classes,HierarchicalPartition-method}
 \title{
-Get class from the HierarchicalPartition object
+Get class IDs from the HierarchicalPartition object
 }
 \description{
-Get class from the HierarchicalPartition object
+Get class IDs from the HierarchicalPartition object
 }
 \usage{
 \S4method{get_classes}{HierarchicalPartition}(object, depth = max_depth(object))
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object}
-  \item{depth}{minimal depth of the hierarchy}
+  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
+  \item{depth}{depth of the hierarchy.}
 
 }
 \value{
-A vector of predicted classes.
+A vector of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

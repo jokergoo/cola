@@ -66,11 +66,11 @@ message('@{message}')
 	return(invisible(NULL))
 }
 
-TEMPLATE_DIR = system.file("extdata", package = "cola")
+# TEMPLATE_DIR = system.file("extdata", package = "cola")
 # TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
 
 # == title
-# Generate the HTML code for the JavaScript tabs.
+# Generate the HTML fragment for the JavaScript tabs.
 #
 # == details
 # The jQuery UI is used to generate html tabs (https://jqueryui.com/tabs/ ).
@@ -122,7 +122,7 @@ $( function() {
 }
 
 # == title
-# Make report for the ConsensusPartitionList object
+# Make report from the ConsensusPartitionList object
 #
 # == param
 # -object a `ConsensusPartitionList-class` object.
@@ -131,8 +131,10 @@ $( function() {
 #
 # == details
 # The `ConsensusPartitionList-class` object contains results for all top-value methods and all partition methods.
-# This function generates a HTML report which contains all plots for every combination
-# of top-value method and partition method. The report generation may take a while.
+# This function generates a HTML report which contains all plots and tables for every combination
+# of top-value method and partition method. 
+#
+# The report generation may take a while.
 #
 # == value
 # No value is returned.
@@ -156,7 +158,7 @@ setMethod(f = "cola_report",
 
 
 # == title
-# Make report for the ConsensusPartition object
+# Make report from the ConsensusPartition object
 #
 # == param
 # -object a `ConsensusPartition-class` object.
@@ -168,11 +170,14 @@ setMethod(f = "cola_report",
 # If you want to make report only for one single method, you can subset the 
 # `ConsensusPartitionList-class` object and then call ``cola_report``, e.g.
 #
-#     cola_report(res_list["sd", "hclust"], output_dir = ...)
+#     cola_report(res_list["sd", "hclust", drop = FALSE], output_dir = ...)
 #
 #
 # == value
 # No value is returned.
+#
+# == seealso
+# `cola_report,ConsensusPartitionList-method`
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -187,7 +192,7 @@ setMethod(f = "cola_report",
 
 
 # == title
-# Make report for the HierarchicalPartition object
+# Make report from the HierarchicalPartition object
 #
 # == param
 # -object a `HierarchicalPartition-class` object.

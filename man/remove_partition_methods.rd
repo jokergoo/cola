@@ -1,5 +1,5 @@
-\name{remove_partition_method}
-\alias{remove_partition_method}
+\name{remove_partition_methods}
+\alias{remove_partition_methods}
 \title{
 Remove partition methods
 }
@@ -7,7 +7,7 @@ Remove partition methods
 Remove partition methods
 }
 \usage{
-remove_partition_method(method)
+remove_partition_methods(method)
 }
 \arguments{
 
@@ -23,5 +23,4 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
-
 }

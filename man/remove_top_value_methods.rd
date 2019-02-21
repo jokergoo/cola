@@ -1,5 +1,5 @@
-\name{remove_top_value_method}
-\alias{remove_top_value_method}
+\name{remove_top_value_methods}
+\alias{remove_top_value_methods}
 \title{
 Remove top-value methods
 }
@@ -7,7 +7,7 @@ Remove top-value methods
 Remove top-value methods
 }
 \usage{
-remove_top_value_method(method)
+remove_top_value_methods(method)
 }
 \arguments{
 
@@ -23,5 +23,4 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
-
 }

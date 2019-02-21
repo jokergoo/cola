@@ -1,6 +1,5 @@
 \name{all_nodes-HierarchicalPartition-method}
 \alias{all_nodes,HierarchicalPartition-method}
-\alias{all_nodes}
 \title{
 All nodes in the hierarchy
 }
@@ -26,3 +25,4 @@ Zuguang Gu <z.gu@dkfz.de>
 data(cola_rh)
 all_nodes(cola_rh)
 }
+\alias{all_nodes}

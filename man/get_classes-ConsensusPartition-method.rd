@@ -1,10 +1,10 @@
 \name{get_classes-ConsensusPartition-method}
 \alias{get_classes,ConsensusPartition-method}
 \title{
-Get class from the ConsensusPartition object
+Get class IDs from the ConsensusPartition object
 }
 \description{
-Get class from the ConsensusPartition object
+Get class IDs from the ConsensusPartition object
 }
 \usage{
 \S4method{get_classes}{ConsensusPartition}(object, k = object@k)
@@ -16,7 +16,7 @@ Get class from the ConsensusPartition object
 
 }
 \value{
-A data frame with class IDs and other columns which are entropy of the membership matrix
+A data frame with class IDs and other columns which are entropy of the percent membership matrix
 and the silhouette scores which measure the stability of a sample to stay in its group.
 }
 \author{

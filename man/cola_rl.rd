@@ -2,10 +2,10 @@
 \docType{data}
 \alias{cola_rl}
 \title{
-Example for ConsensusPartitionList object
+Example ConsensusPartitionList object
 }
 \description{
-Example for ConsensusPartitionList object
+Example ConsensusPartitionList object
 }
 \usage{
 data(cola_rl)

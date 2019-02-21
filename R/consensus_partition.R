@@ -854,7 +854,7 @@ setMethod(f = "membership_heatmap",
 # -top_n top n rows to use. By default it uses all rows in the original matrix.
 # -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`.
-# -silhouette_cutoff cutoff of silhouette. Data points with values less
+# -silhouette_cutoff cutoff of silhouette score. Data points with values less
 #        than it will be mapped to small points.
 # -remove whether to remove columns which have less silhouette values than
 #        the cutoff.

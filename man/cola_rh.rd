@@ -2,10 +2,10 @@
 \docType{data}
 \alias{cola_rh}
 \title{
-Example for HierarchicalPartition object
+Example HierarchicalPartition object
 }
 \description{
-Example for HierarchicalPartition object
+Example HierarchicalPartition object
 }
 \usage{
 data(cola_rh)

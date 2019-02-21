@@ -19,7 +19,7 @@ correspond_between_rankings(lt, top_n = length(lt[[1]]),
 
 }
 \details{
-It makes plots for every pairwise comparisons between different rankings.
+It makes plots for every pairwise comparisons in \code{lt}.
 }
 \value{
 No value is returned.
@@ -34,5 +34,5 @@ x1 = rowSds(mat)
 x2 = rowMads(mat)
 x3 = rowSds(mat)/rowMeans(mat)
 correspond_between_rankings(lt = list(sd = x1, mad = x2, vc = x3), 
-    top_n = 20)
+    top_n = 20, col = c("red", "blue", "green"))
 }

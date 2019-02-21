@@ -1,6 +1,5 @@
 \name{get_param-ConsensusPartition-method}
 \alias{get_param,ConsensusPartition-method}
-\alias{get_param}
 \title{
 Get parameters
 }
@@ -17,8 +16,12 @@ Get parameters
   \item{unique}{whether apply \code{\link[base]{unique}} to rows of the returned data frame.}
 
 }
+\details{
+It is mainly used internally.
+}
 \value{
-A data frame of parameters corresponding to the current k.
+A data frame of parameters corresponding to the current k. In the data frame, each row corresponds
+to a partition run.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
@@ -30,3 +33,4 @@ get_param(obj)
 get_param(obj, k = 2)
 get_param(obj, unique = FALSE)
 }
+\alias{get_param}

@@ -9,6 +9,9 @@ All supported top-value methods
 \usage{
 all_top_value_methods()
 }
+\details{
+New top-value methods can be registered by \code{\link{register_top_value_methods}}.
+}
 \value{
 A vector of supported top-value methods.
 }

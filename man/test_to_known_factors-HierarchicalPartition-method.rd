@@ -1,10 +1,10 @@
 \name{test_to_known_factors-HierarchicalPartition-method}
 \alias{test_to_known_factors,HierarchicalPartition-method}
 \title{
-Test correspondance between predicted and known classes
+Test correspondance between predicted classes and known factors
 }
 \description{
-Test correspondance between predicted and known classes
+Test correspondance between predicted classes and known factors
 }
 \usage{
 \S4method{test_to_known_factors}{HierarchicalPartition}(object, depth = max_depth(object),
@@ -13,8 +13,8 @@ Test correspondance between predicted and known classes
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{minimal depth of the hierarchy}
-  \item{known}{a vector or a data frame with known factors}
+  \item{depth}{depth of the hierarchy.}
+  \item{known}{a vector or a data frame with known factors. By default it is the annotation table set in \code{\link{hierarchical_partition}}.}
 
 }
 \details{
@@ -27,7 +27,6 @@ A matrix of p-values.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+data(cola_rh)
+test_to_known_factors(cola_rh, 1:60)
 }

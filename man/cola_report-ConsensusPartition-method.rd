@@ -1,10 +1,10 @@
 \name{cola_report-ConsensusPartition-method}
 \alias{cola_report,ConsensusPartition-method}
 \title{
-Make report for the ConsensusPartition object
+Make report from the ConsensusPartition object
 }
 \description{
-Make report for the ConsensusPartition object
+Make report from the ConsensusPartition object
 }
 \usage{
 \S4method{cola_report}{ConsensusPartition}(object, output_dir)
@@ -22,10 +22,13 @@ If you want to make report only for one single method, you can subset the
 \code{\link{ConsensusPartitionList-class}} object and then call \code{cola_report}, e.g.
 
   \preformatted{
-    cola_report(res_list["sd", "hclust"], output_dir = ...)  }
+    cola_report(res_list["sd", "hclust", drop = FALSE], output_dir = ...)  }
 }
 \value{
 No value is returned.
+}
+\seealso{
+\code{\link{cola_report,ConsensusPartitionList-method}}
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
@@ -33,5 +36,4 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
-
 }

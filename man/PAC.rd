@@ -1,10 +1,10 @@
 \name{PAC}
 \alias{PAC}
 \title{
-PAC score
+The proportion of ambiguous clustering (PAC score)
 }
 \description{
-PAC score
+The proportion of ambiguous clustering (PAC score)
 }
 \usage{
 PAC(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
@@ -19,14 +19,14 @@ PAC(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 
 }
 \details{
-This a variant of the orignial PAC (proportion of ambiguous clustering) method.
+This a variant of the orignial PAC method.
 
 For each \code{x_1i} in \code{x1} and \code{x_2j} in \code{x2}, \code{PAC_k = F(x_2j) - F(x_1i)}
-where \code{F(x)} is the ecdf of the consensus matrix (the lower triangle matrix without diagnals). 
+where \code{F(x)} is the cumulative distribution function of the consensus matrix (the lower triangle matrix without diagnals is only used). 
 The final PAC is the mean of all \code{PAC_k} by removing top \code{trim/2} percent and bottom \code{trim/2} percent of all values.
 }
 \value{
-A single numeric score.
+A single numeric vaule.
 }
 \section{See}{
 See \url{https://www.nature.com/articles/srep06207} for explanation of PAC score.}

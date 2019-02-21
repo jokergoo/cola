@@ -12,14 +12,14 @@ adjust_matrix(m, sd_quantile = 0.05, max_na = 0.25)
 \arguments{
 
   \item{m}{a numeric matrix.}
-  \item{sd_quantile}{cutoff the quantile of standard variation. Rows with variance less than it are removed.}
-  \item{max_na}{maximum NA rate in each row. Rows with NA rate larger than it are removed.}
+  \item{sd_quantile}{cutoff the quantile of standard variation. Rows with standard deviation less than it are removed.}
+  \item{max_na}{maximum NA rate in each row. Rows with NA rate larger than this value are removed.}
 
 }
 \details{
 The function uses \code{\link[impute]{impute.knn}} to impute missing data, then
 uses \code{\link{adjust_outlier}} to adjust outliers and 
-removes rows with low standard variation.
+removes rows with low standard deviations.
 }
 \value{
 A numeric matrix.

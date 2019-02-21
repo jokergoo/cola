@@ -12,7 +12,7 @@
 # No value is returned.
 #
 # == seealso
-# `top_rows_overlap,list-method`
+# `top_elements_overlap`
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -28,7 +28,7 @@ setMethod(f = "top_rows_overlap",
 
 	all_top_value_list = object@.env$all_top_value_list
 
-	top_rows_overlap(all_top_value_list, top_n = top_n, method = method, ...)
+	top_elements_overlap(all_top_value_list, top_n = top_n, method = method, ...)
 })
 
 # == title
@@ -41,6 +41,9 @@ setMethod(f = "top_rows_overlap",
 # -method ``venn``: use Venn diagram; ``venneuler``: use Venn Euler diagram; ``correspondance``: use `correspond_between_rankings`.
 # -... additional arguments passed to `venn_euler` or `correspond_between_rankings`.
 #
+# == details
+# It first calculates scores for every top-value method and make plot by `top_row_overlap,list-method`.
+#
 # == value
 # No value is returned.
 #
@@ -48,7 +51,7 @@ setMethod(f = "top_rows_overlap",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == seealso
-# `top_rows_overlap,list-method`
+# `top_elements_overlap`
 #
 # == example
 # set.seed(123)
@@ -68,18 +71,21 @@ setMethod(f = "top_rows_overlap",
 	})
 	names(all_top_value_list) = top_value_method
 
-	top_rows_overlap(all_top_value_list, top_n = top_n, method = method, ...)
+	top_elements_overlap(all_top_value_list, top_n = top_n, method = method, ...)
 })
 
 
 # == title
-# Overlap of top rows from different top-value methods
+# Overlap of top elements from different metrics
 #
 # == param
-# -object a list which contains rankings from different metrics.
+# -object a list which contains values from different metrics.
 # -top_n number of top rows.
 # -method ``venn``: use Venn diagram; ``venneuler``: use Venn Euler diagram; ``correspondance``: use `correspond_between_rankings`.
 # -... additional arguments passed to `venn_euler` or `correspond_between_rankings`.
+#
+# == details
+# The i^th value in all vectors in the input should correspond to a same element from the original data.
 #
 # == value
 # No value is returned.
@@ -92,11 +98,14 @@ setMethod(f = "top_rows_overlap",
 # set.seed(123)
 # mat = matrix(rnorm(1000), nrow = 100)
 # lt = list(sd = rowSds(mat), mad = rowMads(mat))
-# top_rows_overlap(lt, top_n = 25)
-setMethod(f = "top_rows_overlap",
-	signature = "list",
-	definition = function(object, top_n = round(0.25*length(object[[1]])), 
+# top_element_overlap(lt, top_n = 25, method = "venn")
+# top_element_overlap(lt, top_n = 25, method = "correspondance")
+top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])), 
 		method = c("venn", "venneuler", "correspondance"), ...) {
+
+	if(length(unique(sapply(object, length))) > 1) {
+		stop_wrap("Length of all vectors in the input list should be the same.")
+	}
 
 	lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
     
@@ -109,7 +118,8 @@ setMethod(f = "top_rows_overlap",
 	} else if(method == "correspondance") {
 		correspond_between_rankings(object, top_n = top_n, ...)
 	}
-})
+	return(invisible(NULL))
+}
 
 # == title
 # Heatmap of top rows from different top-value methods
@@ -147,19 +157,19 @@ setMethod(f = "top_rows_heatmap",
 #
 # == param
 # -object a numeric matrix.
-# -all_top_value_list top values that have already been calculated from the matrix. If it is ``NULL``
+# -all_top_value_list top-values that have already been calculated from the matrix. If it is ``NULL``
 #              the values are calculated by methods in ``top_value_method`` argument.
 # -top_value_method methods defined in `all_top_value_methods`.
-# -top_n number of top rows to show.
+# -top_n number of top rows to show in the heatmap.
 # -layout_nr number of rows in the layout.
 # -scale_rows whether scale rows.
 #
 # == details
 # The function makes heatmaps where the rows are scaled (or not scaled) for the top n rows
-# from different top value methods.
+# from different top-value methods.
 #
-# The top n rows are used for subgroup classification, so the heatmaps show which top
-# value method gives better candidate rows for the classification.
+# The top n rows are used for subgroup classification in cola analysis, so the heatmaps show which 
+# top-value method gives better candidate rows for the classification.
 #
 # == value
 # No value is returned.

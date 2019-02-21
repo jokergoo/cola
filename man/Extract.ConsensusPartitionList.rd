@@ -12,8 +12,8 @@ Subset a ConsensusPartitionList object
 }
 \arguments{
 
-  \item{x}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{i}{index for top value methods, character or nummeric.}
+  \item{x}{a \code{\link{ConsensusPartitionList-class}} object.}
+  \item{i}{index for top-value methods, character or nummeric.}
   \item{j}{index for partition methods, character or nummeric.}
   \item{drop}{whether drop class}
 
@@ -27,8 +27,8 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 data(cola_rl)
 cola_rl[c("sd", "MAD"), c("hclust", "kmeans")]
-cola_rl["sd", "kmeans"]
-cola_rl["sd", "kmeans", drop = FALSE]
+cola_rl["sd", "kmeans"] # a ConsensusPartition object
+cola_rl["sd", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
 cola_rl["sd", ]
 cola_rl[, "hclust"]
 cola_rl[1:2, 1:2]

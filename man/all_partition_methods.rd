@@ -9,6 +9,9 @@ All supported partition methods
 \usage{
 all_partition_methods()
 }
+\details{
+New partition methods can be registered by \code{\link{register_partition_methods}}.
+}
 \value{
 A vector of supported partition methods.
 }

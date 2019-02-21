@@ -20,6 +20,9 @@ Overlap of top rows from different top-value methods
   \item{...}{additional arguments passed to \code{\link{venn_euler}} or \code{\link{correspond_between_rankings}}.}
 
 }
+\details{
+It first calculates scores for every top-value method and make plot by \code{\link{top_row_overlap,list-method}}.
+}
 \value{
 No value is returned.
 }
@@ -27,7 +30,7 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \seealso{
-\code{\link{top_rows_overlap,list-method}}
+\code{\link{top_elements_overlap}}
 }
 \examples{
 set.seed(123)

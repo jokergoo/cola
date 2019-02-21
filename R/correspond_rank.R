@@ -7,22 +7,23 @@
 # -x2 a vector of scores calculated by another metric.
 # -name1 name of the first metric.
 # -name2 name of the second metric.
-# -col1 color of the lines for the first metric.
-# -col2 color of the lines for the second metric.
+# -col1 color for the first metric.
+# -col2 color for the second metric.
 # -top_n top n elements to show correspondance.
 # -transparency transparency of the connection lines.
 # -pt_size size of the points, must be a `grid::unit` object
 # -newpage whether to plot in a new graphic page.
-# -ratio ratio of width of the left plot, connection lines and right plot.
+# -ratio ratio of width of the left barplot, connection lines and right barplot. The three values will be scaled to a sum of 1.
 # 
 # == details
-# In ``x1`` and ``x2``, the i^{th} element is the same object but with different 
+# In ``x1`` and ``x2``, the i^{th} element is the same object (e.g. same row if they are calculated from a matrix) but with different 
 # scores under different metrics.
 # 
 # ``x1`` and ``x2`` are sorted in the left panel and right panel. The top n elements
-# under corresponding metric are highlighted by vertical lines in both panels.
-# Lines connect the same element with top values in either ``x1`` or ``x2``, and it shows
-# e.g. the rank of the element by the second metric which has rank 1 by the first metric.
+# under corresponding metric are highlighted by vertical color lines in both panels.
+# The left and right panels also show as barplots of the scores in the two metrics.
+# Between the left and right panels, there are lines connecting the same element (e.g. i^th element in ``x1`` and ``x2``)
+# in the two ordered vectors so that you can see how a same element has two different ranks in the two metrics.
 #
 # Under the plot is a simple Venn diagram showing the overlaps of the top n elements 
 # by the two metrics.
@@ -39,7 +40,7 @@
 # x1 = rowSds(mat)
 # x2 = rowMads(mat)
 # correspond_between_two_rankings(x1, x2, name1 = "sd", name2 = "mad", top_n = 20)
-correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "", 
+correspond_between_two_rankings = function(x1, x2, name1, name2, 
 	col1 = 2, col2 = 3, top_n = round(0.25*length(x1)), transparency = 0.9, 
 	pt_size = unit(1, "mm"), newpage = TRUE, ratio = c(1, 1, 1)) {
 	
@@ -53,6 +54,9 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 
 	r1 = rank(x1, ties.method = "random")
 	r2 = rank(x2, ties.method = "random")
+
+	if(missing(name1)) name1 = deparse(substitute(x1))
+	if(missing(name2)) name2 = deparse(substitute(x2))
 
 	n = length(x1)
 	text_height = grobHeight(textGrob("foo"))*2
@@ -113,7 +117,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 # -... pass to `correspond_between_two_rankings`.
 # 
 # == details
-# It makes plots for every pairwise comparisons between different rankings.
+# It makes plots for every pairwise comparisons in ``lt``.
 #
 # == value
 # No value is returned.
@@ -128,7 +132,7 @@ correspond_between_two_rankings = function(x1, x2, name1 = "", name2 = "",
 # x2 = rowMads(mat)
 # x3 = rowSds(mat)/rowMeans(mat)
 # correspond_between_rankings(lt = list(sd = x1, mad = x2, vc = x3), 
-#     top_n = 20)
+#     top_n = 20, col = c("red", "blue", "green"))
 correspond_between_rankings = function(lt, top_n = length(lt[[1]]), 
 	col = brewer_pal_set1_col[1:length(lt)], ...) {
 

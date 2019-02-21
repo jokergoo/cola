@@ -7,8 +7,12 @@
 # -k number of partitions.
 # -unique whether apply `base::unique` to rows of the returned data frame.
 #
+# == details
+# It is mainly used internally.
+#
 # == value
-# A data frame of parameters corresponding to the current k.
+# A data frame of parameters corresponding to the current k. In the data frame, each row corresponds
+# to a partition run.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -24,10 +28,12 @@ setMethod(f = "get_param",
 	definition = function(object, k = object@k, unique = TRUE) {
 	ind = which(object@k %in% k)
 	if(unique) {
-		unique(do.call("rbind", lapply(ind, function(i) object@object_list[[i]]$param)))
+		df = unique(do.call("rbind", lapply(ind, function(i) object@object_list[[i]]$param)))
 	} else {
-		do.call("rbind", lapply(ind, function(i) object@object_list[[i]]$param))
+		df = do.call("rbind", lapply(ind, function(i) object@object_list[[i]]$param))
 	}
+	rownames(df) = NULL
+	return(df)
 })
 
 # == title
@@ -39,8 +45,7 @@ setMethod(f = "get_param",
 #
 # == details
 # For row i and column j in the consensus matrix, the value of corresponding x_ij
-# is the probability of sample i and sample j being in a same subgroup from the repetitive 
-# partitionings.
+# is the probability of sample i and sample j being in a same group from all partitions.
 #
 # == value
 # A consensus matrix corresponding to the current k.
@@ -65,19 +70,23 @@ setMethod(f = "get_consensus",
 # == param
 # -object a `ConsensusPartition-class` object.
 # -k number of partitions.
-# -each whether return the percentage membership matrix which is summarized from all repetitive partitionings
-#       or the individual membership in every random partitioning.
+# -each whether return the percentage membership matrix which is summarized from all partitions
+#       or the individual membership in every random partition.
 #
 # == details
 # If ``each == TRUE``, the value in the membership matrix is the probability
-# to be in one subgroup, while if ``each == FALSE``, the membership matrix contains the 
-# class labels for the partitions in all repetitive partitionings with randomly sampling subset
+# to be in one class, while if ``each == FALSE``, the membership matrix contains the 
+# class labels for every single partitions which are from randomly sampling subset
 # of rows in the matrix.
 #
 # The percent membership matrix is calculated by `clue::cl_consensus`.
 #
 # == value
-# A membership matrix where rows correspond to the samples in the original matrix.
+# A membership matrix where rows correspond to the columns in the original matrix.
+#
+# == seealso
+# `get_membership,ConsensusPartitionList-method` summarizes membership from partitions from all combinations
+# of top-value methods and partition methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -106,13 +115,16 @@ setMethod(f = "get_membership",
 # -k number of partitions.
 #
 # == detail
-# The membership matrix (the probability of each sample to be in a subgroup) is inferred
-# from the membership matrices of all combinations of methods, weighted by the mean silhouette score of the partitions
+# The membership matrix (the probability of each sample to be in one group, if assuming columns represent samples) is inferred
+# from the consensus partition of every combination of methods, weighted by the mean silhouette score of the partition
 # for each method. So methods which give instable partitions have lower weights 
 # when summarizing membership matrix from all methods.
 # 
 # == value
 # A membership matrix where rows correspond to the samples in the original matrix.
+#
+# == seealso
+# `get_membership,ConsensusPartition-method` returns membership matrix for a single top-value method and partition method.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -130,7 +142,7 @@ setMethod(f = "get_membership",
 
 
 # == title
-# Get statistics
+# Get statistics for the consensus partition
 #
 # == param
 # -object a `ConsensusPartition-class` object.
@@ -142,16 +154,16 @@ setMethod(f = "get_membership",
 # -cophcor cophenetic correlation coefficient. It measures if hierarchical clustering is applied
 #          on the consensus matrix, how good it correlates to the consensus matrix itself.
 # -PAC proportion of ambiguous clustering, calculated by `PAC`.
-# -mean_silhouette the mean silhouette score.
+# -mean_silhouette the mean silhouette score. See https://en.wikipedia.org/wiki/Silhouette_(clustering) .
 # -concordance the mean probability that each partition fits the consensus partition, calculated by `concordance`.
-# -area_increased the increased area under ecdf to the previous k
+# -area_increased the increased area under ECDF (the empirical cumulative distribution function curve) to the previous k
 # -Rand the Rand index which is the percent of pairs of samples that are both in a same cluster or both are not 
-#       in a same cluster in the partition of ``k`` and ``k-1``.
+#       in a same cluster in the partition of ``k`` and ``k-1``. See https://en.wikipedia.org/wiki/Rand_index .
 # -Jaccard the ratio of pairs of samples are both in a same cluster in the partition of ``k`` and ``k-1`` and the pairs
 #          of samples are both in a same cluster in the partition ``k`` or ``k-1``.
 #
 # == value
-# A matrix of partition statistics for all k.
+# A matrix of partition statistics.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -172,20 +184,21 @@ setMethod(f = "get_stats",
 	}
 	m = m[as.character(k), , drop = FALSE]
 	# m = cbind(m, separation_rate = sapply(k, function(i) separation_rate(object, i)))
+	m = cbind(k = k, m)
 	return(m)
 })
 
 
 # == title
-# Get statistics
+# Get statistics for consensus partitions from all methods
 #
 # == param
 # -object a `ConsensusPartitionList-class` object.
-# -k number of partitions.
+# -k number of partitions. The value can only be a single value.
 #
 # == value
 # A matrix of partition statistics for a selected k. Rows in the 
-# matrix correspond to all combinations of top value methods and partition methods.
+# matrix correspond to combinations of top-value methods and partition methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -208,14 +221,14 @@ setMethod(f = "get_stats",
 
 
 # == title
-# Get class from the ConsensusPartition object
+# Get class IDs from the ConsensusPartition object
 #
 # == param
 # -object a `ConsensusPartition-class` object.
 # -k number of partitions.
 #
 # == return
-# A data frame with class IDs and other columns which are entropy of the membership matrix
+# A data frame with class IDs and other columns which are entropy of the percent membership matrix
 # and the silhouette scores which measure the stability of a sample to stay in its group.
 #
 # == author
@@ -240,7 +253,7 @@ setMethod(f = "get_classes",
 })
 
 # == title
-# Get class from the ConsensusPartitionList object
+# Get class IDs from the ConsensusPartitionList object
 #
 # == param
 # -object a `ConsensusPartitionList-class` object.
@@ -251,7 +264,8 @@ setMethod(f = "get_classes",
 # by weighting the mean silhouette scores in each method. 
 #
 # == return
-# A data frame with class IDs, membership, entropy and silhouette scores.
+# A data frame with class IDs and other columns which are entropy of the percent membership matrix
+# and the silhouette scores which measure the stability of a sample to stay in its group.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -271,14 +285,23 @@ setMethod(f = "get_classes",
 #
 # == param
 # -object a `ConsensusPartition-class` object.
-# -rand_index_cutoff the Rand index compared to previous k is larger than this, it is filtered out.
+# -rand_index_cutoff the Rand index compared to previous k is larger than this value, it is filtered out.
 #
 # == details
-# The best k is voted from 1) which k has the maximum cophcor value, 2) which k has the minimal PAC value,
-# 3) which k has the maximum mean silhouette value and 4) which k has the maximum concordance value.
+# The best k is voted from 1) the k with the maximal cophcor value, 2) the k with the minimal PAC value,
+# 3) the k with the maximal mean silhouette value and 4) the k with the maximal concordance value.
+#
+# There are scenarios that a better partition with k groups than k - 1 groups (e.g. for the sense of better sihouette score) 
+# is only because of one tiny group of samples are separated and it is better to still put them back to the original group
+# to improve the robustness of the subgrouping. For this, users can set the cutoff of Rand index by ``rand_index_cutoff`` to
+# get rid of or reduce the effect of such cirsumstances.
+#
+# Honestly, it is hard or maybe impossible to say which k is the best one. `guess_best_k` function only gives suggestion of selecting
+# a reasonable k. Users still need to look at the plots (e.g. by `select_partition_number` or `consensus_heatmap` functions), or even
+# by checking whether the subgrouping gives a reasonable signatures by `get_signatures`, to pick a reasonable k that best explains thieir study. 
 #
 # == value
-# The best k
+# The best k.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -319,10 +342,10 @@ setMethod(f = "guess_best_k",
 # -rand_index_cutoff the Rand index compared to previous k is larger than this, it is filtered out.
 #
 # == details
-# It basically gives best k for each combination of top value method and partition method.
+# It basically gives the best k for each combination of top-value method and partition method by calling `guess_best_k,ConsensusPartition-method`.
 #
 # == value
-# A data frame with best k for each combination of methods
+# A data frame with the best k and other statistics for each combination of methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>

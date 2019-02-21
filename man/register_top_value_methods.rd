@@ -1,5 +1,5 @@
-\name{register_top_value_method}
-\alias{register_top_value_method}
+\name{register_top_value_methods}
+\alias{register_top_value_methods}
 \title{
 Register user-defined top-value methods
 }
@@ -7,7 +7,7 @@ Register user-defined top-value methods
 Register user-defined top-value methods
 }
 \usage{
-register_top_value_method(...)
+register_top_value_methods(...)
 }
 \arguments{
 
@@ -17,15 +17,15 @@ register_top_value_method(...)
 \details{
 The user-defined function should accept one argument which is the data
 matrix and the scores are calculated by rows. Rows with top scores are treated
-as "top rows". Follow is how we register "sd" top-value method:
+as "top rows" in cola analysis. Following is how we register "sd" (standard deviation) top-value method:
 
   \preformatted{
-  register_top_value_method(sd = function(mat), apply(mat, 1, sd))  }
+  register_top_value_methods(sd = function(mat) apply(mat, 1, sd))  }
 
 Of course, you can use \code{\link[matrixStats]{rowSds}} to give a faster calculation of row sd:
 
   \preformatted{
-  register_top_value_method(sd = rowSds)  }
+  register_top_value_methods(sd = rowSds)  }
 
 The registered top-value method will be used as defaults in \code{\link{run_all_consensus_partition_methods}}.
 
@@ -35,9 +35,9 @@ There are four default top-value methods:
 
 \describe{
   \item{"sd"}{standard deviation, by \code{\link[matrixStats]{rowSds}}.}
-  \item{"cv"}{coefficient variance, calculated as \code{sd/(mean+s)} where \code{s} is the 10th quantile of all row means.}
+  \item{"cv"}{coefficient variance, calculated as \code{sd/(mean+s)} where \code{s} is the 10th percentile of all row means.}
   \item{"MAD"}{median absolute deviation, by \code{\link[matrixStats:rowSds]{rowMads}}.}
-  \item{"AAC"}{the \code{\link{AAC}} method.}
+  \item{"ATC"}{the \code{\link{ATC}} method.}
 }
 }
 \value{
@@ -51,10 +51,10 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 all_top_value_methods()
-register_top_value_method(
-    AAC_spearman = function(mat) AAC(mat, cor_method = "spearman"),
-    AAC_multicore = function(mat) AAC(mat, mc.cores = 2)
+register_top_value_methods(
+    ATC_spearman = function(mat) ATC(mat, method = "spearman"),
+    ATC_multicore = function(mat) ATC(mat, mc.cores = 2)
 )
 all_top_value_methods()
-remove_top_value_method(c("AAC_spearman", "AAC_multicore"))
+remove_top_value_method(c("ATC_spearman", "ATC_multicore"))
 }

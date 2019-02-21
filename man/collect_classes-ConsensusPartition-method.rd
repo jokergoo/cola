@@ -13,11 +13,13 @@ Collect classes from ConsensusPartition object
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object.}
   \item{internal}{used internally.}
-  \item{show_row_names}{whether show row names}
+  \item{show_row_names}{whether show row names.}
 
 }
 \details{
-Membership matrix and the classes with each k are plotted in the heatmap.
+The percent membership matrix and the class IDs for each k are plotted in the heatmaps.
+
+Same row in all heatmaps corresponds to the same column in the original matrix.
 }
 \value{
 No value is returned.

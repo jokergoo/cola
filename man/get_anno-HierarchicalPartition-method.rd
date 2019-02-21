@@ -11,7 +11,7 @@ Get annotations
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object}
+  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
 
 }
 \value{
@@ -23,5 +23,4 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
-
 }

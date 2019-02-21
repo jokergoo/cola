@@ -12,11 +12,13 @@ Subset the HierarchicalPartition object
 }
 \arguments{
 
-  \item{x}{a \code{\link{HierarchicalPartition-class}} object}
-  \item{i}{index}
+  \item{x}{a \code{\link{HierarchicalPartition-class}} object.}
+  \item{i}{index. The value should be numeric or a node ID.}
 
 }
 \details{
+On each node, there is a \code{\link{ConsensusPartition-class}} object.
+
 Note you cannot get a sub-hierarchy of the partition.
 }
 \value{

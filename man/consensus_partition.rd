@@ -27,9 +27,9 @@ consensus_partition(data,
 
   \item{data}{a numeric matrix where subgroups are found by columns.}
   \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}. Use \code{\link{register_top_value_method}} to add a new top-value method.}
-  \item{top_n}{number of rows with top values. The value can be a vector with length > 1. When n > 5000, the function only randomly sample 5000 rows from top n rows.}
+  \item{top_n}{number of rows with top values. The value can be a vector with length > 1. When n > 5000,  the function only randomly sample 5000 rows from top n rows. If \code{top_n} is a vector, paritition will be applied to every values in \code{top_n} and consensus partition is summarized from all partitions.}
   \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}. Use \code{\link{register_partition_method}} to add a new partition method.}
-  \item{max_k}{maximum number of partitions to try. The function will try \code{2:max_k} partitions.}
+  \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions.}
   \item{p_sampling}{proportion of the top n rows to sample.}
   \item{partition_repeat}{number of repeats for the random sampling.}
   \item{partition_param}{parameters for the partition method which are passed to \code{...} in a registered partition method. See \code{\link{register_partition_method}} for detail.}
@@ -51,18 +51,28 @@ The function performs analysis in following steps:
 }
 }
 \value{
-A \code{\link{ConsensusPartition-class}} object. Simply type the name of the object in the R interactive session
+A \code{\link{ConsensusPartition-class}} object. Simply type object in the interactive R session
 to see which functions can be applied on it.
 }
 \seealso{
-\code{\link{run_all_consensus_partition_methods}} runs consensus partition with multiple top value methods
+\code{\link{run_all_consensus_partition_methods}} runs consensus partition with multiple top-value methods
 and multiple partition methods. \code{\link{hierarchical_partition}} runs consensus partition hierarchically.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+set.seed(123)
+m = cbind(rbind(matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
+                matrix(rnorm(20*20, mean = 0,   sd = 0.5), nr = 20),
+                matrix(rnorm(20*20, mean = 0,   sd = 0.5), nr = 20)),
+          rbind(matrix(rnorm(20*20, mean = 0,   sd = 0.5), nr = 20),
+                matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
+                matrix(rnorm(20*20, mean = 0,   sd = 0.5), nr = 20)),
+          rbind(matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
+                matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
+                matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
+         ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
+cp = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
+cp
 }

@@ -16,10 +16,10 @@ Get the best number of partitions
 
 }
 \details{
-It basically gives best k for each combination of top value method and partition method.
+It basically gives the best k for each combination of top-value method and partition method by calling \code{\link{guess_best_k,ConsensusPartition-method}}.
 }
 \value{
-A data frame with best k for each combination of methods
+A data frame with the best k and other statistics for each combination of methods.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

@@ -5,16 +5,16 @@
 # == param
 # -object A `ConsensusPartition-class` object.
 # -k number of partitions.
-# -silhouette_cutoff cutoff for silhouette values. Columns with values 
+# -silhouette_cutoff cutoff for silhouette scores. Samples with values 
 #        less than it are not used for finding signature rows. For selecting a 
-#        proper silhouette value, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
-# -fdr_cutoff cutoff for FDR of the difference between subgroups.
+#        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
+# -fdr_cutoff cutoff for FDR of the difference test between subgroups.
 # -scale_rows whether apply row scaling when making the heatmap.
 # -diff_method methods to get rows which are significantly different between subgroups, see 'Details' section.
 # -anno a data frame with known annotation of samples.
 # -anno_col a list of colors for the annotations in ``anno``.
 # -internal used internally.
-# -show_column_names whether show column names on the heatmap.
+# -show_column_names whether show column names in the heatmap.
 # -use_raster internally used.
 # -plot whether to make the plot.
 # -verbose whether to print messages.
@@ -22,7 +22,7 @@
 # -... other arguments.
 # 
 # == details 
-# Basically the function applies test for the difference of subgroups for every
+# Basically the function applies statistical test for the difference in subgroups for every
 # row. There are following methods which test significance of the difference:
 #
 # -ttest First it looks for the subgroup with highest mean value, compare to each of the 
@@ -30,19 +30,18 @@
 #        for the subgroup with lowest mean value, compare to each of the other subgroups
 #        again with t-test and take the maximum p-values. Later for these two list of p-values
 #        take the minimal p-value as the final p-value. 
-# -samr/pamr use SAM/PAM method to find significantly different rows between subgroups.
+# -samr/pamr use SAM (from samr package)/PAM (from pamr package) method to find significantly different rows between subgroups.
 # -Ftest use F-test to find significantly different rows between subgroups.
 #
-# Also, to call it a signature for a given subgroup, the values in the
-# corresponding subgroup should have the highest mean value compared to all
-# other subgroups. The minimal p-value compared to all other subgroups is taken
-# as the p-value of the row and used for FDR calculation.
+# ``diff_method`` can also be a self-defined function. The function needs two arguments which are the matrix for the analysis
+# and the predicted classes. The function should returns a vector of FDR from the difference test.
 #
 # == return 
-# A list of three elements:
-# 
-# -``df`` a data frame.
-# -``sample_used`` sample index used.
+# A data frame with more than two columns:
+#
+# -`which_row`: row index corresponding to the original matrix.
+# -`fdr`: the FDR.
+# - other columns are the mean expression (depending rows are scaled or not) in each subgroup.
 # 
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -51,7 +50,7 @@ setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
 	silhouette_cutoff = 0.5, 
-	fdr_cutoff = ifelse(diff_method == "samr", 0.05, 0.1), 
+	fdr_cutoff = ifelse(identical(diff_method, "samr"), 0.05, 0.1), 
 	scale_rows = object@scale_rows,
 	diff_method = c("Ftest", "ttest", "samr", "pamr"),
 	anno = get_anno(object), 
@@ -206,6 +205,11 @@ setMethod(f = "get_signatures",
 	# names(group2) = rownames(mat)
 
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2)
+	mean_mat = tapply(seq_len(ncol(mat)), class, function(ind) {
+		rowMeans(mat[, ind, drop = FALSE])
+	})
+	colnames(mean_mat) = paste0("mean_", unique(class))
+	returned_df = cbind(returned_df, mean_mat)
 	returned_df = returned_df[order(returned_df[, "fdr"]), ]
 	returned_obj = returned_df
 	attr(returned_obj, "sample_used") = column_used_logical
@@ -422,11 +426,13 @@ setMethod(f = "get_signatures",
 	# the cutoff
 	# https://www.stat.berkeley.edu/~s133/Cluster2a.html
 	if(!internal) {
-		decorate_annotation("silhouette", {
-			grid.rect(gp = gpar(fill = "transparent"))
-			grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
-			if(!has_ambiguous) grid.text("Silhouette\nscore", x = unit(1, "npc") + unit(10, "mm"), just = "top", rot = 90, gp = gpar(fontsize = 8))
-		})
+		for(i in seq_along(unique(class_df$class[column_used_logical]))) {
+			decorate_annotation("silhouette",  slice = i, {
+				grid.rect(gp = gpar(fill = "transparent"))
+				grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
+				if(!has_ambiguous) grid.text("Silhouette\nscore", x = unit(1, "npc") + unit(10, "mm"), just = "top", rot = 90, gp = gpar(fontsize = 8))
+			})
+		}
 		if(has_ambiguous) {
 			decorate_annotation("silhouette2", {
 				grid.rect(gp = gpar(fill = "transparent"))
@@ -455,12 +461,6 @@ compare_to_subgroup = function(mat, class, which = "highest") {
 		}
 	})
 
-	if(requireNamespace("genefilter")) {
-		rowttests = getFromNamespace("rowttests", "genefilter")
-	} else {
-		stop("Cannot find 'genefilter' package.")
-	}
-
 	# class and subgroup_index are all numeric
 	compare_to_one_subgroup = function(mat, class, subgroup_index) {
 		
@@ -470,7 +470,7 @@ compare_to_subgroup = function(mat, class, which = "highest") {
 			l = class == subgroup_index | class == oc[i]
 			m2 = mat[, l, drop = FALSE]
 			fa = factor(class[l])
-			pmat[, i] = rowttests(m2, fa)[, "p.value"]
+			pmat[, i] = genefilter::rowttests(m2, fa)[, "p.value"]
 		}
 		rowMaxs(pmat, na.rm = TRUE)
 	}
@@ -559,7 +559,7 @@ Ftest = function(mat, class) {
 		fdr[is.na(fdr)] = Inf
 		return(fdr)
 	} else {
-		stop("Cannot find 'genefilter' package.")
+		stop_wrap("Cannot find 'genefilter' package.")
 	}
 }
 

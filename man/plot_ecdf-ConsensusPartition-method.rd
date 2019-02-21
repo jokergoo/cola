@@ -1,6 +1,5 @@
 \name{plot_ecdf-ConsensusPartition-method}
 \alias{plot_ecdf,ConsensusPartition-method}
-\alias{plot_ecdf}
 \title{
 Plot the empirical cumulative distribution curve of the consensus matrix
 }
@@ -35,3 +34,4 @@ Zuguang Gu <z.gu@dkfz.de>
 data(cola_rl)
 plot_ecdf(cola_rl["sd", "hclust"])
 }
+\alias{plot_ecdf}

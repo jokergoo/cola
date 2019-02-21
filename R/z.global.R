@@ -143,7 +143,7 @@ get_partition_method = function(method, partition_param = list()) {
 # == details 
 # The user-defined function should accept at least two arguments. The first two arguments are the data
 # matrix and the number of partitions. The third optional argument should always be ``...`` so that parameters
-# for the partition function can be passed by ``partition_param`` from `consensus_partition` or `run_all_consensus_partition_methods`.
+# for the partition function can be passed by ``partition_param`` from `consensus_partition`.
 # If users forget to add ``...``, it is added internally.
 #
 # The function should return a vector of partitions (or class labels) or an object which can be recognized by `clue::cl_membership`.
@@ -294,13 +294,6 @@ register_partition_method(
 	# }
 )
 
-register_partition_method(
-	nnmf = function(mat, k, ...) {
-		fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
-		apply(fit$H, 2, which.max)
-	}, scale_method = "rescale"
-)
-
 # == title
 # Register NMF partition method
 #
@@ -313,6 +306,8 @@ register_partition_method(
 #             apply(fit$H, 2, which.max)
 #         }, scale_method = "rescale"
 #     )
+#
+# The name for NMF method is called "nnmf" in `all_partition_methods`.
 #
 register_NMF = function() {
 	if(!requireNamespace("NNLM")) {
@@ -374,7 +369,7 @@ cola_opt = setGlobalOptions(
 	raster_resize = FALSE
 )
 
-
+TEMPLATE_DIR = NULL
 .onLoad = function(...) {
 	TEMPLATE_DIR <<- system.file("extdata", package = "cola")
 }

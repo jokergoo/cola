@@ -7,18 +7,21 @@
 # -k number of partitions.
 # -fun function used to generate plots. Valid functions are `consensus_heatmap`,
 #        `plot_ecdf`, `membership_heatmap`, `get_signatures` and `dimension_reduction`.
-# -top_value_method a vector of top value methods.
+# -top_value_method a vector of top-value methods.
 # -partition_method a vector of partition methods.
-# -verbose verbose
+# -verbose whether to print message.
 # -... other arguments passed to corresponding ``fun``.
 #
 # == details
-# Plots for all combinations of top value methods and parittion methods are arranged in one single page.
+# Plots for all combinations of top-value methods and parittion methods are arranged in one single page.
 #
 # This function makes it easy to directly compare results from multiple methods. 
 #
 # == value
 # No value is returned.
+#
+# == seealso
+# `collect_plots,ConsensusPartition-method` collects plots for a single `ConsensusPartition-class` object.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -34,7 +37,8 @@ setMethod(f = "collect_plots",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k = 2, fun = consensus_heatmap,
 	top_value_method = object@top_value_method, 
-	partition_method = object@partition_method, verbose = TRUE, ...) {
+	partition_method = object@partition_method, 
+	verbose = TRUE, ...) {
 
 	nv = length(dev.list())
 	op = cola_opt$raster_resize
@@ -140,6 +144,9 @@ setMethod(f = "collect_plots",
 #
 # == value
 # No value is returned.
+#
+# == seealso
+# `collect_plots,ConsensusPartitionList-method` collects plots for the `ConsensusPartitionList-class` object.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -345,9 +352,7 @@ setMethod(f = "collect_plots",
 #
 # == param
 # -object a `ConsensusPartitionList-class` object returned by `run_all_consensus_partition_methods`.
-# -k number of partitions
-# -top_value_method a vector of top value methods
-# -partition_method a vector of partition methods
+# -k number of partitions.
 #
 # == details
 # There are following panels in the plot:
@@ -356,8 +361,10 @@ setMethod(f = "collect_plots",
 #   is the consensus partition summarized from partitions from all methods, weighted
 #   by mean silhouette scores.
 # - a row barplot annotation showing the mean silhouette scores for different methods.
-# - a heatmap shows the similarities of the partitions of pairwise methods, calculated
-#    by `clue::cl_dissimilarity` with the ``comembership`` method.
+#
+# The row clustering is applied on the dissimilarity matrix calculated by `clue::cl_dissimilarity` with the ``comembership`` method.
+# 
+# The brightness of the color corresponds to the silhouette scores for the consensus partition in each method. 
 #
 # == value
 # No value is returned.
@@ -366,15 +373,14 @@ setMethod(f = "collect_plots",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# \dontrun{
 # data(cola_rl)
 # collect_classes(cola_rl, k = 3)
-# }
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
-	definition = function(object, k, 
-	top_value_method = object@top_value_method, 
-	partition_method = object@partition_method) {
+	definition = function(object, k) {
+
+	top_value_method = object@top_value_method
+	partition_method = object@partition_method
 
 	top_value_method_vec = NULL
 	partition_method_vec = NULL
@@ -422,23 +428,23 @@ setMethod(f = "collect_classes",
 		column_title = qq("classification from all methods, k = @{k}"),
 		row_names_side = "left", cluster_rows = hclust(m_diss), cluster_columns = FALSE,
 		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
-		cell_fun = function(j, i, x, y, w, h, fill) {
-			col = adjust_by_transparency(fill, 1 - silhouette_mat[j, i])
+		layer_fun = function(j, i, x, y, w, h, fill) {
+			col = adjust_by_transparency(fill, 1 - pindex(silhouette_mat, j, i))
 			grid.rect(x, y, w, h, gp = gpar(fill = col, col = col))
-		}, top_annotation = HeatmapAnnotation(consensus_class = consensus_class, 
+		},
+		top_annotation = HeatmapAnnotation(consensus_class = consensus_class, 
 			col = list(consensus_class = brewer_pal_set2_col),
 			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE),
-		bottom_annotation = bottom_annotation, width = 1) + 
-		rowAnnotation(mean_silhouette = row_anno_barplot(get_stats(object, k = k)[colnames(class_mat), "mean_silhouette"], baseline = 0, axis = TRUE),
-			width = unit(2, "cm")) +
-		rowAnnotation("Top value method" = top_value_method_vec, 
+		bottom_annotation = bottom_annotation,
+		left_annotatio = rowAnnotation("Top value method" = top_value_method_vec, 
 			"Partition method" = partition_method_vec,
-			show_annotation_name = FALSE, annotation_name_side = "bottom",
+			annotation_name_side = "bottom",
 			col = list("Top value method" = structure(names = top_value_method, brewer_pal_set1_col[seq_along(top_value_method)]),
 			           "Partition method" = structure(names = partition_method, brewer_pal_set2_col[seq_along(partition_method)])),
-			width = unit(10, "mm"))
-	
-	draw(ht, padding = unit(c(15, 1, 1, 1), "mm"))
+			width = unit(10, "mm"))) + 
+		rowAnnotation(mean_silhouette = row_anno_barplot(get_stats(object, k = k)[colnames(class_mat), "mean_silhouette"], baseline = 0, axis = TRUE),
+			width = unit(2, "cm"))
+	draw(ht)
 })
 
 
@@ -448,10 +454,12 @@ setMethod(f = "collect_classes",
 # == param
 # -object a `ConsensusPartition-class` object.
 # -internal used internally.
-# -show_row_names whether show row names
+# -show_row_names whether show row names.
 #
 # == details
-# Membership matrix and the classes with each k are plotted in the heatmap.
+# The percent membership matrix and the class IDs for each k are plotted in the heatmaps.
+#
+# Same row in all heatmaps corresponds to the same column in the original matrix.
 #
 # == value
 # No value is returned.

@@ -1,6 +1,6 @@
 
 # == title
-# Run subgroup classification from all methods
+# Consensus partition for all combinations of methods
 #
 # == param
 # -data a numeric matrix where subgroups are found by columns.
@@ -9,20 +9,24 @@
 # -partition_method method which are used to do partition on samples. 
 #        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_method`.
-# -max_k maximum number of partitions to try. It will use ``2:max_k`` partitions.
-# -top_n number of rows with top values. The value can be a vector with length > 1. When n > 5000, the function only randomly sample 5000 rows from top n rows.
+# -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions.
+# -top_n number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
+#        the function only randomly sample 5000 rows from top n rows. If ``top_n`` is a vector, paritition
+#        will be applied to every values in ``top_n`` and consensus partition is summarized from all partitions.
 # -mc.cores number of cores to use.
-# -anno a data frame with known annotation of samples
-# -anno_col a list of colors for the annotations in ``known_anno``.
+# -anno a data frame with known annotation of columns.
+# -anno_col a list of colors for the annotations in ``anno``.
 # -p_sampling proportion of the top n rows to sample.
 # -partition_repeat number of repeats for the random sampling.
 # -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_method` is used.
 #
 # == details
-# The function run consensus partitions for all combinations of top methods and parittion methods.
+# The function runs consensus partitions by `consensus_partition` for all combinations of top methods and parittion methods.
+#
+# It also adjsuts the class IDs for all methods and for all k to make them as consistent as possible.
 #
 # == return 
-# A `ConsensusPartitionList-class` object. Simply type the name of the object in the R interactive session
+# A `ConsensusPartitionList-class` object. Simply type object in the interactive R session
 # to see which functions can be applied on it.
 #
 # == author
@@ -32,16 +36,16 @@
 # \dontrun{
 # set.seed(123)
 # m = cbind(rbind(matrix(rnorm(20*20, mean = 1), nr = 20),
-# 			    matrix(rnorm(20*20, mean = -1), nr = 20)),
-# 	rbind(matrix(rnorm(20*20, mean = -1), nr = 20),
-# 			    matrix(rnorm(20*20, mean = 1), nr = 20))
-# ) + matrix(rnorm(40*40), nr = 40)
+#                 matrix(rnorm(20*20, mean = -1), nr = 20)),
+#           rbind(matrix(rnorm(20*20, mean = -1), nr = 20),
+#                 matrix(rnorm(20*20, mean = 1), nr = 20))
+#          ) + matrix(rnorm(40*40), nr = 40)
 # rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40))
 # }
 # data(cola_rl)
 # cola_rl
 run_all_consensus_partition_methods = function(data, 
-	top_value_method = setdiff(all_top_value_methods(), "som"), 
+	top_value_method = all_top_value_methods(), 
 	partition_method = all_partition_methods(), 
 	max_k = 6, 
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
@@ -122,7 +126,7 @@ run_all_consensus_partition_methods = function(data,
 		if(inherits(x, "pairlist")) {
 			print(x)
 			qqcat("You have an error when doing partition for @{tm}:@{pm}.\n")
-			stop("You have an error.")
+			stop_wrap("You have an error.")
 		}
 		# for(k in res@k) {
 		# 	try(get_signatures(res, k = k, plot = FALSE, verbose = FALSE))
@@ -142,7 +146,7 @@ run_all_consensus_partition_methods = function(data,
 		for(i in i_error) {
 			cat(names(lt)[i], ": ", lt[[i]], "\n", sep = "")
 		}
-		stop("There are errors when doing mclapply.")
+		stop_wrap("There are errors when doing mclapply.")
 	}
 
 	res_list@list = lt
@@ -337,8 +341,8 @@ setMethod(f = "show",
 # Subset a ConsensusPartitionList object
 #
 # == param
-# -x a `ConsensusPartition-class` object.
-# -i index for top value methods, character or nummeric.
+# -x a `ConsensusPartitionList-class` object.
+# -i index for top-value methods, character or nummeric.
 # -j index for partition methods, character or nummeric.
 # -drop whether drop class
 #
@@ -351,8 +355,8 @@ setMethod(f = "show",
 # == example
 # data(cola_rl)
 # cola_rl[c("sd", "MAD"), c("hclust", "kmeans")]
-# cola_rl["sd", "kmeans"]
-# cola_rl["sd", "kmeans", drop = FALSE]
+# cola_rl["sd", "kmeans"] # a ConsensusPartition object
+# cola_rl["sd", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
 # cola_rl["sd", ]
 # cola_rl[, "hclust"]
 # cola_rl[1:2, 1:2]
@@ -414,7 +418,7 @@ setMethod(f = "show",
     if("i" %in% called_args & !"j" %in% called_args) {
     	if(nargs() == 3 & "drop" %in% called_args) {
     		if(length(i) > 1) {
-    			stop("index can only be length 1.")
+    			stop_wrap("index can only be length 1.")
     		}
     		if(is.numeric(i)) {
 	    		i = names(x)[i]
@@ -424,7 +428,7 @@ setMethod(f = "show",
     	}
     	if(nargs() == 2) {
     		if(length(i) > 1) {
-    			stop("index can only be length 1.")
+    			stop_wrap("index can only be length 1.")
     		}
 	    	if(is.numeric(i)) {
 	    		i = names(x)[i]

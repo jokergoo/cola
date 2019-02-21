@@ -22,7 +22,7 @@ Overlap of top rows from different top-value methods
 No value is returned.
 }
 \seealso{
-\code{\link{top_rows_overlap,list-method}}
+\code{\link{top_elements_overlap}}
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
