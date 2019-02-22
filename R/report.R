@@ -318,7 +318,7 @@ make_report = function(var_name, object, output_dir, class) {
 
 	.t2 = Sys.time()
 
-	message(qq("* In total, the report uses @{gsub('^ +', '', format(.t2 - .t1))}."))
+	message(qq("* In total, the report generation uses @{gsub('^ +', '', format(.t2 - .t1))}."))
 
 	return(invisible(NULL))
 }

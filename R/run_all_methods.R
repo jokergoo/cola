@@ -61,8 +61,9 @@ run_all_consensus_partition_methods = function(data,
 	if(is.data.frame(data)) data = as.matrix(data)
 	if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
 
+	cat("* calculate top-values.\n")
 	all_top_value_list = lapply(top_value_method, function(tm) {
-		qqcat("calculate @{tm} score for all rows\n")
+		qqcat("  - calculate @{tm} score for @{nrow(data)} rows.\n")
 		all_top_value = get_top_value_method(tm)(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		return(all_top_value)
@@ -118,15 +119,13 @@ run_all_consensus_partition_methods = function(data,
 	lt = mclapply(seq_len(nrow(comb)), function(i) {
 		tm = comb[i, 1]
 		pm = comb[i, 2]
-		qqcat("* running classification for @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
+		if(interactive() & mc.cores == 1) qqcat("------------------------------------------------------------\n")
+		qqcat("* running partition by @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
 		x = try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k,
 			anno = anno, anno_col = anno_col, .env = .env, verbose = interactive() & mc.cores == 1,
 			top_n = top_n, p_sampling = p_sampling, partition_repeat = partition_repeat, scale_rows = scale_rows))
-		
-		if(inherits(x, "pairlist")) {
-			print(x)
-			qqcat("You have an error when doing partition for @{tm}:@{pm}.\n")
-			stop_wrap("You have an error.")
+		if(inherits(x, "try-error")) {
+			stop_wrap(qq("You have an error when doing partition for @{tm}:@{pm}."))
 		}
 		# for(k in res@k) {
 		# 	try(get_signatures(res, k = k, plot = FALSE, verbose = FALSE))
@@ -151,8 +150,8 @@ run_all_consensus_partition_methods = function(data,
 
 	res_list@list = lt
 	data2 = t(scale(t(data)))
-	cat("* adjust class labels according to the consensus classification from all methods.\n")
-	cat("  - adjust class labels for each k\n")
+	cat("------------------------------------------------------------\n")
+	cat("* adjust class labels according to the consensus classifications from all methods.\n")
 	reference_class = lapply(lt[[1]]@k, function(k) {
 		cl_df = get_consensus_from_multiple_methods(res_list, k)
 		# class_ids = cl_df$class
@@ -171,7 +170,7 @@ run_all_consensus_partition_methods = function(data,
 	names(reference_class) = as.character(lt[[1]]@k)
 	
 	# also adjust between consensus classes
-	cat("  - adjust class labels across all k.\n")
+	cat("  - get reference class labels from all methods, all k.\n")
 	rc = reference_class[[1]]$class_df$class
 	all_k = lt[[1]]@k
 	for(i in seq_along(all_k)[-1]) {
@@ -193,7 +192,7 @@ run_all_consensus_partition_methods = function(data,
 	}
 
 	res_list@consensus_class = reference_class
-
+	cat("  - adjust class labels for each single method, each single k.\n")
 	for(i in seq_along(lt)) {
 		res = lt[[i]]
 		for(k in res@k) {

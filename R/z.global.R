@@ -63,8 +63,24 @@ register_top_value_methods = function(...) {
 	lt = list(...)
 	lt1 = lt[intersect(names(lt), .ENV$ALL_TOP_VALUE_METHODS)]
 	lt2 = lt[setdiff(names(lt), .ENV$ALL_TOP_VALUE_METHODS)]
-	if(length(lt1)) .ENV$ALL_TOP_VALUE_FUN[names(lt1)] = lt1
-	if(length(lt2)) .ENV$ALL_TOP_VALUE_FUN = c(.ENV$ALL_TOP_VALUE_FUN, lt2)
+
+	rand_mat = matrix(rnorm(10*20), nrow = 20)
+	if(length(lt1)) {
+		for(i in seq_along(lt1)) {
+			if(length(lt1[[i]](rand_mat)) != nrow(rand_mat)) {
+				stop_wrap(qq("Top-value method of @{names(lt1[i])} should return a vector with the same length of matrix rows."))
+			}
+		}
+		.ENV$ALL_TOP_VALUE_FUN[names(lt1)] = lt1
+	}
+	if(length(lt2)) {
+		for(i in seq_along(lt2)) {
+			if(length(lt2[[i]](rand_mat)) != nrow(rand_mat)) {
+				stop_wrap(qq("Top-value method of @{names(lt2[i])} should return a vector with the same length of matrix rows."))
+			}
+		}
+		.ENV$ALL_TOP_VALUE_FUN = c(.ENV$ALL_TOP_VALUE_FUN, lt2)
+	}
 	.ENV$ALL_TOP_VALUE_METHODS = names(.ENV$ALL_TOP_VALUE_FUN)
 }
 
@@ -217,7 +233,7 @@ register_partition_methods = function(..., scale_method = c("standardization", "
 		m2 = m
 	}
 	for(i in seq_along(lt)) {
-		t = microbenchmark(lt[[i]](m2, 2), times = 1)
+		t = microbenchmark(foo <- lt[[i]](m2, 2), times = 1)
 		attr(lt[[i]], "execution_time") = mean(t$time)
 	}
 
@@ -301,20 +317,19 @@ register_partition_methods(
 # It actually runs following code:
 #
 #     register_partition_methods(
-#         nnmf = function(mat, k, ...) {
+#         NMF = function(mat, k, ...) {
 #             fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
 #             apply(fit$H, 2, which.max)
 #         }, scale_method = "rescale"
 #     )
 #
-# The name for NMF method is called "nnmf" in `all_partition_methods`.
 #
 register_NMF = function() {
 	if(!requireNamespace("NNLM")) {
-		stop("You need to install NNLM package to support NMF.")
+		stop_wrap("You need to install NNLM package to support NMF.")
 	}
 	register_partition_methods(
-		nnmf = function(mat, k, ...) {
+		NMF = function(mat, k, ...) {
 			fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
 			apply(fit$H, 2, which.max)
 		}, scale_method = "rescale"

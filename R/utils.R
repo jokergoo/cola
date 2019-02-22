@@ -179,6 +179,7 @@ try_and_trace = function(expr) {
 		cat("Caught an error. Following is the trace:\n")
 		format_trace(getFromNamespace("data", ns = "tracer")$last_dump)
 	}
+	return(oe)
 }
 
 format_trace <- function(data, style = NULL) {

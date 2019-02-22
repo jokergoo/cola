@@ -72,7 +72,7 @@ The density distribution for each sample is visualized as heatmap as one column 
 
 ```{r, echo = FALSE, message = FALSE}
 t1 = Sys.time()
-message(qq("* making density heatmap of global distribution in each sample (@{ncol(mat)} samples)"), appendLF = FALSE)
+message(qq("* making density heatmap of global distribution for each sample (@{ncol(mat)} samples)"), appendLF = FALSE)
 ```
 
 ```{r density-heatmap}

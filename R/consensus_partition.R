@@ -86,7 +86,7 @@ consensus_partition = function(data,
 		partition_method = partition_method,
 		k = 2:max_k, 
 		p_sampling = p_sampling,
-		sample_by = "rows",
+		sample_by = "row",
 		partition_repeat = partition_repeat,
 		partition_param = partition_param,
 		anno = anno,
@@ -106,7 +106,7 @@ consensus_partition = function(data,
 	partition_method = "kmeans",
 	k = 2:6, 
 	p_sampling = 0.8,
-	sample_by = c("rows", "columns"), 
+	sample_by = c("row", "column"), 
 	partition_repeat = 50,
 	partition_param = list(),
 	anno = NULL,
@@ -193,10 +193,10 @@ consensus_partition = function(data,
 	if(scale_rows) {
 		scale_method = attr(partition_fun, "scale_method")
 		if("standardization" %in% scale_method) {
-			if(verbose) cat("* rows are scaled before sent to partition: standardization (x - mean)/sd\n")
+			if(verbose) cat("* rows are scaled before sent to partition, method: 'standardization' (x - mean)/sd\n")
 			data = t(scale(t(data)))
 		} else if("rescale" %in% scale_method) {
-			if(verbose) cat("* rows are scaled before sent to partition: rescale (x - min)/(max - min)\n")
+			if(verbose) cat("* rows are scaled before sent to partition, method: 'rescale' (x - min)/(max - min)\n")
 			row_min = rowMeans(data)
 			row_max = rowMaxs(data)
 			row_range = row_max - row_min
@@ -231,23 +231,23 @@ consensus_partition = function(data,
 
 		if(length(ind) > 5000) {
 			ind = sample(ind, 5000)
-			if(verbose) qqcat("* getting top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
+			if(verbose) qqcat("* get top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
 		} else {
-			if(verbose) qqcat("* getting top @{top_n[i]} rows by @{top_value_method} method\n")
+			if(verbose) qqcat("* get top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
 		for(j in seq_len(partition_repeat)) {
-			if(sample_by == "rows") {
+			if(sample_by == "row") {
 				ind_sub = sample(ind, round(p_sampling*length(ind)))
 				mat = data[ind_sub, , drop = FALSE]
 				column_ind_sub = seq_len(ncol(data))
-			} else if(sample_by == "columns") {
+			} else if(sample_by == "column") {
 				column_ind_sub = sample(ncol(data), round(p_sampling*ncol(data)))
 				mat = data[ind, , drop = FALSE]
 			}
 			for(y in k) {
 				if(interactive() && verbose) cat(strrep("\b", 100))
-				if(interactive() && verbose) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}th @{sample_by} sampling from top @{top_n[i]} rows.")
+				if(interactive() && verbose) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
 				partition_list = c(partition_list, list(list(partition_fun(mat, y, column_ind_sub))))
 				param = rbind(param, data.frame(top_n = top_n[i], k = y, n_row = nrow(mat), n_col = ncol(mat), stringsAsFactors = FALSE))
 			}
@@ -311,13 +311,13 @@ consensus_partition = function(data,
 		partition_list = do.call("c", partition_list)
 
 		partition_list = cl_ensemble(list = partition_list)
-		if(verbose) qqcat("@{prefix}merging @{length(partition_list)} (@{partition_repeat}x@{length(top_n)}) partitions into a single ensemble object.\n")
+		if(verbose) qqcat("@{prefix}merge @{length(partition_list)} (@{partition_repeat}x@{length(top_n)}) partitions into a single ensemble object.\n")
 		partition_consensus = cl_consensus(partition_list)
 
 		# note: number of class_ids may be less than k
 		class_ids = as.vector(cl_class_ids(partition_consensus))
 		# adjust the class labels according to the tightness of each subgroup
-		if(verbose) qqcat("@{prefix}adjust the class labels according to the tightness of each class.\n")
+		if(verbose) qqcat("@{prefix}adjust the class labels according to the mean intra-group distance.\n")
 		ri = order(all_top_value, decreasing = TRUE)[1:max(param[, "top_n"])]
 		if(length(ri) > 5000) ri = sample(ri, 5000)
 		mean_dist = tapply(seq_len(ncol(data)), class_ids, function(ind) {
@@ -338,7 +338,7 @@ consensus_partition = function(data,
 		}
 		class_ids = as.numeric(map[as.character(class_ids)])
 
-		if(verbose) qqcat("@{prefix}calculate global membership of each column from all partitions.\n")
+		if(verbose) qqcat("@{prefix}calculate global membership from all partitions.\n")
 		membership_mat = cl_membership(partition_consensus)
 		class(membership_mat) = "matrix"
 		if(ncol(membership_mat) < k) {
@@ -352,7 +352,7 @@ consensus_partition = function(data,
 		attr(membership_mat, "n_of_classes") = NULL
 		attr(membership_mat, "is_cl_hard_partition") = NULL
 		
-		if(verbose) qqcat("@{prefix}calculate membership of each column in each partition.\n")
+		if(verbose) qqcat("@{prefix}calculate membership for every single partition.\n")
 		class_ids_by_top_n = tapply(seq_along(partition_list), param$top_n, function(ind) {
 			partition_consensus = cl_consensus(cl_ensemble(list = partition_list[ind]))
 			ci = as.vector(cl_class_ids(partition_consensus))
@@ -371,7 +371,7 @@ consensus_partition = function(data,
 		}))
 		rownames(membership_each) = rownames(membership_mat)
 
-		if(verbose) qqcat("@{prefix}calculate consensus matrix for samples clustered in a same group.\n")
+		if(verbose) qqcat("@{prefix}calculate consensus matrix.\n")
 		consensus_mat = matrix(1, nrow = nrow(membership_mat), ncol = nrow(membership_mat))
 		for(i in seq_len(nrow(membership_each)-1)) {
 			for(j in (i+1):nrow(membership_each)) {
@@ -395,7 +395,7 @@ consensus_partition = function(data,
 			class_df$silhouette = silhouette(class_ids, dist(t(consensus_mat)))[, "sil_width"]
 		}
 
-		if(verbose) qqcat("@{prefix}calculating metrics for the consensus matrix.\n")
+		if(verbose) qqcat("@{prefix}calculate statistics for the consensus partition.\n")
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
 			cophcor =  cophcor(consensus_mat),
@@ -418,7 +418,7 @@ consensus_partition = function(data,
 		l = param$k == y
 		
 		top_n_level = unique(param[l, "top_n"])
-		if(verbose) qqcat("* wrapping results for k = @{y}\n")
+		if(verbose) qqcat("* wrap results for k = @{y}\n")
 		construct_consensus_object(param[l, ], partition_list[l], y)
 		
 	})
@@ -428,6 +428,7 @@ consensus_partition = function(data,
 	gc(verbose = FALSE, reset = TRUE)
 
 	## adjust class labels for different k should also be adjusted
+	if(verbose) qqcat("* adjust class labels between different k.\n")
 	reference_class = object_list[[1]]$class_df$class
 	for(i in seq_along(k)[-1]) {
 		class_df = object_list[[i]]$class_df
@@ -626,7 +627,7 @@ setMethod(f = "select_partition_number",
 	definition = function(object) {
 	op = par(no.readonly = TRUE)
 
-	m = get_stats(object)
+	m = get_stats(object)[, -1]
 	nm = colnames(m)
 	n = ncol(m)
 	nr = floor(sqrt(n)+1)
@@ -648,7 +649,7 @@ If cophcor >= 0.99 or
    PAC <= 0.1 or 
    concordance >= 0.95,
   take the maximum k,
-else take the k with max vote of
+else take the k with higest vote of
   1. max cophcor,
   2. min PAC,
   3. max mean_silhouette,
