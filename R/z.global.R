@@ -182,7 +182,7 @@ get_partition_method = function(method, partition_param = list()) {
 #
 # -"hclust" hierarchcial clustering with Euclidean distance, later columns are partitioned by `stats::cutree`.
 #           If users want to use another distance metric or clustering method, consider to register a new partition method. E.g.
-#           ``register_partition_methods(hclust_cor = function(mat, k) hc = cutree(hclust(as.dist(cor(mat)))))``.
+#           ``register_partition_methods(hclust_cor = function(mat, k) cutree(hclust(as.dist(cor(mat)))))``.
 # -"kmeans" by `stats::kmeans`.
 # -"skmeans" by `skmeans::skmeans`.
 # -"pam" by `cluster::pam`.
@@ -333,6 +333,28 @@ register_NMF = function() {
 			fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
 			apply(fit$H, 2, which.max)
 		}, scale_method = "rescale"
+	)
+}
+
+# == title
+# Register SOM partition method
+#
+register_SOM = function() {
+	register_partition_methods(
+	    SOM = function(mat, k, ...) {
+	        kr = floor(sqrt(ncol(mat)))
+	        somfit = kohonen::som(t(mat), grid = kohonen::somgrid(kr, kr, "hexagonal"), ...)
+	        m = somfit$codes[[1]]
+	        m = m[seq_len(nrow(m)) %in% somfit$unit.classif, ]
+	        cl = cutree(hclust(dist(m)), k)
+	        group = numeric(ncol(mat))
+	        for(cl_unique in unique(cl)) {
+	            ind = as.numeric(gsub("V", "", names(cl)[which(cl == cl_unique)]))
+	            l = somfit$unit.classif %in% ind
+	            group[l] = cl_unique
+	        }
+	        group
+	    }
 	)
 }
 

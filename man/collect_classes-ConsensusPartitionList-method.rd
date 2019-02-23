@@ -19,7 +19,7 @@ Collect classes from ConsensusPartitionList object
 There are following panels in the plot:
 
 \itemize{
-  \item a heatmap shows partitions predicted from all methods where the top annotation is the consensus partition summarized from partitions from all methods, weighted by mean silhouette scores.
+  \item a heatmap showing partitions predicted from all methods where the top annotation is the consensus partition summarized from partitions from all methods, weighted by mean silhouette scores.
   \item a row barplot annotation showing the mean silhouette scores for different methods.
 }
 

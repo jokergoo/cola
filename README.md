@@ -4,8 +4,8 @@ A General Framework for Consensus and Hierarchical Partitioning
 
 ## Features
 
-1. It modularize the consensus clustering processes that various methods can
-   be easily integrated.
+1. It modularizes the consensus clustering processes that various methods can
+   be easily integrated in different steps of the analysis.
 2. It provides rich visualizations for intepreting the results.
 3. It allows running multiple methods at the same time and provides
    functionalities to compare results in a straightforward way.
@@ -13,7 +13,7 @@ A General Framework for Consensus and Hierarchical Partitioning
    separate subgroups.
 5. It allows doing partitioning in a hierarchical way to detect subgroups
    with relatively smaller difference.
-6. It generates detailed reports for the complete analysis.
+6. It generates detailed HTML reports for the complete analysis.
 
 ## Install
 
@@ -32,27 +32,43 @@ library(devtools)
 install_github("jokergoo/cola")
 ```
 
+## Examples
+
+Analysis for TCGA glioblastoma microarray dataset can be found at https://jokergoo.github.io/cola_examples/.
+
 ## Consensus Partition
 
 <img width="700" src="https://user-images.githubusercontent.com/449218/52628723-86af3400-2eb8-11e9-968d-b7f47a408818.png" />
 
-The steps of consensus partition is always like follows:
+The steps of consensus partition is:
 
-1. Extract top `k` rows from the original matrix by a certain method, e.g.
-   standard deviation.
-2. Randomly sample a subset of rows and apply partition with a certain
-   clustering method, e.g. k-means clustering.
-3. Repeat step 2 for `n` times and summarize the consensus partition from the
-   `n` partitions.
-4. With the stable consensus partition, look for signatures that are
-   specificly high or low in one subgroup.
-5. Check biological functions for the signatures in each subgroup.
+1. Clean the input matrix. The processing are: adjusting outliers, imputing missing
+   values and removing rows with very small variance. This step is optional.
+2. Extract subset of rows with highest scores. Here "scores" are calculated by
+   a certain method. For gene expression analysis or methylation data
+   analysis, $n$ rows with highest variance are used in most cases, where
+   the "method", or let's call it **"the top-value method"** is the variance (by
+   `var()` or `sd()`). Note the choice of "the top-value method" can be
+   general. It can be e.g. MAD (median absolute deviation) or any user-defined
+   method.
+3. Scale the rows in the sub-matrix (e.g. gene expression) or not (e.g. methylation data).
+   This step is optional.
+4. Randomly sample a subset of rows from the sub-matrix with probability $p$ and
+   perform partition on the columns of the matrix by a certain partition
+   method, with trying different numbers of subgroups.
+5. Repeat step 4 several times and collect all the partitions.
+6. Perform consensus partitioning analysis and determine the best number of
+   subgroups which gives the most stable subgrouping.
+7. Apply statistical tests to find rows that show significant difference
+   between the predicted subgroups. E.g. to extract subgroup specific genes.
+8. If rows in the matrix can be associated to genes, downstream analysis such
+   as function enrichment analysis can be performed.
 
 ### Usage
 
 Three lines of code to perfrom cola analysis:
 
-```{r}
+```r
 mat = adjust_matrix(mat)
 rl = run_all_consensus_partition_methods(mat, 
     top_value_method = c("sd", "MAD", ...),
@@ -63,7 +79,7 @@ cola_report(rl, output_dir = ...)
 
 ### Plots
 
-Following plots compares consensus heatmaps with k = 4 under all combinations of methods.
+Following plots compare consensus heatmaps with k = 4 under all combinations of methods.
 
 <img src="https://user-images.githubusercontent.com/449218/52631118-3a66f280-2ebe-11e9-8dea-0172d9beab91.png" />
 
@@ -76,7 +92,7 @@ Following plots compares consensus heatmaps with k = 4 under all combinations of
 
 ### Usage
 
-```{r}
+```r
 rh = hierarchical_partition(mat, top_n = c(1000, 2000, 3000, 4000),
     top_value_method = "MAD", partition_method = "kmeans")
 cola_report(rh, output_dir = ...)

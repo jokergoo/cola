@@ -41,7 +41,7 @@ To remove a partition method, use \code{\link{remove_partition_methods}}.
 There are following default partition methods:
 
 \describe{
-  \item{"hclust"}{hierarchcial clustering with Euclidean distance, later columns are partitioned by \code{\link[stats]{cutree}}. If users want to use another distance metric or clustering method, consider to register a new partition method. E.g. \code{register_partition_methods(hclust_cor = function(mat, k) hc = cutree(hclust(as.dist(cor(mat)))))}.}
+  \item{"hclust"}{hierarchcial clustering with Euclidean distance, later columns are partitioned by \code{\link[stats]{cutree}}. If users want to use another distance metric or clustering method, consider to register a new partition method. E.g. \code{register_partition_methods(hclust_cor = function(mat, k) cutree(hclust(as.dist(cor(mat)))))}.}
   \item{"kmeans"}{by \code{\link[stats]{kmeans}}.}
   \item{"skmeans"}{by \code{\link[skmeans]{skmeans}}.}
   \item{"pam"}{by \code{\link[cluster]{pam}}.}

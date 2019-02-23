@@ -8,7 +8,7 @@ Hierarchical partition
 }
 \usage{
 hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmeans",
-    concordance_cutoff = 0.9, PAC_cutoff = 0.15, min_samples = 6, max_k = 4, ...)
+    concordance_cutoff = 0.9, PAC_cutoff = 0.2, min_samples = 6, max_k = 4, ...)
 }
 \arguments{
 
