@@ -490,6 +490,15 @@ elbow_finder <- function(x_values, y_values) {
   return(c(x_max_dist, y_max_dist))
 }
 
+# https://raghavan.usc.edu//papers/kneedle-simplex11.pdf
+knee_finder = function(x, y) {
+	n = length(x)
+	a = (y[n] - y[1])/(x[n] - x[1])
+	b = y[1] - a*x[1]
+	d = a*x - y
+	x[which.max(d)]
+}
+
 compare_to_subgroup = function(mat, class, which = "highest") {
 
 	od = order(class)
