@@ -39,7 +39,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -data a numeric matrix where subgroups are found by columns.
 # -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
 # -partition_method a single partition method. Available methods are in `all_partition_methods`.
-# -concordance_cutoff the cutoff of concordance scores to determine whether to continue looking for subgroups.
+# -concordance_cutoff the cutoff of concordance scores to determine whether to continue looking for subgroups. Currently it is not used.
 # -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
 # -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
