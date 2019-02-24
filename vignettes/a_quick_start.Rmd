@@ -43,17 +43,18 @@ In above code, there are three steps:
 1. Adjust the matrix. In this step, rows with too many `NA`s are removed. Rows with very low variance
 are removed. `NA` values are imputed if there are not too many in each row. Outliers are adjusted in each
 row. This step is optional.
-2. Run consensus partitioning with multiple methods. The default partition methods are `hclust`,
+2. Run consensus partition with multiple methods. The default partition methods are `hclust`,
 `kmeans`, `skmeans::skmeans`, `cluster::pam` and `Mclust::mclust`. The default methods to
-extract top n rows are `sd`, `cv`, `MAD` and `AAC`. It will try five different numbers of top rows,
-and in each partition, it randomly sample 80% from the top n rows.
-3. Generate a detailed HTML report for the complete cola analysis.
+extract top n rows are `sd`, `cv`, `MAD` and `ATC`. It will try five different numbers of top rows,
+and in each partition, it randomly samples 80% from the top n rows.
+3. Generate a detailed HTML report for the complete analysis.
+
 
 To perform hierarchical partition, run following code:
 
 ```{r, eval = FALSE}
 # code only for demonstration
-rh = hierarchical_partition(mat)
+rh = hierarchical_partition(mat, ...)
 cola_report(rh, output_dir = ...)
 ```
 

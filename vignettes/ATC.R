@@ -29,15 +29,15 @@ ATC_simulation = function() {
 	mat2 = t(rmvnorm(100, mean = rep(0, nr2), sigma = sigma))
 
 	nr3 = 50
-	library(mvtnorm)
 	sigma = matrix(0.5, nrow = nr3, ncol = nr3); diag(sigma) = 1
 	mat3 = t(rmvnorm(100, mean = rep(0, nr3), sigma = sigma))
-
 
 	mat = t(rbind(mat1, mat2, mat3))
 
 	# par(mfrow = c(2, 2))
-	par(mfrow = c(1, 3))
+	grid.newpage()
+	par(mfrow = c(2, 2))
+	plot.new()
 	par(mar = c(3, 5, 1, 1), cex = 0.8)
 	v = NULL
 	min_cor = 0
@@ -80,4 +80,14 @@ ATC_simulation = function() {
 
 
 	plot(colSds(mat), pch = 16, xlab = "", ylab = "SD", col = ifelse(seq_along(v) <= nr1, "#000000", ifelse(seq_along(v) <= nr1+nr2, "#FF0000", "#00FF00")))
+
+	pushViewport(viewport(x = 0, y = 1, width = 0.5, height = 0.5, just = c("left", "top")))
+	library(ComplexHeatmap)
+	split = factor(c(rep(1, 100), rep(2, 10), rep(3, 50)), levels = c(1, 2, 3))
+	ht = Heatmap(t(mat), row_split = split, cluster_row_slices = FALSE, row_title = NULL,
+		show_row_dend = FALSE, show_column_dend = FALSE, show_heatmap_legend = FALSE,
+		left_annotation = rowAnnotation(split = split, col = list(split = c("1" = 1, "2" = 2, "3" = 3)),
+			show_legend = FALSE))
+	draw(ht, newpage = FALSE)
+	popViewport()
 }

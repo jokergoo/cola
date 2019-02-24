@@ -23,11 +23,11 @@
 # By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
 # the top-value method by:
 #
-#     register_top_value_method("ATC_spearman" = function(m) ATC(m, method = "spearman"))
+#     register_top_value_methods("ATC_spearman" = function(m) ATC(m, method = "spearman"))
 #
 # Similarly, to use a robust correlation method, e.g. `WGCNA::bicor` function, you can do like:
 #
-#     register_top_value_method("ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor))
+#     register_top_value_methods("ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor))
 #
 # == return 
 # A vector of numeric values with the same order as rows in the input matrix.

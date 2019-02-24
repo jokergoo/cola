@@ -14,6 +14,7 @@
 # -anno a data frame with known annotation of samples.
 # -anno_col a list of colors for the annotations in ``anno``.
 # -internal used internally.
+# -show_row_dend whether show row dendrogram.
 # -show_column_names whether show column names in the heatmap.
 # -use_raster internally used.
 # -plot whether to make the plot.
@@ -56,6 +57,7 @@ setMethod(f = "get_signatures",
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
 	internal = FALSE,
+	show_row_dend = FALSE,
 	show_column_names = FALSE, use_raster = TRUE,
 	plot = TRUE, verbose = TRUE,
 	top_k_genes = 2000,
@@ -371,7 +373,7 @@ setMethod(f = "get_signatures",
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = ha1,
 		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
-		show_row_names = FALSE, show_row_dend = FALSE, column_title = "confident samples",
+		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = "confident samples",
 		use_raster = use_raster, raster_resize = raster_resize,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, row_title = NULL)
  	

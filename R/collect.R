@@ -357,7 +357,7 @@ setMethod(f = "collect_plots",
 # == details
 # There are following panels in the plot:
 #
-# - a heatmap shows partitions predicted from all methods where the top annotation
+# - a heatmap showing partitions predicted from all methods where the top annotation
 #   is the consensus partition summarized from partitions from all methods, weighted
 #   by mean silhouette scores.
 # - a row barplot annotation showing the mean silhouette scores for different methods.

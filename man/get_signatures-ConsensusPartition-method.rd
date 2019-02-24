@@ -15,6 +15,7 @@ Get signature rows
     anno = get_anno(object),
     anno_col = get_anno_col(object),
     internal = FALSE,
+    show_row_dend = FALSE,
     show_column_names = FALSE, use_raster = TRUE,
     plot = TRUE, verbose = TRUE,
     top_k_genes = 2000,
@@ -31,6 +32,7 @@ Get signature rows
   \item{anno}{a data frame with known annotation of samples.}
   \item{anno_col}{a list of colors for the annotations in \code{anno}.}
   \item{internal}{used internally.}
+  \item{show_row_dend}{whether show row dendrogram.}
   \item{show_column_names}{whether show column names in the heatmap.}
   \item{use_raster}{internally used.}
   \item{plot}{whether to make the plot.}

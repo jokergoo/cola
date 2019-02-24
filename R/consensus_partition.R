@@ -654,7 +654,7 @@ else take the k with higest vote of
   2. min PAC,
   3. max mean_silhouette,
   4. max concordance.
-", cex = 0.9, adj = c(0, 1))
+", cex = 1, adj = c(0, 1))
 
 	par(op)
 })
