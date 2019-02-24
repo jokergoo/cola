@@ -93,4 +93,5 @@ importFrom(parallel, mclapply)
 importFrom(png, readPNG)
 importFrom(skmeans, skmeans)
 importFrom(xml2, read_xml, xml_children, xml_attr, xml_text, xml_name)
-
+useDynLib(cola, .registration=TRUE)
+importFrom(Rcpp, evalCpp)

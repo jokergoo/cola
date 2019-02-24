@@ -367,18 +367,19 @@ consensus_partition = function(data,
 			class = as.vector(cl_class_ids(x))
 			map = relabel_class(class, class_ids, full_set = 1:k)
 			class = as.numeric(map[as.character(class)])
-			class
+			as.integer(class)
 		}))
 		rownames(membership_each) = rownames(membership_mat)
 
 		if(verbose) qqcat("@{prefix}calculate consensus matrix.\n")
-		consensus_mat = matrix(1, nrow = nrow(membership_mat), ncol = nrow(membership_mat))
-		for(i in seq_len(nrow(membership_each)-1)) {
-			for(j in (i+1):nrow(membership_each)) {
-				consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ] + 0)/ncol(membership_each)
-				consensus_mat[j, i] = consensus_mat[i, j]
-			}
-	 	}
+		# consensus_mat = matrix(1, nrow = nrow(membership_mat), ncol = nrow(membership_mat))
+		# for(i in seq_len(nrow(membership_each)-1)) {
+		# 	for(j in (i+1):nrow(membership_each)) {
+		# 		consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ] + 0)/ncol(membership_each)
+		# 		consensus_mat[j, i] = consensus_mat[i, j]
+		# 	}
+	 # 	}
+		consensus_mat = get_consensus_matrix(membership_each)
 	 	rownames(consensus_mat) = rownames(membership_mat)
 	 	colnames(consensus_mat) = rownames(membership_mat)
 
@@ -640,9 +641,9 @@ setMethod(f = "select_partition_number",
 		plot(object@k, m[, i], type = "b", xlab = "k", ylab = nm[i])
 	}
 
+	par(xpd = NA, mar = c(4, 2, 1, 1))
 	plot(c(0, 1), c(0, 1), type = "n", axes = FALSE, ann = FALSE)
-	par(xpd = NA)
-	text(x = 0, y = 0.9,
+	text(x = 0, y = 1,
 "Suggested rule:
   Rand index < 0.95
 If cophcor >= 0.99 or 

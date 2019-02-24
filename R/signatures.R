@@ -106,7 +106,7 @@ setMethod(f = "get_signatures",
 
 	do_row_clustering = TRUE
 	if(inherits(diff_method, "function")) {
-		if(verbose) qqcat("* calculate row difference between subgroups by user-defined function\n")
+		if(verbose) qqcat("* calculate row difference between subgroups by user-defined function.\n")
 		diff_method_fun = diff_method
 		diff_method = digest(diff_method)
 	} else {
@@ -146,7 +146,7 @@ setMethod(f = "get_signatures",
 		}
 	}
 
-	if(verbose) qqcat("* calculating row difference between subgroups by @{diff_method}\n")
+	if(verbose) qqcat("* calculating row difference between subgroups by @{diff_method}.\n")
 	if(find_signature) {
 		if(diff_method == "ttest") {
 			fdr = ttest(data2, class)
@@ -160,7 +160,7 @@ setMethod(f = "get_signatures",
 			fdr = diff_method_fun(data2, class)
 		}
 	} else {
-		if(verbose) qqcat("  - row difference is extracted from cache\n")
+		if(verbose) qqcat("  - row difference is extracted from cache.\n")
 	}
 
 	object@.env[[nm]]$diff_method = diff_method
@@ -170,11 +170,11 @@ setMethod(f = "get_signatures",
 
 	if(scale_rows && !is.null(object@.env[[nm]]$row_order_scaled)) {
 		row_order = object@.env[[nm]]$row_order_scaled
-		if(verbose) qqcat("  - row order for the scaled matrix is extracted from cache\n")
+		if(verbose) qqcat("  - row order for the scaled matrix is extracted from cache.\n")
 		do_row_clustering = FALSE
 	} else if(!scale_rows && !is.null(object@.env[[nm]]$row_order_unscaled)) {
 		row_order = object@.env[[nm]]$row_order_unscaled
-		if(verbose) qqcat("  - row order for the unscaled matrix is extracted from cache\n")
+		if(verbose) qqcat("  - row order for the unscaled matrix is extracted from cache.\n")
 		do_row_clustering = FALSE
 	}
 
@@ -222,7 +222,7 @@ setMethod(f = "get_signatures",
 	returned_obj = returned_df
 	attr(returned_obj, "sample_used") = column_used_logical
 
-	if(verbose) qqcat("* @{nrow(mat)} signatures under fdr < @{fdr_cutoff}\n")
+	if(verbose) qqcat("* @{nrow(mat)} signatures under fdr < @{fdr_cutoff}.\n")
 
 	if(nrow(mat) == 0) {
 		if(plot) {
@@ -243,7 +243,7 @@ setMethod(f = "get_signatures",
 		mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
 		mat2 = mat[order(fdr2)[1:top_k_genes], !column_used_logical, drop = FALSE]
 		# group2 = group2[order(fdr2)[1:top_k_genes]]
-		if(verbose) cat(paste0("* Only take top ", top_k_genes, " signatures with highest fdr for the plot\n"))
+		if(verbose) cat(paste0("* Only take top ", top_k_genes, " signatures with highest fdr for the plot.\n"))
 	} else {
 		mat1 = mat[, column_used_logical, drop = FALSE]
 		mat2 = mat[, !column_used_logical, drop = FALSE]
@@ -341,7 +341,19 @@ setMethod(f = "get_signatures",
 	silhouette_range = range(class_df$silhouette)
 	silhouette_range[2] = 1
 
-	if(verbose) qqcat("* making heatmaps for signatures\n")
+	if(verbose) qqcat("* making heatmaps for signatures.\n")
+
+	row_km = NULL
+	if(!internal) {
+		if(scale_rows) {
+			if(nrow(use_mat1) > 10) {
+				wss <- (nrow(use_mat1)-1)*sum(apply(use_mat1,2,var))
+				for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers=i)$withinss)
+				row_km = elbow_finder(1:15, wss)[1]
+				if(verbose) qqcat("  - split rows into @{row_km} groups by k-means clustering.\n")
+			}
+		}
+	}
 
 	# group2 = factor(group2, levels = sort(unique(group2)))
 	# ht_list = Heatmap(group2, name = "Group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
@@ -371,7 +383,7 @@ setMethod(f = "get_signatures",
 			show_legend = TRUE)
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
-		top_annotation = ha1,
+		top_annotation = ha1, row_km = row_km,
 		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = "confident samples",
 		use_raster = use_raster, raster_resize = raster_resize,
@@ -426,7 +438,7 @@ setMethod(f = "get_signatures",
 		}
 		
 	} else {
-		if(verbose) cat("  - using row order from cache\n")
+		if(verbose) cat("  - using row order from cache.\n")
 		draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, paste0(', top ', top_k_genes,' signatures'), '')}"),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order)
@@ -452,6 +464,31 @@ setMethod(f = "get_signatures",
 
 	return(invisible(returned_obj))
 })
+
+# https://stackoverflow.com/questions/2018178/finding-the-best-trade-off-point-on-a-curve
+elbow_finder <- function(x_values, y_values) {
+  # Max values to create line
+  max_x_x <- max(x_values)
+  max_x_y <- y_values[which.max(x_values)]
+  max_y_y <- max(y_values)
+  max_y_x <- x_values[which.max(y_values)]
+  max_df <- data.frame(x = c(max_y_x, max_x_x), y = c(max_y_y, max_x_y))
+
+  # Creating straight line between the max values
+  fit <- lm(max_df$y ~ max_df$x)
+
+  # Distance from point to line
+  distances <- c()
+  for(i in 1:length(x_values)) {
+    distances <- c(distances, abs(coef(fit)[2]*x_values[i] - y_values[i] + coef(fit)[1]) / sqrt(coef(fit)[2]^2 + 1^2))
+  }
+
+  # Max distance point
+  x_max_dist <- x_values[which.max(distances)]
+  y_max_dist <- y_values[which.max(distances)]
+
+  return(c(x_max_dist, y_max_dist))
+}
 
 compare_to_subgroup = function(mat, class, which = "highest") {
 

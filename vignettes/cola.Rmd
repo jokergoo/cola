@@ -722,16 +722,16 @@ For all pairs of samples, denote following symbols
 (https://en.wikipedia.org/wiki/Rand_index#Definition):
 
 - $a$: the number of pairs of samples that are in the same subgroup in $k$ and
-  in the same subgroup in $k-1$
+  in the same subgroup in $k-1$.
 - $b$: the number of pairs of samples that are in the different subgroup in
-  $k$ and in the different subgroup in $k-1$
+  $k$ and in the different subgroup in $k-1$.
 - $c$: the number of pairs of samples that are in the same subgroup in $k$ and
-  in the different subgroup in $k-1$
+  in the different subgroup in $k-1$.
 - $d$: the number of pairs of samples that are in the different subgroup in
-  $k$ and in the same subgroup in $k-1$
+  $k$ and in the same subgroup in $k-1$.
 
 the Rand index which is the percent of pairs of samples that are both in a
-same cluster or both are not in a same cluster in the partition of k and k-1.
+same cluster or both are not in a same cluster in the partition of $k$ and $k-1$.
 
 $$Rand = \frac{a+b}{a+b+c+d}$$
 

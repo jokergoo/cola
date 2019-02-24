@@ -74,7 +74,7 @@ setMethod(f = "collect_plots",
 	highlight_col = NULL
 	for(i in seq_along(top_value_method)) {
 	    for(j in seq_along(partition_method)) {
-	    	qqcat("* applying @{fun_name} for @{top_value_method[i]}:@{partition_method[j]}\n")
+	    	if(verbose) qqcat("* applying @{fun_name} for @{top_value_method[i]}:@{partition_method[j]}.\n")
 	    	res = object[top_value_method[i], partition_method[j]]
 	    	# if(!missing(k)) {
 		    # 	if(get_stats(res, k = k)[, "PAC"] < 0.05) {
@@ -90,18 +90,18 @@ setMethod(f = "collect_plots",
 			if(is.null(.ENV$TEMP_DIR)) {
 				file_name = tempfile(fileext = ".png", tmpdir = ".")
 		        png(file_name, width = image_width, height = image_height)
-		        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...))
+		        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, verbose = FALSE, ...))
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
 					grid.raster(readPNG(file_name))
 			    } else {
-			    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}\n")
+			    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}.\n")
 			    }
 			    if(file.exists(file_name)) file.remove(file_name)
 			} else {
 				file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png"))
 				if(file.exists(file_name)) {
-					if(verbose) qqcat("  - use cache png: @{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png\n")
+					if(verbose) qqcat("  - use cache png: @{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png.\n")
 					grid.raster(readPNG(file_name))
 				} else {
 					png(file_name, width = image_width, height = image_height)
@@ -110,7 +110,7 @@ setMethod(f = "collect_plots",
 			        if(!inherits(oe, "try-error")) {
 						grid.raster(readPNG(file_name))
 				    } else {
-				    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}\n")
+				    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}.\n")
 				    }
 				}
 			}
@@ -190,7 +190,7 @@ setMethod(f = "collect_plots",
 	upViewport()
 
 	# ecdf
-	if(verbose) cat("* plotting empirical cumulative distribution curves of the consensus matrix\n")
+	if(verbose) cat("* plotting empirical cumulative distribution curves of the consensus matrix.\n")
 	pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 2))
 	file_name = tempfile()
 	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
@@ -207,7 +207,7 @@ setMethod(f = "collect_plots",
     upViewport()
     if(file.exists(file_name)) file.remove(file_name)
 	
-	if(verbose) cat("* plotting classes for all k\n")
+	if(verbose) cat("* plotting classes for all k.\n")
 	pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 3))
 	file_name = tempfile()
     png(file_name, width = image_width, height = image_height)
@@ -241,7 +241,7 @@ setMethod(f = "collect_plots",
 		grid.text(qq("k = @{all_k[i]}"))
 		upViewport()
 
-		qqcat("* making consensus heatmap for k = @{all_k[i]}\n")
+		if(verbose) qqcat("* making consensus heatmap for k = @{all_k[i]}.\n")
 		pushViewport(viewport(layout.pos.row = 4, layout.pos.col = i + 1))
 
 		if(is.null(.ENV$TEMP_DIR)) {
@@ -252,13 +252,13 @@ setMethod(f = "collect_plots",
 	        if(!inherits(oe, "try-error")) {
 				grid.raster(readPNG(file_name))
 		    } else {
-		    	qqcat("* Caught an error for consensus_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}\n")
+		    	qqcat("* Caught an error for consensus_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 		    }
 		    if(file.exists(file_name)) file.remove(file_name)
 		} else {
 			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}.png"))
 			if(file.exists(file_name)) {
-				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}.png\n")
+				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}.png.\n")
 				grid.raster(readPNG(file_name))
 			} else {
 				png(file_name, width = image_width, height = image_height)
@@ -267,7 +267,7 @@ setMethod(f = "collect_plots",
 		        if(!inherits(oe, "try-error")) {
 					grid.raster(readPNG(file_name))
 			    } else {
-			    	qqcat("* Caught an error for consensus_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}\n")
+			    	qqcat("* Caught an error for consensus_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 			    }
 			}
 		}
@@ -275,7 +275,7 @@ setMethod(f = "collect_plots",
 		grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
 
-	    qqcat("* making membership heatmap for k = @{all_k[i]}\n")
+	    if(verbose) qqcat("* making membership heatmap for k = @{all_k[i]}.\n")
 	    pushViewport(viewport(layout.pos.row = 5, layout.pos.col = i + 1))
 	    
 	    if(is.null(.ENV$TEMP_DIR)) {
@@ -286,13 +286,13 @@ setMethod(f = "collect_plots",
 	        if(!inherits(oe, "try-error")) {
 				grid.raster(readPNG(file_name))
 		    } else {
-		    	qqcat("* Caught an error for membership_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}\n")
+		    	qqcat("* Caught an error for membership_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 		    }
 		    if(file.exists(file_name)) file.remove(file_name)
 		} else {
 			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}.png"))
 			if(file.exists(file_name)) {
-				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}.png\n")
+				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}.png.\n")
 				grid.raster(readPNG(file_name))
 			} else {
 				png(file_name, width = image_width, height = image_height)
@@ -301,7 +301,7 @@ setMethod(f = "collect_plots",
 		        if(!inherits(oe, "try-error")) {
 					grid.raster(readPNG(file_name))
 			    } else {
-			    	qqcat("* Caught an error for membership_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}\n")
+			    	qqcat("* Caught an error for membership_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 			    }
 			}
 		}
@@ -309,33 +309,33 @@ setMethod(f = "collect_plots",
 		grid.rect(gp = gpar(fill = "transparent", col = border_color[i]))
 	    upViewport()
 
-	    qqcat("* making signature heatmap for k = @{all_k[i]}\n")
+	    if(verbose) qqcat("* making signature heatmap for k = @{all_k[i]}.\n")
 	    pushViewport(viewport(layout.pos.row = 6, layout.pos.col = i + 1))
 	    
 	    if(is.null(.ENV$TEMP_DIR)) {
 			file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height)
-	        oe = try(get_signatures(object, k = all_k[i], internal = TRUE, use_raster = TRUE))
+	        oe = try(get_signatures(object, k = all_k[i], internal = TRUE, use_raster = TRUE, verbose = FALSE))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
 				grid.raster(readPNG(file_name))
 		    } else {
-		    	qqcat("* Caught an error for get_signatures:@{top_value_method}:@{partition_method}:\n@{oe}\n")
+		    	qqcat("* Caught an error for get_signatures:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 		    }
 		    if(file.exists(file_name)) file.remove(file_name)
 		} else {
 			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}.png"))
 			if(file.exists(file_name)) {
-				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}.png\n")
+				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}.png.\n")
 				grid.raster(readPNG(file_name))
 			} else {
 				png(file_name, width = image_width, height = image_height)
-		        oe = try(get_signatures(object, k = all_k[i], internal = TRUE, use_raster = TRUE))
+		        oe = try(get_signatures(object, k = all_k[i], internal = TRUE, use_raster = TRUE, verbose = FALSE))
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
 					grid.raster(readPNG(file_name))
 			    } else {
-			    	qqcat("* Caught an error for get_signatures:@{top_value_method}:@{partition_method}:\n@{oe}\n")
+			    	qqcat("* Caught an error for get_signatures:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 			    }
 			}
 		}
