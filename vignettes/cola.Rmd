@@ -751,8 +751,7 @@ one single sample separated from other subgroups to form a new subgroup. The Ran
 the Jaccard index for $k=4$ is close to 1, which means, the subgroups at $k=4$ are
 highly similar as $k=3$, thus we ignore $k=4$ and take $k=3$ as the better subgrouping.
 
-```{r, echo = FALSE}
-knitr::include_graphics("rand_jaccard.png")
+<img src="rand_jaccard.png" width="600" />
 ```
 
 ### Rule

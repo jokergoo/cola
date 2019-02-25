@@ -244,7 +244,7 @@ setMethod(f = "get_signatures",
 		mat1 = mat[ind, column_used_logical, drop = FALSE]
 		mat2 = mat[ind, !column_used_logical, drop = FALSE]
 		# group2 = group2[order(fdr2)[1:top_k_genes]]
-		if(verbose) cat(paste0("* Only take top ", top_k_genes, " signatures with highest fdr for the plot.\n"))
+		if(verbose) cat(paste0("* randomly sample 2000 signatures.\n"))
 	} else {
 		mat1 = mat[, column_used_logical, drop = FALSE]
 		mat2 = mat[, !column_used_logical, drop = FALSE]
