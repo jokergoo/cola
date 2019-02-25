@@ -19,7 +19,6 @@
 # -use_raster internally used.
 # -plot whether to make the plot.
 # -verbose whether to print messages.
-# -top_k_genes top k genes to show on the heatmap if the number of signatures exceed it.
 # -... other arguments.
 # 
 # == details 
@@ -60,7 +59,6 @@ setMethod(f = "get_signatures",
 	show_row_dend = FALSE,
 	show_column_names = FALSE, use_raster = TRUE,
 	plot = TRUE, verbose = TRUE,
-	top_k_genes = 2000,
 	...) {
 
 	raster_resize = cola_opt$raster_resize
@@ -238,10 +236,13 @@ setMethod(f = "get_signatures",
 	}
 
 	more_than_5k = FALSE
-	if(nrow(mat) > top_k_genes) {
+	if(nrow(mat) > 2000) {
 		more_than_5k = TRUE
-		mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
-		mat2 = mat[order(fdr2)[1:top_k_genes], !column_used_logical, drop = FALSE]
+		ind = sample(1:nrow(mat), 2000)
+		# mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
+		# mat2 = mat[order(fdr2)[1:top_k_genes], !column_used_logical, drop = FALSE]
+		mat1 = mat[ind, column_used_logical, drop = FALSE]
+		mat2 = mat[ind, !column_used_logical, drop = FALSE]
 		# group2 = group2[order(fdr2)[1:top_k_genes]]
 		if(verbose) cat(paste0("* Only take top ", top_k_genes, " signatures with highest fdr for the plot.\n"))
 	} else {
@@ -426,7 +427,7 @@ setMethod(f = "get_signatures",
 	}
 
 	if(do_row_clustering) {
-		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, paste0(', top ', top_k_genes,' signatures'), '')}"),
+		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}}"),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal)
 		
 		row_order = row_order(ht_list)
@@ -439,7 +440,7 @@ setMethod(f = "get_signatures",
 		
 	} else {
 		if(verbose) cat("  - using row order from cache.\n")
-		draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}@{ifelse(more_than_5k, paste0(', top ', top_k_genes,' signatures'), '')}"),
+		draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}"),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order)
 	}

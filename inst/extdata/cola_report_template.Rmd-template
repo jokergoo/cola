@@ -207,7 +207,7 @@ Get statistics for all methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('get_stat(res_list, k = <%=k%>)', 'k = <%=k%>')
+knitr_add_tab_item('get_stats(res_list, k = <%=k%>)', 'k = <%=k%>')
 <%}-%>
 knitr_insert_tabs()
 ```

@@ -18,7 +18,6 @@ Get signature rows
     show_row_dend = FALSE,
     show_column_names = FALSE, use_raster = TRUE,
     plot = TRUE, verbose = TRUE,
-    top_k_genes = 2000,
     ...)
 }
 \arguments{
@@ -37,7 +36,6 @@ Get signature rows
   \item{use_raster}{internally used.}
   \item{plot}{whether to make the plot.}
   \item{verbose}{whether to print messages.}
-  \item{top_k_genes}{top k genes to show on the heatmap if the number of signatures exceed it.}
   \item{...}{other arguments.}
 
 }

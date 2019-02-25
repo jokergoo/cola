@@ -7,7 +7,7 @@ Get the best number of partitions
 Get the best number of partitions
 }
 \usage{
-\S4method{guess_best_k}{ConsensusPartitionList}(object, rand_index_cutoff = 0.9)
+\S4method{guess_best_k}{ConsensusPartitionList}(object, rand_index_cutoff = 0.95)
 }
 \arguments{
 

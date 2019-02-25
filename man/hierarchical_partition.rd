@@ -15,7 +15,7 @@ hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmean
   \item{data}{a numeric matrix where subgroups are found by columns.}
   \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}.}
   \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}.}
-  \item{concordance_cutoff}{the cutoff of concordance scores to determine whether to continue looking for subgroups.}
+  \item{concordance_cutoff}{the cutoff of concordance scores to determine whether to continue looking for subgroups. Currently it is not used.}
   \item{PAC_cutoff}{the cutoff of PAC scores to determine whether to continue looking for subgroups.}
   \item{min_samples}{the cutoff of number of samples to determine whether to continue looking for subgroups.}
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}

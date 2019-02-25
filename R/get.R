@@ -317,6 +317,10 @@ setMethod(f = "guess_best_k",
 	stat = get_stats(object)
 	stat = stat[stat[, "Rand"] < rand_index_cutoff, , drop = FALSE]
 
+	if(nrow(stat) == 0) {
+		return(min(object@k))
+	}
+
 	l = stat[, "cophcor"] >= 0.99 | stat[, "PAC"] <= 0.1 | stat[, "concordance"] >= 0.95
 	if(sum(l)) {
 		return(max(as.numeric(rownames(stat)[l])))
@@ -355,7 +359,7 @@ setMethod(f = "guess_best_k",
 # guess_best_k(cola_rl)
 setMethod(f = "guess_best_k",
 	signature = "ConsensusPartitionList",
-	definition = function(object, rand_index_cutoff = 0.9) {
+	definition = function(object, rand_index_cutoff = 0.95) {
 
 	best_k = NULL
 	cophcor = NULL

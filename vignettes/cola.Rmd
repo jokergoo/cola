@@ -746,6 +746,15 @@ subgroup in the partition of $k$ or $k-1$.
 
 $$Jaccard = \frac{a}{a+c+d}$$
 
+In following plots, when the number of subgroups increases from 3 to 4, there is only
+one single sample separated from other subgroups to form a new subgroup. The Rand index or
+the Jaccard index for $k=4$ is close to 1, which means, the subgroups at $k=4$ are
+highly similar as $k=3$, thus we ignore $k=4$ and take $k=3$ as the better subgrouping.
+
+```{r, echo = FALSE}
+knitr::include_graphics("rand_jaccard.png")
+```
+
 ### Rule
 
 **cola** provides a `guess_best_k()` function which determines the best $k$.

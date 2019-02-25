@@ -95,10 +95,10 @@ message("  - plotting various statistics for selecting best k", appendLF = FALSE
 select_partition_number(res)
 ```
 
-The numeric values for all these statistics can be obtained by `get_stat()`.
+The numeric values for all these statistics can be obtained by `get_stats()`.
 
 ```{r}
-get_stat(res)
+get_stats(res)
 ```
 
 Guess the best `k` based on these statistics. The rule is as follows:
