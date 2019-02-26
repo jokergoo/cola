@@ -1,5 +1,13 @@
 
 ## GDS534, "ATC:mclust" method
+library(cola)
+res_list = readRDS("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/GDS/GDS534/GDS534_cola_all.rds")
+res = res_list["ATC:mclust"]
+
+library(circlize)
+library(grid)
+library(ComplexHeatmap)
+
 png("~/rand_jaccard.png", width = 620, height = 620)
 
 col_fun = colorRamp2(c(0, 1), c("white", "blue"))
@@ -14,7 +22,7 @@ par(mfrow = c(2, 2))
 plot.new()
 plot.new()
 plot(stat$k, stat$Rand, xlab = "k", ylab = "Rand", type = "b")
-plot(stat$k, stat$Jaccard, xlab = "k", ylab = "Rand", type = "b")
+plot(stat$k, stat$Jaccard, xlab = "k", ylab = "Jaccard", type = "b")
 pushViewport(viewport(x = 0, y = 1, width = 0.5, height = 0.5, just = c("left", "top")))
 draw(ht1, newpage = FALSE)
 popViewport()

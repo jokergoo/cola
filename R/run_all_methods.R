@@ -345,6 +345,10 @@ setMethod(f = "show",
 # -j index for partition methods, character or nummeric.
 # -drop whether drop class
 #
+# == details
+# For a specific combination of top-value method and partition method, you can also
+# subset by e.g. ``x['sd:hclust']``.
+#
 # == value
 # A `ConsensusPartitionList-class` object or a `ConsensusPartition-class` object.
 #
@@ -355,7 +359,10 @@ setMethod(f = "show",
 # data(cola_rl)
 # cola_rl[c("sd", "MAD"), c("hclust", "kmeans")]
 # cola_rl["sd", "kmeans"] # a ConsensusPartition object
+# cola_rl["sd:kmeans"] # a ConsensusPartition object
+# cola_rl[["sd:kmeans"]] # a ConsensusPartition object
 # cola_rl["sd", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
+# cola_rl["sd:kmeans", drop = FALSE] # still a ConsensusPartitionList object
 # cola_rl["sd", ]
 # cola_rl[, "hclust"]
 # cola_rl[1:2, 1:2]
@@ -422,7 +429,7 @@ setMethod(f = "show",
     		if(is.numeric(i)) {
 	    		i = names(x)[i]
 	    	}
-	    	a = strsplit(i, ":")[[1]]
+	    	a = strsplit(i, ":+")[[1]]
 	    	return(x[a[1], a[2], cl$drop])
     	}
     	if(nargs() == 2) {
@@ -432,7 +439,7 @@ setMethod(f = "show",
 	    	if(is.numeric(i)) {
 	    		i = names(x)[i]
 	    	}
-	    	a = strsplit(i, ":")[[1]]
+	    	a = strsplit(i, ":+")[[1]]
 	    	return(x[a[1], a[2]])
 	    }
 
@@ -459,3 +466,28 @@ setMethod(f = "show",
 }
 
 
+# == title
+# Subset a ConsensusPartitionList object
+#
+# == param
+# -x a `ConsensusPartitionList-class` object.
+# -i character index for combination of top-value methods and partition method.
+#
+# == value
+# A `ConsensusPartition-class` object.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+# == example
+# data(cola_rl)
+# cola_rl[["sd:MAD"]]
+"[[.ConsensusPartitionList" = function(x, i) {
+	if(length(i) != 1) {
+		stop_wrap("Length of index can only be one.")
+	}
+	if(!is.character(i)) {
+		stop_wrap("Index can only be character.")
+	}
+	x[i]
+}

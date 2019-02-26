@@ -752,7 +752,6 @@ the Jaccard index for $k=4$ is close to 1, which means, the subgroups at $k=4$ a
 highly similar as $k=3$, thus we ignore $k=4$ and take $k=3$ as the better subgrouping.
 
 <img src="rand_jaccard.png" width="600" />
-```
 
 ### Rule
 
@@ -918,7 +917,7 @@ visualization functions that can be applied to it.
 different statistics along with different $k$, which helps to determine the
 "best k".
 
-```{r, fig.width = 8, fig.height = 8}
+```{r, fig.width = 10, fig.height = 10}
 res = rl["MAD:kmeans"] # the ConsensusPartition object
 select_partition_number(res)
 ```

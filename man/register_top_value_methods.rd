@@ -56,5 +56,5 @@ register_top_value_methods(
     ATC_multicore = function(mat) ATC(mat, mc.cores = 2)
 )
 all_top_value_methods()
-remove_top_value_method(c("ATC_spearman", "ATC_multicore"))
+remove_top_value_methods(c("ATC_spearman", "ATC_multicore"))
 }

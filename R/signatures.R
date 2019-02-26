@@ -350,7 +350,9 @@ setMethod(f = "get_signatures",
 			if(nrow(use_mat1) > 10) {
 				wss <- (nrow(use_mat1)-1)*sum(apply(use_mat1,2,var))
 				for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers=i)$withinss)
-				row_km = elbow_finder(1:15, wss)[1]
+				row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
+				if(length(unique(class)) == 1) row_km = NULL
+				if(length(unique(class)) == 2) row_km = min(row_km, 2)
 				if(verbose) qqcat("  - split rows into @{row_km} groups by k-means clustering.\n")
 			}
 		}
@@ -427,7 +429,7 @@ setMethod(f = "get_signatures",
 	}
 
 	if(do_row_clustering) {
-		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}}"),
+		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}"),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal)
 		
 		row_order = row_order(ht_list)

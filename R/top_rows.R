@@ -98,8 +98,8 @@ setMethod(f = "top_rows_overlap",
 # set.seed(123)
 # mat = matrix(rnorm(1000), nrow = 100)
 # lt = list(sd = rowSds(mat), mad = rowMads(mat))
-# top_element_overlap(lt, top_n = 25, method = "venn")
-# top_element_overlap(lt, top_n = 25, method = "correspondance")
+# top_elements_overlap(lt, top_n = 25, method = "venn")
+# top_elements_overlap(lt, top_n = 25, method = "correspondance")
 top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])), 
 		method = c("venn", "venneuler", "correspondance"), ...) {
 

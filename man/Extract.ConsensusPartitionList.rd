@@ -18,6 +18,10 @@ Subset a ConsensusPartitionList object
   \item{drop}{whether drop class}
 
 }
+\details{
+For a specific combination of top-value method and partition method, you can also
+subset by e.g. \code{x['sd:hclust']}.
+}
 \value{
 A \code{\link{ConsensusPartitionList-class}} object or a \code{\link{ConsensusPartition-class}} object.
 }
@@ -28,7 +32,10 @@ Zuguang Gu <z.gu@dkfz.de>
 data(cola_rl)
 cola_rl[c("sd", "MAD"), c("hclust", "kmeans")]
 cola_rl["sd", "kmeans"] # a ConsensusPartition object
+cola_rl["sd:kmeans"] # a ConsensusPartition object
+cola_rl[["sd:kmeans"]] # a ConsensusPartition object
 cola_rl["sd", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
+cola_rl["sd:kmeans", drop = FALSE] # still a ConsensusPartitionList object
 cola_rl["sd", ]
 cola_rl[, "hclust"]
 cola_rl[1:2, 1:2]

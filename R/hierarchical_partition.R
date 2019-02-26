@@ -290,7 +290,7 @@ calc_dend = function(object, depth = max_depth(object)) {
 
 	pd = get_hierarchy(object, depth = depth)
 	classes = get_classes(object, depth = depth)
-	tb = table(classes)
+	if(is.null(names(classes))) names(classes) = seq_along(classes)
 	cd_list = lapply(tapply(names(classes), classes, function(x) x), function(x) {
 		d = random_dend(length(x))
 		d = dendextend::`labels<-`(d, value = x)
@@ -623,10 +623,6 @@ setMethod(f = "collect_classes",
 	definition = function(object, depth = max_depth(object), 
 	anno = get_anno(object[1]), anno_col = get_anno_col(object[1])) {
 
-	data = object@list[[1]]@.env$data
-	if(nrow(data) > 5000) {
-		data = data[order(rowSds(data), decreasing = TRUE)[1:5000], ]
-	}
 	cl = get_classes(object, depth = depth)
 
 	dend = calc_dend(object, depth = depth)
@@ -727,46 +723,38 @@ setMethod(f = "collect_classes",
 #
 # == example
 # data(cola_rh)
-# test_to_known_factors(cola_rh, 1:60)
+# test_to_known_factors(cola_rh, known = 1:60)
 setMethod(f = "test_to_known_factors",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object), 
-	known = get_anno(object[1])) {
+	definition = function(object, known = get_anno(object[1]),
+	depth = max_depth(object)) {
 
 	if(!is.null(known)) {
 		if(is.atomic(known)) {
 			df = data.frame(known)
 			colnames(df) = deparse(substitute(known))
-			knwon = df
+			known = df
 		}
+	} else {
+		stop_wrap("Known factors should be provided.")
 	}
 
-	all_nodes = sort(unique(as.vector(object@hierarchy)))
-	all_nodes = all_nodes[all_nodes != "0"]
-	if(!is.null(depth)) {
-		all_nodes = all_nodes[nchar(all_nodes) <= depth]
-	}
+	nodes = setdiff(all_nodes(object, depth = depth), all_leaves(object, depth = depth))
 
 	p = NULL
-	for(nm in all_nodes) {
-		nc = nchar(nm)
-		which_group = as.numeric(substr(nm, nc, nc))
-		parent = substr(nm, 1, nc - 1)
-		obj = object@list[[parent]]
-		best_k = guess_best_k(obj)
-		
-		cl = get_classes(obj, k = best_k)$class
-		cl[cl != which_group] = 0
+	for(nm in nodes) {
+		obj = object[[nm]]
 
 		column_index = obj@column_index
 
-		p = rbind(p, test_between_factors(factor(cl), known[column_index, , drop = FALSE]))
+		p = rbind(p, test_to_known_factors(obj, k = guess_best_k(obj), known[column_index, , drop = FALSE]))
 	}
-	rownames(p) = all_nodes
+	rownames(p) = nodes
 
 	class = get_classes(object)
 	m = test_between_factors(class, known, verbose = FALSE)
-	p = rbind(p, overall = m)
+	p = rbind(p, c(length(class), as.vector(m), NA))
+	rownames(p) = c(rownames(p)[-nrow(p)], "overall")
 	return(p)
 })
 

@@ -7,8 +7,8 @@ Test correspondance between predicted classes and known factors
 Test correspondance between predicted classes and known factors
 }
 \usage{
-\S4method{test_to_known_factors}{HierarchicalPartition}(object, depth = max_depth(object),
-    known = get_anno(object[1]))
+\S4method{test_to_known_factors}{HierarchicalPartition}(object, known = get_anno(object[1]),
+    depth = max_depth(object))
 }
 \arguments{
 
@@ -28,5 +28,5 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rh)
-test_to_known_factors(cola_rh, 1:60)
+test_to_known_factors(cola_rh, known = 1:60)
 }

@@ -32,6 +32,6 @@ require(matrixStats)
 set.seed(123)
 mat = matrix(rnorm(1000), nrow = 100)
 lt = list(sd = rowSds(mat), mad = rowMads(mat))
-top_element_overlap(lt, top_n = 25, method = "venn")
-top_element_overlap(lt, top_n = 25, method = "correspondance")
+top_elements_overlap(lt, top_n = 25, method = "venn")
+top_elements_overlap(lt, top_n = 25, method = "correspondance")
 }

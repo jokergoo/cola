@@ -58,7 +58,7 @@ get_top_value_method = function(method) {
 #     ATC_multicore = function(mat) ATC(mat, mc.cores = 2)
 # )
 # all_top_value_methods()
-# remove_top_value_method(c("ATC_spearman", "ATC_multicore"))
+# remove_top_value_methods(c("ATC_spearman", "ATC_multicore"))
 register_top_value_methods = function(...) {
 	lt = list(...)
 	lt1 = lt[intersect(names(lt), .ENV$ALL_TOP_VALUE_METHODS)]
