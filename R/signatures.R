@@ -344,7 +344,7 @@ setMethod(f = "get_signatures",
 
 	if(verbose) qqcat("* making heatmaps for signatures.\n")
 
-	row_km = NULL
+	row_km = 1
 	if(!internal) {
 		if(scale_rows) {
 			if(nrow(use_mat1) > 10) {
