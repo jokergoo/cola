@@ -19,12 +19,12 @@ DAVID_ALL_CATALOGS = strsplit(DAVID_ALL_CATALOGS, ",")[[1]]
 # == details
 # This function directly sends the HTTP request to DAVID web service (https://david.ncifcrf.gov/content.jsp?file=WS.html )
 # and parses the returned XML. The reason of writing this function is I have problems with other
-# R packages doing DAVID analysis (e.g. RDAVIDWebService, https://bioconductor.org/packages/devel/bioc/html/RDAVIDWebService.html)
+# R packages doing DAVID analysis (e.g. RDAVIDWebService, https://bioconductor.org/packages/devel/bioc/html/RDAVIDWebService.html )
 # because the rJava package RDAVIDWebService depends on can not be installed on our cluster.
 #
 # Users are encouraged to use more advanced
 # gene set enrichment tools such as clusterProfiler (http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html ), 
-# or fgsea (http://www.bioconductor.org/packages/release/bioc/html/fgsea.html).
+# or fgsea (http://www.bioconductor.org/packages/release/bioc/html/fgsea.html ).
 #
 # If you want to run this function multiple times, please set time intervals between runs.
 # 

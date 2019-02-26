@@ -554,7 +554,7 @@ intermediate state between group 1 and group 2.
 Consensus partition is applied with a specific number of subgroups (we term
 it as $k$). Normally, a list of $k$ are tried to find the best $k$. **cola**
 provides metrics introduced later to help to determine the best number of subgroups.
-For the topic of determining best number of clustering, please refer to [the NbClust package](https://cran.r-project.org/web/packages/NbClust/index.html).
+For the topic of determining best number of clustering, please refer to [the NbClust package](https://CRAN.R-project.org/package=NbClust).
 
 The `get_stats()` function returns statistics for all metrics mentioned below
 and `select_partition_number()` plots the statistics with the number of
@@ -789,7 +789,7 @@ following methods:
   it looks for the subgroup with lowest mean value, compare to each of the
   other subgroups again with t-test and take the maximum p-values. Later for
   these two list of p-values take the minimal p-value as the final p-value.
-- `samr` and `pamr`: use [SAM](*https://cran.r-project.org/web/packages/samr/index.html)/[PAM](http://www.bioconductor.org/packages/2.8/bioc/html/pamr.html) method to find significantly different rows between
+- `samr` and `pamr`: use [SAM](https://CRAN.R-project.org/package=samr)/[PAM](https://CRAN.R-project.org/package=pamr) method to find significantly different rows between
   subgroups.
 
 Users can also provide their own method by providing a function with the matrix and subgroup labels
