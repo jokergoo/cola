@@ -148,10 +148,20 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	}
 	m = m[l, , drop = FALSE]
 
+	
+
 	n_na = sum(is.na(m))
 	if(n_na > 0) {
 		message_wrap(qq("There are NA values in the data, now impute missing data."))
+		
+		on.exit(if(sink.number()) sink(NULL))	
+		tempf = tempfile()
+		sink(tempf)
+		
 		m = impute.knn(m)$data
+
+		sink(NULL)
+		file.remove(tempf)
 	}
 	m = t(apply(m, 1, adjust_outlier))
 	row_sd = rowSds(m, na.rm = TRUE)
