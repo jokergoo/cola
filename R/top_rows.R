@@ -24,7 +24,7 @@
 setMethod(f = "top_rows_overlap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = min(object@list[[1]]@top_n), 
-		method = c("venn", "venneuler", "correspondance"), ...) {
+		method = c("venneuler", "venn", "correspondance"), ...) {
 
 	all_top_value_list = object@.env$all_top_value_list
 
@@ -61,7 +61,7 @@ setMethod(f = "top_rows_overlap",
 	signature = "matrix",
 	definition = function(object, top_value_method = all_top_value_methods(), 
 		top_n = round(0.25*nrow(object)), 
-		method = c("venn", "venneuler", "correspondance"), ...) {
+		method = c("venneuler", "venn", "correspondance"), ...) {
 
 	all_top_value_list = lapply(top_value_method, function(x) {
 		get_top_value_fun = get_top_value_method(x)
@@ -101,7 +101,7 @@ setMethod(f = "top_rows_overlap",
 # top_elements_overlap(lt, top_n = 25, method = "venn")
 # top_elements_overlap(lt, top_n = 25, method = "correspondance")
 top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])), 
-		method = c("venn", "venneuler", "correspondance"), ...) {
+		method = c("venneuler", "venn", "correspondance"), ...) {
 
 	if(length(unique(sapply(object, length))) > 1) {
 		stop_wrap("Length of all vectors in the input list should be the same.")
@@ -110,6 +110,12 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 	lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
     
     method = match.arg(method)
+    if(method == "venneuler") {
+	    if(!requireNamespace("venneuler")) {
+	    	message_wrap("venneuler package is not installed, use venn() instead.")
+	    	method = "venn"
+	    }
+	}
     if(method == "venn") {
 		venn(lt, ...)
 		title(qq("top @{top_n} rows"))

@@ -61,7 +61,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 						try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value}, silent = TRUE)
 					} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Fisher's exact test\n")
-						try({p.value[i, j] = fisher.test(df[[i]], df[[j]], alternative = "greater")$p.value}, silent = TRUE)
+						try({p.value[i, j] = fisher.test(df[[i]], df[[j]])$p.value}, silent = TRUE)
 					}
 					p.value[j, i] = p.value[i, j]
 				}

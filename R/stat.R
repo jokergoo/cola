@@ -81,14 +81,15 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, max_cor = 1,
 				ind2 = sample(ind2, n_sampling)
 			}
 			suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
+			l = cor_v < min_cor | cor_v > max_cov
+			l[is.na(l)] = FALSE
+			cor_v[l] = 0
 			
-			cor_v = cor_v[cor_v >= min_cor & cor_v <= max_cor]
-
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
 				v[i] = 1
 			} else {
 				f = ecdf(cor_v)
-				cor_v = seq(min_cor, max_cor, length = 100)
+				cor_v = seq(0, 1, length = 100)
 				n2 = length(cor_v)
 				v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
 			}
@@ -97,7 +98,7 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, max_cor = 1,
 	}, mc.cores = mc.cores)
 
 	v = do.call("c", v_list)
-	v = (max_cor - min_cor) - v
+	v = 1 - v
 	names(v) = NULL
 
 	v2[l] = v
