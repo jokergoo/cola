@@ -197,10 +197,10 @@ consensus_partition = function(data,
 			data = t(scale(t(data)))
 		} else if("rescale" %in% scale_method) {
 			if(verbose) cat("* rows are scaled before sent to partition, method: 'rescale' (x - min)/(max - min)\n")
-			row_min = rowMeans(data)
+			row_min = rowMins(data)
 			row_max = rowMaxs(data)
 			row_range = row_max - row_min
-			data = apply(data, 2, function(x) (x - row_min)/row_range)
+			data = (data - row_min)/row_range
 		} else {
 			scale_rows = FALSE
 		}
