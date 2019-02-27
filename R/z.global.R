@@ -313,27 +313,38 @@ register_partition_methods(
 # == title
 # Register NMF partition method
 #
+# == param
+# -package which package to support NMF.
+#
 # == details
-# It actually runs following code:
+# Note `NMF::nmf` is very time-consuming.
 #
-#     register_partition_methods(
-#         NMF = function(mat, k, ...) {
-#             fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
-#             apply(fit$H, 2, which.max)
-#         }, scale_method = "rescale"
-#     )
-#
-#
-register_NMF = function() {
-	if(!requireNamespace("NNLM")) {
-		stop_wrap("You need to install NNLM package to support NMF.")
+register_NMF = function(package = c("NMF", "NNLM")) {
+	package = match.arg(package)[1]
+
+	if(package == "NNLM") {
+		if(!requireNamespace("NNLM")) {
+			stop_wrap("You need to install NNLM package to support NMF.")
+		}
+		register_partition_methods(
+			NMF = function(mat, k, ...) {
+				fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
+				apply(fit$H, 2, which.max)
+			}, scale_method = "rescale"
+		)
+	} else if(package == "NMF") {
+		if(!requireNamespace("NMF")) {
+			stop_wrap("You need to install NMF package to support NMF.")
+		}
+		register_partition_methods(
+			NMF = function(mat, k, ...) {
+				NMF::nmf.options(maxIter = 500)
+				fit = NMF::nmf(mat, rank = k)
+				NMF::nmf.options(maxIter = NULL)
+				apply(fit@fit@H, 2, which.max)
+			}, scale_method = "rescale"
+		)
 	}
-	register_partition_methods(
-		NMF = function(mat, k, ...) {
-			fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
-			apply(fit$H, 2, which.max)
-		}, scale_method = "rescale"
-	)
 }
 
 # == title

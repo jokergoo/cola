@@ -390,7 +390,8 @@ setMethod(f = "get_signatures",
 		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = "confident samples",
 		use_raster = use_raster, raster_resize = raster_resize,
-		bottom_annotation = bottom_anno1, show_column_names = show_column_names, row_title = NULL)
+		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
+		row_title = {if(row_km == 1) NULL else qq("k-means with @{row_km} groups")})
  	
 	all_value_positive = !any(data < 0)
  	if(scale_rows && all_value_positive) {

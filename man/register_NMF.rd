@@ -7,18 +7,15 @@ Register NMF partition method
 Register NMF partition method
 }
 \usage{
-register_NMF()
+register_NMF(package = c("NMF", "NNLM"))
+}
+\arguments{
+
+  \item{package}{which package to support NMF.}
+
 }
 \details{
-It actually runs following code:
-
-  \preformatted{
-    register_partition_methods(
-        NMF = function(mat, k, ...) \{
-            fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
-            apply(fit$H, 2, which.max)
-        \}, scale_method = "rescale"
-    )  }
+Note \code{\link[NMF]{nmf}} is very time-consuming.
 }
 \examples{
 # There is no example
