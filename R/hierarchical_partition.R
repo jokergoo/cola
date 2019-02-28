@@ -473,7 +473,7 @@ setMethod(f = "show",
 # }
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object), 
+	definition = function(object, depth = max_depth(object), node = "0",
 	scale_rows = object[1]@scale_rows, 
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
@@ -570,20 +570,38 @@ setMethod(f = "get_signatures",
 		heatmap_name = "expr"
 	}
 
+	row_split = NULL
+	if(nrow(use_mat1) > 10) {
+		wss <- (nrow(use_mat1)-1)*sum(apply(use_mat1,2,var))
+		for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers=i)$withinss)
+		row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
+		if(length(unique(class)) == 1) row_km = 1
+		if(length(unique(class)) == 2) row_km = min(row_km, 2)
+		if(row_km > 1) {
+			row_split = kmeans(use_mat1, centers = row_km)$cluster
+		}
+		if(verbose) qqcat("  - split rows into @{row_km} groups by k-means clustering.\n")
+	}
+			
+
 	if(verbose) qqcat("* making heatmaps for signatures\n")
 
 	ha1 = HeatmapAnnotation(
 		class = class,
 		col = list(class = object@subgroup_col))
 
+	dend = cluster_within_group(use_mat1, class)
+	browser()
+	
 	ht_list = Heatmap(use_mat1, top_annotation = ha1,
 		name = heatmap_name, show_row_names = FALSE, 
 		show_column_names = show_column_names,
-		column_split = class, col = col_fun,
-		use_raster = TRUE,
-		show_row_dend = FALSE, show_column_dend = FALSE,
+		column_split = length(unique(class)), col = col_fun,
+		use_raster = TRUE, row_split = row_split,
+		show_row_dend = FALSE, cluster_columns = dend,
 		column_title = qq("@{length(unique(class))} groups, @{length(all_sig)} signatures"),
-		bottom_annotation = bottom_anno1)
+		bottom_annotation = bottom_anno1,
+		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
 
 	all_value_positive = !any(m < 0)
  	if(scale_rows && all_value_positive) {
@@ -770,6 +788,7 @@ setMethod(f = "test_to_known_factors",
 #         ``pca`` uses `stats::prcomp`.
 # -silhouette_cutoff cutoff of silhouette score. Data points with values less
 #        than it will be mapped to small points.
+# -scale whether perform scaling on matrix rows.
 #
 # == details
 # The class IDs are extract at ``depth``.
@@ -789,7 +808,7 @@ setMethod(f = "dimension_reduction",
 	definition = function(object,
 	depth = max_depth(object), parent_node,
 	top_n = NULL, method = c("PCA", "MDS"),
-	silhouette_cutoff = 0.5) {
+	silhouette_cutoff = 0.5, scale = TRUE) {
 
 	method = match.arg(method)
 	data = object@list[[1]]@.env$data
@@ -807,7 +826,7 @@ setMethod(f = "dimension_reduction",
 		class = get_classes(object, depth = depth)
 		dimension_reduction(data, pch = 16, col = object@subgroup_col[class],
 			cex = 1, main = qq("Dimension reduction by @{method}, @{ncol(data)} samples"),
-			method = method)
+			method = method, scale = scale)
 		class_level = sort(unique(class))
 		legend(x = par("usr")[2], y = par("usr")[4], legend = paste0("group", class_level), pch = 16,
 				col = object@subgroup_col[class_level], adj = c(0, 1))
@@ -817,7 +836,7 @@ setMethod(f = "dimension_reduction",
 		}
 		obj = object[parent_node]
 		dimension_reduction(obj, k = guess_best_k(obj), top_n = top_n, method = method,
-			silhouette_cutoff = silhouette_cutoff)
+			silhouette_cutoff = silhouette_cutoff, scale = scale)
 		legend("topleft", legend = qq("node @{parent_node}"))
 	}
 

@@ -7,7 +7,7 @@ Get signatures rows
 Get signatures rows
 }
 \usage{
-\S4method{get_signatures}{HierarchicalPartition}(object, depth = max_depth(object),
+\S4method{get_signatures}{HierarchicalPartition}(object, depth = max_depth(object), node = "0",
     scale_rows = object[1]@scale_rows,
     anno = get_anno(object),
     anno_col = get_anno_col(object),

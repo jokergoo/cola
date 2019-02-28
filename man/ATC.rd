@@ -7,7 +7,7 @@ Ability to correlate other rows in the matrix (ATC score)
 Ability to correlate other rows in the matrix (ATC score)
 }
 \usage{
-ATC(mat, cor_fun = stat::cor, min_cor = 0, max_cor = 1,
+ATC(mat, cor_fun = stat::cor, min_cor = 0, factor = 1,
     mc.cores = 1, n_sampling = 1000, q_sd = 0, ...)
 }
 \arguments{
@@ -15,7 +15,6 @@ ATC(mat, cor_fun = stat::cor, min_cor = 0, max_cor = 1,
   \item{mat}{a numeric matrix. ATC score is calculated by rows.}
   \item{cor_fun}{a function which calculates correlation.}
   \item{min_cor}{minimal absolute correlation.}
-  \item{max_cor}{maximal absolute correlation.}
   \item{mc.cores}{number of cores.}
   \item{n_sampling}{when there are too many rows in the matrix, to get the curmulative distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000 rows can already give a farely nice estimation.}
   \item{q_sd}{percentile of the standard deviation for the rows. Rows with values less than it are ignored.}
@@ -25,7 +24,7 @@ ATC(mat, cor_fun = stat::cor, min_cor = 0, max_cor = 1,
 \details{
 For a given row in a matrix, the ATC score is the area above the curve of the curmulative density
 distribution of the absolute correlation to all other rows. Formally, if \code{F_i(x)} is the 
-cumulative distribution function of the absolute correlation for row i, \code{ATC_i = 1 - \\int_{min_cor}^{max_cor} F_i(x)}.
+cumulative distribution function of the absolute correlation for row i, \code{ATC_i = 1 - \\int_{min_cor}^{1} F_i(x)}.
 
 By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
 the top-value method by:

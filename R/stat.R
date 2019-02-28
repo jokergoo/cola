@@ -7,7 +7,7 @@
 # -mat a numeric matrix. ATC score is calculated by rows.
 # -cor_fun a function which calculates correlation.
 # -min_cor minimal absolute correlation.
-# -max_cor maximal absolute correlation.
+# -power power on the correlation values.
 # -mc.cores number of cores.
 # -n_sampling when there are too many rows in the matrix, to get the curmulative
 #           distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000
@@ -17,8 +17,9 @@
 # 
 # == details 
 # For a given row in a matrix, the ATC score is the area above the curve of the curmulative density
-# distribution of the absolute correlation to all other rows. Formally, if ``F_i(x)`` is the 
-# cumulative distribution function of the absolute correlation for row i, ``ATC_i = 1 - \\int_{min_cor}^{max_cor} F_i(x)``.
+# distribution of the absolute correlation to all other rows. Formally, if ``F_i(X)`` is the 
+# cumulative distribution function of ``X`` where ``X`` is the absolute correlation for row i with power ``power`` (i.e. ``X^power``),
+# ``ATC_i = 1 - \\int_{min_cor}^{1} F_i(X)``.
 #
 # By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
 # the top-value method by:
@@ -52,7 +53,7 @@
 # mat = rbind(mat1, mat2, mat3)
 # ATC_score = ATC(mat)
 # plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
-ATC = function(mat, cor_fun = stat::cor, min_cor = 0.4, max_cor = 1, factor = 1,
+ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 	mc.cores = 1, n_sampling = 1000, q_sd = 0, ...) {
 
 	# internally we do it by columns to avoid too many t() callings
@@ -81,16 +82,13 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0.4, max_cor = 1, factor = 1,
 				ind2 = sample(ind2, n_sampling)
 			}
 			suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
-			l = cor_v < min_cor | cor_v > max_cor
-			l[is.na(l)] = FALSE
-			cor_v[l] = 0
-			cor_v = cor_v^factor
+			cor_v = cor_v^power
 			
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
 				v[i] = 1
 			} else {
 				f = ecdf(cor_v)
-				cor_v = seq(0, 1, length = 100)
+				cor_v = seq(min_cor, 1, length = 100)
 				n2 = length(cor_v)
 				v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
 			}
@@ -99,7 +97,7 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0.4, max_cor = 1, factor = 1,
 	}, mc.cores = mc.cores)
 
 	v = do.call("c", v_list)
-	v = 1 - v
+	v = (1 - min_cor) - v
 	names(v) = NULL
 
 	v2[l] = v

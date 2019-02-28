@@ -860,6 +860,7 @@ setMethod(f = "membership_heatmap",
 #        than it will be mapped to small points.
 # -remove whether to remove columns which have less silhouette values than
 #        the cutoff.
+# -scale whether perform scaling on matrix rows.
 # -... other arguments
 #
 # == value
@@ -875,7 +876,8 @@ setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,
 	method = c("PCA", "MDS"),
-	silhouette_cutoff = 0.5, remove = FALSE, ...) {
+	silhouette_cutoff = 0.5, remove = FALSE,
+	scale = TRUE, ...) {
 
 	method = match.arg(method)
 	data = object@.env$data[, object@column_index, drop = FALSE]
@@ -897,13 +899,13 @@ setMethod(f = "dimension_reduction",
 	if(remove) {
 		dimension_reduction(data[, l], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
 			cex = 1, main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
-			method = method)
+			method = method, scale = scale)
 		legend(x = par("usr")[2], legend = unique(class_df$class[l]), 
 			col = brewer_pal_set2_col[as.character(unique(class_df$class[l]))], adj = c(0, 0.5))
 	} else {
 		dimension_reduction(data[, l], pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
 			cex = ifelse(l, 1, 0.7), main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
-			method = method)
+			method = method, scale = scale)
 		class_level = sort(as.character(unique(class_df$class[l])))
 		if(sum(!l)) {
 			legend(x = par("usr")[2], y = par("usr")[4], legend = paste0("group", class_level), pch = 16,
@@ -924,12 +926,12 @@ setMethod(f = "dimension_reduction",
 # == param
 # -object a numeric matrix.
 # -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
-#         ``PCA`` uses `stats::prcomp` and ``tsne`` uses `Rtsne::Rtsne`.
+#         ``PCA`` uses `stats::prcomp`.
 # -pch shape of points.
 # -col color of points.
 # -cex size of points.
 # -main title of the plot.
-# -tsne_param parameters pass to `Rtsne::Rtsne`
+# -scale whether perform scaling on matrix rows.
 #
 # == value
 # No value is returned.
@@ -941,12 +943,11 @@ setMethod(f = "dimension_reduction",
 	signature = "matrix",
 	definition = function(object, 
 	pch = 16, col = "black", cex = 1, main = "",
-	method = c("MDS", "PCA", "tsne"),
-	tsne_param = list()) {
+	method = c("MDS", "PCA"), scale = TRUE) {
 
 	data = object
 	method = match.arg(method)
-	data = t(scale(t(data)))
+	if(scale) data = t(scale(t(data)))
 	l = apply(data, 1, function(x) any(is.na(x)))
 	data = data[!l, ]
 
@@ -959,12 +960,5 @@ setMethod(f = "dimension_reduction",
 		prop = sm$importance[2, 1:2]
 		loc = fit$x[, 1:2]
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = qq("PC1 (@{round(prop[1]*100)}%)"), ylab = qq("PC2 (@{round(prop[2]*100)}%)"))
-	} else if(method == "tsne") {
-		if(require(Rtsne)) {
-			loc = do.call("Rtsne", c(list(X = as.matrix(t(data))), tsne_param))$Y
-			plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "Comp1", ylab = "Comp2")
-		} else {
-			stop_wrap("Rtsne package should be installed.")
-		}
 	}	
 })

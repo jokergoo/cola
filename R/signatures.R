@@ -19,6 +19,7 @@
 # -use_raster internally used.
 # -plot whether to make the plot.
 # -verbose whether to print messages.
+# -seed random seed.
 # -... other arguments.
 # 
 # == details 
@@ -58,7 +59,7 @@ setMethod(f = "get_signatures",
 	internal = FALSE,
 	show_row_dend = FALSE,
 	show_column_names = FALSE, use_raster = TRUE,
-	plot = TRUE, verbose = TRUE,
+	plot = TRUE, verbose = TRUE, seed = 123,
 	...) {
 
 	raster_resize = cola_opt$raster_resize
@@ -115,9 +116,11 @@ setMethod(f = "get_signatures",
 		               class = class,
 		               n_group = k, 
 		               diff_method = diff_method,
-		               column_index = object@column_index),
+		               column_index = object@column_index,
+		               seed = seed),
 				algo = "md5")
 	nm = paste0("signature_fdr_", hash)
+	if(verbose) qqcat("* cache hash: @{hash} (seed @{seed}).\n")
 
 	find_signature = TRUE
 	if(!is.null(object@.env[[nm]])) {
@@ -235,16 +238,24 @@ setMethod(f = "get_signatures",
 		return(invisible(returned_obj))
 	}
 
+	set.seed(seed)
 	more_than_5k = FALSE
-	if(nrow(mat) > 2000) {
+	if(!is.null(object@.env[[nm]]$row_index)) {
+		if(verbose) qqcat("  - use the 2000 signatures what are already generated in previous runs.\n")
+		row_index = object@.env[[nm]]$row_index
+		mat1 = mat[row_index, column_used_logical, drop = FALSE]
+		mat2 = mat[row_index, !column_used_logical, drop = FALSE]
 		more_than_5k = TRUE
-		ind = sample(1:nrow(mat), 2000)
+	} else if(nrow(mat) > 2000) {
+		more_than_5k = TRUE
+		row_index = sample(1:nrow(mat), 2000)
+		object@.env[[nm]]$row_index = row_index
 		# mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
 		# mat2 = mat[order(fdr2)[1:top_k_genes], !column_used_logical, drop = FALSE]
-		mat1 = mat[ind, column_used_logical, drop = FALSE]
-		mat2 = mat[ind, !column_used_logical, drop = FALSE]
+		mat1 = mat[row_index, column_used_logical, drop = FALSE]
+		mat2 = mat[row_index, !column_used_logical, drop = FALSE]
 		# group2 = group2[order(fdr2)[1:top_k_genes]]
-		if(verbose) cat(paste0("* randomly sample 2000 signatures.\n"))
+		if(verbose) cat(paste0("  - randomly sample 2000 signatures.\n"))
 	} else {
 		mat1 = mat[, column_used_logical, drop = FALSE]
 		mat2 = mat[, !column_used_logical, drop = FALSE]
@@ -344,16 +355,26 @@ setMethod(f = "get_signatures",
 
 	if(verbose) qqcat("* making heatmaps for signatures.\n")
 
-	row_km = 1
+	row_split = NULL
 	if(!internal) {
 		if(scale_rows) {
 			if(nrow(use_mat1) > 10) {
-				wss <- (nrow(use_mat1)-1)*sum(apply(use_mat1,2,var))
-				for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers=i)$withinss)
-				row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
-				if(length(unique(class)) == 1) row_km = NULL
-				if(length(unique(class)) == 2) row_km = min(row_km, 2)
-				if(verbose) qqcat("  - split rows into @{row_km} groups by k-means clustering.\n")
+				if(!is.null(object@.env[[nm]]$row_split)) {
+					row_split = object@.env[[nm]]$row_split
+					if(verbose) qqcat("  - use k-means partition that are already calcualted in previous runs.\n")
+				} else {
+					set.seed(seed)
+					wss <- (nrow(use_mat1)-1)*sum(apply(use_mat1,2,var))
+					for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers=i)$withinss)
+					row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
+					if(length(unique(class)) == 1) row_km = 1
+					if(length(unique(class)) == 2) row_km = min(row_km, 2)
+					if(row_km > 1) {
+						row_split = kmeans(use_mat1, centers = row_km)$cluster
+						object@.env[[nm]]$row_split = row_split
+					}
+					if(verbose) qqcat("  - split rows into @{row_km} groups by k-means clustering.\n")
+				}
 			}
 		}
 	}
@@ -386,12 +407,12 @@ setMethod(f = "get_signatures",
 			show_legend = TRUE)
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
-		top_annotation = ha1, row_km = row_km,
+		top_annotation = ha1, row_split = row_split,
 		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = "confident samples",
 		use_raster = use_raster, raster_resize = raster_resize,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
-		row_title = {if(row_km == 1) NULL else qq("k-means with @{row_km} groups")})
+		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
  	
 	all_value_positive = !any(data < 0)
  	if(scale_rows && all_value_positive) {
@@ -442,7 +463,7 @@ setMethod(f = "get_signatures",
 		}
 		
 	} else {
-		if(verbose) cat("  - using row order from cache.\n")
+		if(verbose) cat("  - use row order from cache.\n")
 		draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}"),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order)

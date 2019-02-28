@@ -293,6 +293,18 @@ par(mar = c(4, 4, 1, 1))
 ATC_definition()
 ```
 
+There can be scenarios when large number of rows are correlated to each other
+only with very small correlation value. They will gain high ATC value due to
+the large number of rows (which corresponds to the left part of the read area
+in above plot that close to $x = 0$). To decrease such effect, the ATC definition
+can be slightly modified to:
+
+$$ATC_i = (1 - \alpha) - \int_{\alpha}^1F(x^{\beta})$$
+
+where now $ATC_i$ is the read area only on the right of $x = \alpha$. $\beta$
+is the power added to the absolute correlations that it decreases more for the
+smaller correlations. By Default $\alpha$ is set to 0 and $\beta$ is set to 1.
+
 Next we perform a simulation test to show the attributes of ATC. A matrix with
 160 rows, 100 columns with random values are generated as follows:
 
@@ -408,7 +420,16 @@ register_partition_methods(
 )
 ```
 
-For these two methods, users can simply use `register_som` and `register_NMF()` functions.
+For these two methods, users can simply use `register_som()` and
+`register_NMF()` functions. For NMF methods, there are two packages supported
+in `register_NMF()` which are
+[**NMF**](https://CRAN.R-project.org/package=NMF) (the default method) and
+[**NNLM**](https://cran.r-project.org/package=NNLM) packages. Following is a quick
+comparison of the two packages on [**the Golub dataset**](http://bioconductor.org/packages/golubEsets/). The two heatmaps show the __H__ matrix which is the meta-gene matrix (columns correspond to samples) calculated by the two packages with rank 3.
+According to the heatmaps, **NMF** package performs better than **NNLM** package
+because **NMF** separates AML and ALL samples very nicely.
+
+<img src="NMF_compare.png" />
 
 ### The skmeans method
 

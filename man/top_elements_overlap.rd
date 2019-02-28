@@ -8,7 +8,7 @@ Overlap of top elements from different metrics
 }
 \usage{
 top_elements_overlap(object, top_n = round(0.25*length(object[[1]])),
-    method = c("venn", "venneuler", "correspondance"), ...)
+    method = c("venneuler", "venn", "correspondance"), ...)
 }
 \arguments{
 

@@ -9,7 +9,7 @@ Overlap of top rows from different top-value methods
 \usage{
 \S4method{top_rows_overlap}{matrix}(object, top_value_method = all_top_value_methods(),
     top_n = round(0.25*nrow(object)),
-    method = c("venn", "venneuler", "correspondance"), ...)
+    method = c("venneuler", "venn", "correspondance"), ...)
 }
 \arguments{
 
