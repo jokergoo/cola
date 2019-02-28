@@ -52,7 +52,7 @@
 # mat = rbind(mat1, mat2, mat3)
 # ATC_score = ATC(mat)
 # plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
-ATC = function(mat, cor_fun = stat::cor, min_cor = 0, max_cor = 1, 
+ATC = function(mat, cor_fun = stat::cor, min_cor = 0.4, max_cor = 1, factor = 1,
 	mc.cores = 1, n_sampling = 1000, q_sd = 0, ...) {
 
 	# internally we do it by columns to avoid too many t() callings
@@ -81,9 +81,10 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, max_cor = 1,
 				ind2 = sample(ind2, n_sampling)
 			}
 			suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
-			l = cor_v < min_cor | cor_v > max_cov
+			l = cor_v < min_cor | cor_v > max_cor
 			l[is.na(l)] = FALSE
 			cor_v[l] = 0
+			cor_v = cor_v^factor
 			
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
 				v[i] = 1
