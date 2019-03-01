@@ -11,7 +11,7 @@ Get signature rows
     silhouette_cutoff = 0.5,
     fdr_cutoff = ifelse(identical(diff_method, "samr"), 0.05, 0.1),
     scale_rows = object@scale_rows,
-    diff_method = c("Ftest", "ttest", "samr", "pamr"),
+    diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
     anno = get_anno(object),
     anno_col = get_anno_col(object),
     internal = FALSE,
@@ -36,6 +36,7 @@ Get signature rows
   \item{use_raster}{internally used.}
   \item{plot}{whether to make the plot.}
   \item{verbose}{whether to print messages.}
+  \item{seed}{random seed.}
   \item{...}{other arguments.}
 
 }

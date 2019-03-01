@@ -66,7 +66,11 @@ setMethod(f = "collect_plots",
 	}
 	for(j in seq_along(partition_method)) {
 	    pushViewport(viewport(layout.pos.row = 1, layout.pos.col = j+1))
-	    grid.text(qq("@{partition_method[j]} (k = @{k})"))
+	    if(identical(fun, plot_ecdf)) {
+	    	grid.text(qq("@{partition_method[j]}"))
+	    } else{
+	    	grid.text(qq("@{partition_method[j]} (k = @{k})"))
+	    }
 	    upViewport()
 	}
 	

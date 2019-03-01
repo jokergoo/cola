@@ -9,18 +9,17 @@ Visualize columns after dimension reduction
 \usage{
 \S4method{dimension_reduction}{matrix}(object,
     pch = 16, col = "black", cex = 1, main = "",
-    method = c("MDS", "PCA", "tsne"),
-    tsne_param = list())
+    method = c("MDS", "PCA"), scale = TRUE)
 }
 \arguments{
 
   \item{object}{a numeric matrix.}
-  \item{method}{which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}} and \code{tsne} uses \code{\link[Rtsne]{Rtsne}}.}
+  \item{method}{which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}.}
   \item{pch}{shape of points.}
   \item{col}{color of points.}
   \item{cex}{size of points.}
   \item{main}{title of the plot.}
-  \item{tsne_param}{parameters pass to \code{\link[Rtsne]{Rtsne}}}
+  \item{scale}{whether perform scaling on matrix rows.}
 
 }
 \value{

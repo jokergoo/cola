@@ -53,7 +53,7 @@ setMethod(f = "get_signatures",
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = ifelse(identical(diff_method, "samr"), 0.05, 0.1), 
 	scale_rows = object@scale_rows,
-	diff_method = c("Ftest", "ttest", "samr", "pamr"),
+	diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
 	internal = FALSE,
@@ -573,6 +573,21 @@ ttest = function(mat, class) {
 	fdr[is.na(fdr)] = Inf
 	fdr[is.infinite(fdr)] = Inf
 	fdr
+}
+
+one_vs_others = function(mat, class) {
+	le = unique(class)
+	dfl = list()
+	for(x in le) {
+		fa = as.vector(class)
+		fa[class == le] = "a"
+		fa[class != le] = "b"
+		fa = factor(fa, levels = c("a", "b"))
+		dfl[[x]] = genefilter::rowttests(mat, fa)[, "p.value"]
+	}
+	df = do.call("cbind", dfl)
+	p = rowMins(df)
+	p.adjust(p, "BH")
 }
 
 samr = function(mat, class, ...) {
