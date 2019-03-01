@@ -187,10 +187,10 @@ setMethod(f = "collect_plots",
 	
 	# first row are two names
 	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
-	grid.text("ecdf")
+	grid.text("ECDF")
 	upViewport()
 	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 3))
-	grid.text("classes")
+	grid.text("consensus classes at each k")
 	upViewport()
 
 	# ecdf
@@ -211,7 +211,7 @@ setMethod(f = "collect_plots",
     upViewport()
     if(file.exists(file_name)) file.remove(file_name)
 	
-	if(verbose) cat("* plotting classes for all k.\n")
+	if(verbose) cat("* plotting consensus classes for all k.\n")
 	pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 3))
 	file_name = tempfile()
     png(file_name, width = image_width, height = image_height)
@@ -232,7 +232,7 @@ setMethod(f = "collect_plots",
 	grid.text("consensus heatmap", rot = 90)
 	upViewport()
 	pushViewport(viewport(layout.pos.row = 5, layout.pos.col = 1))
-	grid.text("member heatmap", rot = 90)
+	grid.text("membership heatmap", rot = 90)
 	upViewport()
 	pushViewport(viewport(layout.pos.row = 6, layout.pos.col = 1))
 	grid.text("signature heatmap", rot = 90)
@@ -349,6 +349,17 @@ setMethod(f = "collect_plots",
 	}
 	upViewport()
 	upViewport()
+
+	if(verbose) {
+		cat("
+All individual plots can be made by following functions:
+- plot_ecdf(object, lwd = 1)
+- collect_classes(object)
+- consensus_heatmap(object, k)
+- membership_heatmap(object, k)
+- get_signatures(object, k)
+")
+	}
 })
 
 # == title
@@ -459,6 +470,8 @@ setMethod(f = "collect_classes",
 # -object a `ConsensusPartition-class` object.
 # -internal used internally.
 # -show_row_names whether show row names.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations.
+# -show_row_names whether plot row names on the consensus heatmap (which are the column names in the original matrix)
 #
 # == details
 # The percent membership matrix and the class IDs for each k are plotted in the heatmaps.
@@ -476,7 +489,8 @@ setMethod(f = "collect_classes",
 # collect_classes(cola_rl["sd", "kmeans"])
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",
-	definition = function(object, internal = FALSE, show_row_names = FALSE) {
+	definition = function(object, internal = FALSE, show_row_names = FALSE,
+	anno = get_anno(object), anno_col = get_anno_col(object)) {
 
 	all_k = object@k
 
@@ -500,9 +514,28 @@ setMethod(f = "collect_classes",
 		class_mat = cbind(class_mat, as.numeric(class))
 	}
 
+	if(!is.null(anno)) {
+		if(is.atomic(anno)) {
+			anno_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = anno_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = anno_nm
+			}
+		}
+		if(is.null(anno_col))
+			ht_list = ht_list + rowAnnotation(df = anno)
+		else {
+			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col)
+		}
+		gap = c(gap, 4)
+	}
+
 	if(!internal & show_row_names) {
 		rn = rownames(membership)
-		ht_list = ht_list + rowAnnotation(nm = row_anno_text(rn, location = unit(0, "npc"), just = "left"), width = max_text_width(rn))
+		ht_list = ht_list + rowAnnotation(nm = anno_text(rn))
+		gap[length(gap)] = 1
 	}
 
     draw(ht_list, gap = unit(gap, "mm"), row_order = do.call("order", as.data.frame(class_mat)),

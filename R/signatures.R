@@ -59,9 +59,11 @@ setMethod(f = "get_signatures",
 	internal = FALSE,
 	show_row_dend = FALSE,
 	show_column_names = FALSE, use_raster = TRUE,
-	plot = TRUE, verbose = TRUE, seed = 123,
+	plot = TRUE, verbose = TRUE, seed = 888,
 	...) {
 
+	if(missing(k)) stop_wrap("k needs to be provided.")
+	
 	raster_resize = cola_opt$raster_resize
 
 	class_df = get_classes(object, k)
@@ -361,11 +363,11 @@ setMethod(f = "get_signatures",
 			if(nrow(use_mat1) > 10) {
 				if(!is.null(object@.env[[nm]]$row_split)) {
 					row_split = object@.env[[nm]]$row_split
-					if(verbose) qqcat("  - use k-means partition that are already calcualted in previous runs.\n")
+					if(verbose) qqcat("  - use k-means partition that are already calculated in previous runs.\n")
 				} else {
 					set.seed(seed)
 					wss <- (nrow(use_mat1)-1)*sum(apply(use_mat1,2,var))
-					for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers=i)$withinss)
+					for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers = i, iter.max = 50)$withinss)
 					row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
 					if(length(unique(class)) == 1) row_km = 1
 					if(length(unique(class)) == 2) row_km = min(row_km, 2)
@@ -409,7 +411,7 @@ setMethod(f = "get_signatures",
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = ha1, row_split = row_split,
 		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
-		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = "confident samples",
+		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = qq("@{ncol(use_mat1)} confident samples"),
 		use_raster = use_raster, raster_resize = raster_resize,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
 		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
@@ -450,9 +452,15 @@ setMethod(f = "get_signatures",
 			bottom_annotation = bottom_anno2, show_column_names = show_column_names)
 	}
 
+	if(has_ambiguous) {
+		lgd = Legend(title = "Status (barplots)", labels = c("confident", "ambiguous"), legend_gp = gpar(fill = c("black", "grey")))
+	} else {
+		lgd = NULL
+	}
+
 	if(do_row_clustering) {
 		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}"),
-			show_heatmap_legend = !internal, show_annotation_legend = !internal)
+			show_heatmap_legend = !internal, show_annotation_legend = !internal, heatmap_legend_list = list(lgd))
 		
 		row_order = row_order(ht_list)
 		if(!is.list(row_order)) row_order = list(row_order)
@@ -466,7 +474,7 @@ setMethod(f = "get_signatures",
 		if(verbose) cat("  - use row order from cache.\n")
 		draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}"),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
-			cluster_rows = FALSE, row_order = row_order)
+			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = list(lgd))
 	}
 	# the cutoff
 	# https://www.stat.berkeley.edu/~s133/Cluster2a.html

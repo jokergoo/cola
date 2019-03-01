@@ -352,7 +352,7 @@ consensus_partition = function(data,
 		attr(membership_mat, "n_of_classes") = NULL
 		attr(membership_mat, "is_cl_hard_partition") = NULL
 		
-		if(verbose) qqcat("@{prefix}calculate membership for every single partition.\n")
+		if(verbose) qqcat("@{prefix}adjust class labels for every single partition.\n")
 		class_ids_by_top_n = tapply(seq_along(partition_list), param$top_n, function(ind) {
 			partition_consensus = cl_consensus(cl_ensemble(list = partition_list[ind]))
 			ci = as.vector(cl_class_ids(partition_consensus))
@@ -637,25 +637,33 @@ setMethod(f = "select_partition_number",
 
 	plot_ecdf(object, lwd = 1)
 
+	best_k = guess_best_k(object)
+
 	for(i in seq_len(ncol(m))) {
-		plot(object@k, m[, i], type = "b", xlab = "k", ylab = nm[i])
+		l = object@k == best_k
+		plot(object@k, m[, i], type = "b", xlab = "k", ylab = nm[i],
+			pch = ifelse(l, 16, 1),
+			col = ifelse(l, "red", "black"),
+			cex = ifelse(l, 1.5, 1))
 	}
 
 	par(xpd = NA, mar = c(4, 2, 1, 1))
 	plot(c(0, 1), c(0, 1), type = "n", axes = FALSE, ann = FALSE)
 	text(x = 0, y = 1,
 "Suggested rule:
-  Rand index < 0.95
+Rand index < 0.95
 If cophcor >= 0.99 or 
    PAC <= 0.1 or 
    concordance >= 0.95,
   take the maximum k,
-else take the k with higest vote of
+else take the k with higest votes of
   1. max cophcor,
   2. min PAC,
   3. max mean_silhouette,
   4. max concordance.
-", cex = 1, adj = c(0, 1))
+", cex = 1.5, adj = c(0, 1))
+
+	legend("topright", pch = 16, col = "Red", legend = "best k", cex = 1.5)
 
 	par(op)
 })
@@ -723,7 +731,7 @@ setMethod(f = "consensus_heatmap",
 	Heatmap(class_ids, name = "Class", col = brewer_pal_set2_col,
 		show_row_names = FALSE, width = unit(5, "mm"))
 	
-	ht_list = ht_list +	Heatmap(consensus_mat, name = "Consensus", show_row_names = show_row_names, show_row_dend = FALSE,
+	ht_list = ht_list +	Heatmap(consensus_mat, name = "Consensus", show_row_names = FALSE, show_row_dend = FALSE,
 		col = colorRamp2(c(0, 1), c("white", "blue")), row_order = mat_col_od, column_order = mat_col_od,
 		cluster_rows = FALSE, cluster_columns = FALSE, show_column_names = FALSE)
 
@@ -742,6 +750,9 @@ setMethod(f = "consensus_heatmap",
 		else {
 			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col)
 		}
+	}
+	if(show_row_names && !is.null(rownames(consensus_mat))) {
+		ht_list = ht_list + rowAnnotation(rn = anno_text(rownames(consensus_mat)))
 	}
 	column_title = qq("consensus @{object@partition_method} with @{k} groups from @{object@n_partition/length(object@k)} partitions")
 	draw(ht_list, main_heatmap = "Consensus", column_title = column_title,
@@ -857,7 +868,7 @@ setMethod(f = "membership_heatmap",
 # -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`.
 # -silhouette_cutoff cutoff of silhouette score. Data points with values less
-#        than it will be mapped to small points.
+#        than it will be mapped with cross symbols.
 # -remove whether to remove columns which have less silhouette values than
 #        the cutoff.
 # -scale whether perform scaling on matrix rows.
@@ -900,20 +911,15 @@ setMethod(f = "dimension_reduction",
 		dimension_reduction(data[, l], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
 			cex = 1, main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
 			method = method, scale = scale)
-		legend(x = par("usr")[2], legend = unique(class_df$class[l]), 
+		legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = unique(class_df$class[l]), 
 			col = brewer_pal_set2_col[as.character(unique(class_df$class[l]))], adj = c(0, 0.5))
 	} else {
-		dimension_reduction(data[, l], pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
+		dimension_reduction(data, pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
 			cex = ifelse(l, 1, 0.7), main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
 			method = method, scale = scale)
-		class_level = sort(as.character(unique(class_df$class[l])))
-		if(sum(!l)) {
-			legend(x = par("usr")[2], y = par("usr")[4], legend = paste0("group", class_level), pch = 16,
-				col = brewer_pal_set2_col[class_level], adj = c(0, 1))
-		} else {
-			legend(x = par("usr")[2], y = par("usr")[4], legend = paste0("group", class_level), pch = 16,
-				col = brewer_pal_set2_col[class_level], adj = c(0, 1))
-		}
+		class_level = sort(as.character(unique(class_df$class)))
+		legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = paste0("group", class_level), pch = 16,
+				col = brewer_pal_set2_col[class_level], adj = c(0, 0.5))
 	}
 
 	par(op)

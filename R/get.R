@@ -60,6 +60,7 @@ setMethod(f = "get_param",
 setMethod(f = "get_consensus",
 	signature = "ConsensusPartition",
 	definition = function(object, k) {
+	if(missing(k)) stop_wrap("k needs to be provided.")
 	i = which(object@k == k)
 	object@object_list[[i]]$consensus
 })
@@ -99,6 +100,7 @@ setMethod(f = "get_consensus",
 setMethod(f = "get_membership",
 	signature = "ConsensusPartition",
 	definition = function(object, k, each = FALSE) {
+	if(missing(k)) stop_wrap("k needs to be provided.")
 	i = which(object@k == k)
 	if(each) {
 		object@object_list[[i]]$membership_each
@@ -135,6 +137,7 @@ setMethod(f = "get_membership",
 setMethod(f = "get_membership",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
+	if(missing(k)) stop_wrap("k needs to be provided.")
 	lt = object@consensus_class[[as.character(k)]]
 	lt$membership
 })
@@ -209,6 +212,7 @@ setMethod(f = "get_stats",
 setMethod(f = "get_stats",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
+	if(missing(k)) stop_wrap("k needs to be provided.")
 	m = matrix(nrow = length(object@list), ncol = length(object@list[[1]]@object_list[[1]]$stat) - 1)
 	rownames(m) = names(object@list)
 	colnames(m) = setdiff(names(object@list[[1]]@object_list[[1]]$stat), "ecdf")
@@ -231,6 +235,8 @@ setMethod(f = "get_stats",
 # A data frame with class IDs and other columns which are entropy of the percent membership matrix
 # and the silhouette scores which measure the stability of a sample to stay in its group.
 #
+# If ``k`` is not specified, it returns a data frame with class IDs from every k.
+#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
@@ -238,6 +244,7 @@ setMethod(f = "get_stats",
 # data(cola_rl)
 # obj = cola_rl["sd", "kmeans"]
 # get_classes(obj, k = 2)
+# get_classes(obj)
 setMethod(f = "get_classes",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k) {
@@ -276,6 +283,7 @@ setMethod(f = "get_classes",
 setMethod(f = "get_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
+	if(missing(k)) stop_wrap("k needs to be provided.")
 	lt = object@consensus_class[[as.character(k)]]
 	lt$class_df
 })
