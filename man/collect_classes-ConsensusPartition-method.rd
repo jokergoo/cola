@@ -7,13 +7,16 @@ Collect classes from ConsensusPartition object
 Collect classes from ConsensusPartition object
 }
 \usage{
-\S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE, show_row_names = FALSE)
+\S4method{collect_classes}{ConsensusPartition}(object, internal = FALSE, show_row_names = FALSE,
+    anno = get_anno(object), anno_col = get_anno_col(object))
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object.}
   \item{internal}{used internally.}
   \item{show_row_names}{whether show row names.}
+  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations.}
+  \item{show_row_names}{whether plot row names on the consensus heatmap (which are the column names in the original matrix)}
 
 }
 \details{

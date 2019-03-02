@@ -9,13 +9,15 @@ Heatmap of top rows from different top-value methods
 \usage{
 \S4method{top_rows_heatmap}{matrix}(object, all_top_value_list = NULL,
     top_value_method = all_top_value_methods(),
-    top_n = round(0.25*nrow(object)), layout_nr = 1, scale_rows = TRUE)
+    bottom_annotation = NULL,
+    top_n = round(0.25*nrow(object)), scale_rows = TRUE)
 }
 \arguments{
 
   \item{object}{a numeric matrix.}
   \item{all_top_value_list}{top-values that have already been calculated from the matrix. If it is \code{NULL} the values are calculated by methods in \code{top_value_method} argument.}
   \item{top_value_method}{methods defined in \code{\link{all_top_value_methods}}.}
+  \item{bottom_annotation}{a \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.}
   \item{top_n}{number of top rows to show in the heatmap.}
   \item{layout_nr}{number of rows in the layout.}
   \item{scale_rows}{whether scale rows.}

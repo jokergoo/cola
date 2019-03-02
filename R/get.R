@@ -220,6 +220,7 @@ setMethod(f = "get_stats",
 		ik = which(object@list[[i]]@k == k)
 		m[i, ] = unlist(object@list[[i]]@object_list[[ik]]$stat[colnames(m)])
 	}
+	m = cbind(k = rep(k, nrow(m)), m)
 	return(m)
 })
 

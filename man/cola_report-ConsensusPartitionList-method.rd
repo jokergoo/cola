@@ -22,6 +22,8 @@ This function generates a HTML report which contains all plots and tables for ev
 of top-value method and partition method.
 
 The report generation may take a while.
+
+Icon (\url{https://www.flaticon.com/free-icon/can_1366373} ) of the HTML page is made by photo3idea_studio (\url{https://www.flaticon.com/authors/photo3idea-studio} ) from www.flaticon.com is licensed by CC 3.0 BY.
 }
 \value{
 No value is returned.

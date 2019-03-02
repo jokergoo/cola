@@ -136,6 +136,8 @@ $( function() {
 #
 # The report generation may take a while.
 #
+# Icon (https://www.flaticon.com/free-icon/can_1366373 ) of the HTML page is made by photo3idea_studio (https://www.flaticon.com/authors/photo3idea-studio ) from www.flaticon.com is licensed by CC 3.0 BY.
+#
 # == value
 # No value is returned.
 #
@@ -303,11 +305,19 @@ make_report = function(var_name, object, output_dir, class) {
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-ui.js"), paste0(output_dir, "/js/"))
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
+	file.copy(paste0(TEMPLATE_DIR, "/favicon.ico"), paste0(output_dir, "/"))
 
 	message("* removing temporary files")
 	file.remove(c(tempfile, md_file))
 
 	message(qq("* report is at @{output_dir}/@{html_file[class]}"))
+
+	## add favicon.ico line to the html file
+	html_file = paste0(output_dir, "/", html_file[class])
+	lines = readLines(html_file)
+	ind = which(grepl("^<title>", lines[1:10]))
+	lines[ind] = paste0('<link href="favicon.ico" type="image/vnd.microsoft.icon" />\n', lines[ind])
+	writeLines(lines, con = html_file)
 
 	KNITR_TAB_ENV$current_tab_index = 0
 	KNITR_TAB_ENV$current_div_index = 0

@@ -319,7 +319,7 @@ setMethod(f = "show",
 	print(fname)
 	cat("\n")
 
-	qqcat("You can get result for a single method by its node id, e.g. @{obj_name}[\"@{object@top_value_method[1]}\", \"@{object@partition_method[1]}\"] or @{obj_name}[\"@{object@top_value_method[1]}:@{object@partition_method[1]}\"]\n")
+	qqcat("You can get result for a single method by, e.g. @{obj_name}[\"@{object@top_value_method[1]}\", \"@{object@partition_method[1]}\"] or @{obj_name}[\"@{object@top_value_method[1]}:@{object@partition_method[1]}\"]\n")
 	if(length(object@top_value_method) == 1) {
 		ri = qq("\"@{object@top_value_method[1]}\"")
 	} else {

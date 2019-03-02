@@ -9,7 +9,7 @@ Visualize columns after dimension reduction
 \usage{
 \S4method{dimension_reduction}{matrix}(object,
     pch = 16, col = "black", cex = 1, main = "",
-    method = c("MDS", "PCA"), scale = TRUE)
+    method = c("PCA", "MDS"), scale_rows = TRUE)
 }
 \arguments{
 
@@ -19,7 +19,7 @@ Visualize columns after dimension reduction
   \item{col}{color of points.}
   \item{cex}{size of points.}
   \item{main}{title of the plot.}
-  \item{scale}{whether perform scaling on matrix rows.}
+  \item{scale_rows}{whether perform scaling on matrix rows.}
 
 }
 \value{

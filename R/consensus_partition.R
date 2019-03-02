@@ -715,6 +715,8 @@ setMethod(f = "consensus_heatmap",
 	anno = get_anno(object), anno_col = get_anno_col(object), 
 	show_row_names = FALSE, ...) {
 
+	if(missing(k)) stop_wrap("k needs to be provided.")
+
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
 
@@ -791,6 +793,8 @@ setMethod(f = "membership_heatmap",
 	definition = function(object, k, internal = FALSE, 
 	anno = get_anno(object), anno_col = get_anno_col(object),
 	show_column_names = FALSE, ...) {
+
+	if(missing(k)) stop_wrap("k needs to be provided.")
 
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
@@ -871,7 +875,7 @@ setMethod(f = "membership_heatmap",
 #        than it will be mapped with cross symbols.
 # -remove whether to remove columns which have less silhouette values than
 #        the cutoff.
-# -scale whether perform scaling on matrix rows.
+# -scale_rows whether perform scaling on matrix rows.
 # -... other arguments
 #
 # == value
@@ -888,16 +892,20 @@ setMethod(f = "dimension_reduction",
 	definition = function(object, k, top_n = NULL,
 	method = c("PCA", "MDS"),
 	silhouette_cutoff = 0.5, remove = FALSE,
-	scale = TRUE, ...) {
+	scale_rows = TRUE, ...) {
+
+	if(missing(k)) stop_wrap("k needs to be provided.")
 
 	method = match.arg(method)
 	data = object@.env$data[, object@column_index, drop = FALSE]
 
 	if(!is.null(top_n)) {
 		top_n = min(c(top_n, nrow(data)))
-		all_value = object@.env$all_value_list[[object@top_method]]
+		all_value = object@.env$all_top_value_list[[object@top_value_method]]
 		ind = order(all_value)[1:top_n]
 		data = data[ind, , drop = FALSE]
+	} else {
+		top_n = nrow(data)
 	}
 
 	class_df = get_classes(object, k)
@@ -905,21 +913,36 @@ setMethod(f = "dimension_reduction",
 	l = class_df$silhouette >= silhouette_cutoff
 	
 	op = par(c("mar", "xpd"))
-	par(mar = c(4.1, 4.1, 4.1, 5.1), xpd = NA)
+	par(mar = c(4.1, 4.1, 4.1, 6), xpd = NA)
 
+	class_level = sort(as.character(unique(class_df$class)))
+	n_class = length(class_level)
+		
 	if(remove) {
 		dimension_reduction(data[, l], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
-			cex = 1, main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
-			method = method, scale = scale)
-		legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = unique(class_df$class[l]), 
-			col = brewer_pal_set2_col[as.character(unique(class_df$class[l]))], adj = c(0, 0.5))
+			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
+			method = method, scale_rows = scale_rows)
+		legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
+			pch = c(rep(16, n_class), 0),
+			col = c(brewer_pal_set2_col[class_level], "white"), xjust = 0, yjust = 0.5,
+			title = "Class", title.adj = 0.1, bty = "n",
+			text.col = c(rep("black", n_class), "white"))
 	} else {
 		dimension_reduction(data, pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
-			cex = ifelse(l, 1, 0.7), main = qq("Dimension reduction by @{method}, @{sum(l)}/@{length(l)} samples"),
-			method = method, scale = scale)
-		class_level = sort(as.character(unique(class_df$class)))
-		legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = paste0("group", class_level), pch = 16,
-				col = brewer_pal_set2_col[class_level], adj = c(0, 0.5))
+			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
+			method = method, scale_rows = scale_rows)
+		if(any(l)) {
+			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
+					pch = c(rep(16, n_class), 4),
+					col = c(brewer_pal_set2_col[class_level], "black"), xjust = 0, yjust = 0.5,
+					title = "Class", title.adj = 0.1, bty = "n")
+		} else {
+			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
+				pch = c(rep(16, n_class), 0),
+				col = c(brewer_pal_set2_col[class_level], "white"), xjust = 0, yjust = 0.5,
+				title = "Class", title.adj = 0.1, bty = "n",
+				text.col = c(rep("black", n_class), "white"))
+		}
 	}
 
 	par(op)
@@ -937,7 +960,7 @@ setMethod(f = "dimension_reduction",
 # -col color of points.
 # -cex size of points.
 # -main title of the plot.
-# -scale whether perform scaling on matrix rows.
+# -scale_rows whether perform scaling on matrix rows.
 #
 # == value
 # No value is returned.
@@ -949,17 +972,18 @@ setMethod(f = "dimension_reduction",
 	signature = "matrix",
 	definition = function(object, 
 	pch = 16, col = "black", cex = 1, main = "",
-	method = c("MDS", "PCA"), scale = TRUE) {
+	method = c("PCA", "MDS"), scale_rows = TRUE) {
 
 	data = object
 	method = match.arg(method)
-	if(scale) data = t(scale(t(data)))
+	if(scale_rows) data = t(scale(t(data)))
 	l = apply(data, 1, function(x) any(is.na(x)))
 	data = data[!l, ]
 
 	if(method == "MDS") {
 		loc = cmdscale(dist(t(data)))
-		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "PC1", ylab = "PC2")
+		# loc = cmdscale(as.dist(1 - cor(data)))
+		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "Coordinate 1", ylab = "Coordinate 2")
 	} else if(method == "PCA") {
 		fit = prcomp(t(data))
 		sm = summary(fit)

@@ -133,6 +133,9 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 # == param
 # -object a `ConsensusPartitionList-class` object.
 # -top_n number of top rows.
+# -anno a data frame of annotations for the original matrix columns. 
+#       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations.
 # -scale_rows wether scale rows. 
 # -... pass to `top_rows_heatmap,matrix-method`
 #
@@ -148,14 +151,37 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 setMethod(f = "top_rows_heatmap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = min(object@list[[1]]@top_n), 
-		scale_rows = object@list[[1]]@scale_rows, ...) {
+	anno = get_anno(object), anno_col = get_anno_col(object),
+	scale_rows = object@list[[1]]@scale_rows, ...) {
 
 	all_top_value_list = object@.env$all_top_value_list[object@top_value_method]
     
     mat = object@.env$data
 
+    if(is.null(anno)) {
+		bottom_anno = NULL
+	} else {
+		if(is.atomic(anno)) {
+			anno_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = anno_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = anno_nm
+			}
+		}
+
+		if(is.null(anno_col)) {
+			bottom_anno = HeatmapAnnotation(df = anno,
+				show_annotation_name = TRUE, annotation_name_side = "right")
+		} else {
+			bottom_anno = HeatmapAnnotation(df = anno, col = anno_col,
+				show_annotation_name = TRUE, annotation_name_side = "right")
+		}
+	}
+
     top_rows_heatmap(mat, all_top_value_list = all_top_value_list, top_n = top_n, 
-    	scale_rows = scale_rows, ...)
+    	scale_rows = scale_rows, bottom_annotation = bottom_anno, ...)
 })
 
 # == title
@@ -166,6 +192,7 @@ setMethod(f = "top_rows_heatmap",
 # -all_top_value_list top-values that have already been calculated from the matrix. If it is ``NULL``
 #              the values are calculated by methods in ``top_value_method`` argument.
 # -top_value_method methods defined in `all_top_value_methods`.
+# -bottom_annotation a `ComplexHeatmap::HeatmapAnnotation-class` object.
 # -top_n number of top rows to show in the heatmap.
 # -layout_nr number of rows in the layout.
 # -scale_rows whether scale rows.
@@ -190,8 +217,9 @@ setMethod(f = "top_rows_heatmap",
 setMethod(f = "top_rows_heatmap",
 	signature = "matrix",
 	definition = function(object, all_top_value_list = NULL, 
-		top_value_method = all_top_value_methods(), 
-		top_n = round(0.25*nrow(object)), layout_nr = 1, scale_rows = TRUE) {
+	top_value_method = all_top_value_methods(), 
+	bottom_annotation = NULL,
+	top_n = round(0.25*nrow(object)), scale_rows = TRUE) {
 
 	if(is.null(all_top_value_list)) {
 		all_top_value_list = lapply(top_value_method, function(x) {
@@ -208,11 +236,17 @@ setMethod(f = "top_rows_heatmap",
 	lt = lapply(all_top_value_list, function(x) order(x, decreasing = TRUE)[1:top_n])
     
     grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow = layout_nr, ncol = ceiling(length(lt)/layout_nr))))
+    pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = length(lt),
+    	height = unit.c(2*max_text_height("foo"), unit(1, "null")))))
+    for(i in seq_along(lt)) {
+    	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i))
+    	grid.text(qq("top @{top_n} rows of @{top_value_method[i]}"))
+    	popViewport()
+	}
     image_width = 500
 	image_height = 500
     for(i in seq_along(lt)) {
-    	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i))
+    	pushViewport(viewport(layout.pos.row = 2, layout.pos.col = i))
 		file_name = tempfile()
         png(file_name, width = image_width, height = image_height)
 		
@@ -234,9 +268,11 @@ setMethod(f = "top_rows_heatmap",
 		}
 		oe = try(
 			draw(Heatmap(mat, name = heatmap_name, col = col_fun, show_row_names = FALSE,
-				column_title = qq("top @{top_n} rows of @{top_value_method[i]}"),
+				column_title = NULL,
 				show_row_dend = FALSE, show_column_names = FALSE, 
-				use_raster = TRUE, raster_quality = 2))
+				bottom_annotation = bottom_annotation,
+				use_raster = TRUE, raster_quality = 2),
+				merge_legend = TRUE)
 		)
 		dev.off2()
 	    if(!inherits(oe, "try-error")) {

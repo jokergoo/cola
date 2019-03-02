@@ -105,7 +105,7 @@ t1 = Sys.time()
 message("* guessing best k for each method", appendLF = FALSE)
 ```
 
-Best `k` (number of partitions) for each combination of top value methods and partition methods:
+Best `k` (number of partitions) for each combination of top-value methods and partition methods:
 
 ```{r, eval = FALSE}
 guess_best_k(res_list)
@@ -116,9 +116,12 @@ tb = guess_best_k(res_list)
 g = expand.grid(res_list@partition_method, res_list@top_value_method)
 g = paste0(g[, 2], ":", g[, 1])
 od = sapply(rownames(tb), function(x) which(g == x))
-rownames(tb) = paste0("[", rownames(tb), "](#toc_", od + 2, ")")
+rownames(tb) = paste0("[", rownames(tb), "](#toc_", od + 12, ")")
 kable(tb)
 ```
+
+**: concordance > 0.95, *: concordance > 0.9
+
 
 ```{r, echo = FALSE}
 fs = min(c(3*n_top_value_method, 14))/n_partition_method
@@ -225,7 +228,7 @@ Collect partitions from all methods:
 <% for(k in all_k) { -%>
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - classifications from all methods (k = <%=k%>)", appendLF = FALSE)
-knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 8, fig.height = 8')
+knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 9, fig.height = 8')
 <%}-%>
 knitr_insert_tabs()
 ```

@@ -17,7 +17,7 @@ Get signature rows
     internal = FALSE,
     show_row_dend = FALSE,
     show_column_names = FALSE, use_raster = TRUE,
-    plot = TRUE, verbose = TRUE, seed = 123,
+    plot = TRUE, verbose = TRUE, seed = 888,
     ...)
 }
 \arguments{

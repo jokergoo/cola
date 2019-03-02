@@ -78,7 +78,7 @@ setMethod(f = "collect_plots",
 	highlight_col = NULL
 	for(i in seq_along(top_value_method)) {
 	    for(j in seq_along(partition_method)) {
-	    	if(verbose) qqcat("* applying @{fun_name} for @{top_value_method[i]}:@{partition_method[j]}.\n")
+	    	if(verbose) qqcat("* applying @{fun_name}() for @{top_value_method[i]}:@{partition_method[j]}.\n")
 	    	res = object[top_value_method[i], partition_method[j]]
 	    	# if(!missing(k)) {
 		    # 	if(get_stats(res, k = k)[, "PAC"] < 0.05) {
@@ -368,6 +368,10 @@ All individual plots can be made by following functions:
 # == param
 # -object a `ConsensusPartitionList-class` object returned by `run_all_consensus_partition_methods`.
 # -k number of partitions.
+# -show_column_names whether show column names in the heatmap (which is the column name in the original matrix).
+# -anno a data frame of annotations for the original matrix columns. 
+#       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations.
 #
 # == details
 # There are following panels in the plot:
@@ -392,7 +396,10 @@ All individual plots can be made by following functions:
 # collect_classes(cola_rl, k = 3)
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
-	definition = function(object, k) {
+	definition = function(object, k, show_column_names = FALSE,
+	anno = get_anno(object), anno_col = get_anno_col(object)) {
+
+	if(missing(k)) stop_wrap("k needs to be provided.")
 
 	top_value_method = object@top_value_method
 	partition_method = object@partition_method
@@ -415,6 +422,7 @@ setMethod(f = "collect_classes",
 
 	class_mat = as.matrix(class_mat)
 	colnames(class_mat) = paste(top_value_method_vec, partition_method_vec, sep = ":")
+	rownames(class_mat) = rownames(class_df)
 	ik = which(res@k == k)
 	
 	silhouette_mat = as.matrix(silhouette_mat)
@@ -428,18 +436,35 @@ setMethod(f = "collect_classes",
 	consensus_class = get_classes(object, k = k)$class
 	m = t(class_mat)
 	column_order = column_order_by_group(consensus_class, m)
-	if(is.null(object@list[[1]]@anno)) {
-		bottom_annotation = NULL
+
+	if(is.null(anno)) {
+		bottom_anno = NULL
 	} else {
-		bottom_annotation = HeatmapAnnotation(df = object@list[[1]]@anno, 
-			col = object@list[[1]]@anno_col, show_annotation_name = TRUE,
-			annotation_name_side = "left")
+		if(is.atomic(anno)) {
+			anno_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = anno_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = anno_nm
+			}
+		}
+
+		if(is.null(anno_col)) {
+			bottom_anno = HeatmapAnnotation(df = anno,
+				show_annotation_name = TRUE, annotation_name_side = "left")
+		} else {
+			bottom_anno = HeatmapAnnotation(df = anno, col = anno_col,
+				show_annotation_name = TRUE, annotation_name_side = "left")
+		}
 	}
+
 	pl = lapply(object@list[paste(top_value_method_vec, partition_method_vec, sep = ":")], function(x) as.cl_partition(get_membership(x, k = k)))
 	clen = cl_ensemble(list = pl)
 	m_diss = cl_dissimilarity(clen, method = "comembership")
 
 	ht = Heatmap(m, name = "Class", col = brewer_pal_set2_col, column_order = column_order,
+		show_column_names = show_column_names,
 		column_title = qq("classification from all methods, k = @{k}"),
 		row_names_side = "left", cluster_rows = hclust(m_diss), cluster_columns = FALSE,
 		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
@@ -450,13 +475,14 @@ setMethod(f = "collect_classes",
 		top_annotation = HeatmapAnnotation(consensus_class = consensus_class, 
 			col = list(consensus_class = brewer_pal_set2_col),
 			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE),
-		bottom_annotation = bottom_annotation,
+		bottom_annotation = bottom_anno,
 		left_annotation = rowAnnotation("Top value method" = top_value_method_vec, 
 			"Partition method" = partition_method_vec,
 			annotation_name_side = "bottom",
 			col = list("Top value method" = structure(names = top_value_method, brewer_pal_set1_col[seq_along(top_value_method)]),
 			           "Partition method" = structure(names = partition_method, brewer_pal_set2_col[seq_along(partition_method)])),
-			width = unit(10, "mm"))) + 
+			width = unit(10, "mm"),
+			show_annotation_name = FALSE)) + 
 		rowAnnotation(mean_silhouette = row_anno_barplot(get_stats(object, k = k)[colnames(class_mat), "mean_silhouette"], baseline = 0, axis = TRUE),
 			width = unit(2, "cm"))
 	draw(ht)
