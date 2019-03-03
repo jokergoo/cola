@@ -22,7 +22,7 @@ for each method. So methods which give instable partitions have lower weights
 when summarizing membership matrix from all methods.
 }
 \value{
-A membership matrix where rows correspond to the samples in the original matrix.
+A membership matrix where rows correspond to the columns in the original matrix.
 }
 \seealso{
 \code{\link{get_membership,ConsensusPartition-method}} returns membership matrix for a single top-value method and partition method.

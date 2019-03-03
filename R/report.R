@@ -122,7 +122,7 @@ $( function() {
 }
 
 # == title
-# Make report from the ConsensusPartitionList object
+# Make HTML report from the ConsensusPartitionList object
 #
 # == param
 # -object a `ConsensusPartitionList-class` object.
@@ -134,9 +134,9 @@ $( function() {
 # This function generates a HTML report which contains all plots and tables for every combination
 # of top-value method and partition method. 
 #
-# The report generation may take a while.
+# The report generation may take a while because it generates A LOT of heatmaps.
 #
-# Icon (https://www.flaticon.com/free-icon/can_1366373 ) of the HTML page is made by photo3idea_studio (https://www.flaticon.com/authors/photo3idea-studio ) from www.flaticon.com is licensed by CC 3.0 BY.
+# Icon (https://www.flaticon.com/free-icon/can_1366373 ) of the HTML page is made by photo3idea_studio (https://www.flaticon.com/authors/photo3idea-studio ) from http://www.flaticon.com licensed by CC 3.0 BY.
 #
 # == value
 # No value is returned.
@@ -147,7 +147,7 @@ $( function() {
 # == example
 # \dontrun{
 # data(cola_rl)
-# cola_report(cola_rl[c("sd", "MAD"), c("hclust", "skmeans")], output_dir = "~/test")
+# cola_report(cola_rl[c("sd", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
 # }
 setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
@@ -163,7 +163,7 @@ setMethod(f = "cola_report",
 
 
 # == title
-# Make report from the ConsensusPartition object
+# Make HTML report from the ConsensusPartition object
 #
 # == param
 # -object a `ConsensusPartition-class` object.
@@ -197,7 +197,7 @@ setMethod(f = "cola_report",
 
 
 # == title
-# Make report from the HierarchicalPartition object
+# Make HTML report from the HierarchicalPartition object
 #
 # == param
 # -object a `HierarchicalPartition-class` object.
@@ -217,7 +217,7 @@ setMethod(f = "cola_report",
 # == example
 # \dontrun{
 # data(cola_rh)
-# cola_report(cola_rh, output_dir = "~/test2")
+# cola_report(cola_rh, output_dir = "~/test_cola_rh_report")
 # }
 setMethod(f = "cola_report",
 	signature = "HierarchicalPartition",

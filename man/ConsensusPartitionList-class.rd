@@ -19,7 +19,7 @@ The \code{\link{ConsensusPartitionList-class}} provides following methods:
   \item{\code{\link{run_all_consensus_partition_methods}}:}{constructor method.}
   \item{\code{\link{top_rows_overlap,ConsensusPartitionList-method}}:}{plot the overlaps of top rows under different top-value methods.}
   \item{\code{\link{top_rows_heatmap,ConsensusPartitionList-method}}:}{plot the heatmap of top rows under different top-value methods.}
-  \item{\code{\link{get_classes,ConsensusPartitionList-method}}:}{get a consensus class IDs merging from all methods.}
+  \item{\code{\link{get_classes,ConsensusPartitionList-method}}:}{get consensus class IDs merging from all methods.}
   \item{\code{\link{get_matrix,ConsensusPartition-method}}:}{get the original matrix.}
   \item{\code{\link{get_stats,ConsensusPartitionList-method}}:}{get statistics for a specified k.}
   \item{\code{\link{get_membership,ConsensusPartitionList-method}}:}{get consensus membership matrix summarized from all methods.}

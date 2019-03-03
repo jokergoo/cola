@@ -24,7 +24,7 @@ submit_to_david(genes, email,
 This function directly sends the HTTP request to DAVID web service (\url{https://david.ncifcrf.gov/content.jsp?file=WS.html} )
 and parses the returned XML. The reason of writing this function is I have problems with other
 R packages doing DAVID analysis (e.g. RDAVIDWebService, \url{https://bioconductor.org/packages/devel/bioc/html/RDAVIDWebService.html} )
-because the rJava package RDAVIDWebService depends on can not be installed on our cluster.
+because the rJava package RDAVIDWebService depends on can not be installed on our machine.
 
 Users are encouraged to use more advanced
 gene set enrichment tools such as clusterProfiler (\url{http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html} ), 

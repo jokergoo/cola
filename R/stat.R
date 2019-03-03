@@ -18,17 +18,21 @@
 # == details 
 # For a given row in a matrix, the ATC score is the area above the curve of the curmulative density
 # distribution of the absolute correlation to all other rows. Formally, if ``F_i(X)`` is the 
-# cumulative distribution function of ``X`` where ``X`` is the absolute correlation for row i with power ``power`` (i.e. ``X^power``),
-# ``ATC_i = 1 - \\int_{min_cor}^{1} F_i(X)``.
+# cumulative distribution function of ``X`` where ``X`` is the absolute correlation for row i with power ``power`` (i.e. ``x = cor^power``),
+# ``ATC_i = 1 - \\int_{min_cor}^1 F_i(X)``.
 #
 # By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
 # the top-value method by:
 #
-#     register_top_value_methods("ATC_spearman" = function(m) ATC(m, method = "spearman"))
+#     register_top_value_methods(
+#         "ATC_spearman" = function(m) ATC(m, method = "spearman")
+#     )
 #
 # Similarly, to use a robust correlation method, e.g. `WGCNA::bicor` function, you can do like:
 #
-#     register_top_value_methods("ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor))
+#     register_top_value_methods(
+#         "ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor)
+#     )
 #
 # == return 
 # A vector of numeric values with the same order as rows in the input matrix.
@@ -195,7 +199,7 @@ cophcor = function(consensus_mat) {
 # -class consensus class IDs.
 #
 # == details
-# Class IDs in ``membership_meach`` have already be adjusted to the consensus class IDs
+# Class IDs in ``membership_each`` have already be adjusted to the consensus class IDs
 # to let ``sum(x_single == x_consensus)`` reach maximum.
 #
 # The concordance score is the mean probability of fitting the consensus class IDs in all

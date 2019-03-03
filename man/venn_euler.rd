@@ -26,7 +26,10 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+lt = list(a = sample(letters, 13),
+          b = sample(letters, 13),
+          c = sample(letters, 13))
+if(requireNamespace("venneuler")) {
+	venn_euler(lt)
+}
 }

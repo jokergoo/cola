@@ -17,15 +17,15 @@ Get membership matrix
 
 }
 \details{
-If \code{each == TRUE}, the value in the membership matrix is the probability
-to be in one class, while if \code{each == FALSE}, the membership matrix contains the 
+If \code{each == FALSE}, the value in the membership matrix is the probability
+to be in one class, while if \code{each == TRUE}, the membership matrix contains the 
 class labels for every single partitions which are from randomly sampling subset
 of rows in the matrix.
 
 The percent membership matrix is calculated by \code{\link[clue]{cl_consensus}}.
 }
 \value{
-A membership matrix where rows correspond to the columns in the original matrix.
+If \code{each == TRUE}, it returns a membership matrix where rows correspond to the columns in the original matrix.
 }
 \seealso{
 \code{\link{get_membership,ConsensusPartitionList-method}} summarizes membership from partitions from all combinations

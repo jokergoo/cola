@@ -17,7 +17,7 @@ All leaves in the hierarchy
 
 }
 \value{
-A vector of node ids.
+A vector of node ID.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

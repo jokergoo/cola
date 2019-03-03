@@ -112,15 +112,15 @@ adjust_outlier = function(x, q = 0.05) {
 }
 
 # == title
-# Remove rows with low variance and impute missing data
+# Remove rows with low variance and impute missing values
 #
 # == param
 # -m a numeric matrix.
-# -sd_quantile cutoff the quantile of standard variation. Rows with standard deviation less than it are removed.
-# -max_na maximum NA rate in each row. Rows with NA rate larger than this value are removed.
+# -sd_quantile cutoff the quantile of standard deviation Rows with standard deviation less than it are removed.
+# -max_na maximum NA fraction in each row. Rows with NA fraction larger than this value are removed.
 #
 # == details
-# The function uses `impute::impute.knn` to impute missing data, then
+# The function uses `impute::impute.knn` to impute missing values, then
 # uses `adjust_outlier` to adjust outliers and 
 # removes rows with low standard deviations.
 #

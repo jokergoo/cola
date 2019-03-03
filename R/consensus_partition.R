@@ -17,7 +17,8 @@
 # -partition_param parameters for the partition method which are passed to ``...`` in a registered partition method. See `register_partition_methods` for detail.
 # -anno a data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation
 #       to predicted subgroups will be tested.
-# -anno_col a list of colors (a named vector) for the annotations in ``anno``. If not specified, random colors are used.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
 # -verbose whether print messages.
 # -.env an environment, internally used.
@@ -559,7 +560,7 @@ setMethod(f = "show",
 })
 
 # == title
-# Plot the empirical cumulative distribution curve of the consensus matrix
+# Plot the empirical cumulative distribution curve (ECDF) of the consensus matrix
 #
 # == param
 # -object a `ConsensusPartition-class` object.
@@ -610,9 +611,9 @@ setMethod(f = "plot_ecdf",
 #
 # - ECDF of the consensus matrix under each k, made by `plot_ecdf,ConsensusPartition-method`,
 # - the cophenetic correlation coefficient,
-# - PAC score,
+# - `PAC` score,
 # - mean sihouette score,
-# - the concordance for each partition to the consensus partition,
+# - the `concordance` for each partition to the consensus partition,
 # - area increase of the area under the ECDF of consensus matrix with increasing k,
 # - Rand index for current k compared to k - 1,
 # - Jaccard coefficient for current k compared to k - 1,
@@ -681,7 +682,8 @@ else take the k with higest votes of
 # -internal used internally.
 # -anno a data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_row_names whether plot row names on the consensus heatmap (which are the column names in the original matrix)
 # -... other arguments
 #
@@ -692,7 +694,7 @@ else take the k with higest votes of
 # There are following heatmaps from left to right:
 #
 # - probability of the sample to stay in the corresponding group
-# - silhouette values which measure the distance for an item to the second closest subgroups.
+# - silhouette scores which measure the distance of an item to the second closest subgroups.
 # - predicted classes.
 # - consensus matrix.
 # - more annotations if provided as ``anno``
@@ -780,14 +782,15 @@ setMethod(f = "consensus_heatmap",
 # -internal used internally.
 # -anno a data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_column_names whether show column names in the heatmap (which is the column name in the original matrix).
 # -... other arguments
 #
 # == details
-# Each row in the heatmap is the membership in one partition.
+# Each row in the heatmap is the membership in one single partition.
 #
-# Heatmap is split on rows by ``top_n``..
+# Heatmap is split on rows by ``top_n``.
 #
 # == value
 # No value is returned.
@@ -877,7 +880,7 @@ setMethod(f = "membership_heatmap",
 })
 
 # == title
-# Visualize samples after dimension reduction
+# Visualize column after dimension reduction
 #
 # == description
 # Visualize samples (the matrix columns) after dimension reduction
@@ -890,7 +893,7 @@ setMethod(f = "membership_heatmap",
 #         ``PCA`` uses `stats::prcomp`.
 # -silhouette_cutoff cutoff of silhouette score. Data points with values less
 #        than it will be mapped with cross symbols.
-# -remove whether to remove columns which have less silhouette values than
+# -remove whether to remove columns which have less silhouette scores than
 #        the cutoff.
 # -scale_rows whether perform scaling on matrix rows.
 # -... other arguments

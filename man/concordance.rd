@@ -16,7 +16,7 @@ concordance(membership_each, class)
 
 }
 \details{
-Class IDs in \code{membership_meach} have already be adjusted to the consensus class IDs
+Class IDs in \code{membership_each} have already be adjusted to the consensus class IDs
 to let \code{sum(x_single == x_consensus)} reach maximum.
 
 The concordance score is the mean probability of fitting the consensus class IDs in all

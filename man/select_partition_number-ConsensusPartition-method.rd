@@ -21,9 +21,9 @@ There are following plots made:
 \itemize{
   \item ECDF of the consensus matrix under each k, made by \code{\link{plot_ecdf,ConsensusPartition-method}},
   \item the cophenetic correlation coefficient,
-  \item PAC score,
+  \item \code{\link{PAC}} score,
   \item mean sihouette score,
-  \item the concordance for each partition to the consensus partition,
+  \item the \code{\link{concordance}} for each partition to the consensus partition,
   \item area increase of the area under the ECDF of consensus matrix with increasing k,
   \item Rand index for current k compared to k - 1,
   \item Jaccard coefficient for current k compared to k - 1,

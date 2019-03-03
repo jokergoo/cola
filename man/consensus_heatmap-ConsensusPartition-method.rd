@@ -18,7 +18,7 @@ Heatmap for the consensus matrix
   \item{k}{number of partitions.}
   \item{internal}{used internally.}
   \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
-  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations.}
+  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{show_row_names}{whether plot row names on the consensus heatmap (which are the column names in the original matrix)}
   \item{...}{other arguments}
 
@@ -31,7 +31,7 @@ There are following heatmaps from left to right:
 
 \itemize{
   \item probability of the sample to stay in the corresponding group
-  \item silhouette values which measure the distance for an item to the second closest subgroups.
+  \item silhouette scores which measure the distance of an item to the second closest subgroups.
   \item predicted classes.
   \item consensus matrix.
   \item more annotations if provided as \code{anno}

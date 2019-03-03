@@ -16,7 +16,7 @@
 # -`run_all_consensus_partition_methods`: constructor method.
 # -`top_rows_overlap,ConsensusPartitionList-method`: plot the overlaps of top rows under different top-value methods.
 # -`top_rows_heatmap,ConsensusPartitionList-method`: plot the heatmap of top rows under different top-value methods.
-# -`get_classes,ConsensusPartitionList-method`: get a consensus class IDs merging from all methods.
+# -`get_classes,ConsensusPartitionList-method`: get consensus class IDs merging from all methods.
 # -`get_matrix,ConsensusPartition-method`: get the original matrix.
 # -`get_stats,ConsensusPartitionList-method`: get statistics for a specified k.
 # -`get_membership,ConsensusPartitionList-method`: get consensus membership matrix summarized from all methods.
@@ -56,7 +56,7 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 # -`consensus_partition`: constructor method, run consensus partition with a specified top-value method and a partition method.
 # -`select_partition_number,ConsensusPartition-method`: make a list of plots to select optimized number of partitions.
 # -`consensus_heatmap,ConsensusPartition-method`: make heatmap of the consensus matrix.
-# -`membership_heatmap,ConsensusPartition-method`: make heatmap of the membership in each random sampling.
+# -`membership_heatmap,ConsensusPartition-method`: make heatmap of the membership in every random sampling.
 # -`get_signatures,ConsensusPartition-method`: get the signature rows and make heatmap.
 # -`dimension_reduction,ConsensusPartition-method`: make dimension reduction plots.
 # -`collect_plots,ConsensusPartition-method`: make heatmaps for consensus matrix and membership matrix with different number of partitions.

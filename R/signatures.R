@@ -11,8 +11,10 @@
 # -fdr_cutoff cutoff for FDR of the difference test between subgroups.
 # -scale_rows whether apply row scaling when making the heatmap.
 # -diff_method methods to get rows which are significantly different between subgroups, see 'Details' section.
-# -anno a data frame with known annotation of samples.
-# -anno_col a list of colors for the annotations in ``anno``.
+# -anno a data frame of annotations for the original matrix columns. 
+#       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -internal used internally.
 # -show_row_dend whether show row dendrogram.
 # -show_column_names whether show column names in the heatmap.

@@ -1,10 +1,10 @@
 \name{adjust_matrix}
 \alias{adjust_matrix}
 \title{
-Remove rows with low variance and impute missing data
+Remove rows with low variance and impute missing values
 }
 \description{
-Remove rows with low variance and impute missing data
+Remove rows with low variance and impute missing values
 }
 \usage{
 adjust_matrix(m, sd_quantile = 0.05, max_na = 0.25)
@@ -12,12 +12,12 @@ adjust_matrix(m, sd_quantile = 0.05, max_na = 0.25)
 \arguments{
 
   \item{m}{a numeric matrix.}
-  \item{sd_quantile}{cutoff the quantile of standard variation. Rows with standard deviation less than it are removed.}
-  \item{max_na}{maximum NA rate in each row. Rows with NA rate larger than this value are removed.}
+  \item{sd_quantile}{cutoff the quantile of standard deviation Rows with standard deviation less than it are removed.}
+  \item{max_na}{maximum NA fraction in each row. Rows with NA fraction larger than this value are removed.}
 
 }
 \details{
-The function uses \code{\link[impute]{impute.knn}} to impute missing data, then
+The function uses \code{\link[impute]{impute.knn}} to impute missing values, then
 uses \code{\link{adjust_outlier}} to adjust outliers and 
 removes rows with low standard deviations.
 }

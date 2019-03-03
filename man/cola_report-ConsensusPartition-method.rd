@@ -1,10 +1,10 @@
 \name{cola_report-ConsensusPartition-method}
 \alias{cola_report,ConsensusPartition-method}
 \title{
-Make report from the ConsensusPartition object
+Make HTML report from the ConsensusPartition object
 }
 \description{
-Make report from the ConsensusPartition object
+Make HTML report from the ConsensusPartition object
 }
 \usage{
 \S4method{cola_report}{ConsensusPartition}(object, output_dir)

@@ -134,8 +134,9 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 # -object a `ConsensusPartitionList-class` object.
 # -top_n number of top rows.
 # -anno a data frame of annotations for the original matrix columns. 
-#       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations.
+#       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -scale_rows wether scale rows. 
 # -... pass to `top_rows_heatmap,matrix-method`
 #
@@ -302,7 +303,18 @@ setMethod(f = "top_rows_heatmap",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# lt = list(a = sample(letters, 13),
+#           b = sample(letters, 13),
+#           c = sample(letters, 13))
+# if(requireNamespace("venneuler")) {
+# 	venn_euler(lt)
+# }
 venn_euler = function(lt, ...) {
+
+	if(!inherits(lt, "list")) {
+		stop_wrap("Input should be a list.")
+	}
 
     df = venn(lt, show.plot = FALSE)
     df = df[-1, ]

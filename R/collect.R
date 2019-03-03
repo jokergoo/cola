@@ -370,15 +370,16 @@ All individual plots can be made by following functions:
 # -k number of partitions.
 # -show_column_names whether show column names in the heatmap (which is the column name in the original matrix).
 # -anno a data frame of annotations for the original matrix columns. 
-#       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations.
+#       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 #
 # == details
 # There are following panels in the plot:
 #
 # - a heatmap showing partitions predicted from all methods where the top annotation
 #   is the consensus partition summarized from partitions from all methods, weighted
-#   by mean silhouette scores.
+#   by mean silhouette scores in every single method.
 # - a row barplot annotation showing the mean silhouette scores for different methods.
 #
 # The row clustering is applied on the dissimilarity matrix calculated by `clue::cl_dissimilarity` with the ``comembership`` method.
@@ -505,7 +506,8 @@ setMethod(f = "collect_classes",
 # -show_row_names whether show row names in the heatmap (which is the column name in the original matrix).
 # -anno a data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 #
 # == details
 # The percent membership matrix and the class IDs for each k are plotted in the heatmaps.

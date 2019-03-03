@@ -1,10 +1,10 @@
 \name{get_matrix-ConsensusPartitionList-method}
 \alias{get_matrix,ConsensusPartitionList-method}
 \title{
-Get original matrix
+Get the original matrix
 }
 \description{
-Get original matrix
+Get the original matrix
 }
 \usage{
 \S4method{get_matrix}{ConsensusPartitionList}(object)

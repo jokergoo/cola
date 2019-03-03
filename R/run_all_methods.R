@@ -15,13 +15,14 @@
 #        will be applied to every values in ``top_n`` and consensus partition is summarized from all partitions.
 # -mc.cores number of cores to use.
 # -anno a data frame with known annotation of columns.
-# -anno_col a list of colors for the annotations in ``anno``.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -p_sampling proportion of the top n rows to sample.
 # -partition_repeat number of repeats for the random sampling.
 # -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
 #
 # == details
-# The function runs consensus partitions by `consensus_partition` for all combinations of top methods and parittion methods.
+# The function runs consensus partitions by `consensus_partition` for all combinations of top-value methods and parittion methods.
 #
 # It also adjsuts the class IDs for all methods and for all k to make them as consistent as possible.
 #

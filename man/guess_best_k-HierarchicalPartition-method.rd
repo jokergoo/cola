@@ -1,10 +1,10 @@
 \name{guess_best_k-HierarchicalPartition-method}
 \alias{guess_best_k,HierarchicalPartition-method}
 \title{
-Get the best number of partitions
+Guess the best number of partitions
 }
 \description{
-Get the best number of partitions
+Guess the best number of partitions
 }
 \usage{
 \S4method{guess_best_k}{HierarchicalPartition}(object)

@@ -75,15 +75,15 @@ setMethod(f = "get_consensus",
 #       or the individual membership in every random partition.
 #
 # == details
-# If ``each == TRUE``, the value in the membership matrix is the probability
-# to be in one class, while if ``each == FALSE``, the membership matrix contains the 
+# If ``each == FALSE``, the value in the membership matrix is the probability
+# to be in one class, while if ``each == TRUE``, the membership matrix contains the 
 # class labels for every single partitions which are from randomly sampling subset
 # of rows in the matrix.
 #
 # The percent membership matrix is calculated by `clue::cl_consensus`.
 #
 # == value
-# A membership matrix where rows correspond to the columns in the original matrix.
+# If ``each == TRUE``, it returns a membership matrix where rows correspond to the columns in the original matrix.
 #
 # == seealso
 # `get_membership,ConsensusPartitionList-method` summarizes membership from partitions from all combinations
@@ -123,7 +123,7 @@ setMethod(f = "get_membership",
 # when summarizing membership matrix from all methods.
 # 
 # == value
-# A membership matrix where rows correspond to the samples in the original matrix.
+# A membership matrix where rows correspond to the columns in the original matrix.
 #
 # == seealso
 # `get_membership,ConsensusPartition-method` returns membership matrix for a single top-value method and partition method.
@@ -159,7 +159,7 @@ setMethod(f = "get_membership",
 # -PAC proportion of ambiguous clustering, calculated by `PAC`.
 # -mean_silhouette the mean silhouette score. See https://en.wikipedia.org/wiki/Silhouette_(clustering) .
 # -concordance the mean probability that each partition fits the consensus partition, calculated by `concordance`.
-# -area_increased the increased area under ECDF (the empirical cumulative distribution function curve) to the previous k
+# -area_increased the increased area under ECDF (the empirical cumulative distribution function curve) to the previous k.
 # -Rand the Rand index which is the percent of pairs of samples that are both in a same cluster or both are not 
 #       in a same cluster in the partition of ``k`` and ``k-1``. See https://en.wikipedia.org/wiki/Rand_index .
 # -Jaccard the ratio of pairs of samples are both in a same cluster in the partition of ``k`` and ``k-1`` and the pairs
@@ -307,7 +307,7 @@ setMethod(f = "get_classes",
 #
 # Honestly, it is hard or maybe impossible to say which k is the best one. `guess_best_k` function only gives suggestion of selecting
 # a reasonable k. Users still need to look at the plots (e.g. by `select_partition_number` or `consensus_heatmap` functions), or even
-# by checking whether the subgrouping gives a reasonable signatures by `get_signatures`, to pick a reasonable k that best explains thieir study. 
+# by checking whether the subgrouping gives a reasonable signatures by `get_signatures`, to pick a reasonable k that best explains their study. 
 #
 # == value
 # The best k.
@@ -348,7 +348,7 @@ setMethod(f = "guess_best_k",
 
 
 # == title
-# Get the best number of partitions
+# Guess the best number of partitions
 #
 # == param
 # -object a `ConsensusPartitionList-class` object.
@@ -401,7 +401,7 @@ setMethod(f = "guess_best_k",
 })
 
 # == title
-# Get original matrix
+# Get the original matrix
 #
 # == param
 # -object a `ConsensusPartitionList-class` object
@@ -422,7 +422,7 @@ setMethod(f = "get_matrix",
 })
 
 # == title
-# Get original matrix
+# Get the original matrix
 #
 # == param
 # -object a `ConsensusPartition-class` object

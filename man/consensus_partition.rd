@@ -34,7 +34,7 @@ consensus_partition(data,
   \item{partition_repeat}{number of repeats for the random sampling.}
   \item{partition_param}{parameters for the partition method which are passed to \code{...} in a registered partition method. See \code{\link{register_partition_methods}} for detail.}
   \item{anno}{a data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation to predicted subgroups will be tested.}
-  \item{anno_col}{a list of colors (a named vector) for the annotations in \code{anno}. If not specified, random colors are used.}
+  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{scale_rows}{whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
   \item{verbose}{whether print messages.}
   \item{.env}{an environment, internally used.}

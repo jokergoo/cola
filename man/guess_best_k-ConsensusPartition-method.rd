@@ -26,7 +26,7 @@ get rid of or reduce the effect of such cirsumstances.
 
 Honestly, it is hard or maybe impossible to say which k is the best one. \code{\link{guess_best_k}} function only gives suggestion of selecting
 a reasonable k. Users still need to look at the plots (e.g. by \code{\link{select_partition_number}} or \code{\link{consensus_heatmap}} functions), or even
-by checking whether the subgrouping gives a reasonable signatures by \code{\link{get_signatures}}, to pick a reasonable k that best explains thieir study.
+by checking whether the subgrouping gives a reasonable signatures by \code{\link{get_signatures}}, to pick a reasonable k that best explains their study.
 }
 \value{
 The best k.

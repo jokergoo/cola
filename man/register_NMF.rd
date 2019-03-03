@@ -11,11 +11,11 @@ register_NMF(package = c("NMF", "NNLM"))
 }
 \arguments{
 
-  \item{package}{which package to support NMF.}
+  \item{package}{which package to support NMF, \code{NMF} package or \code{NNLM} package.}
 
 }
 \details{
-Note \code{\link[NMF]{nmf}} is very time-consuming.
+Note NMF analysis is very time-consuming.
 }
 \examples{
 # There is no example

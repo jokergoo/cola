@@ -11,6 +11,7 @@
 # -`hierarchical_partition`: constructor method.
 # -`collect_classes,HierarchicalPartition-method`: plot the hierarchy of subgroups predicted.
 # -`get_classes,HierarchicalPartition-method`: get the class IDs of subgroups.
+# -`guess_best_k,HierarchicalPartition-method`: guess the best number of partitions for each node.
 # -`get_matrix,HierarchicalPartition-method`: get the original matrix.
 # -`get_signatures,HierarchicalPartition-method`: get the signatures for each subgroup.
 # -`dimension_reduction,HierarchicalPartition-method`: make dimension reduction plots.
@@ -455,8 +456,10 @@ setMethod(f = "show",
 # -object a `HierarchicalPartition-class` object.
 # -depth depth of the hierarchy.
 # -scale_rows whether apply row scaling when making the heatmap.
-# -anno a data frame with known annotation of samples.
-# -anno_col a list of colors for the annotations in ``anno``.
+# -anno a data frame of annotations for the original matrix columns. 
+#       By default it uses the annotations specified in `hierarchical_partition`.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_column_names whether show column names in the heatmap.
 # -verbose whether to print messages.
 # -plot whether to make the plot.
@@ -466,11 +469,11 @@ setMethod(f = "show",
 # -... other arguments
 # 
 # == details
-# The function called `get_signatures,ConsensusPartition-method` to find signatures at
-# each level of the partition hierarchy.
+# The function calls `get_signatures,ConsensusPartition-method` to find signatures at
+# each node of the partition hierarchy.
 #
 # == value
-# A list of signature indices (row indices of the original data matrix).
+# A list of row indices where rows are significantly different between subgroups in at least one node.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -634,11 +637,13 @@ setMethod(f = "get_signatures",
 # == param
 # -object a `HierarchicalPartition-class` object.
 # -depth depth of the hierarchy.
-# -anno a data frame with known annotation of the mtarix columns.
-# -anno_col a list of colors for the annotations in ``anno``.
+# -anno a data frame of annotations for the original matrix columns. 
+#       By default it uses the annotations specified in `hierarchical_partition`.
+# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 #
 # == details
-# The function plots the hierarchy of the subgroups.
+# The function plots the hierarchy of the classes.
 #
 # == value
 # No value is returned.
@@ -740,7 +745,7 @@ setMethod(f = "collect_classes",
 # == example
 # data(cola_rh)
 # cola_rh[["01"]]
-# cola_rh[["2"]]
+# cola_rh[[2]]
 "[[.HierarchicalPartition" = function(x, i) {
 	x[i]
 }
@@ -802,7 +807,7 @@ setMethod(f = "test_to_known_factors",
 #         ``pca`` uses `stats::prcomp`.
 # -silhouette_cutoff cutoff of silhouette score. Data points with values less
 #        than it will be mapped to small points.
-# -scale whether perform scaling on matrix rows.
+# -scale_rows whether perform scaling on matrix rows.
 #
 # == details
 # The class IDs are extract at ``depth``.
@@ -893,7 +898,7 @@ setMethod(f = "max_depth",
 # -depth depth in the hierarchy.
 #
 # == value
-# A vector of node ids.
+# A vector of node ID.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -920,7 +925,7 @@ setMethod(f = "all_nodes",
 # -depth depth in the hierarchy.
 #
 # == value
-# A vector of node ids.
+# A vector of node ID.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -1005,7 +1010,7 @@ setMethod(f = "get_anno_col",
 })
 
 # == title
-# Get the best number of partitions
+# Guess the best number of partitions
 #
 # == param
 # -object a `HierarchicalPartition-class` object.

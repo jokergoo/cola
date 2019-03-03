@@ -14,12 +14,12 @@ Collect classes from HierarchicalPartition object
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{depth of the hierarchy.}
-  \item{anno}{a data frame with known annotation of the mtarix columns.}
-  \item{anno_col}{a list of colors for the annotations in \code{anno}.}
+  \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{hierarchical_partition}}.}
+  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
 
 }
 \details{
-The function plots the hierarchy of the subgroups.
+The function plots the hierarchy of the classes.
 }
 \value{
 No value is returned.

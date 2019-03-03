@@ -1,10 +1,10 @@
 \name{cola_report-HierarchicalPartition-method}
 \alias{cola_report,HierarchicalPartition-method}
 \title{
-Make report from the HierarchicalPartition object
+Make HTML report from the HierarchicalPartition object
 }
 \description{
-Make report from the HierarchicalPartition object
+Make HTML report from the HierarchicalPartition object
 }
 \usage{
 \S4method{cola_report}{HierarchicalPartition}(object, output_dir, env = parent.frame())
@@ -29,6 +29,6 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 \dontrun{
 data(cola_rh)
-cola_report(cola_rh, output_dir = "~/test2")
+cola_report(cola_rh, output_dir = "~/test_cola_rh_report")
 }
 }

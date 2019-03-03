@@ -21,8 +21,8 @@ Get signatures rows
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{depth of the hierarchy.}
   \item{scale_rows}{whether apply row scaling when making the heatmap.}
-  \item{anno}{a data frame with known annotation of samples.}
-  \item{anno_col}{a list of colors for the annotations in \code{anno}.}
+  \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{hierarchical_partition}}.}
+  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{show_column_names}{whether show column names in the heatmap.}
   \item{verbose}{whether to print messages.}
   \item{plot}{whether to make the plot.}
@@ -31,11 +31,11 @@ Get signatures rows
 
 }
 \details{
-The function called \code{\link{get_signatures,ConsensusPartition-method}} to find signatures at
-each level of the partition hierarchy.
+The function calls \code{\link{get_signatures,ConsensusPartition-method}} to find signatures at
+each node of the partition hierarchy.
 }
 \value{
-A list of signature indices (row indices of the original data matrix).
+A list of row indices where rows are significantly different between subgroups in at least one node.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

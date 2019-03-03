@@ -314,10 +314,10 @@ register_partition_methods(
 # Register NMF partition method
 #
 # == param
-# -package which package to support NMF.
+# -package which package to support NMF, ``NMF`` package or ``NNLM`` package.
 #
 # == details
-# Note `NMF::nmf` is very time-consuming.
+# Note NMF analysis is very time-consuming.
 #
 register_NMF = function(package = c("NMF", "NNLM")) {
 	package = match.arg(package)[1]

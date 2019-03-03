@@ -18,15 +18,15 @@ Heatmap of membership in each partition
   \item{k}{number of partitions.}
   \item{internal}{used internally.}
   \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
-  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations.}
+  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{show_column_names}{whether show column names in the heatmap (which is the column name in the original matrix).}
   \item{...}{other arguments}
 
 }
 \details{
-Each row in the heatmap is the membership in one partition.
+Each row in the heatmap is the membership in one single partition.
 
-Heatmap is split on rows by \code{top_n}..
+Heatmap is split on rows by \code{top_n}.
 }
 \value{
 No value is returned.

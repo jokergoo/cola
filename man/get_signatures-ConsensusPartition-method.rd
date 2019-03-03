@@ -28,8 +28,8 @@ Get signature rows
   \item{fdr_cutoff}{cutoff for FDR of the difference test between subgroups.}
   \item{scale_rows}{whether apply row scaling when making the heatmap.}
   \item{diff_method}{methods to get rows which are significantly different between subgroups, see 'Details' section.}
-  \item{anno}{a data frame with known annotation of samples.}
-  \item{anno_col}{a list of colors for the annotations in \code{anno}.}
+  \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
+  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{internal}{used internally.}
   \item{show_row_dend}{whether show row dendrogram.}
   \item{show_column_names}{whether show column names in the heatmap.}

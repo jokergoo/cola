@@ -25,19 +25,23 @@ ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 \details{
 For a given row in a matrix, the ATC score is the area above the curve of the curmulative density
 distribution of the absolute correlation to all other rows. Formally, if \code{F_i(X)} is the 
-cumulative distribution function of \code{X} where \code{X} is the absolute correlation for row i with power \code{power} (i.e. \code{X^power}),
-\code{ATC_i = 1 - \\int_{min_cor}^{1} F_i(X)}.
+cumulative distribution function of \code{X} where \code{X} is the absolute correlation for row i with power \code{power} (i.e. \code{x = cor^power}),
+\code{ATC_i = 1 - \\int_{min_cor}^1 F_i(X)}.
 
 By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
 the top-value method by:
 
   \preformatted{
-    register_top_value_methods("ATC_spearman" = function(m) ATC(m, method = "spearman"))  }
+    register_top_value_methods(
+        "ATC_spearman" = function(m) ATC(m, method = "spearman")
+    )  }
 
 Similarly, to use a robust correlation method, e.g. \code{\link[WGCNA]{bicor}} function, you can do like:
 
   \preformatted{
-    register_top_value_methods("ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor))  }
+    register_top_value_methods(
+        "ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor)
+    )  }
 }
 \value{
 A vector of numeric values with the same order as rows in the input matrix.
