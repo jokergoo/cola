@@ -448,6 +448,13 @@ setMethod(f = "collect_classes",
 				anno_col = list(anno_col)
 				names(anno_col) = anno_nm
 			}
+		} else if(ncol(anno) == 1) {
+			if(!is.null(anno_col)) {
+				if(is.atomic(anno_col)) {
+					anno_col = list(anno_col)
+					names(anno_col) = colnames(anno)
+				}
+			}
 		}
 
 		if(is.null(anno_col)) {
@@ -495,9 +502,10 @@ setMethod(f = "collect_classes",
 # == param
 # -object a `ConsensusPartition-class` object.
 # -internal used internally.
-# -show_row_names whether show row names.
+# -show_row_names whether show row names in the heatmap (which is the column name in the original matrix).
+# -anno a data frame of annotations for the original matrix columns. 
+#       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
 # -anno_col a list of colors (color is defined as a named vector) for the annotations.
-# -show_row_names whether plot row names on the consensus heatmap (which are the column names in the original matrix)
 #
 # == details
 # The percent membership matrix and the class IDs for each k are plotted in the heatmaps.
@@ -548,6 +556,13 @@ setMethod(f = "collect_classes",
 			if(!is.null(anno_col)) {
 				anno_col = list(anno_col)
 				names(anno_col) = anno_nm
+			}
+		} else if(ncol(anno) == 1) {
+			if(!is.null(anno_col)) {
+				if(is.atomic(anno_col)) {
+					anno_col = list(anno_col)
+					names(anno_col) = colnames(anno)
+				}
 			}
 		}
 		if(is.null(anno_col))

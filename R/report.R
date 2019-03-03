@@ -153,6 +153,9 @@ setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
 	definition = function(object, output_dir = getwd(), env = parent.frame()) {
 
+	if(!requireNamespace("genefilter")) {
+		stop_wrap("You need to install genefilter package (from Bioconductor).")
+	}
 	var_name = deparse(substitute(object, env = env))
 	make_report(var_name, object, output_dir, class = "ConsensusPartitionList")
 
@@ -223,6 +226,13 @@ setMethod(f = "cola_report",
 	if(nrow(object@hierarchy) == 1) {
 		cat("No hierarchy detected, won't generate the report.\n")
 		return(invisible(NULL))
+	}
+
+	if(!requireNamespace("genefilter")) {
+		stop_wrap("You need to install genefilter package (from Bioconductor).")
+	}
+	if(!requireNamespace("data.tree")) {
+		stop_wrap("You need to install data.tree package (from CRAN).")
 	}
 	var_name = deparse(substitute(object, env = env))
 	make_report(var_name, object, output_dir, class = "HierarchicalPartition")
@@ -305,6 +315,7 @@ make_report = function(var_name, object, output_dir, class) {
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-ui.js"), paste0(output_dir, "/js/"))
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
+	file.copy(paste0(TEMPLATE_DIR, "/jquery.tocify.min.js"), paste0(output_dir, "/js/"))
 	file.copy(paste0(TEMPLATE_DIR, "/favicon.ico"), paste0(output_dir, "/"))
 
 	message("* removing temporary files")
@@ -315,9 +326,49 @@ make_report = function(var_name, object, output_dir, class) {
 	## add favicon.ico line to the html file
 	html_file = paste0(output_dir, "/", html_file[class])
 	lines = readLines(html_file)
+
+	## add name attribute to h2 and h3 tags
+	lines = gsub("^\\s*<h(2|3)>(.*?)</h(2|3)>\\s*$", "<h\\1 id='\\2'>\\2</h\\3>", lines)
+
+	## add favicon
 	ind = which(grepl("^<title>", lines[1:10]))
-	lines[ind] = paste0('<link href="favicon.ico" type="image/vnd.microsoft.icon" />\n', lines[ind])
+	lines[ind] = paste0('<link rel="ICON" type="image/x-icon" href="favicon.ico" />\n', lines[ind])
+	
+	## add toc js at the end of the html
+	nl = length(lines)
+	ind = which(grepl("</html>", lines[(nl-10):nl])) + nl - 10 - 1
+	lines[ind] = "
+<script src='js/jquery.tocify.min.js'></script>
+<div id='toc'></div>
+<style>
+.tocify-subheader {
+    text-indent: 10px;
+}
+.tocify-subheader .tocify-subheader {
+    text-indent: 20px;
+}
+.tocify-subheader .tocify-subheader .tocify-subheader {
+    text-indent: 20px;
+}
+.active {
+    color: #ffffff;
+    background-color: #0080FF;
+}
+</style>
+<script>
+$(function() {
+  $('#toc').tocify({ 
+    showAndHide: false,
+    showAndHideOnScroll: false,
+    selectors: 'h2,h3',
+    showEffect: 'fadeIn'
+  }); 
+});
+</script>
+</html>
+"
 	writeLines(lines, con = html_file)
+
 
 	KNITR_TAB_ENV$current_tab_index = 0
 	KNITR_TAB_ENV$current_div_index = 0

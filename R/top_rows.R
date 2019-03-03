@@ -194,7 +194,6 @@ setMethod(f = "top_rows_heatmap",
 # -top_value_method methods defined in `all_top_value_methods`.
 # -bottom_annotation a `ComplexHeatmap::HeatmapAnnotation-class` object.
 # -top_n number of top rows to show in the heatmap.
-# -layout_nr number of rows in the layout.
 # -scale_rows whether scale rows.
 #
 # == details
@@ -237,7 +236,7 @@ setMethod(f = "top_rows_heatmap",
     
     grid.newpage()
     pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = length(lt),
-    	height = unit.c(2*max_text_height("foo"), unit(1, "null")))))
+    	heights = unit.c(2*max_text_height("foo"), unit(1, "null")))))
     for(i in seq_along(lt)) {
     	pushViewport(viewport(layout.pos.row = 1, layout.pos.col = i))
     	grid.text(qq("top @{top_n} rows of @{top_value_method[i]}"))

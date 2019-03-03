@@ -501,7 +501,10 @@ consensus_partition = function(data,
 	if(is.null(anno_col)) {
 		anno_col = lapply(anno, ComplexHeatmap:::default_col)
 	} else {
-		if(is.null(names(anno_col))) {
+		if(ncol(anno) == 1 && is.atomic(anno_col)) {
+			anno_col = list(anno_col)
+			names(anno_col) = colnames(anno)
+		} else if(is.null(names(anno_col))) {
 			if(length(anno_col) == ncol(anno)) {
 				names(anno_col) = colnames(anno)
 			} else {
@@ -746,6 +749,13 @@ setMethod(f = "consensus_heatmap",
 				anno_col = list(anno_col)
 				names(anno_col) = anno_nm
 			}
+		} else if(ncol(anno) == 1) {
+			if(!is.null(anno_col)) {
+				if(is.atomic(anno_col)) {
+					anno_col = list(anno_col)
+					names(anno_col) = colnames(anno)
+				}
+			}
 		}
 		if(is.null(anno_col))
 			ht_list = ht_list + rowAnnotation(df = anno)
@@ -818,6 +828,13 @@ setMethod(f = "membership_heatmap",
 			if(!is.null(anno_col)) {
 				anno_col = list(anno_col)
 				names(anno_col) = anno_nm
+			}
+		} else if(ncol(anno) == 1) {
+			if(!is.null(anno_col)) {
+				if(is.atomic(anno_col)) {
+					anno_col = list(anno_col)
+					names(anno_col) = colnames(anno)
+				}
 			}
 		}
 
@@ -920,7 +937,7 @@ setMethod(f = "dimension_reduction",
 		
 	if(remove) {
 		dimension_reduction(data[, l], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
-			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
+			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
 			method = method, scale_rows = scale_rows)
 		legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
 			pch = c(rep(16, n_class), 0),
@@ -929,9 +946,9 @@ setMethod(f = "dimension_reduction",
 			text.col = c(rep("black", n_class), "white"))
 	} else {
 		dimension_reduction(data, pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
-			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
+			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
 			method = method, scale_rows = scale_rows)
-		if(any(l)) {
+		if(any(!l)) {
 			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
 					pch = c(rep(16, n_class), 4),
 					col = c(brewer_pal_set2_col[class_level], "black"), xjust = 0, yjust = 0.5,

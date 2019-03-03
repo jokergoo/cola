@@ -19,7 +19,8 @@ cn = colnames(m)
 m = normalize.quantiles(m)
 colnames(m) = cn
 res = run_all_consensus_partition_methods(m, max_k = 6, mc.cores = 4, 
-	anno = anno[, c("ALL.AML"), drop = FALSE]
+	anno = anno[, c("ALL.AML"), drop = FALSE],
+	anno_col = c("ALL" = "red", "AML" = "blue")
 )
 
 saveRDS(res, file = qq("/icgc/dkfzlsdf/analysis/B080/guz/cola_test/Golub_subgroup.rds"))

@@ -14,7 +14,7 @@ if(is_hc) {
 } -%>
 
 <% if(is_hc) { %>
-### Node <%=node%>
+### Node<%=node%>
 <% } else { %>
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
 <% } %>

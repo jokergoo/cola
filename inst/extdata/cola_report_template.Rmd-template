@@ -1,4 +1,4 @@
-Cola report
+Cola Report for Consensus Partitioning
 ==================
 
 **Date**: `r Sys.Date()`
@@ -14,7 +14,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 ```{r, echo = FALSE, message = FALSE}
 library(knitr)
 library(markdown)
-options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "toc"), "base64_images"))
+options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
 options(width = 100)
 options(digits = 3)
 opts_chunk$set(
@@ -27,7 +27,6 @@ suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
 ```
 
-
 <% res_list = object -%>
 
 ## Summary
@@ -36,7 +35,7 @@ suppressPackageStartupMessages(library(genefilter))
 
 <% if(!same_var_name) { -%>
 
-First the variable name is changed to `res_list`.
+First the variable is renamed to `res_list`.
 
 ```{r, eval = FALSE, echo = TRUE}
 res_list = <%=var_name%>
@@ -113,14 +112,11 @@ guess_best_k(res_list)
 
 ```{r, echo = FALSE}
 tb = guess_best_k(res_list)
-g = expand.grid(res_list@partition_method, res_list@top_value_method)
-g = paste0(g[, 2], ":", g[, 1])
-od = sapply(rownames(tb), function(x) which(g == x))
-rownames(tb) = paste0("[", rownames(tb), "](#toc_", od + 12, ")")
+rownames(tb) = qq("[@{rownames(tb)}](#@{rownames(tb)})", collapse = FALSE)
 kable(tb)
 ```
 
-**: concordance > 0.95, *: concordance > 0.9
+\*\*: concordance > 0.95, \*: concordance > 0.9
 
 
 ```{r, echo = FALSE}
@@ -295,6 +291,7 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 if(!is.null(res_list@list[[1]]@anno)) { 
 has_known_anno = TRUE -%>
 
+### Test to known annotations
 
 ```{r, echo = FALSE, message = FALSE}
 message(qq("* testing correlation of subgroups to known annotations"))

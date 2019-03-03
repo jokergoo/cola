@@ -10,6 +10,7 @@ Method dispatch page for \code{guess_best_k}.
 \code{guess_best_k} can be dispatched on following classes:
 
 \itemize{
+\item \code{\link{guess_best_k,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 \item \code{\link{guess_best_k,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{guess_best_k,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 }

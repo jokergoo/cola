@@ -14,9 +14,9 @@ Collect classes from ConsensusPartition object
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object.}
   \item{internal}{used internally.}
-  \item{show_row_names}{whether show row names.}
+  \item{show_row_names}{whether show row names in the heatmap (which is the column name in the original matrix).}
+  \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
   \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations.}
-  \item{show_row_names}{whether plot row names on the consensus heatmap (which are the column names in the original matrix)}
 
 }
 \details{

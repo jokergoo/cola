@@ -19,7 +19,6 @@ Heatmap of top rows from different top-value methods
   \item{top_value_method}{methods defined in \code{\link{all_top_value_methods}}.}
   \item{bottom_annotation}{a \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.}
   \item{top_n}{number of top rows to show in the heatmap.}
-  \item{layout_nr}{number of rows in the layout.}
   \item{scale_rows}{whether scale rows.}
 
 }

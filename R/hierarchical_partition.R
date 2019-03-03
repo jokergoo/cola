@@ -199,7 +199,7 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 	lt[["0"]] = data.tree::Node$new("all samples")
 	cn = colnames(object@list[["0"]]@.env$data)
 	max_depth = max(nchar(hierarchy))
-	lt[["0"]]$node_height = max_depth + 1
+	lt[["0"]]$node_height = max_depth - 1
 	for(i in seq_len(nrow(hierarchy))) {
 		lt[[ hierarchy[i, 2] ]] = lt[[ hierarchy[i, 1] ]]$AddChildNode({
 			node = data.tree::Node$new(hierarchy[i, 2])
@@ -289,7 +289,7 @@ random_dend = function(n) {
 calc_dend = function(object, depth = max_depth(object)) {
 
 	pd = get_hierarchy(object, depth = depth)
-	classes = get_classes(object, depth = depth)
+	classes = get_classes(object, depth = depth)[, 1]
 	if(is.null(names(classes))) names(classes) = seq_along(classes)
 	cd_list = lapply(tapply(names(classes), classes, function(x) x), function(x) {
 		d = random_dend(length(x))
@@ -360,7 +360,7 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 # -depth depth of the hierarchy.
 #
 # == return
-# A vector of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
+# A data frame of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -373,12 +373,17 @@ setMethod(f = "get_classes",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object)) {
 
+	if(length(depth) > 1) {
+		df = do.call(cbind, lapply(depth, function(d) get_classes(object, d)))
+		colnames(df) = paste0("depth=", depth)
+		return(df)
+	}
 	subgroup = object@subgroup
 	if(!is.null(depth)) {
 		l = nchar(subgroup) > depth
 		subgroup[l] = substr(subgroup[l], 1, depth)
 	}
-	subgroup
+	data.frame(class = subgroup, stringsAsFactors = FALSE)
 })
 
 # == title
@@ -429,6 +434,10 @@ setMethod(f = "show",
 	# substr(lines[1], 1, 1) = "+"
 	lines = c(qq("  0, @{length(object@list[['0']]@column_index)} cols"), lines)
 	cat(lines, sep = "\n")
+	
+	# ne = nodes[which.max(nc)[1]]
+	# qqcat("e.g. a node '@{ne}' which a parent node '@{gsub(\'.$\', \'\', ne)}'\n")
+
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'HierarchicalPartition' object:\n")
 	txt = showMethods(classes = "HierarchicalPartition", where = topenv(), printTo = FALSE)
@@ -473,7 +482,7 @@ setMethod(f = "show",
 # }
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object), node = "0",
+	definition = function(object, depth = max_depth(object),
 	scale_rows = object[1]@scale_rows, 
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
@@ -512,7 +521,7 @@ setMethod(f = "get_signatures",
 
 	m = object@.env$data[all_sig, , drop = FALSE]
 
-	class = get_classes(object, depth = depth)
+	class = get_classes(object, depth = depth)[, 1]
 
 	if(nrow(m) > 2000) {
 		if(verbose) qqcat("* randomly sample @{2000} rows from @{nrow(m)} total rows.\n")
@@ -542,6 +551,13 @@ setMethod(f = "get_signatures",
 			if(!is.null(anno_col)) {
 				anno_col = list(anno_col)
 				names(anno_col) = anno_nm
+			}
+		} else if(ncol(anno) == 1) {
+			if(!is.null(anno_col)) {
+				if(is.atomic(anno_col)) {
+					anno_col = list(anno_col)
+					names(anno_col) = colnames(anno)
+				}
 			}
 		}
 
@@ -573,7 +589,7 @@ setMethod(f = "get_signatures",
 	row_split = NULL
 	if(nrow(use_mat1) > 10) {
 		wss <- (nrow(use_mat1)-1)*sum(apply(use_mat1,2,var))
-		for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers=i)$withinss)
+		for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers = i, iter.max = 50)$withinss)
 		row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
 		if(length(unique(class)) == 1) row_km = 1
 		if(length(unique(class)) == 2) row_km = min(row_km, 2)
@@ -591,12 +607,10 @@ setMethod(f = "get_signatures",
 		col = list(class = object@subgroup_col))
 
 	dend = cluster_within_group(use_mat1, class)
-	browser()
 	
 	ht_list = Heatmap(use_mat1, top_annotation = ha1,
 		name = heatmap_name, show_row_names = FALSE, 
-		show_column_names = show_column_names,
-		column_split = length(unique(class)), col = col_fun,
+		show_column_names = show_column_names, col = col_fun,
 		use_raster = TRUE, row_split = row_split,
 		show_row_dend = FALSE, cluster_columns = dend,
 		column_title = qq("@{length(unique(class))} groups, @{length(all_sig)} signatures"),
@@ -641,11 +655,11 @@ setMethod(f = "collect_classes",
 	definition = function(object, depth = max_depth(object), 
 	anno = get_anno(object[1]), anno_col = get_anno_col(object[1])) {
 
-	cl = get_classes(object, depth = depth)
+	cl = get_classes(object, depth = depth)[, 1]
 
 	dend = calc_dend(object, depth = depth)
 
-	ht_list = Heatmap(cl, name = "Groups", col = object@subgroup_col, width = unit(5, "mm"),
+	ht_list = Heatmap(cl, name = "Class", col = object@subgroup_col, width = unit(5, "mm"),
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
 		show_row_names = FALSE)
 	if(!is.null(anno)) {
@@ -656,6 +670,13 @@ setMethod(f = "collect_classes",
 			if(!is.null(anno_col)) {
 				anno_col = list(anno_col)
 				names(anno_col) = anno_nm
+			}
+		} else if(ncol(anno) == 1) {
+			if(!is.null(anno_col)) {
+				if(is.atomic(anno_col)) {
+					anno_col = list(anno_col)
+					names(anno_col) = colnames(anno)
+				}
 			}
 		}
 		if(is.null(anno_col))
@@ -695,7 +716,10 @@ setMethod(f = "collect_classes",
 	if(is.numeric(i)) {
 		i = names(x@list)[i]
 	}
-	x@list[[i]]
+	if(is.null(x@list[[i]])) {
+		stop_wrap("index for the HierarchicalPartition object cannot be found.")
+	}
+	return(x@list[[i]])
 }
 
 # == title
@@ -729,12 +753,14 @@ setMethod(f = "collect_classes",
 # -object a `HierarchicalPartition-class` object.
 # -depth depth of the hierarchy.
 # -known a vector or a data frame with known factors. By default it is the annotation table set in `hierarchical_partition`.
-#
-# == details
-# The function test correlation between classes and known annotations at each node in the hierarchy.
+# -verbose whether to print messages.
 #
 # == value
-# A matrix of p-values.
+# A data frame with columns:
+#
+# - number of samples
+# - p-values from the tests
+# - number of classes
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -745,7 +771,7 @@ setMethod(f = "collect_classes",
 setMethod(f = "test_to_known_factors",
 	signature = "HierarchicalPartition",
 	definition = function(object, known = get_anno(object[1]),
-	depth = max_depth(object)) {
+	depth = 2:max_depth(object), verbose = FALSE) {
 
 	if(!is.null(known)) {
 		if(is.atomic(known)) {
@@ -757,23 +783,11 @@ setMethod(f = "test_to_known_factors",
 		stop_wrap("Known factors should be provided.")
 	}
 
-	nodes = setdiff(all_nodes(object, depth = depth), all_leaves(object, depth = depth))
-
-	p = NULL
-	for(nm in nodes) {
-		obj = object[[nm]]
-
-		column_index = obj@column_index
-
-		p = rbind(p, test_to_known_factors(obj, k = guess_best_k(obj), known[column_index, , drop = FALSE]))
-	}
-	rownames(p) = nodes
-
-	class = get_classes(object)
-	m = test_between_factors(class, known, verbose = FALSE)
-	p = rbind(p, c(length(class), as.vector(m), NA))
-	rownames(p) = c(rownames(p)[-nrow(p)], "overall")
-	return(p)
+	class = get_classes(object, depth)
+	m = test_between_factors(class, known, verbose = verbose)
+	colnames(m) = paste0(colnames(m), "(p-value)")
+	df = cbind(n = nrow(class), m, n_class = apply(class, 2, function(x) length(unique(x))))
+	return(df)
 })
 
 # == title
@@ -808,13 +822,13 @@ setMethod(f = "dimension_reduction",
 	definition = function(object,
 	depth = max_depth(object), parent_node,
 	top_n = NULL, method = c("PCA", "MDS"),
-	silhouette_cutoff = 0.5, scale = TRUE) {
+	silhouette_cutoff = 0.5, scale_rows = TRUE) {
 
 	method = match.arg(method)
 	data = object@list[[1]]@.env$data
 
 	op = par(c("mar", "xpd"))
-	par(mar = c(4.1, 4.1, 4.1, 5.1), xpd = NA)
+	par(mar = c(4.1, 4.1, 4.1, 6), xpd = NA)
 
 	if(missing(parent_node)) {
 		if(!is.null(top_n)) {
@@ -822,22 +836,28 @@ setMethod(f = "dimension_reduction",
 			all_top_value = object@list[["0"]]@.env$all_top_value_list[[object@list[["0"]]@top_value_method]]
 			ind = order(all_top_value)[1:top_n]
 			data = data[ind, , drop = FALSE]
+		} else {
+			top_n = nrow(data)
 		}
-		class = get_classes(object, depth = depth)
+		class = get_classes(object, depth = depth)[, 1]
+		n_class = length(unique(class))
 		dimension_reduction(data, pch = 16, col = object@subgroup_col[class],
-			cex = 1, main = qq("Dimension reduction by @{method}, @{ncol(data)} samples"),
-			method = method, scale = scale)
+			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@list[[1]]@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{ncol(data)} samples at depth @{depth} with @{n_class} classes"),
+			method = method, scale_rows = scale_rows)
 		class_level = sort(unique(class))
-		legend(x = par("usr")[2], y = par("usr")[4], legend = paste0("group", class_level), pch = 16,
-				col = object@subgroup_col[class_level], adj = c(0, 1))
+		legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(class_level, "ambiguous"), 
+			pch = c(rep(16, n_class), 0),
+			col = c(object@subgroup_col[class_level], "white"), xjust = 0, yjust = 0.5,
+			title = "Class", title.adj = 0.1, bty = "n",
+			text.col = c(rep("black", n_class), "white"))
 	} else {
 		if(!parent_node %in% setdiff(all_nodes(object), all_leaves(object))) {
 			stop_wrap(qq("@{parent_node} has no children nodes."))
 		}
 		obj = object[parent_node]
 		dimension_reduction(obj, k = guess_best_k(obj), top_n = top_n, method = method,
-			silhouette_cutoff = silhouette_cutoff, scale = scale)
-		legend("topleft", legend = qq("node @{parent_node}"))
+			silhouette_cutoff = silhouette_cutoff, scale_rows = scale_rows)
+		legend(x = par("usr")[2], y = par("usr")[4], legend = qq("node @{parent_node}"))
 	}
 
 	par(op)
@@ -983,3 +1003,53 @@ setMethod(f = "get_anno_col",
 	definition = function(object) {
 	get_anno_col(object[1])
 })
+
+# == title
+# Get the best number of partitions
+#
+# == param
+# -object a `HierarchicalPartition-class` object.
+#
+# == details
+# It basically gives the best k at each node.
+#
+# == value
+# A data frame with the best k and other statistics for each node.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+# == example
+# data(cola_rh)
+# guess_best_k(cola_rh)
+setMethod(f = "guess_best_k",
+	signature = "HierarchicalPartition",
+	definition = function(object) {
+
+	best_k = NULL
+	cophcor = NULL
+	PAC = NULL
+	mean_silhouette = NULL
+	concordance = NULL
+	for(nm in names(object@list)) {
+		obj = object@list[[nm]]
+		best_k[nm] = guess_best_k(obj)
+		stat = get_stats(obj, k = best_k[nm])
+		cophcor[nm] = stat[1, "cophcor"]
+		PAC[nm] = stat[1, "PAC"]
+		mean_silhouette[nm] = stat[1, "mean_silhouette"]
+		concordance[nm] = stat[1, "concordance"]
+	}
+	tb = data.frame(best_k = best_k,
+		cophcor = cophcor,
+		PAC = PAC,
+		mean_silhouette = mean_silhouette,
+		concordance = concordance)
+
+	l = rownames(tb) %in% all_leaves(object)
+	tb = cbind(tb, ifelse(l, "leaf", "node"), stringsAsFactors = FALSE)
+	colnames(tb)[ncol(tb)] = ""
+
+	return(tb)
+})
+

@@ -95,7 +95,10 @@ run_all_consensus_partition_methods = function(data,
 	if(is.null(anno_col)) {
 		anno_col = lapply(anno, ComplexHeatmap:::default_col)
 	} else {
-		if(is.null(names(anno_col))) {
+		if(ncol(anno) == 1 && is.atomic(anno_col)) {
+			anno_col = list(anno_col)
+			names(anno_col) = colnames(anno)
+		} else if(is.null(names(anno_col))) {
 			if(length(anno_col) == ncol(anno)) {
 				names(anno_col) = colnames(anno)
 			} else {

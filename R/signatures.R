@@ -284,6 +284,13 @@ setMethod(f = "get_signatures",
 				anno_col = list(anno_col)
 				names(anno_col) = anno_nm
 			}
+		} else if(ncol(anno) == 1) {
+			if(!is.null(anno_col)) {
+				if(is.atomic(anno_col)) {
+					anno_col = list(anno_col)
+					names(anno_col) = colnames(anno)
+				}
+			}
 		}
 
 		if(is.null(anno_col)) {
@@ -454,13 +461,14 @@ setMethod(f = "get_signatures",
 
 	if(has_ambiguous) {
 		lgd = Legend(title = "Status (barplots)", labels = c("confident", "ambiguous"), legend_gp = gpar(fill = c("black", "grey")))
+		heatmap_legend_list = list(lgd)
 	} else {
-		lgd = NULL
+		heatmap_legend_list = NULL
 	}
 
 	if(do_row_clustering) {
 		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}"),
-			show_heatmap_legend = !internal, show_annotation_legend = !internal, heatmap_legend_list = list(lgd))
+			show_heatmap_legend = !internal, show_annotation_legend = !internal, heatmap_legend_list = heatmap_legend_list)
 		
 		row_order = row_order(ht_list)
 		if(!is.list(row_order)) row_order = list(row_order)
@@ -474,7 +482,7 @@ setMethod(f = "get_signatures",
 		if(verbose) cat("  - use row order from cache.\n")
 		draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}"),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
-			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = list(lgd))
+			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = heatmap_legend_list)
 	}
 	# the cutoff
 	# https://www.stat.berkeley.edu/~s133/Cluster2a.html

@@ -1152,7 +1152,7 @@ actually there are two obvious subgroups and there are quite a lot signature
 genes which are significantly different between the two subgroups. This proves
 it is very meanningful that there are two secondary subgroups in Mesenchymal subtype.
 
-```{r, results = "hide"}
+```{r, results = "hide", eval = FALSE}
 get_signatures(rh["001"], k = 2)
 ```
 

@@ -1,4 +1,4 @@
-Cola report for hierarchical partitioning
+Cola Report for Hierarchical Partitioning
 ==================
 
 **Date**: `r Sys.Date()`
@@ -14,10 +14,11 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 ```{r, echo = FALSE, message = FALSE}
 library(knitr)
 library(markdown)
-options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options"), "toc"), "base64_images"))
+options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
 options(width = 100)
 options(digits = 3)
 opts_chunk$set(
+	comment = "#>",
 	fig.path = "figure_cola/",
 	warning = FALSE,
 	message = FALSE
@@ -30,33 +31,32 @@ suppressPackageStartupMessages(library(genefilter))
 
 ## Summary
 
-All available functions which can be applied to `res_hc` object.
-
 <% same_var_name = var_name == "res_hc" -%>
 
-
-```{r, eval = <%= ifelse(same_var_name, '1:2','2:3')%>, echo = FALSE}
 <% if(!same_var_name) { -%>
-res_hc = <%=var_name%>
-<% } -%>
-res_hc = object
-res_hc
-```
 
+First the variable is renamed to `res_hc`.
 
 ```{r, eval = FALSE, echo = TRUE}
-<% if(!same_var_name) { -%>
 res_hc = <%=var_name%>
+```
 <% } -%>
+
+```{r, echo = FALSE}
+res_hc = object
+```
+
+All available functions which can be applied to `res_hc` object.
+
+```{r}
 res_hc
 ```
 
-The call for `hierarchical_partition()`:
+The call of `hierarchical_partition()` was:
 
 ```{r, echo = FALSE}
 print(res_hc@calling)
 ```
-
 
 Dimension of the input matrix:
 
@@ -65,56 +65,70 @@ mat = get_matrix(res_hc)
 dim(mat)
 ```
 
-Global distribution for each sample:
+### Density distribution
 
+The density distribution for each sample is visualized as heatmap as one column in follwing plot:
 
 ```{r, echo = FALSE, message = FALSE}
 t1 = Sys.time()
-message(qq("* making density heatmap of global distribution in each sample (@{ncol(mat)} samples)"), appendLF = FALSE)
+message(qq("* making density heatmap of global distribution for each sample (@{ncol(mat)} samples)"), appendLF = FALSE)
 ```
 
-```{r hc-density-heatmap}
+```{r density-heatmap}
 library(ComplexHeatmap)
-<% if(is.null(res_hc@list[[1]]@anno)) { -%>
+<% if(is.null(get_anno(res_hc))) { -%>
 densityHeatmap(mat, ylab = "value", cluster_columns = TRUE, show_column_names = FALSE)
 <% } else { -%>
-densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_list), 
-	col = get_anno_col(res_list)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE)
+densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hc), 
+	col = get_anno_col(res_hc)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE)
 <% } -%>
 ```
-
 
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))))
 ```
 
-
 About the hierarchy:
 
-
 ```{r}
-max_depth = max_depth(res_hc)
-max_depth
-all_nodes = all_nodes(res_hc)
-all_nodes
-all_leaves = all_leaves(res_hc)
-all_leaves
+max_depth(res_hc)
+all_nodes(res_hc)
+all_leaves(res_hc)
 ```
 
 ```{r, echo = FALSE, message = FALSE}
 message(qq("* top rows are extracted by '@{res_hc[1]@top_value_method}' method"))
 message(qq("* subgroups are detected by '@{res_hc[1]@partition_method}' method"))
-message(qq("* In total there are @{length(all_leaves)} subgroups"))
 ```
 
+### Guess best k
 
-Partitions for different depth:
+```{r, echo = FALSE, message = FALSE}
+message("* guessing best k for each node")
+```
+
+Best `k` (number of partitions) for node in the partition hierarchy:
+
+```{r, eval = FALSE}
+guess_best_k(res_hc)
+```
+
+```{r, echo = FALSE}
+tb = guess_best_k(res_hc)
+tb = cbind(node_id = paste0("Node", rownames(tb)), tb, stringsAsFactors = FALSE)
+ind = which(tb[, ncol(tb)] == "node")
+tb$node_id[ind] = qq("[@{tb$node_id[ind]}](#@{tb$node_id[ind]})", collapse = FALSE)
+colnames(tb)[ncol(tb)] = ""
+kable(tb, row.names = FALSE)
+```
+
+### Partitions
 
 <% max_depth = max_depth(res_hc) -%>
 
 ```{r, echo = FALSE, message = FALSE}
 t1 = Sys.time()
-message(qq("* collecting classifications for each depth (2..@{max_depth})"), appendLF = FALSE)
+message(qq("* collecting classifications for each depth (@{max_depth}..2)"), appendLF = FALSE)
 ```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
@@ -124,7 +138,9 @@ knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)\nget_classes(res
 knitr_insert_tabs()
 ```
 
-MDS plot:
+
+
+### PCA plot
 
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
@@ -149,33 +165,36 @@ knitr_insert_tabs()
 ```
 
 <% if(max_depth >= 2) { %>
-Signature genes and the overlap:
+
+### Signature heatmap
+
+Signature genes:
 
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making signature heatmaps"), appendLF = FALSE)
 ```
 
-```{r hc-signature-1, results = "hide"}
+```{r hc-signature, results = "hide"}
 get_signatures(res_hc)
 ```
 
-```{r hc-signature-2, results = "hide"}
-get_signatures(res_hc, plot_type = "venneuler")
+```{r, echo = FALSE, message = FALSE}
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
 
 <% } -%>
-
 
 <% has_known_anno = FALSE
 if(!is.null(res_hc@list[['0']]@anno)) { 
 has_known_anno = TRUE -%>
 
+### Test to known annotations
+
 Test correlation between subgroups and known annotations:
 
 ```{r, echo = FALSE, message = FALSE}
-t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
-message(qq("* testing correlation of subgroups to known annotations"), appendLF = FALSE)
+message(qq("* testing correlation of subgroups to known annotations"))
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
@@ -185,9 +204,6 @@ knitr_add_tab_item('test_to_known_factors(res_hc, depth = <%=depth%>)', 'depth =
 knitr_insert_tabs()
 ```
 
-```{r, echo = FALSE, message = FALSE}
-t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
-```
 
 <% } -%>
 
@@ -210,3 +226,9 @@ for(node in all_parents) {
 ```{r}
 sessionInfo()
 ```
+
+
+```{r, echo = FALSE, message = FALSE}
+message("-----------------------------------------------------------------")
+```
+

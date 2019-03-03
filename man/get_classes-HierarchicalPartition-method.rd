@@ -16,7 +16,7 @@ Get class IDs from the HierarchicalPartition object
 
 }
 \value{
-A vector of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
+A data frame of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
