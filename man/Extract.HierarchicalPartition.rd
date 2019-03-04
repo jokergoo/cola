@@ -27,5 +27,5 @@ A \code{\link{ConsensusPartition-class}} object.
 \examples{
 data(cola_rh)
 cola_rh["01"]
-cola_rh["2"]
+cola_rh[2]
 }

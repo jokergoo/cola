@@ -713,7 +713,7 @@ setMethod(f = "collect_classes",
 # == example
 # data(cola_rh)
 # cola_rh["01"]
-# cola_rh["2"]
+# cola_rh[2]
 "[.HierarchicalPartition" = function(x, i) {
 	if(length(i) > 1) {
 		stop_wrap("length of the index should only be one.")
