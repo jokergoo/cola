@@ -6,7 +6,7 @@ library(HSMMSingleCell)
 data(HSMM_expr_matrix)
 data(HSMM_sample_sheet)
 
-m = adjust(log10(HSMM_expr_matrix + 1))
+m = adjust_matrix(log10(HSMM_expr_matrix + 1))
 anno = HSMM_sample_sheet
 
 set.seed(123)

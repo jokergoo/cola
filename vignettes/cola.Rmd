@@ -613,9 +613,9 @@ the intermediate state between group 1 and group 2.
 
 Consensus partitioning is applied with a specific number of subgroups (we term
 it as $k$). Normally, a list of $k$ are tried to find the best $k$. **cola**
-provides metrics to help to determine the best number of subgroups. For the
-topic of determining best number of groups from clustering, please refer to [the
-NbClust package](https://CRAN.R-project.org/package=NbClust).
+provides metrics to help to determine the best number of subgroups. [the
+NbClust package](https://CRAN.R-project.org/package=NbClust) provides a nice
+overview of determining best number of groups from clustering.
 
 The `get_stats()` function returns statistics for all metrics mentioned below
 and `select_partition_number()` plots the statistics with the number of
@@ -1067,7 +1067,7 @@ code are enough for you.
 
 ```{r, eval = FALSE}
 # code is only for demonstration
-mat = adjust_matrix(mat) # in some datasets, you don't even need this line.
+mat = adjust_matrix(mat) # for some datasets, you don't need this line.
 rl = run_all_consensus_partition_methods(mat, mc.cores = ...)
 cola_report(rl, output_dir = ...) # Alles ist da!
 ```
@@ -1108,13 +1108,13 @@ rl
 
 The HTML report for the analysis is available at https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_cola_report/cola_report.html.
 
-## Hierarchical partition
+## Hierarchical partitioning
 
 Normal consensus partition methods aim to find $k$ subgroups at the same time. However, when
 1. there are dominant subgroups, or 2. the number of potential subgroups are large, it is 
 difficult to find secondary subgroups which show less difference with normal consensus partition
 process. To solve this problem, the subgroups can be found in a hierarchical way, where dominant
-subgroups are found first, later secondary subgroups are detected.
+subgroups are found first, and secondary subgroups are detected afterwards.
 
 **cola** package implements hierarchical partition and the flowchart is as follows.
 
@@ -1124,22 +1124,24 @@ Generally, at each recursive step, the consensus partition is performed for a
 small set of $k$ (because the final larger number of subgroups will be
 detected hierarchically) and a subset of samples, If the PAC score of the
 "best k" is less than 0.2, the samples are split into two subgroups where the
-first group contains samples with smallest intra-group mean distance and
+first group contains samples with largest distance to all other subgroups and
 the second groups are all other samples. For each of the two groups, if
-the number of samples is less than 6, the hierarchial partition stops, or it
-repeatedly performs the hierarchial partition on the subset of samples in the
+the number of samples is less than 6, the hierarchical partition stops, or it
+repeatedly performs the hierarchical partition on the subset of samples in the
 corresponding groups.
 
 Hierarchical partition is performed by `hierarchical_partition()` function.
-Here you can only use one single top-value method and a single partition
-methods.
+Note you can only use one single top-value method and a single partition
+methods here.
 
 In following example, we still use the TCGA GBM microarray datasets. The
-consensus partition which is summarized from all methods are added as an
-annotation to compare to the subgroups predicted by hierarchical partition.
+consensus partition which is summarized from all methods (from
+`run_all_consensus_partition_methods()`) are added as an annotation to compare
+to the subgroups predicted by hierarchical partition.
 
 ```{r, eval = FALSE}
 # code is only for demonstration
+library(RColorBrewer)
 rh = hierarchical_partition(mat, top_n = c(1000, 2000, 3000, 4000),
     top_value_method = "MAD", partition_method = "kmeans",
     anno = data.frame(subtype = subtype,
@@ -1157,7 +1159,7 @@ rh = readRDS("TCGA_GBM_subgroup_hierarchical_partition.rds")
 file.remove("TCGA_GBM_subgroup_hierarchical_partition.rds")
 ```
 
-Simply typing `rh` gives summary of the analysis.
+Simply typing `rh` gives the summary of the analysis.
 
 ```{r}
 rh
@@ -1165,7 +1167,7 @@ rh
 
 **cola** uses a special way to encode the node in the hierarchy. The length of
 the node name is the depth of the node in the hierarchy and the substring
-excluding the last digit is the name node of the parent node. E.g. for the
+excluding the last digit is the node name of the parent node. E.g. for the
 node `0011`, the depth is 4 and the parent node is `001`. For each node, the
 last digit represents the index of the subgroup detected in parent node. and 0
 represents all other subgroups. E.g. `02` means this node contains samples
@@ -1174,7 +1176,14 @@ which belong to subgroup 2 when doing consensus partition at node 0 (subgroup
 to other subgroups), and `00` contains samples which do not belong to subgroup
 2 at node 0.
 
-`collect_classes()` plots the hierarchial of subgroups as well as the annotations 
+On each node of the partition hierarchy, it is a `ConsensusPartition` object (note it is
+not a sub-hierarchy) and it can be retrieved by using node name as index.
+
+```{r}
+rh["00"]
+```
+
+`collect_classes()` plots the hierarchy of subgroups as well as the annotations 
 that are set before.
 
 ```{r}
@@ -1203,6 +1212,13 @@ it is very meanningful that there are two secondary subgroups in Mesenchymal sub
 get_signatures(rh["001"], k = 2)
 ```
 
+`get_sigatures()` can also be applied to the `rh` object to visualize the signature rows
+found in every node in the partition hierarchy.
+
+```{r}
+get_signatures(rh)
+```
+
 Similar as the `ConsensusPartitionList` object, `cola_report()` function
 can also be applied to this `HierarchicalPartition` object. The full report
 for `rh` can be found at https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_hierarchical_partition_cola_report/cola_hc.html.
@@ -1211,6 +1227,16 @@ for `rh` can be found at https://jokergoo.github.io/cola_examples/TCGA_GBM_subgr
 # code is only for demonstration
 cola_report(rh, output_dir = "~/your-output-folder/tcga_cola_rh_report")
 ```
+
+Following functions can be applied to the `HierarchicalPartition` class:
+
+- `cola_report()`: Generate a HTML report for the complete analysis.
+- `collect_classes()`: Make heatmaps for the hierarchical partition.
+- `dimension_reduction()`: Make PCA plot.
+- `get_classes()`: Get class labels at a specific depth of the hierarchy.
+- `get_signatures()`: Make the heatmap for the signatures. 
+- `test_to_known_factors()`: Apply tests to the annotations if provides. The test will be Fisher's exact test or ANOVA depending on the data type of the annotation.
+
 
 ## Session info
 

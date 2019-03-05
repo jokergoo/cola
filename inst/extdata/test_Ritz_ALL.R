@@ -7,7 +7,7 @@ data(ALL)
 m = exprs(ALL)
 anno = pData(ALL)
 
-m = adjust(m)
+m = adjust_matrix(m)
 
 library(preprocessCore)
 cn = colnames(m)
