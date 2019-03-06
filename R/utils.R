@@ -268,3 +268,20 @@ message_wrap = function (...) {
     x = paste(strwrap(x), collapse = "\n")
     message(x)
 }
+
+# http://conjugateprior.org/2015/06/identifying-the-os-from-r/
+os_type <- function() {
+  sysinf <- Sys.info()
+  if (!is.null(sysinf)){
+    os <- sysinf['sysname']
+    if (os == 'Darwin')
+      os <- "OSX"
+  } else {
+    os <- .Platform$OS.type
+    if (grepl("^darwin", R.version$os))
+      os <- "OSX"
+    if (grepl("linux-gnu", R.version$os))
+      os <- "linux"
+  }
+  tolower(os)
+}

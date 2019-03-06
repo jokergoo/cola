@@ -10,9 +10,9 @@ Method dispatch page for \code{get_classes}.
 \code{get_classes} can be dispatched on following classes:
 
 \itemize{
+\item \code{\link{get_classes,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 \item \code{\link{get_classes,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{get_classes,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
-\item \code{\link{get_classes,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 }
 }
 \examples{

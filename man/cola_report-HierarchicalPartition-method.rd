@@ -7,12 +7,13 @@ Make HTML report from the HierarchicalPartition object
 Make HTML report from the HierarchicalPartition object
 }
 \usage{
-\S4method{cola_report}{HierarchicalPartition}(object, output_dir, env = parent.frame())
+\S4method{cola_report}{HierarchicalPartition}(object, output_dir, mc.cores = 1, env = parent.frame())
 }
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
   \item{output_dir}{the output directory where the report is put.}
+  \item{mc.cores}{number of cores. On OSX it is enforced to be 1.}
   \item{env}{where the objects in the report are found, internally used.}
 
 }

@@ -209,17 +209,26 @@ knitr_insert_tabs()
 
 ## Results for each node
 
-<%
+<% 
 is_hc = TRUE
 fs = 2
 all_k = res_hc@list[[1]]@k
 all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
 n_section = length(all_parents)
 i_section = 0
-for(node in all_parents) {
-	i_section = i_section + 1 -%>
-	<% brew(paste0(TEMPLATE_DIR, "/section_template.Rmd-template")) %>
-<%} -%>
+if(os_type() == "OSX") {
+	mc.cores = 1
+}
+frag_list = parallel::mclapply(seq_along(all_parents), function(ind) {
+	i_section = ind
+	node = all_parent[ind]
+	brew(paste0(TEMPLATE_DIR, "/section_template.Rmd-template"))
+}, mc.cores = mc.cores)
+
+for(i in seq_along(frag_list)) { -%>
+    <% frag_list[[i]] %>
+<% } -%>
+
 
 ## Session info
 

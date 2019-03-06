@@ -1,6 +1,7 @@
 Changes in version 0.99.12
 + implement get_consensus_matrix() by C++
 + add regiester_NMF() and register_SOM()
++ support multiple cores for report generation
 
 Changes in version 0.99.9
 + move TEMPLATE_DIR to `.onLoad()`.

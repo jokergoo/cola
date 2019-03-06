@@ -154,7 +154,7 @@ n_method = n_top_value_method * n_partition_method
 for(k in all_k) { -%>
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - consensus heamtaps for all methods (k = <%=k%>)", appendLF = FALSE)
-knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = consensus_heatmap)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"')
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = consensus_heatmap, mc.cores = <%=mc.cores%>)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"')
 <% } -%>
 knitr_insert_tabs()
 ```
@@ -172,7 +172,7 @@ Membership heatmaps for all methods:
 <% for(k in all_k) { -%>
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - membership heamtap for all methods (k = <%=k%>)", appendLF = FALSE)
-knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = membership_heatmap)', 'k = <%=k%>', opt = 'fig.width =<%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"')
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = membership_heatmap, mc.cores = <%=mc.cores%>)', 'k = <%=k%>', opt = 'fig.width =<%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -190,7 +190,7 @@ Signature heatmaps for all methods:
 <% for(k in all_k) { -%>
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - signature heamtap for all methods (k = <%=k%>)", appendLF = FALSE)
-knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = get_signatures)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"')
+knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = get_signatures, mc.cores = <%=mc.cores%>)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -315,12 +315,20 @@ knitr_insert_tabs()
 is_hc = FALSE
 n_section = n_top_value_method * n_partition_method
 i_section = 0
-for(top_value_method in res_list@top_value_method) {
-    for(partition_method in res_list@partition_method) { 
-    	i_section = i_section + 1 -%>
-    	<% brew(paste0(TEMPLATE_DIR, "/section_template.Rmd-template")) %>
+comb = expand.grid(res_list@partition_method, res_list@top_value_method, stringsAsFactors = FALSE)[, 2:1]
+if(os_type() == "OSX") {
+	mc.cores = 1
+}
+frag_list = parallel::mclapply(seq_len(nrow(comb)), function(ind) {
+	i_section = ind
+	top_value_method = comb[ind, 1]
+	partition_method = comb[ind, 2]
+	brew(paste0(TEMPLATE_DIR, "/section_template.Rmd-template"))
+}, mc.cores = mc.cores)
 
-<% }} -%>
+for(i in seq_along(frag_list)) { -%>
+    <% frag_list[[i]] %>
+<% } -%>
 
 ## Session info
 

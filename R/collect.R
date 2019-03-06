@@ -10,6 +10,7 @@
 # -top_value_method a vector of top-value methods.
 # -partition_method a vector of partition methods.
 # -verbose whether to print message.
+# -mc.cores number of cores. On OSX it is enforced to be 1.
 # -... other arguments passed to corresponding ``fun``.
 #
 # == details
@@ -38,7 +39,7 @@ setMethod(f = "collect_plots",
 	definition = function(object, k = 2, fun = consensus_heatmap,
 	top_value_method = object@top_value_method, 
 	partition_method = object@partition_method, 
-	verbose = TRUE, ...) {
+	verbose = TRUE, mc.cores = 1, ...) {
 
 	nv = length(dev.list())
 	op = cola_opt$raster_resize
@@ -74,62 +75,68 @@ setMethod(f = "collect_plots",
 	    upViewport()
 	}
 	
-	highlight_row = NULL
-	highlight_col = NULL
-	for(i in seq_along(top_value_method)) {
-	    for(j in seq_along(partition_method)) {
-	    	if(verbose) qqcat("* applying @{fun_name}() for @{top_value_method[i]}:@{partition_method[j]}.\n")
-	    	res = object[top_value_method[i], partition_method[j]]
-	    	# if(!missing(k)) {
-		    # 	if(get_stats(res, k = k)[, "PAC"] < 0.05) {
-		    # 		highlight_row = c(highlight_row, i + 1)
-		    # 		highlight_col = c(highlight_col, j + 1)
-		    # 	}
-		    # }
-	    	pushViewport(viewport(layout.pos.row = i + 1, layout.pos.col = j + 1))
-	    	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
-    		# image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
-    		image_width = 800
-    		image_height = 800
-			if(is.null(.ENV$TEMP_DIR)) {
-				file_name = tempfile(fileext = ".png", tmpdir = ".")
-		        png(file_name, width = image_width, height = image_height)
-		        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, verbose = FALSE, ...))
+	comb = expand.grid(seq_along(top_value_method), seq_along(partition_method))
+	comb = comb[order(comb[, 1], comb[, 2]), , drop = FALSE]
+
+	if(os_type() == "OSX") {
+		mc.cores = 1
+	}
+	image = mclapply(seq_len(nrow(comb)), function(ind, ...) {
+		i = comb[ind, 1]
+		j = comb[ind, 2]
+
+		if(verbose) qqcat("* applying @{fun_name}() for @{top_value_method[i]}:@{partition_method[j]}.\n")
+	    res = object[top_value_method[i], partition_method[j]]
+
+    	image_width = 800
+		image_height = 800
+		if(is.null(.ENV$TEMP_DIR)) {
+			file_name = tempfile(fileext = ".png", tmpdir = ".")
+	        png(file_name, width = image_width, height = image_height)
+	        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, verbose = FALSE, ...), silent = TRUE)
+	        dev.off2()
+	        if(!inherits(oe, "try-error")) {
+				return(structure(file_name, cache = FALSE))
+		    } else {
+		    	return(structure(NA, error = oe))
+		    }
+		} else {
+			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png"))
+			if(file.exists(file_name)) {
+				if(verbose) qqcat("  - use cache png: @{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png.\n")
+				return(structure(file_name, cache = TRUE))
+			} else {
+				png(file_name, width = image_width, height = image_height)
+		        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...), silent = TRUE)
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
-					grid.raster(readPNG(file_name))
+					return(structure(file_name, cache = TRUE))
 			    } else {
-			    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}.\n")
+			    	return(structure(NA, error = oe))
 			    }
-			    if(file.exists(file_name)) file.remove(file_name)
-			} else {
-				file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png"))
-				if(file.exists(file_name)) {
-					if(verbose) qqcat("  - use cache png: @{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png.\n")
-					grid.raster(readPNG(file_name))
-				} else {
-					png(file_name, width = image_width, height = image_height)
-			        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...))
-			        dev.off2()
-			        if(!inherits(oe, "try-error")) {
-						grid.raster(readPNG(file_name))
-				    } else {
-				    	qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{oe}.\n")
-				    }
-				}
 			}
-			
-		    grid.rect(gp = gpar(fill = "transparent", col = "black"))
-		    upViewport()
-	    }
+		}
+	}, mc.cores = mc.cores, ...)
+
+	for(ind in seq_len(nrow(comb))) {
+		i = comb[ind, 1]
+		j = comb[ind, 2]
+
+    	pushViewport(viewport(layout.pos.row = i + 1, layout.pos.col = j + 1))
+    	if(is.na(image[[ind]])) {
+    		qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{attr(image[[ind]], 'error')}\n")
+    	} else {
+    		# if(verbose) qqcat("  - reading @{image[[ind]]}\n")
+			grid.raster(readPNG(image[[ind]]))
+			if(!attr(image[[ind]], "cache")) {
+				file.remove(image[[ind]])
+				# if(verbose) qqcat("  - removing @{image[[ind]]}\n")
+			}
+		}
+		
+	    grid.rect(gp = gpar(fill = "transparent", col = "black"))
+	    upViewport()
 	}
-	# if(!missing(k)) {
-	# 	for(i in seq_along(highlight_row)) {
-	# 		pushViewport(viewport(layout.pos.row = highlight_row[i], layout.pos.col = highlight_col[i]))
-	# 		grid.rect(gp = gpar(fill = "transparent", col = "red", lwd = 2))
-	# 		upViewport()
-	# 	}
-	# }
 
 	upViewport()
 	upViewport()
