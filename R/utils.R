@@ -283,5 +283,5 @@ os_type <- function() {
     if (grepl("linux-gnu", R.version$os))
       os <- "linux"
   }
-  tolower(os)
+  return(os)
 }
