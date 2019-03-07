@@ -21,6 +21,7 @@ consensus_partition(data,
     anno_col = NULL,
     scale_rows = NULL,
     verbose = TRUE,
+    mc.cores = 1,
     .env = NULL)
 }
 \arguments{
@@ -37,6 +38,7 @@ consensus_partition(data,
   \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{scale_rows}{whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
   \item{verbose}{whether print messages.}
+  \item{mc.cores}{multiple cores to use.}
   \item{.env}{an environment, internally used.}
 
 }

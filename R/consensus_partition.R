@@ -21,6 +21,7 @@
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
 # -verbose whether print messages.
+# -mc.cores multiple cores to use.
 # -.env an environment, internally used.
 #
 # == details
@@ -70,6 +71,7 @@ consensus_partition = function(data,
 	anno_col = NULL,
 	scale_rows = NULL,
 	verbose = TRUE,
+	mc.cores = 1,
 	.env = NULL) {
 
 	if(missing(data)) {
@@ -94,6 +96,7 @@ consensus_partition = function(data,
 		anno_col = anno_col,
 		scale_rows = scale_rows,
 		verbose = verbose,
+		mc.cores = mc.cores,
 		.env = .env))
 	res@running_time = t[["elapsed"]]
 	return(res)
@@ -114,6 +117,7 @@ consensus_partition = function(data,
 	anno_col = NULL,
 	scale_rows = NULL,
 	verbose = TRUE,
+	mc.cores = 1,
 	.env = NULL) {
 
 	# .env is used to store shared matrix because the matrix will be used multiple times in
@@ -121,6 +125,8 @@ consensus_partition = function(data,
 	# copy it multiple times
 	# `column_index` is specifically for hierarchical_partition() where in each level only a subset
 	# of columns in the original matrix is used
+	# .env$column_index is only used to pass secret column_index parameter, 
+	# the real column_index is stored as a slot in this object.
 	if(is.null(.env)) {
 		if(is.data.frame(data)) data = as.matrix(data)
 		# if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
@@ -166,9 +172,6 @@ consensus_partition = function(data,
 	partition_fun = get_partition_method(partition_method, partition_param)
 
 	get_top_value_fun = get_top_value_method(top_value_method)
-
-	param = data.frame(top_n = numeric(0), k = numeric(0), n_row = numeric(0))
-	partition_list = list()
 
 	# also since one top value metric will be used for different partition methods,
 	# we cache the top values for repetitive use
@@ -226,6 +229,9 @@ consensus_partition = function(data,
 	}
 
 	# now we do repetitive clustering
+	param = data.frame(top_n = numeric(0), k = numeric(0), n_row = numeric(0))
+	partition_list = list()
+
 	sample_by = match.arg(sample_by)[1]
 	for(i in seq_len(length(top_n))) {
 		ind = order(all_top_value, decreasing = TRUE)[ 1:top_n[i] ]
@@ -237,7 +243,13 @@ consensus_partition = function(data,
 			if(verbose) qqcat("* get top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
-		for(j in seq_len(partition_repeat)) {
+		if(verbose && mc.cores > 1) qqcat("  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
+
+		lt = mclapply(seq_len(partition_repeat), function(j) {
+
+			param = data.frame(top_n = numeric(0), k = numeric(0), n_row = numeric(0))
+			partition_list = list()
+			
 			if(sample_by == "row") {
 				ind_sub = sample(ind, round(p_sampling*length(ind)))
 				mat = data[ind_sub, , drop = FALSE]
@@ -247,11 +259,17 @@ consensus_partition = function(data,
 				mat = data[ind, , drop = FALSE]
 			}
 			for(y in k) {
-				if(interactive() && verbose) cat(strrep("\b", 100))
-				if(interactive() && verbose) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
+				if(interactive() && verbose && mc.cores == 1) cat(strrep("\b", 100))
+				if(interactive() && verbose && mc.cores == 1) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
 				partition_list = c(partition_list, list(list(partition_fun(mat, y, column_ind_sub))))
 				param = rbind(param, data.frame(top_n = top_n[i], k = y, n_row = nrow(mat), n_col = ncol(mat), stringsAsFactors = FALSE))
 			}
+
+			return(list(param = param, partition_list = partition_list))
+		}, mc.cores = mc.cores)
+		for(i in seq_along(lt)) {
+			param = rbind(param, lt[[i]]$param)
+			partition_list = c(partition_list, lt[[i]]$partition_list)
 		}
 		if(interactive() && verbose) cat("\n")
 	}
@@ -525,7 +543,7 @@ consensus_partition = function(data,
 	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n) * length(k),  
 		partition_method = partition_method, top_value_method = top_value_method, top_n = top_n,
 		anno = anno, anno_col = anno_col, scale_rows = scale_rows, column_index = .env$column_index, .env = .env)
-	
+
 	return(res)
 }
 

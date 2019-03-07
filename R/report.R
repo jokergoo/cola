@@ -342,7 +342,7 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 <div id='toc'></div>
 <style>
 #toc {
-	height: 110%;
+  height: 110%;
 }
 .tocify-subheader {
     text-indent: 10px;
@@ -357,11 +357,17 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
     color: #ffffff;
     background-color: #0080FF;
 }
-.tocify ul:hover {
-	background-color: #EFEFEF;
+.active a {
+    color: #ffffff;
+}
+.tocify li {
+  padding: 4px 2px;
 }
 .tocify li:hover {
-	background-color: #EFEFEF;
+  background-color: #EFEFEF;
+}
+.tocify li:hover a  {
+  color: #0366d6;
 }
 </style>
 <script>

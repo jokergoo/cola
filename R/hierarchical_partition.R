@@ -46,6 +46,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
+# -verbose whether print message.
+# -mc.cores multiple cores to use. 
 # -... pass to `consensus_partition`
 #
 # == details
@@ -80,44 +82,26 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # data(cola_rh)
 # cola_rh
 hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
-	concordance_cutoff = 0.9, PAC_cutoff = 0.2, min_samples = 6, max_k = 4, ...) {
+	concordance_cutoff = 0.9, PAC_cutoff = 0.2, min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
 	cl = match.call()
 	
-	.h_obj = new.env()
-	.h_obj$hierarchy = matrix(nrow = 0, ncol = 2)
-	.h_obj$list = list()
-	.h_obj$subgroup = rep("", ncol(data))
-
 	.hierarchical_partition = function(.env, column_index, concordance_cutoff = 0.9, node_id = '0', 
-		parent = NULL, min_samples = 6, max_k = 4, ...) {
+		min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
-		if(node_id != "0") {
-			cat("\n")
-			.h_obj$hierarchy = rbind(.h_obj$hierarchy, c(parent, node_id))
-		}
-		qqcat("* submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
+		if(verbose) cat("=========================================================\n")
+		if(verbose) qqcat("* submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
+		## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
 	   	.env$all_top_value_list = NULL
-	   	.env$column_index = column_index
+	   	.env$column_index = column_index  #note .env$column_index is only for passing to `consensus_partition()` function
 		part = consensus_partition(verbose = FALSE, .env = .env, max_k = max_k, 
-			top_value_method = top_value_method, partition_method = partition_method, ...)
+			top_value_method = top_value_method, partition_method = partition_method, mc.cores = mc.cores, ...)
+		attr(part, "node_id") = node_id
 
-	    .h_obj$list[[node_id]] = part
-	    .h_obj$subgroup[column_index] = node_id
+		lt = list(obj = part)
 
 	    best_k = guess_best_k(part)
 	    cl = get_classes(part, k = best_k)
-	    .h_obj$best_k[node_id] = best_k
-
-		# oe = try(sig <- get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE))
-		# if(inherits(oe, "try-error")) {
-		# 	cat("caught an error, stop.\n")
-		# 	return(NULL)
-		# }
-		# if(length(sig$group) < 100) {
-		# 	qqcat("Number of signatures are too small (< 100), stop.\n")
-		# 	return(NULL)
-		# }
 
 	    mat = .env$data[, column_index, drop = FALSE]
 	    if(part@scale_rows) {
@@ -129,54 +113,79 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	    set2 = which(cl$class != s)
 	    .env$all_top_value_list = NULL
 
-	    qqcat("* best k = @{best_k}, the farthest subgroup: @{s}\n")
+	    if(verbose) qqcat("* best k = @{best_k}, the farthest subgroup: @{s}\n")
 		PAC_score = get_stats(part, k = best_k)[, "PAC"]
 	    if(PAC_score > PAC_cutoff) {
-	    	qqcat("* PAC score is too big @{sprintf('%.2f', PAC_score)}, stop.\n")
-	    	return(NULL)
+	    	if(verbose) qqcat("* PAC score is too big @{sprintf('%.2f', PAC_score)}, stop.\n")
+	    	return(lt)
 	    }
 
-	    # dist_decrease = mean_dist_decrease(mat, set1, set2)
-	    # if(dist_decrease < reduce) {
-	    # 	qqcat("mean distance does not decrease too much @{dist_decrease}, stop.\n")
-	    # 	return(NULL)
-	    # } else {
+    	if(length(set1) <= min_samples || length(set2) <= min_samples) {
+    		if(verbose) cat("* subgroups have too few columns, stop.\n")
+    		return(lt)
+    	}
 
-	    	if(length(set1) <= min_samples || length(set2) <= min_samples) {
-	    		cat("* subgroups have too few columns, stop.\n")
-	    		return(NULL)
+    	if(verbose) qqcat("* partitioned into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
+    	# insert the two subgroups into the hierarchy
+    	sub_node_1 = paste0(node_id, s)
+    	sub_node_2 = paste0(node_id, "0")
+
+    	lt2 = lapply(1:2, function(ind) {
+	    	if(length(set1) > min_samples && ind == 1) {
+	    		return(.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1,
+	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
 
-	    	qqcat("* partitioned into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
-	    	# insert the two subgroups into the hierarchy
-	    	sub_node_1 = paste0(node_id, s)
-	    	sub_node_2 = paste0(node_id, "0")
-
-	    	if(length(set1) > min_samples) {
-	    		.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1, parent = node_id,
-	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, ...)
+	    	if(length(set2) > min_samples && ind == 2) {
+	    		return(.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2,
+	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
 
-	    	if(length(set2) > min_samples) {
-	    		.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2, parent = node_id,
-	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, ...)
-	    	}
-	    	
-	    # }
+	    	return(NULL)
+	    })
 
-	    return(NULL)
+	    if(!is.null(lt2[[1]])) lt$child1 = lt2[[1]]
+	    if(!is.null(lt2[[2]])) lt$child2 = lt2[[2]]
+
+	    return(lt)
 	}
 
 	.env = new.env()
 	.env$data = data
-	.hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), concordance_cutoff = concordance_cutoff, min_samples = min_samples, 
-		node_id = "0", parent = NULL, max_k = max_k, ...)
+	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), concordance_cutoff = concordance_cutoff, min_samples = min_samples, 
+		node_id = "0", max_k = max_k, verbose = verbose, mc.cores = mc.cores, ...)
+
+	# reformat lt
+	.e = new.env()
+	.e$hierarchy = matrix(nrow = 0, ncol = 2)
+	.e$lt = list()
+	reformat_lt = function(lt, .e) {
+		nm = names(lt)
+		parent_id = attr(lt$obj, "node_id")
+		.e$lt[[parent_id]] = lt$obj
+		if("child1" %in% nm) {
+			child_id = attr(lt$child1$obj, "node_id")
+			.e$hierarchy = rbind(.e$hierarchy, c(parent_id, child_id))
+			reformat_lt(lt$child1, .e)
+		}
+		if("child2" %in% nm) {
+			child_id = attr(lt$child2$obj, "node_id")
+			.e$hierarchy = rbind(.e$hierarchy, c(parent_id, child_id))
+			reformat_lt(lt$child2, .e)
+		}
+	}
+	reformat_lt(lt, .e)
 
 	hp = new("HierarchicalPartition")
-	hp@hierarchy = .h_obj$hierarchy
-	hp@list = .h_obj$list
-	hp@best_k = .h_obj$best_k
-	hp@subgroup = .h_obj$subgroup
+	hp@hierarchy = .e$hierarchy
+	hp@list = .e$lt
+	hp@best_k = sapply(.e$lt, guess_best_k)
+	leaves = all_leaves(hp)
+	subgroup = rep(NA, ncol(data))
+	for(le in leaves) {
+		subgroup[ .e$lt[[le]]@column_index ] = le
+	}
+	hp@subgroup = subgroup
 	names(hp@subgroup) = colnames(data)
 
 	le = unique(as.vector(hp@hierarchy))
@@ -186,7 +195,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 		hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
 	}
 	hp@calling = cl
-	hp@.env = .h_obj$list[[1]]@.env
+	hp@.env = hp@list[[1]]@.env
 
 	return(hp)
 }

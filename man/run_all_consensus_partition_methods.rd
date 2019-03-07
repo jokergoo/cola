@@ -15,7 +15,8 @@ run_all_consensus_partition_methods(data,
     min(5000, round(nrow(data)*0.5)),
     length.out = 5),
     mc.cores = 1, anno = NULL, anno_col = NULL,
-    p_sampling = 0.8, partition_repeat = 50, scale_rows = NULL)
+    p_sampling = 0.8, partition_repeat = 50, scale_rows = NULL,
+    verbose = TRUE)
 }
 \arguments{
 
@@ -30,6 +31,7 @@ run_all_consensus_partition_methods(data,
   \item{p_sampling}{proportion of the top n rows to sample.}
   \item{partition_repeat}{number of repeats for the random sampling.}
   \item{scale_rows}{whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
+  \item{verbose}{whether print messages.}
 
 }
 \details{
