@@ -66,6 +66,7 @@ h6 {
 
 a {
   text-decoration: none;
+  color: #0080FF;
 }
 
 a:hover {
@@ -73,7 +74,7 @@ a:hover {
 }
 
 a:visited {
-   color: rgb(50%, 0%, 50%);
+   color: #0080FF;
 }
 
 pre, img {

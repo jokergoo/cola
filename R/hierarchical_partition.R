@@ -606,7 +606,7 @@ setMethod(f = "get_signatures",
 	if(verbose) qqcat("* making heatmaps for signatures\n")
 
 	ha1 = HeatmapAnnotation(
-		class = class,
+		Class = class,
 		col = list(class = object@subgroup_col))
 
 	dend = cluster_within_group(use_mat1, class)

@@ -341,6 +341,9 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 <script src='js/jquery.tocify.min.js'></script>
 <div id='toc'></div>
 <style>
+#toc {
+	height: 110%;
+}
 .tocify-subheader {
     text-indent: 10px;
 }
@@ -353,6 +356,12 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 .active {
     color: #ffffff;
     background-color: #0080FF;
+}
+.tocify ul:hover {
+	background-color: #EFEFEF;
+}
+.tocify li:hover {
+	background-color: #EFEFEF;
 }
 </style>
 <script>
