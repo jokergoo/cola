@@ -7,13 +7,12 @@ Make HTML report from the ConsensusPartitionList object
 Make HTML report from the ConsensusPartitionList object
 }
 \usage{
-\S4method{cola_report}{ConsensusPartitionList}(object, output_dir = getwd(), mc.cores = 1, env = parent.frame())
+\S4method{cola_report}{ConsensusPartitionList}(object, output_dir = getwd(), env = parent.frame())
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
   \item{output_dir}{the output directory where the report is put.}
-  \item{mc.cores}{number of cores. On OSX it is enforced to be 1.}
   \item{env}{where the objects in the report are found, internally used.}
 
 }

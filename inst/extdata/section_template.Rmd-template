@@ -19,11 +19,9 @@ if(is_hc) {
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
 <% } %>
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 message("-----------------------------------------------------------------")
 ```
-<% } -%>
 
 
 <% if(is_hc) { -%>
@@ -36,7 +34,7 @@ message("* generating plots for <%=top_value_method%>:<%=partition_method%> (<%=
 ```
 <% } -%>
 
-The object with results only for a single top value method and a single partition method 
+The object with results only for a single top-value method and a single partition method 
 can be extracted as:
 
 ```{r}
@@ -58,12 +56,10 @@ res
 `collect_plots()` function collects all the plots made from `res` for all `k` (number of partitions)
 into one single page to provide an easy and fast comparison between different `k`.
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 t1 = Sys.time()
 message("  - collecting all plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
-<% } -%>
 
 The plots are:
 
@@ -92,12 +88,10 @@ collect_plots(res)
 
 Generally speaking, higher cophenetic correlation coefficient, lower PAC score, higher mean silhouette score or higher concordance corresponds to better partition. Rand index and Jaccard index measure how similar the current partition is compared to partition with `k-1`. If they are too similar, we won't accept `k` is better than `k-1`.
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - plotting various statistics for selecting best k", appendLF = FALSE)
 ```
-<% } -%>
 
 ```{r <%=chunk_prefix%>-select-partition-number, results = "hide", fig.width = 10}
 select_partition_number(res)
@@ -138,12 +132,10 @@ knitr_insert_tabs()
 
 Heatmaps for the consensus matrix:
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - making consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
-<% } -%>
 
 ```{r <%=chunk_prefix%>-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -154,12 +146,10 @@ knitr_insert_tabs()
 
 Heatmaps for the membership of samples in all partitions to see how consistent they are:
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
-<% } -%>
 
 ```{r <%=chunk_prefix%>-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -173,12 +163,10 @@ different between classes which can be candidate marks for certain classes.
 
 Heatmaps for signatures:
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
-<% } -%>
 
 ```{r <%=chunk_prefix%>-signature, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -196,12 +184,10 @@ knitr_insert_tabs()
 
 PCA plots:
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - making PCA plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
-<% } -%>
 
 ```{r <%=chunk_prefix%>-mds, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -210,12 +196,10 @@ knitr_add_tab_item('dimension_reduction(res, k = <%=k%>)', 'k = <%=k%>')
 knitr_insert_tabs()
 ```
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - collecting classifications for all k", appendLF = FALSE)
 ```
-<% } -%>
 
 How subgroups split when increasing `k`:
 
@@ -225,12 +209,10 @@ collect_classes(res)
 
 <% if(has_known_anno) { %>
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("  - testing correlation of subgroups to known annotations"), appendLF = FALSE)
 ```
-<% } -%>
 	
 Test to known annotations:
 
@@ -238,11 +220,9 @@ Test to known annotations:
 test_to_known_factors(res)
 ```
 
-<% if(mc.cores == 1) { -%>
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
-<% } -%>
 
 <%} else {-%>
 ```{r, echo = FALSE, message = FALSE}

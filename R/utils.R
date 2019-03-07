@@ -283,5 +283,9 @@ os_type <- function() {
     if (grepl("linux-gnu", R.version$os))
       os <- "linux"
   }
-  return(os)
+  tolower(os)
+}
+
+multicore_supported = function() {
+	!(os_type() %in% c("osx", "windows"))
 }

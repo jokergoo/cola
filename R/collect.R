@@ -78,7 +78,8 @@ setMethod(f = "collect_plots",
 	comb = expand.grid(seq_along(top_value_method), seq_along(partition_method))
 	comb = comb[order(comb[, 1], comb[, 2]), , drop = FALSE]
 
-	if(os_type() == "OSX") {
+	if(!multicore_supported()) {
+		if(mc.cores > 1 && verbose) qqcat("* mc.cores is reset to 1 because mclapply() is not supported on this OS.\n")
 		mc.cores = 1
 	}
 	image = mclapply(seq_len(nrow(comb)), function(ind, ...) {

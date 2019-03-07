@@ -127,7 +127,6 @@ $( function() {
 # == param
 # -object a `ConsensusPartitionList-class` object.
 # -output_dir the output directory where the report is put.
-# -mc.cores number of cores. On OSX it is enforced to be 1.
 # -env where the objects in the report are found, internally used.
 #
 # == details
@@ -152,13 +151,13 @@ $( function() {
 # }
 setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
-	definition = function(object, output_dir = getwd(), mc.cores = 1, env = parent.frame()) {
+	definition = function(object, output_dir = getwd(), env = parent.frame()) {
 
 	if(!requireNamespace("genefilter")) {
 		stop_wrap("You need to install genefilter package (from Bioconductor).")
 	}
 	var_name = deparse(substitute(object, env = env))
-	make_report(var_name, object, output_dir, mc.cores = mc.cores, class = "ConsensusPartitionList")
+	make_report(var_name, object, output_dir, class = "ConsensusPartitionList")
 
 })
 
@@ -203,7 +202,6 @@ setMethod(f = "cola_report",
 # == param
 # -object a `HierarchicalPartition-class` object.
 # -output_dir the output directory where the report is put.
-# -mc.cores number of cores. On OSX it is enforced to be 1.
 # -env where the objects in the report are found, internally used.
 #
 # == details
@@ -223,7 +221,7 @@ setMethod(f = "cola_report",
 # }
 setMethod(f = "cola_report",
 	signature = "HierarchicalPartition",
-	definition = function(object, output_dir, mc.cores = 1, env = parent.frame()) {
+	definition = function(object, output_dir, env = parent.frame()) {
 
 	if(nrow(object@hierarchy) == 1) {
 		cat("No hierarchy detected, won't generate the report.\n")
@@ -237,16 +235,12 @@ setMethod(f = "cola_report",
 		stop_wrap("You need to install data.tree package (from CRAN).")
 	}
 	var_name = deparse(substitute(object, env = env))
-	make_report(var_name, object, output_dir, mc.cores = mc.cores, class = "HierarchicalPartition")
+	make_report(var_name, object, output_dir, class = "HierarchicalPartition")
 
 })
 
 
-make_report = function(var_name, object, output_dir, mc.cores = 1, class = class(object)) {
-
-	if(os_type() == "OSX") {
-		mc.cores = 1
-	}
+make_report = function(var_name, object, output_dir, class = class(object)) {
 
 	.t1 = Sys.time()
 	template_file = c("HierarchicalPartition" = "cola_hc_template.Rmd-template",
