@@ -7,7 +7,7 @@ data(HSMM_sample_sheet)
 
 # `HSMM_expr_matrix` is a FPKM matrix
 m = adjust_matrix(log10(HSMM_expr_matrix + 1))
-anno = HSMM_sample_sheet
+anno = HSMM_sample_sheet[, c("Hours", "Media", "Pseudotime", "State")]
 
 
 set.seed(123)

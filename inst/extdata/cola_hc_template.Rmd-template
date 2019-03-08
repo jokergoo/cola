@@ -134,14 +134,14 @@ message(qq("* collecting classifications for each depth (@{max_depth}..2)"), app
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
+knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'collect-classes-from-hierarchical-partition')
 <% } -%>
 knitr_insert_tabs()
 ```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('get_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
+knitr_add_tab_item('get_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'get-classes-from-hierarchical-partition')
 <% } -%>
 knitr_insert_tabs()
 ```
@@ -156,7 +156,7 @@ message(qq("* making PCA plots"), appendLF = FALSE)
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
+knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'dimension-reduction-by-depth')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -166,7 +166,7 @@ Or you can also do it for each parent node:
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
 for(p in all_parents) { -%>
-knitr_add_tab_item('dimension_reduction(res_hc, parent_node = "<%=p%>")', 'parent_node = "<%=p%>"')
+knitr_add_tab_item('dimension_reduction(res_hc, parent_node = "<%=p%>")', 'parent_node = "<%=p%>"', prefix = 'dimension-reduction-by-node')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -206,7 +206,7 @@ message(qq("* testing correlation of subgroups to known annotations"))
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('test_to_known_factors(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>')
+knitr_add_tab_item('test_to_known_factors(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
 <%}-%>
 knitr_insert_tabs()
 ```

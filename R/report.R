@@ -5,7 +5,7 @@ KNITR_TAB_ENV$current_tab_index = 0
 KNITR_TAB_ENV$current_div_index = 0
 KNITR_TAB_ENV$header = NULL
 KNITR_TAB_ENV$current_html = ""
-KNITR_TAB_ENV$random_str = round(runif(1, min = 1, max = 1e8))
+KNITR_TAB_ENV$prefix = NULL
 KNITR_TAB_ENV$css_added = FALSE
 
 # == title
@@ -31,9 +31,17 @@ KNITR_TAB_ENV$css_added = FALSE
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
-knitr_add_tab_item = function(code, header, desc = "", opt = NULL, message = NULL) {
+knitr_add_tab_item = function(code, header, prefix, desc = "", opt = NULL, message = NULL) {
+
 	KNITR_TAB_ENV$current_tab_index = KNITR_TAB_ENV$current_tab_index + 1
-	tab = qq("tab-@{KNITR_TAB_ENV$random_str}-@{KNITR_TAB_ENV$current_tab_index}")
+	tab = qq("tab-@{prefix}-@{KNITR_TAB_ENV$current_tab_index}")
+	if(!is.null(KNITR_TAB_ENV$prefix)) {
+		if(KNITR_TAB_ENV$prefix != prefix) {
+			stop_wrap("prefix should be the same as the previous one.")
+		}
+	}
+	KNITR_TAB_ENV$prefix = prefix
+
 	knitr_text = qq(
 "@{strrep('`', 3)}{r @{tab}@{ifelse(is.null(opt), '', paste0(', ', opt))}}
 @{code}
@@ -107,7 +115,7 @@ $( function() {
 ")
 	qqcat("<div id='tabs@{KNITR_TAB_ENV$current_div_index}'>\n")
 	cat("<ul>\n")
-	qqcat("<li><a href='#tab-@{KNITR_TAB_ENV$random_str}-@{seq_len(KNITR_TAB_ENV$current_tab_index)}'>@{KNITR_TAB_ENV$header}</a></li>\n")
+	qqcat("<li><a href='#tab-@{KNITR_TAB_ENV$prefix}-@{seq_len(KNITR_TAB_ENV$current_tab_index)}'>@{KNITR_TAB_ENV$header}</a></li>\n")
 	cat("</ul>\n")
 	cat(KNITR_TAB_ENV$current_html)
 	cat("</div>\n")
@@ -115,7 +123,7 @@ $( function() {
 	KNITR_TAB_ENV$current_tab_index = 0
 	KNITR_TAB_ENV$header = NULL
 	KNITR_TAB_ENV$current_html = ""
-	KNITR_TAB_ENV$random_str = round(runif(1, min = 1, max = 1e8))
+	KNITR_TAB_ENV$prefix = NULL
 	KNITR_TAB_ENV$css_added = TRUE
 	
 	return(invisible(NULL))
@@ -319,7 +327,7 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 	file.copy(paste0(TEMPLATE_DIR, "/favicon.ico"), paste0(output_dir, "/"))
 
 	message("* removing temporary files")
-	file.remove(c(tempfile, md_file))
+	# file.remove(c(tempfile, md_file))
 
 	message(qq("* report is at @{output_dir}/@{html_file[class]}"))
 

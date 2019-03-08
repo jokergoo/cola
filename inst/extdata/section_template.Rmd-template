@@ -125,7 +125,7 @@ is calculated from the consensus matrix.
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('cbind(get_classes(res, k = <%=k%>), get_membership(res, k = <%=k%>))', 'k = <%=k%>')
+knitr_add_tab_item('cbind(get_classes(res, k = <%=k%>), get_membership(res, k = <%=k%>))', 'k = <%=k%>', prefix = '<%=top_value_method%>-<%=partition_method%>-get-classes')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -139,7 +139,7 @@ message("  - making consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')"
 
 ```{r <%=chunk_prefix%>-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('consensus_heatmap(res, k = <%=k%>)', 'k = <%=k%>')
+knitr_add_tab_item('consensus_heatmap(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=top_value_method%>-<%=partition_method%>-consensus-heatmap')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -153,7 +153,7 @@ message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')
 
 ```{r <%=chunk_prefix%>-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('membership_heatmap(res, k = <%=k%>)', 'k = <%=k%>')
+knitr_add_tab_item('membership_heatmap(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=top_value_method%>-<%=partition_method%>-membership-heatmap')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -170,14 +170,14 @@ message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')", appen
 
 ```{r <%=chunk_prefix%>-signature, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('get_signatures(res, k = <%=k%>)', 'k = <%=k%>', opt = 'results = "hide"')
+knitr_add_tab_item('get_signatures(res, k = <%=k%>)', 'k = <%=k%>', opt = 'results = "hide"', prefix = '<%=top_value_method%>-<%=partition_method%>-get-signatures')
 <%}-%>
 knitr_insert_tabs()
 ```
 
 ```{r <%=chunk_prefix%>-signature-no-scale, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('get_signatures(res, k = <%=k%>, scale_rows = FALSE)', 'k = <%=k%>', opt = 'results = "hide"')
+knitr_add_tab_item('get_signatures(res, k = <%=k%>, scale_rows = FALSE)', 'k = <%=k%>', opt = 'results = "hide"', prefix = '<%=top_value_method%>-<%=partition_method%>-get-signatures-no-scale')
 <%}-%>
 knitr_insert_tabs()
 ```
@@ -191,7 +191,7 @@ message("  - making PCA plots (k = '<%=paste(all_k, collapse=', ')%>')", appendL
 
 ```{r <%=chunk_prefix%>-mds, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('dimension_reduction(res, k = <%=k%>)', 'k = <%=k%>')
+knitr_add_tab_item('dimension_reduction(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=top_value_method%>-<%=partition_method%>-dimension-reduction')
 <%}-%>
 knitr_insert_tabs()
 ```

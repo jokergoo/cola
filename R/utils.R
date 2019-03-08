@@ -187,7 +187,7 @@ try_and_trace = function(expr) {
 	oe = try(expr, silent = TRUE)
 	if(inherits(oe, "try-error")) {
 		cat("Caught an error. Following is the trace:\n")
-		format_trace(getFromNamespace("data", ns = "tracer")$last_dump)
+		format_trace(tracer::data$last_dump)
 	}
 	return(oe)
 }

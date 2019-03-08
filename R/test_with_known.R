@@ -13,7 +13,7 @@
 # Pairwise test is applied to every two columns in the data frames. Methods are:
 # 
 # - two numeric variables: correlation test by `stats::cor.test` is applied;
-# - two character or factor variables: `stats::fisher.test` is applied;
+# - two character or factor variables: `stats::chisq.test` is applied;
 # - one numeric variable and one character/factor variable: oneway ANOVA test by `stats::oneway.test` is applied.
 # 
 # This function can be used to test the correlation between the predicted classes and other known factors.
@@ -60,8 +60,8 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
 						try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value}, silent = TRUE)
 					} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
-						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Fisher's exact test\n")
-						try({p.value[i, j] = fisher.test(df[[i]], df[[j]])$p.value}, silent = TRUE)
+						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Chi-squared test\n")
+						try({p.value[i, j] = chisq.test(df[[i]], df[[j]])$p.value}, silent = TRUE)
 					}
 					p.value[j, i] = p.value[i, j]
 				}
@@ -115,8 +115,8 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 						if(verbose) qqcat("@{nm2[j]} ~ @{nm1[i]}: oneway ANOVA test\n")
 						try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value}, silent = TRUE)
 					} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
-						if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Fisher's exact test\n")
-						try({p.value[i, j] = fisher.test(df1[[i]], df2[[j]], alternative = "greater")$p.value}, silent = TRUE)
+						if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Chi-squared test\n")
+						try({p.value[i, j] = chisq.test(df1[[i]], df2[[j]])$p.value}, silent = TRUE)
 					}
 				}
 			}

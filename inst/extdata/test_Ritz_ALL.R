@@ -5,6 +5,7 @@ data(ALL)
 
 m = exprs(ALL)
 anno = pData(ALL)
+anno = anno[, c("sex", "age", "BT", "citog", "mol.biol")]
 
 m = adjust_matrix(m)
 

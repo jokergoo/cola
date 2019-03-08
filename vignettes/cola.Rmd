@@ -950,7 +950,7 @@ Functions on `ConsensusPartitionList` class that are important to use are:
 - `get_classes()`: The global consensus subgroup by taking subgroups from all methods together.
 - `get_stats()`: Extract the statistics for determining best number of subgroups.
 - `guess_best_k()`: Guess the best $k$ for each method.
-- `test_to_known_factors()`: Apply tests to the annotations if provides. The test will be Fisher's exact test or ANOVA depending on the data type of the annotation.
+- `test_to_known_factors()`: Apply tests to the annotations if provides. The test will be Chi-squared test or ANOVA depending on the data type of the annotation.
 - `top_rows_heatmap()`: Make heatmaps for `top_n` rows under different top-value methods.
 - `top_rows_overlap()`: Make Venn-Euler diagram for the `top_n` rows under different top-value methods.
 
