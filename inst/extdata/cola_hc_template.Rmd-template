@@ -1,7 +1,7 @@
 Cola Report for Hierarchical Partitioning
 ==================
 
-**Date**: `r Sys.time()`
+**Date**: `r Sys.time()`, **cola version**: `r installed.packages()["cola", "Version"]`
 
 ----------------------------------------------------------------
 
