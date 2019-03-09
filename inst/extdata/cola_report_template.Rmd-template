@@ -15,7 +15,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
-options(width = 100)
+options(width = 140)
 options(digits = 3)
 opts_chunk$set(
 	comment = "#>",
@@ -55,7 +55,7 @@ res_list
 The call of `run_all_consensus_partition_methods()` was:
 
 ```{r, echo = FALSE}
-print(res_list@calling)
+cat(paste(deparse(res_list@calling, width.cutoff = getOption("width")), collapse = "\n"), "\n")
 ```
 
 Dimension of the input matrix:
@@ -105,7 +105,10 @@ t1 = Sys.time()
 message("* guessing best k for each method", appendLF = FALSE)
 ```
 
-Best `k` (number of partitions) for each combination of top-value methods and partition methods:
+Best `k` (number of partitions) for each combination of top-value methods and partition methods. Clicking
+on the method name in following table leads to the report for a single combination of methods.
+
+Please go the [the cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13) for the metrics of determining the best number of partitions.
 
 ```{r, eval = FALSE}
 guess_best_k(res_list)
@@ -113,7 +116,7 @@ guess_best_k(res_list)
 
 ```{r, echo = FALSE}
 tb = guess_best_k(res_list)
-rownames(tb) = qq("[@{rownames(tb)}](#@{rownames(tb)})", collapse = FALSE)
+rownames(tb) = qq("[@{rownames(tb)}](#@{gsub(':', '-', rownames(tb))})", collapse = FALSE)
 kable(tb)
 ```
 
@@ -126,7 +129,7 @@ fs = min(c(3*n_top_value_method, 14))/n_partition_method
 
 ### CDF of consensus matrices
 
-CDF of consensus matrix for all methods:
+Cumulative distribution function curve of consensus matrix for all methods:
 
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
@@ -144,7 +147,7 @@ message(qq("* making consensus heatmaps for all methods"), appendLF = FALSE)
 
 ### Consensus heatmap
 
-Consensus heatmaps for all methods:
+Consensus heatmaps for all methods. [link to cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_9)
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% all_k = res_list@list[[1]]@k
@@ -167,7 +170,7 @@ message(qq("* making membership heatmaps for all methods"), appendLF = FALSE)
 
 ### Membership heatmap
 
-Membership heatmaps for all methods:
+Membership heatmaps for all methods. [link to cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_12)
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -185,7 +188,7 @@ message(qq("* making signature heatmaps for all methods"), appendLF = FALSE)
 
 ### Signature heatmap
 
-Signature heatmaps for all methods:
+Signature heatmaps for all methods. [link to cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_22)
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -203,7 +206,7 @@ message(qq("* getting statistics for all methods"), appendLF = FALSE)
 
 ### Statistics table
 
-Get statistics for all methods:
+Get statistics for all methods. [link to cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13)
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -216,7 +219,7 @@ knitr_insert_tabs()
 
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
-message(qq("* collecting classifications for all methods"), appendLF = FALSE)
+message(qq("* collecting classifications for all methods"))
 ```
 
 Collect partitions from all methods:
@@ -225,7 +228,7 @@ Collect partitions from all methods:
 <% for(k in all_k) { -%>
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - classifications from all methods (k = <%=k%>)", appendLF = FALSE)
-knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 9, fig.height = 8', prefix = 'collect-classes-from-consensus-partition-list')
+knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 9, fig.height = 8', prefix = 'collect-classes-from-consensus-partition-list', hide_and_show = TRUE)
 <%}-%>
 knitr_insert_tabs()
 ```

@@ -22,7 +22,7 @@ Pairwise test is applied to every two columns in the data frames. Methods are:
 
 \itemize{
   \item two numeric variables: correlation test by \code{\link[stats]{cor.test}} is applied;
-  \item two character or factor variables: \code{\link[stats]{fisher.test}} is applied;
+  \item two character or factor variables: \code{\link[stats]{chisq.test}} is applied;
   \item one numeric variable and one character/factor variable: oneway ANOVA test by \code{\link[stats]{oneway.test}} is applied.
 }
 

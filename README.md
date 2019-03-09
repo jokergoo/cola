@@ -34,7 +34,7 @@ install_github("jokergoo/cola")
 
 ## Examples
 
-Analysis for TCGA glioblastoma microarray dataset can be found at https://jokergoo.github.io/cola_examples/.
+Several examples for cola analysis can be found at https://jokergoo.github.io/cola_examples/.
 
 ## Consensus Partition
 

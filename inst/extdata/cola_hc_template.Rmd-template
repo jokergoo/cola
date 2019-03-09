@@ -55,7 +55,7 @@ res_hc
 The call of `hierarchical_partition()` was:
 
 ```{r, echo = FALSE}
-print(res_hc@calling)
+cat(paste(deparse(res_hc@calling, width.cutoff = getOption("width")), collapse = "\n"), "\n")
 ```
 
 Dimension of the input matrix:

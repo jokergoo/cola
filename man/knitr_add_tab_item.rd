@@ -7,15 +7,18 @@ Add one JavaScript tab in the report
 Add one JavaScript tab in the report
 }
 \usage{
-knitr_add_tab_item(code, header, desc = "", opt = NULL, message = NULL)
+knitr_add_tab_item(code, header, prefix, desc = "", opt = NULL,
+    message = NULL, hide_and_show = FALSE)
 }
 \arguments{
 
   \item{code}{R code to execute.}
   \item{header}{header or the title for the tab.}
+  \item{prefix}{prefix of chunk label.}
   \item{desc}{decription in the tab.}
   \item{opt}{options for the knitr chunk.}
   \item{message}{message to print.}
+  \item{hide_and_show}{whether hide the code output.}
 
 }
 \details{

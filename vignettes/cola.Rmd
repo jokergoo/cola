@@ -920,7 +920,7 @@ demonstrated [here](https://jokergoo.github.io/cola_examples/) (Running cola ana
 is always time-consuming, so we use the object that has already be generated.).
 
 ```{r, results = "hide"}
-download.file("https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup.rds", 
+download.file("https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup.rds", 
     destfile = "TCGA_GBM_subgroup.rds", quiet = TRUE)
 rl = readRDS("TCGA_GBM_subgroup.rds")
 file.remove("TCGA_GBM_subgroup.rds")
@@ -1106,7 +1106,7 @@ Simply typing `rl` gives a summary of the analysis:
 rl
 ```
 
-The HTML report for the analysis is available at https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_cola_report/cola_report.html.
+The HTML report for the analysis is available at https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_cola_report/cola_report.html.
 
 ## Hierarchical partitioning
 
@@ -1150,10 +1150,10 @@ rh = hierarchical_partition(mat, top_n = c(1000, 2000, 3000, 4000),
         consensus = structure(brewer.pal(4, "Set1"), names = 1:4)))
 ```
 
-`rh` is already generated and can be downloaded from [here](https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_hierarchical_partition.rds).
+`rh` is already generated and can be downloaded from [here](https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_hierarchical_partition.rds).
 
 ```{r, results = "hide"}
-download.file("https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_hierarchical_partition.rds", 
+download.file("https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_hierarchical_partition.rds", 
   destfile = "TCGA_GBM_subgroup_hierarchical_partition.rds", quiet = TRUE)
 rh = readRDS("TCGA_GBM_subgroup_hierarchical_partition.rds")
 file.remove("TCGA_GBM_subgroup_hierarchical_partition.rds")
@@ -1221,7 +1221,7 @@ get_signatures(rh)
 
 Similar as the `ConsensusPartitionList` object, `cola_report()` function
 can also be applied to this `HierarchicalPartition` object. The full report
-for `rh` can be found at https://jokergoo.github.io/cola_examples/TCGA_GBM_subgroup_hierarchical_partition_cola_report/cola_hc.html.
+for `rh` can be found at https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_hierarchical_partition_cola_report/cola_hc.html.
 
 ```{r, eval = FALSE}
 # code is only for demonstration

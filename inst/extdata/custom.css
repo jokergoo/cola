@@ -1,27 +1,4 @@
-#toc {
-  position: fixed;
-  left: 0;
-  top: 20px;
-  width: 200px;
-  height: 100%;
-  overflow:auto;
-  padding: 0px 10px 0px 10px;
-}
-#toc_header {
-  display: none;
-}
-#toc ul {
-  margin: 0px;
-  padding: 0px;
-}
-#toc ul li {
-  list-style-type: none;
-}
 
-#toc ul li ul li {
-  margin-left: 15px;
-  list-style-type: circle;
-}
 body, td, th {
    font-family: Arial,Helvetica,sans-serif;
    background-color: white;

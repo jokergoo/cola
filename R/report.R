@@ -14,9 +14,11 @@ KNITR_TAB_ENV$css_added = FALSE
 # == param
 # -code R code to execute.
 # -header header or the title for the tab.
+# -prefix prefix of chunk label.
 # -desc decription in the tab.
 # -opt options for the knitr chunk.
 # -message message to print.
+# -hide_and_show whether hide the code output.
 #
 # == details
 # Each tab contains the R source code and results generated from it (figure, tables, text, ...).
@@ -31,7 +33,8 @@ KNITR_TAB_ENV$css_added = FALSE
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
-knitr_add_tab_item = function(code, header, prefix, desc = "", opt = NULL, message = NULL) {
+knitr_add_tab_item = function(code, header, prefix, desc = "", opt = NULL, 
+	message = NULL, hide_and_show = FALSE) {
 
 	KNITR_TAB_ENV$current_tab_index = KNITR_TAB_ENV$current_tab_index + 1
 	tab = qq("tab-@{prefix}-@{KNITR_TAB_ENV$current_tab_index}")
@@ -64,11 +67,29 @@ message('@{message}')
 
 	op1 = getOption("markdown.HTML.options")
 	op2 = getOption("width")
-	options(markdown.HTML.options = setdiff(op1, c("base64_images", "toc")), width = 100)
+	options(markdown.HTML.options = setdiff(op1, c("base64_images", "toc")), width = getOption("width"))
 	md = knit(text = knitr_text, quiet = TRUE, envir = parent.frame())
 	html = markdownToHTML(text = md, fragment.only = TRUE)
-	html = qq("<div id='@{tab}'>\n@{html}\n</div>\n")
-	options(markdown.HTML.options = op1, width = op2)
+	# add hide_and_show
+	if(hide_and_show) {
+		html = qq("
+<div id='@{tab}'>
+<p><a id='@{tab}-a' style='color:#0366d6' href='#'>show/hide code output</a></p>
+@{html}
+<script>
+$('#@{tab}-a').parent().next().next().hide();
+$('#@{tab}-a').click(function(){
+  $('#@{tab}-a').parent().next().next().toggle();
+  return(false);
+});
+</script>
+</div>
+")
+	} else {
+		html = qq("<div id='@{tab}'>\n@{html}\n</div>\n")
+	}
+
+	options(markdown.HTML.options = op1, width = getOption("width"))
 	KNITR_TAB_ENV$header = c(KNITR_TAB_ENV$header, header)
 	KNITR_TAB_ENV$current_html = paste0(KNITR_TAB_ENV$current_html, html)
 	return(invisible(NULL))
@@ -323,11 +344,11 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 	dir.create(paste0(output_dir, "/js"), showWarnings = FALSE)
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-ui.js"), paste0(output_dir, "/js/"))
 	file.copy(paste0(TEMPLATE_DIR, "/jquery-1.12.4.js"), paste0(output_dir, "/js/"))
-	file.copy(paste0(TEMPLATE_DIR, "/jquery.tocify.min.js"), paste0(output_dir, "/js/"))
+	file.copy(paste0(TEMPLATE_DIR, "/jquery.tocify.js"), paste0(output_dir, "/js/"))
 	file.copy(paste0(TEMPLATE_DIR, "/favicon.ico"), paste0(output_dir, "/"))
 
 	message("* removing temporary files")
-	# file.remove(c(tempfile, md_file))
+	file.remove(c(tempfile, md_file))
 
 	message(qq("* report is at @{output_dir}/@{html_file[class]}"))
 
@@ -336,7 +357,13 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 	lines = readLines(html_file)
 
 	## add name attribute to h2 and h3 tags
-	lines = gsub("^\\s*<h(2|3)>(.*?)</h(2|3)>\\s*$", "<h\\1 id='\\2'>\\2</h\\3>", lines)
+	l = grepl("^\\s*<h(2|3)>(.*?)</h(2|3)>\\s*$", lines)
+	for(ind in which(l)) {
+		foo = gsub("^\\s*<h(2|3)>(.*?)</h(2|3)>\\s*$", "\\2", lines[ind])
+		foo = gsub("\\W+$", "", foo)
+		foo = gsub("\\W", "-", foo)
+		lines[ind] = gsub("^\\s*<h(2|3)>(.*?)</h(2|3)>\\s*$", qq("<h\\1 id='@{foo}'>\\2</h\\3>"), lines[ind])
+	}
 
 	## add favicon
 	ind = which(grepl("^<title>", lines[1:10]))
@@ -346,11 +373,22 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 	nl = length(lines)
 	ind = which(grepl("</html>", lines[(nl-10):nl])) + nl - 10 - 1
 	lines[ind] = "
-<script src='js/jquery.tocify.min.js'></script>
+<script src='js/jquery.tocify.js'></script>
 <div id='toc'></div>
 <style>
-#toc {
-  height: 110%;
+.tocify {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  width: 200px;
+  height: 100%;
+  overflow:auto;
+}
+.tocify ul, .tocify li {
+    list-style: none;
+    margin: 0;
+    padding: 1px 4px;
+    border: none;
 }
 .tocify-subheader {
     text-indent: 10px;
@@ -368,9 +406,6 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 .active a {
     color: #ffffff;
 }
-.tocify li {
-  padding: 4px 2px;
-}
 .tocify li:hover {
   background-color: #EFEFEF;
 }
@@ -379,13 +414,16 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 }
 </style>
 <script>
-$(function() {
+$(window).on('load', function() {
   $('#toc').tocify({ 
     showAndHide: false,
     showAndHideOnScroll: false,
     selectors: 'h2,h3',
-    showEffect: 'fadeIn'
+    showEffect: 'none',
+    hashGenerator: 'pretty',
+    highlightOnScroll: true
   }); 
+  $('#toc li').first().addClass('tocify-item active');
 });
 </script>
 </html>

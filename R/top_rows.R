@@ -274,8 +274,6 @@ setMethod(f = "top_rows_heatmap",
 				use_raster = TRUE, raster_quality = 2),
 				merge_legend = TRUE)
 		)
-		print(traceback())
-
 		dev.off2()
 	    if(!inherits(oe, "try-error")) {
 	    	grid.raster(readPNG(file_name))
