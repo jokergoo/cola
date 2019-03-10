@@ -226,7 +226,7 @@ i_section = 0
 frag_list = lapply(seq_along(all_parents), function(ind) {
 	i_section = ind
 	node = all_parents[ind]
-	brew(paste0(TEMPLATE_DIR, "/section_template.Rmd-template"))
+	brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"))
 })
 
 for(i in seq_along(frag_list)) { -%>

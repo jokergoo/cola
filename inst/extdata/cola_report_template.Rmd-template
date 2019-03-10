@@ -325,7 +325,7 @@ for(ind in seq_len(nrow(comb))) {
 	i_section = ind
 	top_value_method = comb[ind, 1]
 	partition_method = comb[ind, 2]
-	frag_list[[ind]] = brew(paste0(TEMPLATE_DIR, "/section_template.Rmd-template"))
+	frag_list[[ind]] = brew(file.path(TEMPLATE_DIR, "section_template.Rmd-template"))
 }
 
 for(i in seq_along(frag_list)) { -%>
