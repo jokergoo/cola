@@ -1,6 +1,5 @@
 
 [![Build Status](https://travis-ci.org/jokergoo/cola.svg)](https://travis-ci.org/jokergoo/cola) 
-[![codecov](https://img.shields.io/codecov/c/github/jokergoo/cola.svg)](https://codecov.io/github/jokergoo/cola) 
 [ ![bioc](http://bioconductor.org/shields/downloads/devel/cola.svg) ](http://bioconductor.org/packages/stats/bioc/cola)
 [ ![bioc](http://bioconductor.org//shields/lastcommit/devel/bioc/cola.svg) ](http://bioconductor.org/checkResults/devel/bioc-LATEST/cola/)
 

@@ -1,5 +1,4 @@
 language: r
 r: bioc-devel
-r_github_packages: jokergoo/ComplexHeatmap
-r_build_args: --no-build-vignettes
-r_check_args: --no-build-vignettes
+r_build_args: --no-build-vignettes --no-manual
+r_check_args: --no-build-vignettes --no-manual
