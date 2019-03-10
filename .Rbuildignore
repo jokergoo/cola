@@ -9,4 +9,4 @@ vignettes_not_run
 run_all_jobs.R
 data/generate_data.Rscript
 generate_examples.R
-
+.travis.yml
