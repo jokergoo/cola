@@ -54,7 +54,7 @@ To perform hierarchical partition, run following code:
 
 ```{r, eval = FALSE}
 # code only for demonstration
-rh = hierarchical_partition(mat, ...)
+rh = hierarchical_partition(mat, mc.cores = ...)
 cola_report(rh, output_dir = ...)
 ```
 

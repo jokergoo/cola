@@ -1,3 +1,5 @@
+<img src="https://user-images.githubusercontent.com/449218/54158555-03e3af80-444b-11e9-9773-070823101263.png" width=250 align="right" style="border:4px solid black;" />
+
 
 [![Build Status](https://travis-ci.org/jokergoo/cola.svg)](https://travis-ci.org/jokergoo/cola) 
 [ ![bioc](http://bioconductor.org/shields/downloads/devel/cola.svg) ](http://bioconductor.org/packages/stats/bioc/cola)
