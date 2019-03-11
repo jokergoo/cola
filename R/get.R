@@ -327,7 +327,7 @@ setMethod(f = "guess_best_k",
 	stat = stat[stat[, "Rand"] < rand_index_cutoff, , drop = FALSE]
 
 	if(nrow(stat) == 0) {
-		return(min(object@k))
+		return(NA)
 	}
 
 	l = stat[, "cophcor"] >= 0.99 | stat[, "PAC"] <= 0.1 | stat[, "concordance"] >= 0.95
@@ -380,11 +380,18 @@ setMethod(f = "guess_best_k",
 			nm = paste0(tm, ":", pm)
 			obj = object@list[[nm]]
 			best_k[nm] = guess_best_k(obj, rand_index_cutoff)
-			stat = get_stats(obj, k = best_k[nm])
-			cophcor[nm] = stat[1, "cophcor"]
-			PAC[nm] = stat[1, "PAC"]
-			mean_silhouette[nm] = stat[1, "mean_silhouette"]
-			concordance[nm] = stat[1, "concordance"]
+			if(is.na(best_k[nm])) {
+				cophcor[nm] = NA
+				PAC[nm] = NA
+				mean_silhouette[nm] = NA
+				concordance[nm] = NA
+			} else {
+				stat = get_stats(obj, k = best_k[nm])
+				cophcor[nm] = stat[1, "cophcor"]
+				PAC[nm] = stat[1, "PAC"]
+				mean_silhouette[nm] = stat[1, "mean_silhouette"]
+				concordance[nm] = stat[1, "concordance"]
+			}
 		}
 	}
 	tb = data.frame(best_k = best_k,
@@ -394,10 +401,10 @@ setMethod(f = "guess_best_k",
 		concordance = concordance)
 
 	rntb = rownames(tb)
-	l = tb$concordance > 0.9
+	l = tb$concordance > 0.9 & !is.na(tb$best_k)
 	tb = cbind(tb, ifelse(l, ifelse(tb$concordance > 0.95, "**", "*"), ""), stringsAsFactors = FALSE)
 	colnames(tb)[ncol(tb)] = ""
-	return(tb[order(tb[, "concordance"], decreasing = TRUE), , drop = FALSE])
+	return(tb[order(!is.na(tb[, "best_k"]) + 0, tb[, "concordance"], decreasing = TRUE), , drop = FALSE])
 })
 
 # == title

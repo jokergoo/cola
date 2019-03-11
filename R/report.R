@@ -328,7 +328,7 @@ make_report = function(var_name, object, output_dir, class = class(object)) {
 	.ENV$TEMP_DIR = temp_dir
 
 	message("* generating R markdown file based on template report")
-	rmd_file = file.path(output_dir, "cola_report.Rmd")
+	rmd_file = file.path(output_dir, gsub("html$", "Rmd", html_file[class]))
 	brew(report_template, output = rmd_file)
 	op = getOption("markdown.HTML.options")
 	options(markdown.HTML.options = setdiff(op, "base64_images"))

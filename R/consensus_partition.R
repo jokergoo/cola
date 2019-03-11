@@ -568,7 +568,12 @@ setMethod(f = "show",
 	qqcat("  Top rows (@{paste(top_n_str, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
 	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")
 	qqcat("  Performed in total @{object@n_partition} partitions.\n")
-	qqcat("  Best k for subgroups seems to be @{guess_best_k(object)}.\n")
+	best_k = guess_best_k(object)
+	if(is.na(best_k)) {
+		qqcat("  There is no best k.\n")
+	} else {
+		qqcat("  Best k for subgroups seems to be @{best_k}.\n")
+	}
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'ConsensusPartition' object:\n")
 	txt = showMethods(classes = "ConsensusPartition", where = topenv(), printTo = FALSE)
@@ -660,13 +665,16 @@ setMethod(f = "select_partition_number",
 	plot_ecdf(object, lwd = 1)
 
 	best_k = guess_best_k(object)
+	if(is.na(best_k)) best_k = -1
 
 	for(i in seq_len(ncol(m))) {
 		l = object@k == best_k
-		plot(object@k, m[, i], type = "b", xlab = "k", ylab = nm[i],
-			pch = ifelse(l, 16, 1),
-			col = ifelse(l, "red", "black"),
-			cex = ifelse(l, 1.5, 1))
+		plot(object@k, m[, i], type = "b", xlab = "k", ylab = nm[i])
+		if(any(l)) {
+			points(object@k, m[, i],
+				pch = ifelse(l, 16, 1),
+				col = ifelse(l, "red", "black"))
+		}
 	}
 
 	par(xpd = NA, mar = c(4, 2, 1, 1))
@@ -683,7 +691,7 @@ else take the k with higest votes of
   2. min PAC,
   3. max mean_silhouette,
   4. max concordance.
-", cex = 1.5, adj = c(0, 1))
+", cex = 1.2, adj = c(0, 1))
 
 	legend("topright", pch = 16, col = "Red", legend = "best k", cex = 1.5)
 

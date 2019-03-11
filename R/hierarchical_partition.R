@@ -101,6 +101,10 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 		lt = list(obj = part)
 
 	    best_k = guess_best_k(part)
+	    if(is.na(best_k)) {
+	    	if(verbose) qqcat("* Rand index is too high, no meaningful subgroups, stop.\n")
+	    	return(lt)
+	    }
 	    cl = get_classes(part, k = best_k)
 
 	    mat = .env$data[, column_index, drop = FALSE]
@@ -799,7 +803,7 @@ setMethod(f = "test_to_known_factors",
 
 	class = get_classes(object, depth)
 	m = test_between_factors(class, known, verbose = verbose)
-	colnames(m) = paste0(colnames(m), "(p-value)")
+	colnames(m) = paste0(colnames(m), "(p)")
 	df = cbind(n = nrow(class), m, n_class = apply(class, 2, function(x) length(unique(x))))
 	return(df)
 })
@@ -1048,11 +1052,18 @@ setMethod(f = "guess_best_k",
 	for(nm in names(object@list)) {
 		obj = object@list[[nm]]
 		best_k[nm] = guess_best_k(obj)
-		stat = get_stats(obj, k = best_k[nm])
-		cophcor[nm] = stat[1, "cophcor"]
-		PAC[nm] = stat[1, "PAC"]
-		mean_silhouette[nm] = stat[1, "mean_silhouette"]
-		concordance[nm] = stat[1, "concordance"]
+		if(is.na(best_k[nm])) {
+			cophcor[nm] = NA
+			PAC[nm] = NA
+			mean_silhouette[nm] = NA
+			concordance[nm] = NA
+		} else {
+			stat = get_stats(obj, k = best_k[nm])
+			cophcor[nm] = stat[1, "cophcor"]
+			PAC[nm] = stat[1, "PAC"]
+			mean_silhouette[nm] = stat[1, "mean_silhouette"]
+			concordance[nm] = stat[1, "concordance"]
+		}
 	}
 	tb = data.frame(best_k = best_k,
 		cophcor = cophcor,

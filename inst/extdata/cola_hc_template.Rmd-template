@@ -15,7 +15,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
-options(width = 100)
+options(width = 120)
 options(digits = 3)
 opts_chunk$set(
 	comment = "#>",
@@ -141,7 +141,7 @@ knitr_insert_tabs()
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('get_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'get-classes-from-hierarchical-partition')
+knitr_add_tab_item('get_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'get-classes-from-hierarchical-partition', show_and_hide = TRUE)
 <% } -%>
 knitr_insert_tabs()
 ```
@@ -226,6 +226,8 @@ i_section = 0
 frag_list = lapply(seq_along(all_parents), function(ind) {
 	i_section = ind
 	node = all_parents[ind]
+	top_value_method = res_hc[[node]]@top_value_method
+	partition_method = res_hc[[node]]@partition_method
 	brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"))
 })
 

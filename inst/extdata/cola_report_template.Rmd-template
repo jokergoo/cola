@@ -15,7 +15,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
-options(width = 140)
+options(width = 120)
 options(digits = 3)
 opts_chunk$set(
 	comment = "#>",

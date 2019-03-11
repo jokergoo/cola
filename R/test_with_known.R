@@ -116,7 +116,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 						try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value}, silent = TRUE)
 					} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
 						if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Chi-squared test\n")
-						try({p.value[i, j] = chisq.test(df1[[i]], df2[[j]])$p.value}, silent = TRUE)
+						try({suppressWarnings(p.value[i, j] = chisq.test(df1[[i]], df2[[j]])$p.value)}, silent = TRUE)
 					}
 				}
 			}
@@ -181,7 +181,7 @@ setMethod(f = "test_to_known_factors",
 
 	m = test_between_factors(class, known, verbose = verbose)
 	rownames(m) = paste(object@top_value_method, object@partition_method, sep = ":")
-	colnames(m) = paste0(colnames(m), "(p-value)")
+	colnames(m) = paste0(colnames(m), "(p)")
 	m = cbind(n = sum(l), m, k = k)
 	return(m)
 })
