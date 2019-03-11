@@ -43,8 +43,8 @@ Several examples for cola analysis can be found at https://jokergoo.github.io/co
 
 ## Vignettes
 
-- [1. A Quick Start of Using cola Package](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/a_quick_start.html)
-- [2. A Framework for Consensus and Hierarchical Partitioning](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html)
+1. [A Quick Start of Using cola Package](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/a_quick_start.html)
+2. [A Framework for Consensus and Hierarchical Partitioning](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html)
 
 ## Consensus Partition
 

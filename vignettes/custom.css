@@ -1,34 +1,11 @@
-#toc {
-  position: fixed;
-  left: 0;
-  top: 20px;
-  width: 260px;
-  height: 100%;
-  overflow:auto;
-  padding: 0px 10px 0px 10px;
-}
-#toc_header {
-  display: none;
-}
-#toc ul {
-  margin: 0px;
-  padding: 0px;
-}
-#toc ul li {
-  list-style-type: none;
-}
 
-#toc ul li ul li {
-  margin-left: 15px;
-  list-style-type: circle;
-}
 body, td, th {
    font-family: Arial,Helvetica,sans-serif;
    background-color: white;
    font-size: 13px;
   max-width: 800px;
   margin: auto;
-  margin-left:270px;
+  margin-left:210px;
   padding: 0px 10px 0px 10px;
   border-left: 1px solid #EEEEEE;
   line-height: 150%;
@@ -42,7 +19,6 @@ monospace;
 
 h1 {
    font-size:2.2em;
-     line-height: 150%;
 }
 
 h2 {
@@ -67,6 +43,7 @@ h6 {
 
 a {
   text-decoration: none;
+  color: #0366d6;
 }
 
 a:hover {
@@ -74,7 +51,7 @@ a:hover {
 }
 
 a:visited {
-   color: rgb(50%, 0%, 50%);
+   color: #0366d6;
 }
 
 pre, img {
