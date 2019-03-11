@@ -11,6 +11,8 @@ subtype_col = structure(seq_len(4), names = unique(subtype))
 data = data[, names(subtype)]
 data = adjust_matrix(data)
 
+register_NMF()
+
 set.seed(123)
 rl = run_all_consensus_partition_methods(
 	data, 

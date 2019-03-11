@@ -9,6 +9,7 @@ data(HSMM_sample_sheet)
 m = adjust_matrix(log10(HSMM_expr_matrix + 1))
 anno = HSMM_sample_sheet[, c("Hours", "Media", "Pseudotime", "State")]
 
+register_NMF()
 
 set.seed(123)
 rl = run_all_consensus_partition_methods(

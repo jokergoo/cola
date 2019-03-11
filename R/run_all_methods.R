@@ -228,7 +228,7 @@ run_all_consensus_partition_methods = function(data,
 	}
 	res_list@list = lt
 	res_list@comb = comb
-	res_list@calling = cl
+	res_list@call = cl
 
 	return(res_list)
 }

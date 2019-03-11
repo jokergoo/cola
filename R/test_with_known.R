@@ -116,7 +116,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 						try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value}, silent = TRUE)
 					} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
 						if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Chi-squared test\n")
-						try({suppressWarnings(p.value[i, j] = chisq.test(df1[[i]], df2[[j]])$p.value)}, silent = TRUE)
+						try({suppressWarnings(p.value[i, j] <- chisq.test(df1[[i]], df2[[j]])$p.value)}, silent = TRUE)
 					}
 				}
 			}

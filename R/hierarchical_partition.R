@@ -28,7 +28,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
         hierarchy = "matrix",
         subgroup = "character",
         subgroup_col = "character",
-        calling = "ANY",
+        call = "ANY",
         .env = "environment"
     )
 )
@@ -82,7 +82,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # data(cola_rh)
 # cola_rh
 hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
-	concordance_cutoff = 0.9, PAC_cutoff = 0.2, min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
+	concordance_cutoff = 0.9, PAC_cutoff = 0.2, min_samples = 6, 
+	max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
 	cl = match.call()
 	
@@ -198,7 +199,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	} else {
 		hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
 	}
-	hp@calling = cl
+	hp@call = cl
 	hp@.env = hp@list[[1]]@.env
 
 	return(hp)

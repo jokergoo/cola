@@ -16,6 +16,8 @@ cn = colnames(m)
 m = normalize.quantiles(m)
 colnames(m) = cn
 
+register_NMF()
+
 set.seed(123)
 rl = run_all_consensus_partition_methods(
 	m,

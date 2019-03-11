@@ -55,7 +55,7 @@ res_list
 The call of `run_all_consensus_partition_methods()` was:
 
 ```{r, echo = FALSE}
-cat(paste(deparse(res_list@calling, width.cutoff = getOption("width")), collapse = "\n"), "\n")
+cat(paste(deparse(res_list@call, width.cutoff = getOption("width")), collapse = "\n"), "\n")
 ```
 
 Dimension of the input matrix:
