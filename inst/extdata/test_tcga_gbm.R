@@ -35,3 +35,7 @@ rh = hierarchical_partition(data,
 )
 saveRDS(rh, file = "~/project/development/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_hierarchical_partition.rds")
 cola_report(rh, output_dir = "~/project/development/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_hierarchical_partition_cola_report")
+	
+# cmd = qq("module load R/3.3.1; Rscript /home/guz/project/development/cola/test_not_run/test_tcga_gbm.R")
+# cmd = qq("perl /home/guz/project/development/ngspipeline2/qsub_single_line.pl '-l walltime=40:00:00,mem=20G,nodes=1:ppn=4 -N tcga_gbm_microarray_subgroup' '@{cmd}'")
+# system(cmd)

@@ -41,6 +41,11 @@ install_github("jokergoo/cola")
 
 Several examples for cola analysis can be found at https://jokergoo.github.io/cola_examples/.
 
+## Vignettes
+
+- [1. A Quick Start of Using cola Package](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/a_quick_start.html)
+- [2. A Framework for Consensus and Hierarchical Partitioning](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html)
+
 ## Consensus Partition
 
 <img width="700" src="https://user-images.githubusercontent.com/449218/52628723-86af3400-2eb8-11e9-968d-b7f47a408818.png" />
@@ -75,7 +80,8 @@ Three lines of code to perfrom cola analysis:
 
 ```r
 mat = adjust_matrix(mat)
-rl = run_all_consensus_partition_methods(mat, 
+rl = run_all_consensus_partition_methods(
+    mat, 
     top_value_method = c("sd", "MAD", ...),
     partition_method = c("hclust", "kmeans", ...),
     mc.cores = ...)
@@ -98,8 +104,12 @@ Following plots compare consensus heatmaps with k = 4 under all combinations of 
 ### Usage
 
 ```r
-rh = hierarchical_partition(mat, top_n = c(1000, 2000, 3000, 4000),
-    top_value_method = "MAD", partition_method = "kmeans")
+rh = hierarchical_partition(
+    mat,
+    top_value_method = "MAD", 
+    partition_method = "kmeans",
+    mc.cores = ...
+)
 cola_report(rh, output_dir = ...)
 ```
 
