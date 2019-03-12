@@ -193,7 +193,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	hp@subgroup = subgroup
 	names(hp@subgroup) = colnames(data)
 
-	le = unique(as.vector(hp@hierarchy))
+	le = all_nodes(hp)
 	if(length(le) <= 16) {
 		hp@subgroup_col = structure(brewer_pal_set2_col[seq_along(le)], names = le)
 	} else {
@@ -508,8 +508,9 @@ setMethod(f = "get_signatures",
 	silhouette_cutoff = 0.5, 
 	...) {
 
-	if(depth <= 1) {
-		stop_wrap("depth should be at least larger than 1.")
+	if(max_depth(object) == 1) {
+		cat("No partition hierarchy found.\n")
+		return(invisible(NULL))
 	}
 
 	alf = all_leaves(object, depth = depth)
@@ -674,6 +675,11 @@ setMethod(f = "collect_classes",
 	definition = function(object, depth = max_depth(object), 
 	anno = get_anno(object[1]), anno_col = get_anno_col(object[1])) {
 
+	if(max_depth(object) == 1) {
+		cat("No partition hierarchy found.\n")
+		return(invisible(NULL))
+	}
+
 	cl = get_classes(object, depth = depth)[, 1]
 
 	dend = calc_dend(object, depth = depth)
@@ -792,6 +798,11 @@ setMethod(f = "test_to_known_factors",
 	definition = function(object, known = get_anno(object[1]),
 	depth = 2:max_depth(object), verbose = FALSE) {
 
+	if(max_depth(object) == 1) {
+		cat("No partition hierarchy found.\n")
+		return(invisible(NULL))
+	}
+
 	if(!is.null(known)) {
 		if(is.atomic(known)) {
 			df = data.frame(known)
@@ -901,6 +912,10 @@ setMethod(f = "max_depth",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 
+	if(nrow(object@hierarchy) == 0) {
+		return(1)
+	}
+
 	max(nchar(object@hierarchy[, 2]))
 })
 
@@ -923,6 +938,10 @@ setMethod(f = "max_depth",
 setMethod(f = "all_nodes",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object)) {
+
+	if(nrow(object@hierarchy) == 0) {
+		return("0")
+	}
 
 	all_nodes = unique(as.vector(object@hierarchy))
 	if(!is.null(depth)) {
@@ -950,6 +969,10 @@ setMethod(f = "all_nodes",
 setMethod(f = "all_leaves",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object)) {
+
+	if(nrow(object@hierarchy) == 0) {
+		return("0")
+	}
 
 	hierarchy = unique(object@hierarchy)
 	if(!is.null(depth)) {

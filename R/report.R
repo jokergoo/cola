@@ -252,7 +252,7 @@ setMethod(f = "cola_report",
 	signature = "HierarchicalPartition",
 	definition = function(object, output_dir, env = parent.frame()) {
 
-	if(nrow(object@hierarchy) == 1) {
+	if(max_depth(object) <= 1) {
 		cat("No hierarchy detected, won't generate the report.\n")
 		return(invisible(NULL))
 	}
