@@ -228,7 +228,7 @@ frag_list = lapply(seq_along(all_parents), function(ind) {
 	node = all_parents[ind]
 	top_value_method = res_hc[[node]]@top_value_method
 	partition_method = res_hc[[node]]@partition_method
-	brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"))
+	brew(file.path(TEMPLATE_DIR, "section_template.Rmd-template"))
 })
 
 for(i in seq_along(frag_list)) { -%>

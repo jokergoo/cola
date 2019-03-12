@@ -34,8 +34,6 @@ Imports: grDevices,
          digest,
          impute,
          brew,
-         tracer,
-         clisymbols,
          Rcpp (>= 0.11.0)
 Suggests: genefilter,
           mvtnorm,
