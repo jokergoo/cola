@@ -18,10 +18,10 @@ options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "
 options(width = 120)
 options(digits = 3)
 opts_chunk$set(
-	comment = "#>",
-	fig.path = "figure_cola/",
-	warning = FALSE,
-	message = FALSE
+    comment = "#>",
+    fig.path = "figure_cola/",
+    warning = FALSE,
+    message = FALSE
 )
 suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
@@ -78,10 +78,12 @@ message(qq("* making density heatmap of global distribution for each sample (@{n
 ```{r density-heatmap}
 library(ComplexHeatmap)
 <% if(is.null(get_anno(res_hc))) { -%>
-densityHeatmap(mat, ylab = "value", cluster_columns = TRUE, show_column_names = FALSE)
+densityHeatmap(mat, ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
+    mc.cores = <%=mc.cores%>)
 <% } else { -%>
 densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hc), 
-	col = get_anno_col(res_hc)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE)
+    col = get_anno_col(res_hc)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
+    mc.cores = <%=mc.cores%>)
 <% } -%>
 ```
 
@@ -216,25 +218,32 @@ knitr_insert_tabs()
 
 ## Results for each node
 
-<% 
-is_hc = TRUE
+```{r, results = "asis", echo = FALSE}
 fs = 2
-all_k = res_hc@list[[1]]@k
+is_hc = TRUE
 all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
 n_section = length(all_parents)
 i_section = 0
-frag_list = lapply(seq_along(all_parents), function(ind) {
-	i_section = ind
-	node = all_parents[ind]
-	top_value_method = res_hc[[node]]@top_value_method
-	partition_method = res_hc[[node]]@partition_method
-	brew(file.path(TEMPLATE_DIR, "section_template.Rmd-template"))
-})
+.e = environment()
+md_list = mclapply(seq_along(all_patterns), function(ind) {
+    i_section = ind
+    node = all_parents[ind]
+    top_value_method = res_hc[[node]]@top_value_method
+    partition_method = res_hc[[node]]@partition_method
+    
+    tmpfile = tempfile()
+    
+    brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)
+    rmd = paste(readLines(tmpfile), collapse = "\n")
+    file.remove(tmpfile)
 
-for(i in seq_along(frag_list)) { -%>
-    <% frag_list[[i]] %>
-<% } -%>
+    knit(text = rmd, quiet = TRUE, envir = .e)
+}, mc.cores = mc.cores)
 
+for(i in seq_along(md_list)) {
+    cat(md_list[[i]], "\n")
+}
+```
 
 ## Session info
 
