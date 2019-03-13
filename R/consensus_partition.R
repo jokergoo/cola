@@ -99,6 +99,12 @@ consensus_partition = function(data,
 		mc.cores = mc.cores,
 		.env = .env))
 	res@running_time = t[["elapsed"]]
+
+	if(verbose) {
+		tc = Sys.time()
+		tf = format(tc + structure(t[["elapsed"]], units = "secs", class = "difftime") - tc)
+		qqcat("* @{top_value_method}:@{partition_method} used @{tf}.\n")
+	}
 	return(res)
 }
 
@@ -243,7 +249,7 @@ consensus_partition = function(data,
 			if(verbose) qqcat("* get top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
-		if(verbose && mc.cores > 1) qqcat("  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
+		if(verbose && mc.cores > 1) qqcat("  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{mc.cores} cores).")
 
 		lt = mclapply(seq_len(partition_repeat), function(j) {
 
