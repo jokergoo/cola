@@ -128,7 +128,7 @@ run_all_consensus_partition_methods = function(data,
 		if(interactive() && verbose) qqcat("------------------------------------------------------------\n")
 		if(verbose) qqcat("* running partition by @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
 		try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k,
-			anno = anno, anno_col = anno_col, .env = .env, verbose = interactive() && verbose,
+			anno = anno, anno_col = anno_col, .env = .env, verbose = verbose,
 			top_n = top_n, p_sampling = p_sampling, partition_repeat = partition_repeat, scale_rows = scale_rows,
 			mc.cores = mc.cores), qq("You have an error when doing partition for @{tm}:@{pm}."))
 		return(res)

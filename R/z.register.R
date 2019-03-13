@@ -120,9 +120,17 @@ get_partition_method = function(method, partition_param = list()) {
 
 	# if sample from columns, the columns which have not been samples should be filled with NA
 	fun2 = function(mat, k, column_index = seq_len(ncol(mat))) {
+		n = length(column_index)
 		partition = do.call(fun, c(list(mat[, column_index, drop = FALSE], k), partition_param))
-		if(!is.atomic(partition)) {
+		if(is.atomic(partition)) {
+			if(length(partition) != n) {
+				stop_wrap("Length of partition should be the same as number of matrix columns.")
+			}
+		} else {
 			partition = cl_membership(partition)
+			if(nrow(partition) != n) {
+				stop_wrap("Length of partition should be the same as number of matrix columns.")
+			}
 			partition = as.vector(cl_class_ids(partition))
 		}
 		partition2 = rep(NA, ncol(mat))
@@ -339,9 +347,13 @@ register_NMF = function(package = c("NMF", "NNLM")) {
 		register_partition_methods(
 			NMF = function(mat, k, ...) {
 				NMF::nmf.options(maxIter = 500)
-				fit = NMF::nmf(mat, rank = k)
+				suppressWarnings(fit <- NMF::nmf(mat, rank = k))
 				NMF::nmf.options(maxIter = NULL)
-				apply(fit@fit@H, 2, which.max)
+				if(is.na(fit@residuals)) {
+					sample(seq_len(k), ncol(mat), replace = TRUE)
+				} else {
+					apply(fit@fit@H, 2, which.max)
+				}
 			}, scale_method = "rescale"
 		)
 	}
