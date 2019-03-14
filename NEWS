@@ -1,3 +1,6 @@
+Changes in version 0.99.14
++ cola_report() supports `mc.cores`
+
 Changes in version 0.99.13
 + partition functions all support `mc.cores`
 
