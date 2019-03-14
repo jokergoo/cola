@@ -1,3 +1,9 @@
+if(grepl("tbi", Sys.info()["nodename"])) {
+	root = "/home/guz"
+} else {
+	root = "/desktop-home/guz"
+}
+
 library(cola)
 
 library(ALL)
@@ -23,8 +29,8 @@ rl = run_all_consensus_partition_methods(
 	mc.cores = 4, 
 	anno = anno
 )
-saveRDS(rl, file = "/desktop-home/guz/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup.rds")
-cola_report(rl, output_dir = "/desktop-home/guz/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup_cola_report")
+saveRDS(rl, file = qq("@{root}/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup.rds"))
+cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup_cola_report"), mc.cores = 4)
 
 set.seed(123)
 rh = hierarchical_partition(
@@ -33,5 +39,5 @@ rh = hierarchical_partition(
 	mc.cores = 4,
 	anno = anno
 )
-saveRDS(rh, file = "/desktop-home/guz/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup_hierarchical_partition.rds")
-cola_report(rh, output_dir = "/desktop-home/guz/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup_hierarchical_partition_cola_report")
+saveRDS(rh, file = qq("@{root}/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup_hierarchical_partition.rds"))
+cola_report(rh, output_dir = qq("@{root}/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup_hierarchical_partition_cola_report"), mc.cores = 4)

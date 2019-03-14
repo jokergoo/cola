@@ -15,7 +15,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
-options(width = 120)
+options(width = 100)
 options(digits = 3)
 opts_chunk$set(
     comment = "#>",
@@ -159,10 +159,10 @@ n_partition_method = length(res_list@partition_method)
 n_method = n_top_value_method * n_partition_method
 for(k in all_k) { -%>
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
-message("  - consensus heamtaps for all methods (k = <%=k%>)", appendLF = FALSE)
+message("  - consensus heamtaps for all methods (k = <%=k%>)<%=ifelse(mc.cores > 1, paste0(', ', mc.cores, ' cores'), '')%>", appendLF = FALSE)
 knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = consensus_heatmap, mc.cores = <%=mc.cores%>)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"', prefix = 'collect-consensus-heatmap')
 <% } -%>
-knitr_insert_tabs()
+knitr_insert_tabs('collect-consensus-heatmap')
 ```
 
 ```{r, echo = FALSE, message = FALSE}
@@ -177,10 +177,10 @@ Membership heatmaps for all methods. [link to cola vignette](http://bioconductor
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
-message("  - membership heamtap for all methods (k = <%=k%>)", appendLF = FALSE)
+message("  - membership heamtap for all methods (k = <%=k%>)<%=ifelse(mc.cores > 1, paste0(', ', mc.cores, ' cores'), '')%>", appendLF = FALSE)
 knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = membership_heatmap, mc.cores = <%=mc.cores%>)', 'k = <%=k%>', opt = 'fig.width =<%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"', prefix = 'collect-membership-heatmap')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('collect-membership-heatmap')
 ```
 
 ```{r, echo = FALSE, message = FALSE}
@@ -195,10 +195,10 @@ Signature heatmaps for all methods. [link to cola vignette](http://bioconductor.
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
-message("  - signature heamtap for all methods (k = <%=k%>)", appendLF = FALSE)
+message("  - signature heamtap for all methods (k = <%=k%>)<%=ifelse(mc.cores > 1, paste0(', ', mc.cores, ' cores'), '')%>", appendLF = FALSE)
 knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = get_signatures, mc.cores = <%=mc.cores%>)', 'k = <%=k%>', opt = 'fig.width = <%=fs*n_partition_method%>, fig.height = <%=fs*n_top_value_method%>, results = "hide"', prefix = 'collect-get-signatures')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('collect-get-signatures')
 ```
 
 ```{r, echo = FALSE, message = FALSE}
@@ -214,7 +214,7 @@ Get statistics for all methods. [link to cola vignette](http://bioconductor.org/
 <% for(k in all_k) { -%>
 knitr_add_tab_item('get_stats(res_list, k = <%=k%>)', 'k = <%=k%>', prefix = 'get-stats-from-consensus-partition-list')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('get-stats-from-consensus-partition-list')
 ```
 
 ### Partition from all methods
@@ -232,7 +232,7 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = S
 message("  - classifications from all methods (k = <%=k%>)", appendLF = FALSE)
 knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 9, fig.height = 8', prefix = 'collect-classes-from-consensus-partition-list')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('collect-classes-from-consensus-partition-list')
 ```
 
 ```{r, echo = FALSE, message = FALSE}
@@ -255,7 +255,7 @@ if(inherits(oe, "try-error")) {
 <% for(top_n in res_list@list[[1]]@top_n) { -%>
 knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>, method = "<%=venn_method%>")', 'top_n = <%=top_n%>', opt = 'fig.width = 5, fig.height = 5', prefix = 'top-rows-overlap-by-venn')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('top-rows-overlap-by-venn')
 ```
 
 Also visualize the correspondance of rankings between different top methods:
@@ -264,7 +264,7 @@ Also visualize the correspondance of rankings between different top methods:
 <% for(top_n in res_list@list[[1]]@top_n) { -%>
 knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>, method = "correspondance")', 'top_n = <%=top_n%>', opt = 'fig.width = 14, fig.height = 8', prefix = 'top-rows-overlap-by-correspondance')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('top-rows-overlap-by-correspondance')
 ```
 
 Heatmaps for the top rows:
@@ -286,7 +286,7 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = S
 message("  - comparing top row methods by heatmap (top_n = <%=top_n%>)", appendLF = FALSE)
 knitr_add_tab_item('top_rows_heatmap(res_list, top_n = <%=top_n%>)', 'top_n = <%=top_n%>', opt = 'fig.width = <%=fig_width%>, fig.height = <%=fig_height%>', prefix = 'top-rows-heatmap')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('top-rows-heatmap')
 ```
 
 ```{r, echo = FALSE, message = FALSE}
@@ -309,7 +309,7 @@ Test correlation between subgroups and known annotations:
 <% for(k in all_k) { -%>
 knitr_add_tab_item('test_to_known_factors(res_list, k = <%=k%>)', 'k = <%=k%>', prefix = 'test-to-known-factors-from-consensus-partition-list')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('test-to-known-factors-from-consensus-partition-list')
 ```
 
 
@@ -329,7 +329,7 @@ md_list = mclapply(seq_len(nrow(comb)), function(ind) {
     i_section = ind
     top_value_method = comb[ind, 1]
     partition_method = comb[ind, 2]
-    tmpfile = tempfile()
+    tmpfile = tempfile(tmpdir = cola:::.ENV$TEMP_DIR)
     
     brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)
     rmd = paste(readLines(tmpfile), collapse = "\n")

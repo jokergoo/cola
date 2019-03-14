@@ -569,7 +569,7 @@ setMethod(f = "show",
 	signature = "ConsensusPartition",
 	definition = function(object) {
 	qqcat("A 'ConsensusPartition' object with k = @{paste(object@k, collapse = ', ')}.\n")
-	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
+	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{length(object@column_index)} columns.\n")
 	top_n_str = object@top_n
 	qqcat("  Top rows (@{paste(top_n_str, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
 	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")

@@ -15,7 +15,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
-options(width = 120)
+options(width = 100)
 options(digits = 3)
 opts_chunk$set(
     comment = "#>",
@@ -138,14 +138,14 @@ message(qq("* collecting classifications for each depth (@{max_depth}..2)"), app
 <% for(depth in max_depth:2) { -%>
 knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'collect-classes-from-hierarchical-partition')
 <% } -%>
-knitr_insert_tabs()
+knitr_insert_tabs('collect-classes-from-hierarchical-partition')
 ```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('get_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'get-classes-from-hierarchical-partition', show_and_hide = TRUE)
+knitr_add_tab_item('get_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'get-classes-from-hierarchical-partition', hide_and_show = TRUE)
 <% } -%>
-knitr_insert_tabs()
+knitr_insert_tabs('get-classes-from-hierarchical-partition')
 ```
 
 
@@ -160,7 +160,7 @@ message(qq("* making PCA plots"), appendLF = FALSE)
 <% for(depth in max_depth:2) { -%>
 knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'dimension-reduction-by-depth')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('dimension-reduction-by-depth')
 ```
 
 Or you can also do it for each parent node:
@@ -168,9 +168,9 @@ Or you can also do it for each parent node:
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
 for(p in all_parents) { -%>
-knitr_add_tab_item('dimension_reduction(res_hc, parent_node = "<%=p%>")', 'parent_node = "<%=p%>"', prefix = 'dimension-reduction-by-node')
+knitr_add_tab_item('dimension_reduction(res_hc, parent_node = "<%=p%>")', 'node = "<%=p%>"', prefix = 'dimension-reduction-by-node')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('dimension-reduction-by-node')
 ```
 
 <% if(max_depth >= 2) { %>
@@ -210,7 +210,7 @@ message(qq("* testing correlation of subgroups to known annotations"))
 <% for(depth in max_depth:2) { -%>
 knitr_add_tab_item('test_to_known_factors(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('test-to-known-factors-from-hierarchical-partition')
 ```
 
 
@@ -225,13 +225,14 @@ all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
 n_section = length(all_parents)
 i_section = 0
 .e = environment()
-md_list = mclapply(seq_along(all_patterns), function(ind) {
+all_k = res_hc@list[[1]]@k
+md_list = mclapply(seq_along(all_parents), function(ind) {
     i_section = ind
     node = all_parents[ind]
     top_value_method = res_hc[[node]]@top_value_method
     partition_method = res_hc[[node]]@partition_method
     
-    tmpfile = tempfile()
+    tmpfile = tempfile(tmpdir = cola:::.ENV$TEMP_DIR)
     
     brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)
     rmd = paste(readLines(tmpfile), collapse = "\n")

@@ -1,3 +1,9 @@
+if(grepl("tbi", Sys.info()["nodename"])) {
+	root = "/home/guz"
+} else {
+	root = "/desktop-home/guz"
+}
+
 library(cola)
 
 library(HSMMSingleCell)
@@ -9,7 +15,7 @@ data(HSMM_sample_sheet)
 m = adjust_matrix(log10(HSMM_expr_matrix + 1))
 anno = HSMM_sample_sheet[, c("Hours", "Media", "Pseudotime", "State")]
 
-gt = readRDS("/desktop-home/guz/project/development/cola_examples/HSMM_single_cell/gene_type_gencode_v17.rds")
+gt = readRDS(qq("@{root}/project/development/cola_examples/HSMM_single_cell/gene_type_gencode_v17.rds"))
 m = m[gt[rownames(m)] == "protein_coding", , drop = FALSE]
 
 register_NMF()
@@ -22,8 +28,8 @@ rl = run_all_consensus_partition_methods(
 	anno = anno
 )
 
-saveRDS(rl, file = "/desktop-home/guz/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup.rds")
-cola_report(rl, output_dir = "/desktop-home/guz/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup_cola_report")
+saveRDS(rl, file = qq("@{root}/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup.rds"))
+cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup_cola_report"), mc.cores = 4)
 
 set.seed(123)
 rh = hierarchical_partition(
@@ -32,5 +38,5 @@ rh = hierarchical_partition(
 	mc.cores = 4,
 	anno = anno
 )
-saveRDS(rh, file = "/desktop-home/guz/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup_hierarchical_partition.rds")
-cola_report(rh, output_dir = "/desktop-home/guz/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup_hierarchical_partition_cola_report")
+saveRDS(rh, file = qq("@{root}/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup_hierarchical_partition.rds"))
+cola_report(rh, output_dir = qq("@{root}/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup_hierarchical_partition_cola_report"), mc.cores = 4

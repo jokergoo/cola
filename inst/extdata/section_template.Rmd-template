@@ -133,9 +133,9 @@ is calculated from the consensus matrix.
 
 ```{r <%=chunk_prefix%>-get-classes, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('cbind(get_classes(res, k = <%=k%>), get_membership(res, k = <%=k%>))', 'k = <%=k%>', prefix = '<%=top_value_method%>-<%=partition_method%>-get-classes', hide_and_show = TRUE)
+knitr_add_tab_item('cbind(get_classes(res, k = <%=k%>), get_membership(res, k = <%=k%>))', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-get-classes', hide_and_show = TRUE)
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('<%=chunk_prefix%>-get-classes')
 ```
 
 Heatmaps for the consensus matrix:
@@ -149,9 +149,9 @@ message("  - making consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')"
 
 ```{r <%=chunk_prefix%>-consensus-heatmap, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('consensus_heatmap(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=top_value_method%>-<%=partition_method%>-consensus-heatmap')
+knitr_add_tab_item('consensus_heatmap(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-consensus-heatmap')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('<%=chunk_prefix%>-consensus-heatmap')
 ```
 
 Heatmaps for the membership of samples in all partitions to see how consistent they are:
@@ -165,9 +165,9 @@ message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')
 
 ```{r <%=chunk_prefix%>-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('membership_heatmap(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=top_value_method%>-<%=partition_method%>-membership-heatmap')
+knitr_add_tab_item('membership_heatmap(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-membership-heatmap')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('<%=chunk_prefix%>-membership-heatmap')
 ```
 
 As soon as we have had the classes for columns, we can look for signatures which are significantly
@@ -184,16 +184,16 @@ message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')", appen
 
 ```{r <%=chunk_prefix%>-signature, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('get_signatures(res, k = <%=k%>)', 'k = <%=k%>', opt = 'results = "hide"', prefix = '<%=top_value_method%>-<%=partition_method%>-get-signatures')
+knitr_add_tab_item('get_signatures(res, k = <%=k%>)', 'k = <%=k%>', opt = 'results = "hide"', prefix = '<%=chunk_prefix%>-get-signatures')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('<%=chunk_prefix%>-get-signatures')
 ```
 
 ```{r <%=chunk_prefix%>-signature-no-scale, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('get_signatures(res, k = <%=k%>, scale_rows = FALSE)', 'k = <%=k%>', opt = 'results = "hide"', prefix = '<%=top_value_method%>-<%=partition_method%>-get-signatures-no-scale')
+knitr_add_tab_item('get_signatures(res, k = <%=k%>, scale_rows = FALSE)', 'k = <%=k%>', opt = 'results = "hide"', prefix = '<%=chunk_prefix%>-get-signatures-no-scale')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('<%=chunk_prefix%>-get-signatures-no-scale')
 ```
 
 PCA plots:
@@ -207,9 +207,9 @@ message("  - making PCA plots (k = '<%=paste(all_k, collapse=', ')%>')", appendL
 
 ```{r <%=chunk_prefix%>-mds, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('dimension_reduction(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=top_value_method%>-<%=partition_method%>-dimension-reduction')
+knitr_add_tab_item('dimension_reduction(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-dimension-reduction')
 <%}-%>
-knitr_insert_tabs()
+knitr_insert_tabs('<%=chunk_prefix%>-dimension-reduction')
 ```
 
 <% if(mc.cores == 1) { -%>
@@ -225,7 +225,7 @@ How subgroups split when increasing `k`:
 collect_classes(res)
 ```
 
-<% if(has_known_anno) { %>
+<% if(has_known_anno) { -%>
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message8, echo = FALSE, message = FALSE}
@@ -244,13 +244,13 @@ test_to_known_factors(res)
 ```{r <%=chunk_prefix%>-message9, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
+<%}-%>
 
-<%} else {-%>
-<% if(mc.cores == 1) { -%>
+<%} else {
+if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message9, echo = FALSE, message = FALSE}
 message("")
 ```
-<%}-%>
-<%}-%>
+<%} }-%>
 
 Consider to use `submit_to_david()` to do function enrichment for each signature list.

@@ -2,7 +2,6 @@
 
 KNITR_TAB_ENV = new.env()
 KNITR_TAB_ENV$current_tab_index = 0
-KNITR_TAB_ENV$current_div_index = 0
 KNITR_TAB_ENV$header = NULL
 KNITR_TAB_ENV$current_html = ""
 KNITR_TAB_ENV$prefix = NULL
@@ -101,6 +100,9 @@ $('#@{tab}-a').click(function(){
 # == title
 # Generate the HTML fragment for the JavaScript tabs.
 #
+# == param
+# -uid a unique identifier for the div.
+#
 # == details
 # The jQuery UI is used to generate html tabs (https://jqueryui.com/tabs/ ).
 #
@@ -114,8 +116,7 @@ $('#@{tab}-a').click(function(){
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
-knitr_insert_tabs = function() {
-	KNITR_TAB_ENV$current_div_index = KNITR_TAB_ENV$current_div_index + 1
+knitr_insert_tabs = function(uid) {
 
 	if(!KNITR_TAB_ENV$css_added) {
 		css = paste(readLines(file.path(TEMPLATE_DIR, "jquery-ui.css")), collapse = "\n")
@@ -130,11 +131,11 @@ knitr_insert_tabs = function() {
 	qqcat("
 <script>
 $( function() {
-	$( '#tabs@{KNITR_TAB_ENV$current_div_index}' ).tabs();
+	$( '#tabs-@{uid}' ).tabs();
 } );
 </script>
 ")
-	qqcat("<div id='tabs@{KNITR_TAB_ENV$current_div_index}'>\n")
+	qqcat("<div id='tabs-@{uid}'>\n")
 	cat("<ul>\n")
 	qqcat("<li><a href='#tab-@{KNITR_TAB_ENV$prefix}-@{seq_len(KNITR_TAB_ENV$current_tab_index)}'>@{KNITR_TAB_ENV$header}</a></li>\n")
 	cat("</ul>\n")

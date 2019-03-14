@@ -102,9 +102,9 @@ setMethod(f = "collect_plots",
 		    	return(structure(NA, error = oe))
 		    }
 		} else {
-			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png"))
+			file_name = file.path(.ENV$TEMP_DIR, qq("@{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}_@{digest(res@column_index)}.png"))
 			if(file.exists(file_name)) {
-				if(verbose) qqcat("  - use cache png: @{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}.png.\n")
+				if(verbose) qqcat("  - use cache png: @{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}_@{digest(res@column_index)}.png.\n")
 				return(structure(file_name, cache = TRUE))
 			} else {
 				png(file_name, width = image_width, height = image_height)
@@ -268,9 +268,9 @@ setMethod(f = "collect_plots",
 		    }
 		    if(file.exists(file_name)) file.remove(file_name)
 		} else {
-			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}.png"))
+			file_name = file.path(.ENV$TEMP_DIR, qq("@{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png"))
 			if(file.exists(file_name)) {
-				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}.png.\n")
+				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png.\n")
 				grid.raster(readPNG(file_name))
 			} else {
 				png(file_name, width = image_width, height = image_height)
@@ -302,9 +302,9 @@ setMethod(f = "collect_plots",
 		    }
 		    if(file.exists(file_name)) file.remove(file_name)
 		} else {
-			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}.png"))
+			file_name = file.path(.ENV$TEMP_DIR, qq("@{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png"))
 			if(file.exists(file_name)) {
-				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}.png.\n")
+				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png.\n")
 				grid.raster(readPNG(file_name))
 			} else {
 				png(file_name, width = image_width, height = image_height)
@@ -336,9 +336,9 @@ setMethod(f = "collect_plots",
 		    }
 		    if(file.exists(file_name)) file.remove(file_name)
 		} else {
-			file_name = paste0(.ENV$TEMP_DIR, qq("/@{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}.png"))
+			file_name = file.path(.ENV$TEMP_DIR, qq("@{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}_@{digest(object@column_index)}.png"))
 			if(file.exists(file_name)) {
-				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}.png.\n")
+				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}_@{digest(object@column_index)}.png.\n")
 				grid.raster(readPNG(file_name))
 			} else {
 				png(file_name, width = image_width, height = image_height)

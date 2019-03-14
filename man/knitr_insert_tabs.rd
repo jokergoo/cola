@@ -7,7 +7,12 @@ Generate the HTML fragment for the JavaScript tabs.
 Generate the HTML fragment for the JavaScript tabs.
 }
 \usage{
-knitr_insert_tabs()
+knitr_insert_tabs(uid)
+}
+\arguments{
+
+  \item{uid}{a unique identifier for the div.}
+
 }
 \details{
 The jQuery UI is used to generate html tabs (\url{https://jqueryui.com/tabs/} ).

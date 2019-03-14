@@ -1,3 +1,9 @@
+if(grepl("tbi", Sys.info()["nodename"])) {
+	root = "/home/guz"
+} else {
+	root = "/desktop-home/guz"
+}
+
 library(cola)
 
 library(golubEsets)
@@ -27,8 +33,8 @@ rl = run_all_consensus_partition_methods(
 	anno_col = c("ALL" = "red", "AML" = "blue")
 )
 
-saveRDS(rl, file = "/desktop-home/guz/project/development/cola_examples/Golub_leukemia/Golub_leukemia_subgroup.rds")
-cola_report(rl, output_dir = "/desktop-home/guz/project/development/cola_examples/Golub_leukemia/Golub_leukemia_subgroup_cola_report")
+saveRDS(rl, file = qq("@{root}/project/development/cola_examples/Golub_leukemia/Golub_leukemia_subgroup.rds"))
+cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/Golub_leukemia/Golub_leukemia_subgroup_cola_report"), mc.cores = 4)
 
 set.seed(123)
 rh = hierarchical_partition(
@@ -40,5 +46,5 @@ rh = hierarchical_partition(
 	anno = anno[, c("ALL.AML"), drop = FALSE],
 	anno_col = c("ALL" = "red", "AML" = "blue")
 )
-saveRDS(rh, file = "/desktop-home/guz/project/development/cola_examples/Golub_leukemia/Golub_leukemia_subgroup_hierarchical_partition.rds")
-cola_report(rh, output_dir = "/desktop-home/guz/project/development/cola_examples/Golub_leukemia/Golub_leukemia_subgroup_hierarchical_partition_cola_report")
+saveRDS(rh, file = qq("@{root}/project/development/cola_examples/Golub_leukemia/Golub_leukemia_subgroup_hierarchical_partition.rds"))
+cola_report(rh, output_dir = qq("@{root}/project/development/cola_examples/Golub_leukemia/Golub_leukemia_subgroup_hierarchical_partition_cola_report"), mc.cores = 4)

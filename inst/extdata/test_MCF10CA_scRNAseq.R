@@ -1,6 +1,12 @@
+if(grepl("tbi", Sys.info()["nodename"])) {
+	root = "/home/guz"
+} else {
+	root = "/desktop-home/guz"
+}
+
 library(cola)
 
-rpkm = readRDS("/desktop-home/guz/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_rpkm.rds")
+rpkm = readRDS(qq("@{root}/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_rpkm.rds"))
 
 m = log2(rpkm + 1)
 
@@ -20,8 +26,8 @@ rl = run_all_consensus_partition_methods(
 	anno_col = list(cell_type = cell_col)
 )
 
-saveRDS(rl, file = "/desktop-home/guz/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_subgroup.rds")
-cola_report(rl, output_dir = "/desktop-home/guz/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_subgroup_cola_report")
+saveRDS(rl, file = qq("@{root}/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_subgroup.rds"))
+cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_subgroup_cola_report"), mc.cores = 4)
 
 set.seed(123)
 rh = hierarchical_partition(
@@ -31,5 +37,5 @@ rh = hierarchical_partition(
 	anno = data.frame(cell_type = cell_type), 
 	anno_col = list(cell_type = cell_col)
 )
-saveRDS(rh, file = "/desktop-home/guz/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_subgroup_hierarchical_partition.rds")
-cola_report(rh, output_dir = "/desktop-home/guz/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_subgroup_hierarchical_partition_cola_report")
+saveRDS(rh, file = qq("@{root}/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_subgroup_hierarchical_partition.rds"))
+cola_report(rh, output_dir = qq("@{root}/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_subgroup_hierarchical_partition_cola_report"), mc.cores = 4)
