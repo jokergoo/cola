@@ -1,10 +1,11 @@
-if(grepl("tbi", Sys.info()["nodename"])) {
-	root = "/home/guz"
-} else {
-	root = "/desktop-home/guz"
-}
+
+# root = "/home/guz"
+root = "/desktop-home/guz"
+
 
 library(cola)
+library(GetoptLong)
+
 
 rpkm = readRDS(qq("@{root}/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_rpkm.rds"))
 

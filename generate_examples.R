@@ -1,11 +1,9 @@
+# root = "/home/guz"
+root = "/desktop-home/guz"
 
-if(grepl("tbi", Sys.info()["nodename"])) {
-  root = "/home/guz"
-} else {
-  root = "/desktop-home/guz"
-}
 
 library(cola)
+library(GetoptLong)
 
 set.seed(123)
 m = cbind(rbind(matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
@@ -39,6 +37,7 @@ library(GetoptLong)
 run_script = function(script) {
     cmd = qq("module load R/3.3.1; Rscript @{script};")
     name = qq("cola_@{gsub('.R$', '', basename(script))}")
+    suppressWarnings(file.remove(qq("@{root}/project/development/cola_examples/@{name}.out")))
     cmd = qq("perl @{root}/project/development/ngspipeline2/bsub_single_line.pl --hour 50 --memory 20 --core 4 --name @{name} --output @{root}/project/development/cola_examples/@{name}.out --command '@{cmd}'")
     system(cmd)
 }
@@ -48,4 +47,5 @@ run_script(qq("@{root}/project/development/cola/inst/extdata/test_tcga_gbm.R"))
 run_script(qq("@{root}/project/development/cola/inst/extdata/test_Ritz_ALL.R"))
 run_script(qq("@{root}/project/development/cola/inst/extdata/test_HSMM_single_cell.R"))
 run_script(qq("@{root}/project/development/cola/inst/extdata/test_MCF10CA_scRNAseq.R"))
+
 run_script(qq("@{root}/project/development/cola/inst/extdata/test_cola.R"))

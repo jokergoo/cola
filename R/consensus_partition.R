@@ -249,7 +249,7 @@ consensus_partition = function(data,
 			if(verbose) qqcat("* get top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
-		if(verbose && mc.cores > 1) qqcat("  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{mc.cores} cores).")
+		if(verbose && mc.cores > 1) qqcat("  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{mc.cores} cores).\n")
 
 		lt = mclapply(seq_len(partition_repeat), function(j) {
 

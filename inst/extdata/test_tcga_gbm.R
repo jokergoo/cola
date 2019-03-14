@@ -1,11 +1,11 @@
-if(grepl("tbi", Sys.info()["nodename"])) {
-	root = "/home/guz"
-} else {
-	root = "/desktop-home/guz"
-}
+
+# root = "/home/guz"
+root = "/desktop-home/guz"
+
 
 library(cola)
 library(RColorBrewer)
+library(GetoptLong)
 
 m = read.table(qq("@{root}/project/development/cola_examples/TCGA_GBM/unifiedScaled.txt"), header = TRUE, row.names = 1, check.names = FALSE)
 m = as.matrix(m)

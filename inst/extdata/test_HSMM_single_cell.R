@@ -1,10 +1,11 @@
-if(grepl("tbi", Sys.info()["nodename"])) {
-	root = "/home/guz"
-} else {
-	root = "/desktop-home/guz"
-}
+
+# root = "/home/guz"
+root = "/desktop-home/guz"
+
 
 library(cola)
+library(GetoptLong)
+
 
 library(HSMMSingleCell)
 
