@@ -1,3 +1,4 @@
+options(showWarnCalls = TRUE, showErrorCalls = TRUE)
 
 # root = "/home/guz"
 root = "/desktop-home/guz"
@@ -12,7 +13,7 @@ rpkm = readRDS(qq("@{root}/project/development/cola_examples/MCF10CA_scRNAseq/MC
 m = log2(rpkm + 1)
 
 cell_type = ifelse(grepl("round", colnames(rpkm)), "round", "aberrant")
-cell_col = cell_type = c("aberrant" = "red", "round" = "blue")
+cell_col = c("aberrant" = "red", "round" = "blue")
 
 m = adjust_matrix(m)
 
