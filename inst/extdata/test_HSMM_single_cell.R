@@ -1,3 +1,4 @@
+options(showWarnCalls = TRUE, showErrorCalls = TRUE)
 
 # root = "/home/guz"
 root = "/desktop-home/guz"
