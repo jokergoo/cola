@@ -420,6 +420,9 @@ make_report = function(var_name, object, output_dir, mc.cores = 1, class = class
 .tocify li:hover a  {
   color: #0366d6;
 }
+#toc {
+	padding-bottom:20px;
+}
 </style>
 <script>
 $(window).on('load', function() {
