@@ -86,7 +86,9 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
 	cl = match.call()
-	
+
+	if(verbose) qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
+
 	.hierarchical_partition = function(.env, column_index, concordance_cutoff = 0.9, node_id = '0', 
 		min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
