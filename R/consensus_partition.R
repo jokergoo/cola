@@ -155,6 +155,8 @@ consensus_partition = function(data,
 
 	data = data[, .env$column_index, drop = FALSE]
 
+	if(verbose) qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
+
 	k = sort(k)
 	l = k <= ncol(data)
 	if(sum(l) != length(k)) {
@@ -182,13 +184,13 @@ consensus_partition = function(data,
 	# also since one top value metric will be used for different partition methods,
 	# we cache the top values for repetitive use
 	if(is.null(.env$all_top_value_list)) {
-		if(verbose) qqcat("* calcualting @{top_value_method} values.\n")
+		if(verbose) qqcat("* calculating @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list = list()
 		.env$all_top_value_list[[top_value_method]] = all_top_value
 	} else if(is.null(.env$all_top_value_list[[top_value_method]])) {
-		if(verbose) qqcat("* calcualting @{top_value_method} values.\n")
+		if(verbose) qqcat("* calculating @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list[[top_value_method]] = all_top_value

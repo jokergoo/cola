@@ -64,6 +64,8 @@ run_all_consensus_partition_methods = function(data,
 	if(is.data.frame(data)) data = as.matrix(data)
 	if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
 
+	if(verbose) qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
+
 	if(verbose) cat("* calculate top-values.\n")
 	all_top_value_list = lapply(top_value_method, function(tm) {
 		if(verbose) qqcat("  - calculate @{tm} score for @{nrow(data)} rows.\n")
