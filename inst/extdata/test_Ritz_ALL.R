@@ -13,7 +13,7 @@ data(ALL)
 
 m = exprs(ALL)
 anno = pData(ALL)
-anno = anno[, c("sex", "age", "BT", "citog", "mol.biol")]
+anno = anno[, c("sex", "age", "BT")]
 
 m = adjust_matrix(m)
 

@@ -3,7 +3,7 @@
 
 <% 
 if(is_hc) {
-    mark = ""
+    mark = ifelse(tb[node, ncol(tb)] == "parent", "(p)", "")
     chunk_prefix = paste("node", node, sep = "-")
 } else {
     tb = guess_best_k(res_list)
@@ -13,7 +13,7 @@ if(is_hc) {
 } -%>
 
 <% if(is_hc) { %>
-### Node<%=node%>
+### Node<%=node%><%=mark%>
 <% } else { %>
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
 <% } %>

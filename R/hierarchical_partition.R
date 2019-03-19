@@ -1098,7 +1098,7 @@ setMethod(f = "guess_best_k",
 		concordance = concordance)
 
 	l = rownames(tb) %in% all_leaves(object)
-	tb = cbind(tb, ifelse(l, "leaf", "node"), stringsAsFactors = FALSE)
+	tb = cbind(tb, ifelse(l, "leaf", "parent"), stringsAsFactors = FALSE)
 	colnames(tb)[ncol(tb)] = ""
 
 	return(tb)

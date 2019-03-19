@@ -15,7 +15,7 @@ data(HSMM_sample_sheet)
 
 # `HSMM_expr_matrix` is a FPKM matrix
 m = adjust_matrix(log10(HSMM_expr_matrix + 1))
-anno = HSMM_sample_sheet[, c("Hours", "Media", "Pseudotime", "State")]
+anno = HSMM_sample_sheet[, c("Hours", "Media", "State")]
 
 gt = readRDS(qq("@{root}/project/development/cola_examples/HSMM_single_cell/gene_type_gencode_v17.rds"))
 m = m[gt[rownames(m)] == "protein_coding", , drop = FALSE]

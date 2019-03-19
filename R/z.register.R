@@ -300,7 +300,7 @@ register_partition_methods(
 	# },
 	mclust = function(mat, k, ...) {
 		pca = prcomp(t(mat))
-		Mclust(pca$x[, 1:3], G = k, verbose = FALSE, ...)$classification
+		Mclust(pca$x[, 1:3], G = k, verbose = FALSE, control = emControl(itmax = c(1000, 1000)), ...)$classification
 	}
 	# som = function(mat, k, ...) {
 	# 	kr = floor(sqrt(ncol(mat)))
@@ -346,7 +346,7 @@ register_NMF = function(package = c("NMF", "NNLM")) {
 		}
 		register_partition_methods(
 			NMF = function(mat, k, ...) {
-				NMF::nmf.options(maxIter = 500)
+				NMF::nmf.options(maxIter = 1000)
 				suppressWarnings(fit <- NMF::nmf(mat, rank = k))
 				NMF::nmf.options(maxIter = NULL)
 				if(is.na(fit@residuals)) {
