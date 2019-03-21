@@ -368,6 +368,7 @@ make_report = function(var_name, object, output_dir, mc.cores = 1, class = class
 	l = grepl("^\\s*<h(2|3)>(.*?)</h(2|3)>\\s*$", lines)
 	for(ind in which(l)) {
 		foo = gsub("^\\s*<h(2|3)>(.*?)</h(2|3)>\\s*$", "\\2", lines[ind])
+		foo = gsub("\\(p\\)", "", foo) # for e.g. node01(p)
 		foo = gsub("\\W+$", "", foo)
 		foo = gsub("\\W", "-", foo)
 		lines[ind] = gsub("^\\s*<h(2|3)>(.*?)</h(2|3)>\\s*$", qq("<h\\1 id='@{foo}'>\\2</h\\3>"), lines[ind])

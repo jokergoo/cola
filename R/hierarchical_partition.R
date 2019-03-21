@@ -42,7 +42,9 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -partition_method a single partition method. Available methods are in `all_partition_methods`.
 # -concordance_cutoff the cutoff of concordance scores to determine whether to continue looking for subgroups. Currently it is not used.
 # -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
+# -silhouette_cutoff cutoff for silhouette scores.
 # -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
+# -min_signatures minimal number of signatures to determine whether to continue looking for subgroups.
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
@@ -82,14 +84,14 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # data(cola_rh)
 # cola_rh
 hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
-	concordance_cutoff = 0.9, PAC_cutoff = 0.2, min_samples = 6, 
+	concordance_cutoff = 0.9, PAC_cutoff = 0.2, silhouette_cutoff = 0.5, min_samples = 6, min_signatures = 50,
 	max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
 	cl = match.call()
 
 	if(verbose) qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 
-	.hierarchical_partition = function(.env, column_index, concordance_cutoff = 0.9, node_id = '0', 
+	.hierarchical_partition = function(.env, column_index, concordance_cutoff = 0.9, node_id = '0', silhouette_cutoff = 0.5,
 		min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
 		if(verbose) cat("=========================================================\n")
@@ -116,8 +118,8 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	    }
 	    mat = mat[order(.env$all_top_value_list[[1]], decreasing = TRUE), , drop = FALSE]
 	    s = farthest_subgroup(mat, cl$class, part@top_n)
-	    set1 = which(cl$class == s)
-	    set2 = which(cl$class != s)
+	    set1 = which(cl$class == s & cl$silhouette >= silhouette_cutoff)
+	    set2 = which(cl$class != s & cl$silhouette >= silhouette_cutoff)
 	    .env$all_top_value_list = NULL
 
 	    if(verbose) qqcat("* best k = @{best_k}, the farthest subgroup: @{s}\n")
@@ -132,19 +134,31 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
     		return(lt)
     	}
 
+    	sig_df = get_signatures(part, k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff)
+    	if(is.null(sig_df)) {
+			if(verbose) qqcat("* unable to find signatures, stop.\n")
+	    	return(lt)
+    	} else if(nrow(sig_df) < min_signatures) {
+			if(verbose) qqcat("* number of signatures are too small (@{nrow(sig_df)}), stop.\n")
+	    	return(lt)
+    	}
+
     	if(verbose) qqcat("* partitioned into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
     	# insert the two subgroups into the hierarchy
     	sub_node_1 = paste0(node_id, s)
     	sub_node_2 = paste0(node_id, "0")
 
+    	set1 = which(cl$class == s)
+	    set2 = which(cl$class != s)
+
     	lt2 = lapply(1:2, function(ind) {
 	    	if(length(set1) > min_samples && ind == 1) {
-	    		return(.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1,
+	    		return(.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1, silhouette_cutoff = silhouette_cutoff,
 	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
 
 	    	if(length(set2) > min_samples && ind == 2) {
-	    		return(.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2,
+	    		return(.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2, silhouette_cutoff = silhouette_cutoff,
 	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
 
@@ -159,7 +173,8 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 
 	.env = new.env()
 	.env$data = data
-	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), concordance_cutoff = concordance_cutoff, min_samples = min_samples, 
+	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), concordance_cutoff = concordance_cutoff, 
+		silhouette_cutoff = silhouette_cutoff, min_samples = min_samples, 
 		node_id = "0", max_k = max_k, verbose = verbose, mc.cores = mc.cores, ...)
 
 	# reformat lt
@@ -624,7 +639,7 @@ setMethod(f = "get_signatures",
 
 	ha1 = HeatmapAnnotation(
 		Class = class,
-		col = list(class = object@subgroup_col))
+		col = list(Class = object@subgroup_col))
 
 	dend = cluster_within_group(use_mat1, class)
 	

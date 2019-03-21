@@ -24,15 +24,15 @@ colnames(m) = cn
 
 register_NMF()
 
-set.seed(123)
-rl = run_all_consensus_partition_methods(
-	m,
-	top_n = c(1000, 2000, 3000, 4000), 
-	mc.cores = 4, 
-	anno = anno
-)
-saveRDS(rl, file = qq("@{root}/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup.rds"))
-cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup_cola_report"), mc.cores = 4)
+# set.seed(123)
+# rl = run_all_consensus_partition_methods(
+# 	m,
+# 	top_n = c(1000, 2000, 3000, 4000), 
+# 	mc.cores = 4, 
+# 	anno = anno
+# )
+# saveRDS(rl, file = qq("@{root}/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup.rds"))
+# cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup_cola_report"), mc.cores = 4)
 
 set.seed(123)
 rh = hierarchical_partition(

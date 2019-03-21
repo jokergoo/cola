@@ -8,7 +8,7 @@ Hierarchical partition
 }
 \usage{
 hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmeans",
-    concordance_cutoff = 0.9, PAC_cutoff = 0.2, min_samples = 6,
+    concordance_cutoff = 0.9, PAC_cutoff = 0.2, silhouette_cutoff = 0.5, min_samples = 6,
     max_k = 4, verbose = TRUE, mc.cores = 1, ...)
 }
 \arguments{
@@ -18,6 +18,7 @@ hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmean
   \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}.}
   \item{concordance_cutoff}{the cutoff of concordance scores to determine whether to continue looking for subgroups. Currently it is not used.}
   \item{PAC_cutoff}{the cutoff of PAC scores to determine whether to continue looking for subgroups.}
+  \item{silhouette_cutoff}{cutoff for silhouette scores.}
   \item{min_samples}{the cutoff of number of samples to determine whether to continue looking for subgroups.}
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}
   \item{verbose}{whether print message.}

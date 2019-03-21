@@ -37,7 +37,7 @@ library(GetoptLong)
 run_script = function(script) {
     cmd = qq("module load R/3.3.1; Rscript @{script};")
     name = qq("cola_@{gsub('.R$', '', basename(script))}")
-    cmd = qq("perl @{root}/project/development/ngspipeline2/bsub_single_line.pl --hour 50 --memory 20 --core 4 --name @{name} --dir @{root}/project/development/cola_examples/ --command '@{cmd}'")
+    cmd = qq("perl @{root}/project/development/ngspipeline2/bsub_single_line.pl --hour 50 --memory 20 --core 4 --name @{name} --dir @{root}/project/development/cola_examples/ --command '@{cmd}' --enforce")
     system(cmd)
 }
 

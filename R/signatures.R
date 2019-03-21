@@ -74,7 +74,7 @@ setMethod(f = "get_signatures",
 	data = object@.env$data[, object@column_index, drop = FALSE]
 
 	l = class_df$silhouette >= silhouette_cutoff
-	data2 = data[, l]
+	data2 = data[, l, drop = FALSE]
 	class = class_df$class[l]
 	column_used_index = which(l)
 	tb = table(class)

@@ -1,7 +1,7 @@
 Cola Report for Consensus Partitioning
 ==================
 
-**Date**: `r Sys.time()`, **cola version**: `r installed.packages()["cola", "Version"]`
+**Date**: `r as.POSIXlt(Sys.time())`, **cola version**: `r installed.packages()["cola", "Version"]`
 
 ----------------------------------------------------------------
 
