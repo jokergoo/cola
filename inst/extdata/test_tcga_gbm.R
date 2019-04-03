@@ -34,6 +34,8 @@ register_NMF()
 set.seed(123)
 rh = hierarchical_partition(
 	m, 
+	top_value_method = "ATC",
+	partition_method = "skmeans",
 	top_n = c(1000, 2000, 3000, 4000),
 	mc.cores = 4, 
     anno = data.frame(subtype = subtype,

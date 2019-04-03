@@ -185,8 +185,11 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = S
 message(qq("* making signature heatmaps"), appendLF = FALSE)
 ```
 
-```{r hc-signature, results = "hide"}
-get_signatures(res_hc)
+```{r, results = 'asis', echo = FALSE, include = TRUE}
+<% for(depth in max_depth:2) { -%>
+knitr_add_tab_item('get_signatures(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', opt = 'results="hide"', prefix = 'get-signatures-from-hierarchical-partition')
+<%}-%>
+knitr_insert_tabs('get-signatures-from-hierarchical-partition')
 ```
 
 ```{r, echo = FALSE, message = FALSE}
