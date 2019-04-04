@@ -325,6 +325,7 @@ n_section = n_top_value_method * n_partition_method
 i_section = 0
 comb = expand.grid(res_list@partition_method, res_list@top_value_method, stringsAsFactors = FALSE)[, 2:1]
 .e = environment()
+
 md_list = mclapply(seq_len(nrow(comb)), function(ind) {
     i_section = ind
     top_value_method = comb[ind, 1]
@@ -335,8 +336,11 @@ md_list = mclapply(seq_len(nrow(comb)), function(ind) {
     rmd = paste(readLines(tmpfile), collapse = "\n")
     file.remove(tmpfile)
 
+    ComplexHeatmap:::dev.null()
     knit(text = rmd, quiet = TRUE, envir = .e)
+    dev.off()
 }, mc.cores = mc.cores)
+
 
 for(i in seq_along(md_list)) {
     cat(md_list[[i]], "\n")

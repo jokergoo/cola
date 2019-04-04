@@ -53,7 +53,69 @@ setMethod(f = "collect_plots",
 		cola_opt$raster_resize = op
 	})
 
+	
 	fun_name = deparse(substitute(fun))
+	
+	comb = expand.grid(seq_along(top_value_method), seq_along(partition_method))
+	comb = comb[order(comb[, 1], comb[, 2]), , drop = FALSE]
+
+	if(!multicore_supported()) {
+		if(mc.cores > 1 && verbose) qqcat("* mc.cores is reset to 1 because mclapply() is not supported on this OS.\n")
+		mc.cores = 1
+	}
+
+	if(identical(fun, plot_ecdf) || fun_name %in% c("plot_ecdf", "dimension_reduction")) {
+		image_width = 500
+		image_height = 500
+		resolution = 150
+	} else {
+		image_width = 800
+		image_height = 800
+		resolution = NA
+	}
+	
+	dev.null()
+	image = mclapply(seq_len(nrow(comb)), function(ind, ...) {
+		i = comb[ind, 1]
+		j = comb[ind, 2]
+
+		if(verbose) qqcat("* applying @{fun_name}() for @{top_value_method[i]}:@{partition_method[j]}.\n")
+	    res = object[top_value_method[i], partition_method[j]]
+
+		if(is.null(.ENV$TEMP_DIR)) {
+			file_name = tempfile(fileext = ".png", tmpdir = ".")
+	        png(file_name, width = image_width, height = image_height, res = resolution)
+	        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, verbose = FALSE, ...), silent = TRUE)
+	        dev.off2()
+	        if(!inherits(oe, "try-error")) {
+				return(structure(file_name, cache = FALSE))
+		    } else {
+		    	return(structure(NA, error = oe))
+		    }
+		} else {
+			file_name = file.path(.ENV$TEMP_DIR, qq("@{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}_@{digest(res@column_index)}.png"))
+			if(file.exists(file_name)) {
+				if(verbose) qqcat("  - use cache png: @{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}_@{digest(res@column_index)}.png.\n")
+				return(structure(file_name, cache = TRUE))
+			} else {
+				png(file_name, width = image_width, height = image_height, res = resolution)
+		        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...), silent = TRUE)
+		        dev.off2()
+		        if(!inherits(oe, "try-error")) {
+					return(structure(file_name, cache = TRUE))
+			    } else {
+			    	return(structure(NA, error = oe))
+			    }
+			}
+		}
+	}, mc.cores = mc.cores, ...)
+	dev.off2()
+
+	if(any(sapply(image, inherits, "try-error"))) {
+		print(image)
+		stop_wrap("You have errors when generating the plots.")
+	}
+
 	grid.newpage()
 	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 	pushViewport(viewport(layout = grid.layout(nrow = length(top_value_method)+1, 
@@ -74,50 +136,6 @@ setMethod(f = "collect_plots",
 	    }
 	    upViewport()
 	}
-	
-	comb = expand.grid(seq_along(top_value_method), seq_along(partition_method))
-	comb = comb[order(comb[, 1], comb[, 2]), , drop = FALSE]
-
-	if(!multicore_supported()) {
-		if(mc.cores > 1 && verbose) qqcat("* mc.cores is reset to 1 because mclapply() is not supported on this OS.\n")
-		mc.cores = 1
-	}
-	image = mclapply(seq_len(nrow(comb)), function(ind, ...) {
-		i = comb[ind, 1]
-		j = comb[ind, 2]
-
-		if(verbose) qqcat("* applying @{fun_name}() for @{top_value_method[i]}:@{partition_method[j]}.\n")
-	    res = object[top_value_method[i], partition_method[j]]
-
-    	image_width = 800
-		image_height = 800
-		if(is.null(.ENV$TEMP_DIR)) {
-			file_name = tempfile(fileext = ".png", tmpdir = ".")
-	        png(file_name, width = image_width, height = image_height)
-	        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, verbose = FALSE, ...), silent = TRUE)
-	        dev.off2()
-	        if(!inherits(oe, "try-error")) {
-				return(structure(file_name, cache = FALSE))
-		    } else {
-		    	return(structure(NA, error = oe))
-		    }
-		} else {
-			file_name = file.path(.ENV$TEMP_DIR, qq("@{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}_@{digest(res@column_index)}.png"))
-			if(file.exists(file_name)) {
-				if(verbose) qqcat("  - use cache png: @{top_value_method[i]}_@{partition_method[j]}_@{fun_name}_@{k}_@{digest(res@column_index)}.png.\n")
-				return(structure(file_name, cache = TRUE))
-			} else {
-				png(file_name, width = image_width, height = image_height)
-		        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...), silent = TRUE)
-		        dev.off2()
-		        if(!inherits(oe, "try-error")) {
-					return(structure(file_name, cache = TRUE))
-			    } else {
-			    	return(structure(NA, error = oe))
-			    }
-			}
-		}
-	}, mc.cores = mc.cores, ...)
 
 	for(ind in seq_len(nrow(comb))) {
 		i = comb[ind, 1]
@@ -128,19 +146,21 @@ setMethod(f = "collect_plots",
     		qqcat("* Caught an error for @{top_value_method[i]}:@{partition_method[j]}:\n@{attr(image[[ind]], 'error')}\n")
     	} else {
     		# if(verbose) qqcat("  - reading @{image[[ind]]}\n")
+    		pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 			grid.raster(readPNG(image[[ind]]))
 			if(!attr(image[[ind]], "cache")) {
 				file.remove(image[[ind]])
 				# if(verbose) qqcat("  - removing @{image[[ind]]}\n")
 			}
+			popViewport()
 		}
 		
 	    grid.rect(gp = gpar(fill = "transparent", col = "black"))
-	    upViewport()
+	    popViewport()
 	}
 
-	upViewport()
-	upViewport()
+	popViewport()
+	popViewport()
 })
 
 # == title
@@ -207,18 +227,21 @@ setMethod(f = "collect_plots",
 	file_name = tempfile()
 	# image_width = convertWidth(unit(1, "npc"), "bigpts", valueOnly = TRUE)
  #    image_height = convertHeight(unit(1, "npc"), "bigpts", valueOnly = TRUE)
-	image_width = 800
-	image_height = 800
-    png(file_name, width = image_width, height = image_height)
+	
+    png(file_name, width = 500, height = 500, res = 150)
     oe = try(plot_ecdf(object))
     dev.off2()
     if(!inherits(oe, "try-error")) {
+    	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
     	grid.raster(readPNG(file_name))
+    	popViewport()
     }
     grid.rect(gp = gpar(fill = "transparent"))
     upViewport()
     if(file.exists(file_name)) file.remove(file_name)
 	
+	image_width = 800
+	image_height = 800
 	if(verbose) cat("* plotting consensus classes for all k.\n")
 	pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 3))
 	file_name = tempfile()
@@ -226,7 +249,9 @@ setMethod(f = "collect_plots",
     oe = try(collect_classes(object, internal = TRUE))
     dev.off2()
     if(!inherits(oe, "try-error")) {
+    	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
         grid.raster(readPNG(file_name))
+        popViewport()
     }
     grid.rect(gp = gpar(fill = "transparent"))
     upViewport()
@@ -262,7 +287,9 @@ setMethod(f = "collect_plots",
 	        oe = try(consensus_heatmap(object, k = all_k[i], internal = TRUE))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
+	        	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 				grid.raster(readPNG(file_name))
+				popViewport()
 		    } else {
 		    	qqcat("* Caught an error for consensus_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 		    }
@@ -271,13 +298,17 @@ setMethod(f = "collect_plots",
 			file_name = file.path(.ENV$TEMP_DIR, qq("@{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png"))
 			if(file.exists(file_name)) {
 				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png.\n")
+				pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 				grid.raster(readPNG(file_name))
+				popViewport()
 			} else {
 				png(file_name, width = image_width, height = image_height)
 		        oe = try(consensus_heatmap(object, k = all_k[i], internal = TRUE))
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
+		        	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 					grid.raster(readPNG(file_name))
+					popViewport()
 			    } else {
 			    	qqcat("* Caught an error for consensus_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 			    }
@@ -296,7 +327,9 @@ setMethod(f = "collect_plots",
 	        oe = try(membership_heatmap(object, k = all_k[i], internal = TRUE))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
+	        	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 				grid.raster(readPNG(file_name))
+				popViewport()
 		    } else {
 		    	qqcat("* Caught an error for membership_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 		    }
@@ -305,13 +338,17 @@ setMethod(f = "collect_plots",
 			file_name = file.path(.ENV$TEMP_DIR, qq("@{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png"))
 			if(file.exists(file_name)) {
 				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png.\n")
+				pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 				grid.raster(readPNG(file_name))
+				popViewport()
 			} else {
 				png(file_name, width = image_width, height = image_height)
 		        oe = try(membership_heatmap(object, k = all_k[i], internal = TRUE))
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
+		        	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 					grid.raster(readPNG(file_name))
+					popViewport()
 			    } else {
 			    	qqcat("* Caught an error for membership_heatmap:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 			    }
@@ -330,7 +367,9 @@ setMethod(f = "collect_plots",
 	        oe = try(get_signatures(object, k = all_k[i], internal = TRUE, use_raster = TRUE, verbose = FALSE))
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
+	        	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 				grid.raster(readPNG(file_name))
+				popViewport()
 		    } else {
 		    	qqcat("* Caught an error for get_signatures:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 		    }
@@ -339,13 +378,17 @@ setMethod(f = "collect_plots",
 			file_name = file.path(.ENV$TEMP_DIR, qq("@{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}_@{digest(object@column_index)}.png"))
 			if(file.exists(file_name)) {
 				if(verbose) qqcat("  - use cache png: @{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}_@{digest(object@column_index)}.png.\n")
+				pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 				grid.raster(readPNG(file_name))
+				popViewport()
 			} else {
 				png(file_name, width = image_width, height = image_height)
 		        oe = try(get_signatures(object, k = all_k[i], internal = TRUE, use_raster = TRUE, verbose = FALSE))
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
+		        	pushViewport(viewport(width = unit(1, "npc") - unit(2, "mm"), height = unit(1, "npc") - unit(2, "mm")))
 					grid.raster(readPNG(file_name))
+					popViewport()
 			    } else {
 			    	qqcat("* Caught an error for get_signatures:@{top_value_method}:@{partition_method}:\n@{oe}.\n")
 			    }
@@ -361,7 +404,7 @@ setMethod(f = "collect_plots",
 	if(verbose) {
 		cat("
 All individual plots can be made by following functions:
-- plot_ecdf(object, lwd = 1)
+- plot_ecdf(object)
 - collect_classes(object)
 - consensus_heatmap(object, k)
 - membership_heatmap(object, k)
@@ -547,11 +590,13 @@ setMethod(f = "collect_classes",
 
 		ht_list = ht_list + Heatmap(membership, col = colorRamp2(c(0, 1), c("white", "red")),
 			show_row_names = FALSE, cluster_columns = FALSE, cluster_rows = FALSE, show_heatmap_legend = i == 1,
+			show_column_names = !internal,
 			heatmap_legend_param = list(title = "Prob"),
-			column_title = qq("k = @{all_k[i]}"),
+			column_title = ifelse(internal, "", qq("k = @{all_k[i]}")),
 			name = paste0("membership_", all_k[i])) + 
 			Heatmap(class, col = brewer_pal_set2_col, 
 				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), 
+				show_column_names = !internal,
 				heatmap_legend_param = list(title = "Class"),
 				name = paste(all_k[i], "_classes"))
 		gap = c(gap, c(0, 4))
@@ -576,9 +621,9 @@ setMethod(f = "collect_classes",
 			}
 		}
 		if(is.null(anno_col))
-			ht_list = ht_list + rowAnnotation(df = anno)
+			ht_list = ht_list + rowAnnotation(df = anno, show_annotation_name = !internal)
 		else {
-			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col)
+			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col, show_annotation_name = !internal)
 		}
 		gap = c(gap, 4)
 	}

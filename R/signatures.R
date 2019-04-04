@@ -297,10 +297,10 @@ setMethod(f = "get_signatures",
 
 		if(is.null(anno_col)) {
 			bottom_anno1 = HeatmapAnnotation(df = anno[column_used_logical, , drop = FALSE],
-				show_annotation_name = !has_ambiguous, annotation_name_side = "right")
+				show_annotation_name = !has_ambiguous & !internal, annotation_name_side = "right")
 		} else {
 			bottom_anno1 = HeatmapAnnotation(df = anno[column_used_logical, , drop = FALSE], col = anno_col,
-				show_annotation_name = !has_ambiguous, annotation_name_side = "right")
+				show_annotation_name = !has_ambiguous & !internal, annotation_name_side = "right")
 		}
 	}
 
@@ -358,7 +358,7 @@ setMethod(f = "get_signatures",
 			}
 
 			bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,
-				show_annotation_name = TRUE, annotation_name_side = "right")	
+				show_annotation_name = !internal, annotation_name_side = "right")	
 		}
 	}
 	silhouette_range = range(class_df$silhouette)
@@ -401,7 +401,7 @@ setMethod(f = "get_signatures",
 		ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
 				Class = class_df$class[column_used_logical],
 				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
-				show_annotation_name = !has_ambiguous,
+				show_annotation_name = !has_ambiguous & !internal,
 				annotation_name_side = "right",
 				show_legend = TRUE)
 	} else {
@@ -413,23 +413,23 @@ setMethod(f = "get_signatures",
 				bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
 				height = unit(15, "mm")),
 			col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
-			show_annotation_name = !has_ambiguous,
+			show_annotation_name = !has_ambiguous & !internal,
 			annotation_name_side = "right",
 			show_legend = TRUE)
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = ha1, row_split = row_split,
 		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
-		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = qq("@{ncol(use_mat1)} confident samples"),
+		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = {if(internal) NULL else qq("@{ncol(use_mat1)} confident samples")},
 		use_raster = use_raster, raster_resize = raster_resize,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
 		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
  	
 	all_value_positive = !any(data < 0)
  	if(scale_rows && all_value_positive) {
-		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm")) +
+		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"), show_column_names = !internal) +
 			Heatmap(rel_diff, col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")), 
-				show_row_names = FALSE, name = "rel_diff", width = unit(5, "mm"))
+				show_row_names = FALSE, show_column_names = !internal, name = "rel_diff", width = unit(5, "mm"))
 	}
 
 	if(has_ambiguous) {
@@ -437,7 +437,7 @@ setMethod(f = "get_signatures",
 			ha2 = HeatmapAnnotation(Prob = membership_mat[!column_used_logical, ,drop = FALSE],
 				Class = class_df$class[!column_used_logical],
 				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
-				show_annotation_name = TRUE,
+				show_annotation_name = !internal,
 				annotation_name_side = "right",
 				show_legend = FALSE)
 		} else {
@@ -449,7 +449,7 @@ setMethod(f = "get_signatures",
 					bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
 					height = unit(15, "mm")), 
 				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
-				show_annotation_name = c(TRUE, TRUE, FALSE),
+				show_annotation_name = c(TRUE, TRUE, FALSE) & !internal,
 				annotation_name_side = "right",
 				show_legend = FALSE)
 		}
@@ -469,7 +469,7 @@ setMethod(f = "get_signatures",
 	}
 
 	if(do_row_clustering) {
-		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}"),
+		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}")),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal, heatmap_legend_list = heatmap_legend_list)
 		
 		row_order = row_order(ht_list)
@@ -482,7 +482,7 @@ setMethod(f = "get_signatures",
 		
 	} else {
 		if(verbose) cat("  - use row order from cache.\n")
-		draw(ht_list, main_heatmap = heatmap_name, column_title = qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}"),
+		draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}")),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = heatmap_legend_list)
 	}

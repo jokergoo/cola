@@ -595,7 +595,6 @@ setMethod(f = "show",
 #
 # == param
 # -object a `ConsensusPartition-class` object.
-# -lwd line width.
 # -... other arguments.
 #
 # == details
@@ -617,7 +616,11 @@ setMethod(f = "show",
 # plot_ecdf(cola_rl["sd", "hclust"])
 setMethod(f = "plot_ecdf",
 	signature = "ConsensusPartition",
-	definition = function(object, lwd = 4, ...) {
+	definition = function(object, ...) {
+
+	omar = par("mar")
+	par(mar = c(4.1, 4.1, 1, 1))
+	on.exit(par(mar = omar))
 	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "consensus value (x)", ylab = "P(X <= x)")
 	for(i in seq_along(object@k)) {
 		consensus_mat = get_consensus(object, k = object@k[i])
@@ -626,7 +629,7 @@ setMethod(f = "plot_ecdf",
 		y = f(x)
 		x = c(0, x)
 		y = c(0, y)
-		lines(x, y, col = i, lwd = lwd)
+		lines(x, y, col = i)
 	}
 	legend("bottomright", pch = 15, legend = paste0("k = ", object@k), col = seq_along(object@k))
 })
@@ -766,11 +769,14 @@ setMethod(f = "consensus_heatmap",
 	membership_mat = get_membership(object, k)
 
 	ht_list = Heatmap(membership_mat, name = "Prob", cluster_columns = FALSE, show_row_names = FALSE,
-		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red"))) + 
+		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red")),
+		show_column_names = !internal) + 
 	Heatmap(class_df$silhouette, name = "Silhouette", width = unit(5, "mm"),
-		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple"))) +
+		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple")),
+		show_column_names = !internal) +
 	Heatmap(class_ids, name = "Class", col = brewer_pal_set2_col,
-		show_row_names = FALSE, width = unit(5, "mm"))
+		show_row_names = FALSE, width = unit(5, "mm"),
+		show_column_names = !internal)
 	
 	ht_list = ht_list +	Heatmap(consensus_mat, name = "Consensus", show_row_names = FALSE, show_row_dend = FALSE,
 		col = colorRamp2(c(0, 1), c("white", "blue")), row_order = mat_col_od, column_order = mat_col_od,
@@ -794,15 +800,19 @@ setMethod(f = "consensus_heatmap",
 			}
 		}
 		if(is.null(anno_col))
-			ht_list = ht_list + rowAnnotation(df = anno)
+			ht_list = ht_list + rowAnnotation(df = anno, show_annotation_name = !internal)
 		else {
-			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col)
+			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col, show_annotation_name = !internal)
 		}
 	}
 	if(show_row_names && !is.null(rownames(consensus_mat))) {
 		ht_list = ht_list + rowAnnotation(rn = anno_text(rownames(consensus_mat)))
 	}
-	column_title = qq("consensus @{object@partition_method} with @{k} groups from @{object@n_partition/length(object@k)} partitions")
+	if(internal) {
+		column_title = NULL
+	} else {
+		column_title = qq("consensus @{object@partition_method} with @{k} groups from @{object@n_partition/length(object@k)} partitions")
+	}
 	draw(ht_list, main_heatmap = "Consensus", column_title = column_title,
 		show_heatmap_legend = !internal, show_annotation_legend = !internal)
 })
@@ -877,10 +887,10 @@ setMethod(f = "membership_heatmap",
 
 		if(is.null(anno_col)) {
 			bottom_anno = HeatmapAnnotation(df = anno,
-				show_annotation_name = TRUE, annotation_name_side = "right")
+				show_annotation_name = !internal, annotation_name_side = "right")
 		} else {
 			bottom_anno = HeatmapAnnotation(df = anno, col = anno_col,
-				show_annotation_name = TRUE, annotation_name_side = "right")
+				show_annotation_name = !internal, annotation_name_side = "right")
 		}
 	}
 
@@ -893,7 +903,8 @@ setMethod(f = "membership_heatmap",
 		width = unit(10, "mm"), show_row_names = FALSE, show_heatmap_legend = FALSE,
 		show_column_names = FALSE) +
 	Heatmap(membership_each, name = "Class", show_row_dend = FALSE, show_column_dend = FALSE, col = brewer_pal_set2_col,
-		column_title = qq("membership heatmap, k = @{k}"), column_order = mat_col_od, cluster_columns = FALSE,
+		column_title = ifelse(internal, "", qq("membership heatmap, k = @{k}")), 
+		column_order = mat_col_od, cluster_columns = FALSE,
 		row_split = param$top_n,
 		top_annotation = HeatmapAnnotation(Prob = membership_mat,
 			Class = class_ids, col = c(list(Class = brewer_pal_set2_col), Prob = col_fun),
@@ -901,15 +912,21 @@ setMethod(f = "membership_heatmap",
 		bottom_annotation = bottom_anno,
 		show_column_names = show_column_names,
 		row_title = NULL
-		) 
-	row_title = qq("@{round(object@n_partition/length(object@k)/length(top_n_level))} x @{length(top_n_level)} random samplings")
+	)
+	if(internal) {
+		row_title = NULL
+	} else {
+		row_title = qq("@{round(object@n_partition/length(object@k)/length(top_n_level))} x @{length(top_n_level)} random samplings")
+	}
 	draw(ht, main_heatmap = "Class", row_title = row_title,
 		show_heatmap_legend = FALSE, show_annotation_legend = !internal)
 	param2 = get_param(object, k)
-	for(i in seq_along(top_n_level)) {
-		decorate_heatmap_body("top_n", slice = i, {
-			grid.text(qq("top @{top_n_level[i]} rows"), rot = 90, gp = gpar(fontsize = 10))
-		})
+	if(!internal) {
+		for(i in seq_along(top_n_level)) {
+			decorate_heatmap_body("top_n", slice = i, {
+				grid.text(qq("top @{top_n_level[i]} rows"), rot = 90, gp = gpar(fontsize = 10))
+			})
+		}
 	}
 })
 
@@ -925,6 +942,7 @@ setMethod(f = "membership_heatmap",
 # -top_n top n rows to use. By default it uses all rows in the original matrix.
 # -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`.
+# -internal internally used.
 # -silhouette_cutoff cutoff of silhouette score. Data points with values less
 #        than it will be mapped with cross symbols.
 # -remove whether to remove columns which have less silhouette scores than
@@ -944,7 +962,7 @@ setMethod(f = "membership_heatmap",
 setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,
-	method = c("PCA", "MDS"),
+	method = c("PCA", "MDS"), internal = FALSE,
 	silhouette_cutoff = 0.5, remove = FALSE,
 	scale_rows = TRUE, ...) {
 
@@ -968,6 +986,7 @@ setMethod(f = "dimension_reduction",
 	
 	op = par(c("mar", "xpd"))
 	par(mar = c(4.1, 4.1, 4.1, 6), xpd = NA)
+	on.exit(par(op))
 
 	class_level = sort(as.character(unique(class_df$class)))
 	n_class = length(class_level)
@@ -975,31 +994,33 @@ setMethod(f = "dimension_reduction",
 	if(remove) {
 		dimension_reduction(data[, l], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
-			method = method, scale_rows = scale_rows)
-		legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
-			pch = c(rep(16, n_class), 0),
-			col = c(brewer_pal_set2_col[class_level], "white"), xjust = 0, yjust = 0.5,
-			title = "Class", title.adj = 0.1, bty = "n",
-			text.col = c(rep("black", n_class), "white"))
-	} else {
-		dimension_reduction(data, pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
-			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
-			method = method, scale_rows = scale_rows)
-		if(any(!l)) {
-			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
-					pch = c(rep(16, n_class), 4),
-					col = c(brewer_pal_set2_col[class_level], "black"), xjust = 0, yjust = 0.5,
-					title = "Class", title.adj = 0.1, bty = "n")
-		} else {
+			method = method, scale_rows = scale_rows, internal = internal)
+		if(!internal) {
 			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
 				pch = c(rep(16, n_class), 0),
 				col = c(brewer_pal_set2_col[class_level], "white"), xjust = 0, yjust = 0.5,
 				title = "Class", title.adj = 0.1, bty = "n",
 				text.col = c(rep("black", n_class), "white"))
 		}
+	} else {
+		dimension_reduction(data, pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
+			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
+			method = method, scale_rows = scale_rows, internal = internal)
+		if(!internal) {
+			if(any(!l)) {
+				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
+						pch = c(rep(16, n_class), 4),
+						col = c(brewer_pal_set2_col[class_level], "black"), xjust = 0, yjust = 0.5,
+						title = "Class", title.adj = 0.1, bty = "n")
+			} else {
+				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
+					pch = c(rep(16, n_class), 0),
+					col = c(brewer_pal_set2_col[class_level], "white"), xjust = 0, yjust = 0.5,
+					title = "Class", title.adj = 0.1, bty = "n",
+					text.col = c(rep("black", n_class), "white"))
+			}
+		}
 	}
-
-	par(op)
 })
 
 
@@ -1015,6 +1036,7 @@ setMethod(f = "dimension_reduction",
 # -cex size of points.
 # -main title of the plot.
 # -scale_rows whether perform scaling on matrix rows.
+# -internal internally used.
 #
 # == value
 # No value is returned.
@@ -1026,13 +1048,22 @@ setMethod(f = "dimension_reduction",
 	signature = "matrix",
 	definition = function(object, 
 	pch = 16, col = "black", cex = 1, main = "",
-	method = c("PCA", "MDS"), scale_rows = TRUE) {
+	method = c("PCA", "MDS"), scale_rows = TRUE,
+	internal = FALSE) {
 
 	data = object
 	method = match.arg(method)
 	if(scale_rows) data = t(scale(t(data)))
 	l = apply(data, 1, function(x) any(is.na(x)))
 	data = data[!l, ]
+
+	if(internal) {
+		omar = par("mar")
+		par(mar = c(4.1, 4.1, 1, 1))
+		on.exit(par(mar = omar))
+
+		main = NULL
+	}
 
 	if(method == "MDS") {
 		loc = cmdscale(dist(t(data)))

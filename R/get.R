@@ -401,8 +401,9 @@ setMethod(f = "guess_best_k",
 		concordance = concordance)
 
 	rntb = rownames(tb)
-	l = tb$concordance > 0.9 & !is.na(tb$best_k)
-	tb = cbind(tb, ifelse(l, ifelse(tb$concordance > 0.95, "**", "*"), ""), stringsAsFactors = FALSE)
+	l = tb$concordance > 0.95 & !is.na(tb$best_k)
+
+	tb = cbind(tb, ifelse(l, ifelse(tb$concordance > 0.95 & stat[, "cophcor"] >= 0.99 & stat[, "PAC"] <= 0.1, "**", "*"), ""), stringsAsFactors = FALSE)
 	colnames(tb)[ncol(tb)] = ""
 	return(tb[order(!is.na(tb[, "best_k"]) + 0, tb[, "concordance"], decreasing = TRUE), , drop = FALSE])
 })

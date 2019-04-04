@@ -243,7 +243,10 @@ md_list = mclapply(seq_along(all_parents), function(ind) {
     rmd = paste(readLines(tmpfile), collapse = "\n")
     file.remove(tmpfile)
 
+    ComplexHeatmap:::dev.null()
     knit(text = rmd, quiet = TRUE, envir = .e)
+    dev.off()
+    
 }, mc.cores = mc.cores)
 
 for(i in seq_along(md_list)) {

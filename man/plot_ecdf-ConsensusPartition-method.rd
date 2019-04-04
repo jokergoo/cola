@@ -8,12 +8,11 @@ Plot the empirical cumulative distribution curve (ECDF) of the consensus matrix
 Plot the empirical cumulative distribution curve (ECDF) of the consensus matrix
 }
 \usage{
-\S4method{plot_ecdf}{ConsensusPartition}(object, lwd = 4, ...)
+\S4method{plot_ecdf}{ConsensusPartition}(object, ...)
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{lwd}{line width.}
   \item{...}{other arguments.}
 
 }

@@ -181,6 +181,7 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 }
 
 dev.off2 = ComplexHeatmap:::dev.off2
+dev.null = ComplexHeatmap:::dev.null
 
 # https://stackoverflow.com/questions/15282471/get-stack-trace-on-trycatched-error-in-r
 try_and_trace = function(expr, message) {
