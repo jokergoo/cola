@@ -281,57 +281,6 @@ consensus_partition = function(data,
 		}
 		if(interactive() && verbose) cat("\n")
 	}
-	
-	construct_consensus_object_simple = function(param, partition_list) {
-
-		partition_list = do.call("c", partition_list)
-
-		partition_list = cl_ensemble(list = partition_list)
-		partition_consensus = cl_consensus(partition_list)
-
-		class_ids = as.vector(cl_class_ids(partition_consensus))
-		
-		membership_each = do.call("cbind", lapply(seq_along(partition_list), function(i) {
-			x = partition_list[[i]]
-			class = as.vector(cl_class_ids(x))
-			class
-		}))
-		rownames(membership_each) = colnames(data)
-
-		consensus_mat = matrix(1, nrow = nrow(membership_each), ncol = nrow(membership_each))
-		for(i in seq_len(nrow(membership_each)-1)) {
-			for(j in (i+1):nrow(membership_each)) {
-				consensus_mat[i, j] = sum(membership_each[i, ] == membership_each[j, ])/ncol(membership_each)
-				consensus_mat[j, i] = consensus_mat[i, j]
-			}
-	 	}
-	 	rownames(consensus_mat) = rownames(membership_each)
-	 	colnames(consensus_mat) = rownames(membership_each)
-
-	 	class_df = data.frame(
-	 		class = class_ids,
-	 		stringsAsFactors = FALSE
-	 	)
-	 	rownames(class_df) = colnames(data)
-
-	 	if(length(unique(class_ids)) == 1) {
-	 		class_df$silhouette = rep(0, length(class_ids))
-	 	} else {
-			class_df$silhouette = silhouette(class_ids, dist(t(consensus_mat)))[, "sil_width"]
-		}
-
-		stat = list(
-			cophcor =  cophcor(consensus_mat),
-			mean_silhouette = mean(class_df$silhouette),
-			PAC = PAC(consensus_mat),
-			concordance = concordance(membership_each, class_ids)
-		)
-		
-		return(list(
-			consensus = consensus_mat, 
-			stat = stat
-		))
-	}
 
 	construct_consensus_object = function(param, partition_list, k, prefix = "  - ") {
 
@@ -431,6 +380,11 @@ consensus_partition = function(data,
 			mean_silhouette = mean(class_df$silhouette),
 			concordance = concordance(membership_each, class_ids)
 		)
+
+		loc = cmdscale(dist(t(data)), k = 2)
+		stat$mean_group_dist_2PC = mean_group_dist(loc, class_ids)
+		loc = cmdscale(dist(t(data)), k = 3)
+		stat$mean_group_dist_3PC = mean_group_dist(loc, class_ids)
 		
 		return(list(
 			class_df = class_df, 
@@ -666,7 +620,8 @@ setMethod(f = "select_partition_number",
 	definition = function(object) {
 	op = par(no.readonly = TRUE)
 
-	m = get_stats(object)[, -1]
+	m = get_stats(object)
+	m = m[, !colnames(m) %in% c("k", "mean_group_dist_2PC", "mean_group_dist_3PC"), drop = FALSE]
 	nm = colnames(m)
 	n = ncol(m)
 	nr = floor(sqrt(n)+1)

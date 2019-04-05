@@ -21,4 +21,5 @@ setGeneric('dimension_reduction', function(object, ...) standardGeneric('dimensi
 setGeneric('test_to_known_factors', function(object, ...) standardGeneric('test_to_known_factors'))
 setGeneric('get_param', function(object, ...) standardGeneric('get_param'))
 setGeneric('membership_heatmap', function(object, ...) standardGeneric('membership_heatmap'))
+setGeneric('collect_stats', function(object, ...) standardGeneric('collect_stats'))
 setGeneric('all_nodes', function(object, ...) standardGeneric('all_nodes'))

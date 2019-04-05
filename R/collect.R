@@ -648,4 +648,101 @@ setMethod(f = "collect_classes",
     }
 })
 
+# == title
+# Draw and compare statistics for a single method
+#
+# == param
+# -object a `ConsensusPartition-class` object.
+#
+# == details
+# It is identical to `plot_partition_number,ConsensusPartition-metod`.
+#
+setMethod(f = "collect_stats",
+	signature = "ConsensusPartition",
+	definition = function(object, ...) {
 
+	plot_partition_number(object, ...)
+})
+
+
+# == title
+# Draw and compare statistics for multiple methods
+#
+# == param
+# -object a `ConsensusPartitionList-class` object.
+# -k number of partitions
+# -layout_nrow number of rows in the layout
+# -... other arguments
+#
+# == details
+# It draws heatmaps for statistics for multiple methods in parallel, so that users can compare which combination
+# of methods gives the best results with given the number of partitions.
+#
+# == examples
+# data(cola_rl)
+# collect_stats(cola_rl, k = 3)
+setMethod(f = "collect_stats",
+	signature = "ConsensusPartitionList",
+	definition = function(object, k, layout_nrow = 2, ...) {
+
+	if(missing(k)) stop_wrap("k needs to be provided.")
+
+	stats = get_stats(object, k = k)
+
+	all_top_value_methods = object@top_value_method
+	all_parittion_methods = object@partition_method
+
+	all_stat_nm = setdiff(colnames(stats), c("k", "area_increased", "Rand", "Jaccard"))
+
+	grid.newpage()
+	layout_ncol = ceiling(length(all_stat_nm)/2)
+	pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = layout_ncol)))
+	layout_ir = 1
+	layout_ic = 1
+	for(nm in all_stat_nm) {
+		m = matrix(nrow = length(all_top_value_methods), ncol = length(all_parittion_methods), dimnames = list(all_top_value_methods, all_parittion_methods))
+		for(rn in rownames(m)) {
+			for(cn in colnames(m)) {
+				m[rn, cn] = stats[paste0(rn, ":", cn), nm]
+			}
+		}
+
+		if(nm == "PAC") {
+			m = 1 - m
+			nm = "1 - PAC"
+		}
+
+		pushViewport(viewport(layout.pos.row = layout_ir, layout.pos.col = layout_ic))
+		if(nm %in% c("cophcor", "1 - PAC", "mean_silhouette", "concordance")) {
+			col_fun = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
+		} else {
+			col_fun = colorRamp2(c(min(m), (min(m) + max(m))/2, max(m)), c("blue", "white", "red"))
+		}
+		ht = Heatmap(m, name = nm, col = col_fun, cluster_rows = FALSE, cluster_columns = FALSE, rect_gp = gpar(type = "none"),
+			layer_fun = function(j, i, x, y, w, h, fill) {
+				v = pindex(m, i, j)
+				w = as.numeric(w)[1]
+				h = as.numeric(h)[1]
+				grid.rect(x, y, w, h, gp = gpar(fill = "#EFEFEF", col = "white", lwd = 2))
+				r = unit(min(w, h)*0.45*v, "snpc")
+				# grid.circle(x, y, r = r, gp = gpar(fill = fill))
+				grid.rect(x, y, width = r*2, height = r*2, gp = gpar(fill = fill))
+			}, column_title = "    ", column_title_side = "bottom", column_title_gp = gpar(fontsize = 18),
+			column_names_side = "top", column_names_rot = 45)
+		lgd = Legend(col_fun = col_fun, direction = "horizontal", title = qq("@{nm} (k = @{k})"), title_position = "lefttop")
+		draw(ht, newpage = FALSE)
+		decorate_column_title(nm, {
+			draw(lgd)
+		})
+		popViewport()
+
+		if(layout_ic == layout_ncol) {
+			layout_ir = layout_ir + 1
+			layout_ic = 1
+		} else {
+			layout_ic = layout_ic + 1
+		}
+	}
+	popViewport()
+
+})

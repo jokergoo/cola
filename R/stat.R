@@ -170,20 +170,24 @@ PAC = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 }
 
 
-tot_withinss = function(class_id, mat) {
-	s = tapply(seq_along(class_id), class_id, function(ind) {
-		if(length(ind) == 1) {
-			return(0)
-		} else {
-			m = mat[, ind, drop = FALSE]
-			mean = rowMeans(m)
-			m = cbind(mean, m)
-			sum((dist(t(m))[1:length(ind)])^2)
-		}
-	})
-	sum(s)
-}
+mean_group_dist = function(mat, factor) {
+	le = unique(factor)
+	nle = length(le)
+	if(nle == 1) {
+		return(0)
+	}
+	d1 = matrix(nrow = nle, ncol = nle)
+	dm = as.matrix(dist(mat))
 
+	for(i in 1:(nle-1)) {
+		for(j in (i+1):nle) {
+			l1 = factor == le[i]
+			l2 = factor == le[j]
+			d1[i, j] = mean(dm[l1, l2])
+		}
+	}
+	mean(d1[!is.na(d1)])
+}
 
 cophcor = function(consensus_mat) {
 	dis_consensus = as.dist(1 - consensus_mat)

@@ -217,6 +217,15 @@ knitr_add_tab_item('get_stats(res_list, k = <%=k%>)', 'k = <%=k%>', prefix = 'ge
 knitr_insert_tabs('get-stats-from-consensus-partition-list')
 ```
 
+Compare statistics for all methods.
+
+```{r, results = "asis", echo = FALSE, include = TRUE}
+<% for(k in all_k) { -%>
+knitr_add_tab_item('collect_stats(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 'fig.width = 6, fig.width = 9', prefix = 'collect-stats-from-consensus-partition-list')
+<%}-%>
+knitr_insert_tabs('collect-stats-from-consensus-partition-list')
+```
+
 ### Partition from all methods
 
 ```{r, echo = FALSE, message = FALSE}
@@ -250,6 +259,10 @@ if(inherits(oe, "try-error")) {
 } else {
    venn_method = "venneuler"
 }-%>
+
+<% if(venn_method == "venn") { %>
+Failed to load **venneuler** package, use `gplots::venn()` instead.
+<% } %>
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(top_n in res_list@list[[1]]@top_n) { -%>

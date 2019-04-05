@@ -215,7 +215,7 @@ setMethod(f = "get_stats",
 	if(missing(k)) stop_wrap("k needs to be provided.")
 	m = matrix(nrow = length(object@list), ncol = length(object@list[[1]]@object_list[[1]]$stat) - 1)
 	rownames(m) = names(object@list)
-	colnames(m) = setdiff(names(object@list[[1]]@object_list[[1]]$stat), "ecdf")
+	colnames(m) = setdiff(names(object@list[[1]]@object_list[[1]]$stat), c("ecdf"))
 	for(i in seq_along(object@list)) {
 		ik = which(object@list[[i]]@k == k)
 		m[i, ] = unlist(object@list[[i]]@object_list[[ik]]$stat[colnames(m)])
