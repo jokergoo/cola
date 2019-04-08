@@ -1,4 +1,28 @@
 
+#toc {
+  position: fixed;
+  left: 0;
+  top: 20px;
+  width: 200px;
+  height: 100%;
+  overflow:auto;
+  padding: 0px 10px 0px 10px;
+}
+#toc_header {
+  display: none;
+}
+#toc ul {
+  margin: 0px;
+  padding: 0px;
+}
+#toc ul li {
+  list-style-type: none;
+}
+
+#toc ul li ul li {
+  margin-left: 15px;
+  list-style-type: circle;
+}
 body, td, th {
    font-family: Arial,Helvetica,sans-serif;
    background-color: white;
@@ -12,21 +36,22 @@ body, td, th {
 }
 
 tt, code, pre {
-   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, 
-
-monospace;
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', 'Consolas', 'Monaco', 'monospace';
 }
 
 h1 {
    font-size:2.2em;
+   line-height: 150%;
 }
 
 h2 {
    font-size:1.8em;
+   line-height: 150%;
 }
 
 h3 {
    font-size:1.4em;
+   line-height: 150%;
 }
 
 h4 {

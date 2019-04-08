@@ -656,7 +656,7 @@ setMethod(f = "collect_classes",
 # -... other arguments.
 #
 # == details
-# It is identical to `plot_partition_number,ConsensusPartition-metod`.
+# It is identical to `plot_partition_number,ConsensusPartition-method`.
 #
 setMethod(f = "collect_stats",
 	signature = "ConsensusPartition",

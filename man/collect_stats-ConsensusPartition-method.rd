@@ -16,7 +16,7 @@ Draw and compare statistics for a single method
 
 }
 \details{
-It is identical to \code{\link{plot_partition_number,ConsensusPartition-metod}}.
+It is identical to \code{\link{plot_partition_number,ConsensusPartition-method}}.
 }
 \examples{
 # There is no example

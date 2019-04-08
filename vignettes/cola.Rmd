@@ -408,7 +408,7 @@ It is easy to define another `hclust` method:
 ```{r, eval = FALSE}
 # code is only for demonstration
 register_partition_methods(
-    hclust_cor = function(mat, k) cutree(hclust(as.dist(1 - cor(mat))))
+    hclust_cor = function(mat, k) cutree(hclust(as.dist(1 - cor(mat))), k)
 )
 ```
 
