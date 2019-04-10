@@ -656,13 +656,13 @@ setMethod(f = "collect_classes",
 # -... other arguments.
 #
 # == details
-# It is identical to `plot_partition_number,ConsensusPartition-method`.
+# It is identical to `select_partition_number,ConsensusPartition-method`.
 #
 setMethod(f = "collect_stats",
 	signature = "ConsensusPartition",
 	definition = function(object, ...) {
 
-	plot_partition_number(object, ...)
+	select_partition_number(object, ...)
 })
 
 
