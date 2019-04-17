@@ -52,9 +52,8 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 all_top_value_methods()
 register_top_value_methods(
-    ATC_spearman = function(mat) ATC(mat, method = "spearman"),
-    ATC_multicore = function(mat) ATC(mat, mc.cores = 2)
+    ATC_spearman = function(mat) ATC(mat, method = "spearman")
 )
 all_top_value_methods()
-remove_top_value_methods(c("ATC_spearman", "ATC_multicore"))
+remove_top_value_methods("ATC_spearman")
 }
