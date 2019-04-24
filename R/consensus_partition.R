@@ -896,14 +896,17 @@ setMethod(f = "membership_heatmap",
 # -k number of partitions.
 # -top_n top n rows to use. By default it uses all rows in the original matrix.
 # -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
-#         ``PCA`` uses `stats::prcomp`.
+#         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
+#         `umap::umap`.
+# -control a list of parameters for `Rtsne::Rtsne` or `umap::umap`.
 # -internal internally used.
 # -silhouette_cutoff cutoff of silhouette score. Data points with values less
 #        than it will be mapped with cross symbols.
 # -remove whether to remove columns which have less silhouette scores than
 #        the cutoff.
 # -scale_rows whether perform scaling on matrix rows.
-# -... other arguments
+# -verbose whether print messages.
+# -... other arguments.
 #
 # == value
 # No value is returned.
@@ -917,11 +920,41 @@ setMethod(f = "membership_heatmap",
 setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,
-	method = c("PCA", "MDS"), internal = FALSE,
+	method = c("PCA", "MDS", "t-SNE", "UMAP"), 
+	control = list(),
+	internal = FALSE,
 	silhouette_cutoff = 0.5, remove = FALSE,
-	scale_rows = TRUE, ...) {
+	scale_rows = TRUE, verbose = TRUE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
+
+	cl = as.list(match.call())
+	# default value
+	if(! "method" %in% names(cl)) {
+		method = NULL
+		if(is.null(method)) {
+			oe = try(loadNamespace("umap"), silent = TRUE)
+			if(inherits(oe, "try-error")) {
+				if(verbose) cat("umap package is not installed.\n")
+			} else {
+				if(verbose) cat("use UMAP\n")
+				method = "UMAP"
+			}
+		}
+		if(is.null(method)) {
+			oe = try(loadNamespace("Rtsne"), silent = TRUE)
+			if(inherits(oe, "try-error")) {
+				if(verbose) cat("Rtsne package is not installed.\n")
+			} else {
+				if(verbose) cat("use t-SNE\n")
+				method = "t-SNE"
+			}
+		}
+		if(is.null(method)) {
+			if(verbose) cat("use PCA\n")
+			method = "PCA"
+		}
+	}
 
 	method = match.arg(method)
 	data = object@.env$data[, object@column_index, drop = FALSE]
@@ -949,7 +982,7 @@ setMethod(f = "dimension_reduction",
 	if(remove) {
 		dimension_reduction(data[, l], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
-			method = method, scale_rows = scale_rows, internal = internal)
+			method = method, control = control, scale_rows = scale_rows, internal = internal, verbose = verbose)
 		if(!internal) {
 			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
 				pch = c(rep(16, n_class), 0),
@@ -960,7 +993,7 @@ setMethod(f = "dimension_reduction",
 	} else {
 		dimension_reduction(data, pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
-			method = method, scale_rows = scale_rows, internal = internal)
+			method = method, control = control, scale_rows = scale_rows, internal = internal, verbose = verbose)
 		if(!internal) {
 			if(any(!l)) {
 				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
@@ -985,13 +1018,16 @@ setMethod(f = "dimension_reduction",
 # == param
 # -object a numeric matrix.
 # -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
-#         ``PCA`` uses `stats::prcomp`.
+#         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
+#         `umap::umap`.
+# -control a list of parameters for `Rtsne::Rtsne` or `umap::umap`.
 # -pch shape of points.
 # -col color of points.
 # -cex size of points.
 # -main title of the plot.
 # -scale_rows whether perform scaling on matrix rows.
 # -internal internally used.
+# -verbose whether print messages.
 #
 # == value
 # No value is returned.
@@ -1003,11 +1039,43 @@ setMethod(f = "dimension_reduction",
 	signature = "matrix",
 	definition = function(object, 
 	pch = 16, col = "black", cex = 1, main = "",
-	method = c("PCA", "MDS"), scale_rows = TRUE,
-	internal = FALSE) {
+	method = c("PCA", "MDS", "t-SNE", "UMAP"),
+	control = list(), 
+	scale_rows = TRUE,
+	internal = FALSE, verbose = TRUE) {
 
 	data = object
-	method = match.arg(method)
+	cl = as.list(match.call())
+
+	# default value
+	if(! "method" %in% names(cl)) {
+		method = NULL
+		if(is.null(method)) {
+			oe = try(loadNamespace("umap"), silent = TRUE)
+			if(inherits(oe, "try-error")) {
+				if(verbose) cat("umap package is not installed.\n")
+			} else {
+				if(verbose) cat("use UMAP\n")
+				method = "UMAP"
+			}
+		}
+		if(is.null(method)) {
+			oe = try(loadNamespace("Rtsne"), silent = TRUE)
+			if(inherits(oe, "try-error")) {
+				if(verbose) cat("Rtsne package is not installed.\n")
+			} else {
+				if(verbose) cat("use t-SNE\n")
+				method = "t-SNE"
+			}
+		}
+		if(is.null(method)) {
+			if(verbose) cat("use PCA\n")
+			method = "PCA"
+		}
+	}
+
+	method = match.arg(method)[1]
+
 	if(scale_rows) data = t(scale(t(data)))
 	l = apply(data, 1, function(x) any(is.na(x)))
 	data = data[!l, ]
@@ -1022,7 +1090,6 @@ setMethod(f = "dimension_reduction",
 
 	if(method == "MDS") {
 		loc = cmdscale(dist(t(data)))
-		# loc = cmdscale(as.dist(1 - cor(data)))
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "Coordinate 1", ylab = "Coordinate 2")
 	} else if(method == "PCA") {
 		fit = prcomp(t(data))
@@ -1030,7 +1097,19 @@ setMethod(f = "dimension_reduction",
 		prop = sm$importance[2, 1:2]
 		loc = fit$x[, 1:2]
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = qq("PC1 (@{round(prop[1]*100)}%)"), ylab = qq("PC2 (@{round(prop[2]*100)}%)"))
-	}	
+	} else if(method == "t-SNE") {
+		param = list(X = t(data))
+		param = c(param, control)
+		fit = do.call(Rtsne::Rtsne, param)
+		loc = fit$Y
+		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "t-SNE 1", ylab = "t-SNE 2")
+	} else if(method == "UMAP") {
+		param = list(d = t(data))
+		param = c(param, control)
+		fit = do.call(umap::umap, param)
+		loc = fit$layout
+		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "UMAP 1", ylab = "UMAP 2")
+	}
 })
 
 
