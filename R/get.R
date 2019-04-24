@@ -330,7 +330,7 @@ setMethod(f = "guess_best_k",
 		return(NA)
 	}
 
-	l = stat[, "PAC"] <= 0.05
+	l = stat[, "PAC"] <= 0.05 & stat[, "mean_silhouette"] >= 0.8
 	if(sum(l)) {
 		return(max(as.numeric(rownames(stat)[l])))
 	}
@@ -401,7 +401,7 @@ setMethod(f = "guess_best_k",
 		concordance = concordance)
 
 	rntb = rownames(tb)
-	l = tb$PAC <= 0.1 & !is.na(tb$best_k)
+	l = tb$PAC <= 0.1 & !is.na(tb$best_k) & tb$mean_silhouette >= 0.8
 
 	tb = cbind(tb, ifelse(l, ifelse(tb$mean_silhouette >= 0.9 & tb$PAC <= 0.05, "**", "*"), ""), stringsAsFactors = FALSE)
 	colnames(tb)[ncol(tb)] = ""

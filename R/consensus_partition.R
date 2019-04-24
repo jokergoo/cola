@@ -279,7 +279,7 @@ consensus_partition = function(data,
 			param = rbind(param, lt[[i]]$param)
 			partition_list = c(partition_list, lt[[i]]$partition_list)
 		}
-		if(interactive() && verbose) cat("\n")
+		if(interactive() && verbose && mc.cores == 1) cat("\n")
 	}
 
 	construct_consensus_object = function(param, partition_list, k, prefix = "  - ") {

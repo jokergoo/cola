@@ -354,6 +354,7 @@ make_report = function(var_name, object, output_dir, mc.cores = 1, class = class
 	file.copy(file.path(TEMPLATE_DIR, "jquery-1.12.4.js"), file.path(output_dir, "js"))
 	file.copy(file.path(TEMPLATE_DIR, "jquery.tocify.js"), file.path(output_dir, "js"))
 	file.copy(file.path(TEMPLATE_DIR, "favicon.ico"), output_dir)
+	file.copy(file.path(TEMPLATE_DIR, "Ellipsis-4.2s-119px.gif"), output_dir)
 
 	# message("* removing temporary files")
 	# file.remove(c(rmd_file, md_file))
@@ -378,6 +379,10 @@ make_report = function(var_name, object, output_dir, mc.cores = 1, class = class
 	ind = which(grepl("^<title>", lines[1:10]))
 	lines[ind] = paste0('<link rel="ICON" type="image/x-icon" href="favicon.ico" />\n', lines[ind])
 	
+	### add loading flag
+	ind = which(grepl("^<hr/>", lines[1:500]))
+	lines[ind] = paste0("<p id='loadingflag' style='text-align:center;'>Document is loading... <img src='Ellipsis-4.2s-119px.gif' style='vertical-align:middle;' /></p>\n", lines[ind])
+
 	## add toc js at the end of the html
 	nl = length(lines)
 	ind = which(grepl("</html>", lines[(nl-10):nl])) + nl - 10 - 1
@@ -436,6 +441,7 @@ $(window).on('load', function() {
     highlightOnScroll: true
   }); 
   $('#toc li').first().addClass('tocify-item active');
+  $('#loadingflag').hide();
 });
 </script>
 </html>
