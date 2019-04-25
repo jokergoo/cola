@@ -54,7 +54,7 @@ Description: Subgroup classification is a basic task in genomic data analysis,
   novel subgroups when there is nothing known about the data or it can test
   consistency between predicted subgroups with known annotations. The cola
   package provides a general framework for subgroup classification by
-  consensus clustering. It has following features: 1. It modularize the
+  consensus clustering. It has following features: 1. It modularizes the
   consensus clustering processes that various methods can be easily
   integrated. 2. It provides rich visualizations for interpreting the results.
   3. It allows running multiple methods at the same time and provides

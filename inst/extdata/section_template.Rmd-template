@@ -196,18 +196,37 @@ knitr_add_tab_item('get_signatures(res, k = <%=k%>, scale_rows = FALSE)', 'k = <
 knitr_insert_tabs('<%=chunk_prefix%>-get-signatures-no-scale')
 ```
 
-PCA plots:
-
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
-message("  - making PCA plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
+message("  - making dimension reduction plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
 <%}-%>
 
+<% 
+dr_method = NULL
+if(is.null(dr_method)) {
+    oe = try(loadNamespace("umap"), silent = TRUE)
+    if(!inherits(oe, "try-error")) {
+        dr_method = "UMAP"
+    }
+}
+if(is.null(dr_method)) {
+    oe = try(loadNamespace("Rtsne"), silent = TRUE)
+    if(!inherits(oe, "try-error")) {
+        dr_method = "t-SNE"
+    }
+}
+if(is.null(dr_method)) {
+    dr_method = "PCA"
+}
+-%>
+
+<%=dr_method%> plots:
+
 ```{r <%=chunk_prefix%>-mds, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
-knitr_add_tab_item('dimension_reduction(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-dimension-reduction')
+knitr_add_tab_item('dimension_reduction(res, k = <%=k%>, method = "<%=dr_method%>")', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-dimension-reduction')
 <%}-%>
 knitr_insert_tabs('<%=chunk_prefix%>-dimension-reduction')
 ```

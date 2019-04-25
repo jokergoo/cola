@@ -331,7 +331,7 @@ register_NMF = function(package = c("NMF", "NNLM")) {
 
 	if(package == "NNLM") {
 		if(!requireNamespace("NNLM")) {
-			stop_wrap("You need to install NNLM package to support NMF.")
+			stop_wrap("You need to install NNLM package (https://cran.r-project.org/src/contrib/Archive/NNLM/) to support NMF.")
 		}
 		register_partition_methods(
 			NMF = function(mat, k, ...) {

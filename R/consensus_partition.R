@@ -282,7 +282,7 @@ consensus_partition = function(data,
 		if(interactive() && verbose && mc.cores == 1) cat("\n")
 	}
 
-	construct_consensus_object = function(param, partition_list, k, prefix = "  - ") {
+	construct_consensus_object = function(param, partition_list, k, prefix = "  - ", verbose = TRUE) {
 
 		partition_list = do.call("c", partition_list)
 
@@ -401,7 +401,7 @@ consensus_partition = function(data,
 		
 		top_n_level = unique(param[l, "top_n"])
 		if(verbose) qqcat("* wrap results for k = @{y}\n")
-		construct_consensus_object(param[l, ], partition_list[l], y)
+		construct_consensus_object(param[l, ], partition_list[l], y, verbose = FALSE)
 		
 	})
 	names(object_list) = as.character(k)

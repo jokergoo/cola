@@ -729,7 +729,8 @@ setMethod(f = "collect_stats",
 				# grid.circle(x, y, r = r, gp = gpar(fill = fill))
 				grid.rect(x, y, width = r*2, height = r*2, gp = gpar(fill = fill))
 			}, column_title = "    ", column_title_side = "bottom", column_title_gp = gpar(fontsize = 18),
-			column_names_side = "top", column_names_rot = 45)
+			column_names_side = "top", column_names_rot = 45, 
+			show_heatmap_legend = FALSE)
 		lgd = Legend(col_fun = col_fun, direction = "horizontal", title = qq("@{nm} (k = @{k})"), title_position = "lefttop")
 		draw(ht, newpage = FALSE)
 		decorate_column_title(nm, {

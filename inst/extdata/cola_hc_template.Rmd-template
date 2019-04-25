@@ -1,7 +1,7 @@
 Cola Report for Hierarchical Partitioning
 ==================
 
-**Date**: `r as.POSIXlt(Sys.time())`, **cola version**: `r installed.packages()["cola", "Version"]`
+**Date**: `r format(as.POSIXlt(Sys.time()), usetz = TRUE)`, **cola version**: `r installed.packages()["cola", "Version"]`
 
 ----------------------------------------------------------------
 
@@ -244,9 +244,9 @@ md_list = mclapply(seq_along(all_parents), function(ind) {
     file.remove(tmpfile)
 
     ComplexHeatmap:::dev.null()
-    knit(text = rmd, quiet = TRUE, envir = .e)
+    txt = knit(text = rmd, quiet = TRUE, envir = .e)
     dev.off()
-    
+    return(txt)
 }, mc.cores = mc.cores)
 
 for(i in seq_along(md_list)) {
