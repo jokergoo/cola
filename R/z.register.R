@@ -319,7 +319,7 @@ register_partition_methods(
 
 # == title
 # Register NMF partition method
-##
+#
 # == details
 # Note NMF analysis is very time-consuming.
 #
@@ -327,15 +327,15 @@ register_NMF = function() {
 	# package = match.arg(package)[1]
 	package = "NMF"
 	if(package == "NNLM") {
-		if(!requireNamespace("NNLM")) {
-			stop_wrap("You need to install NNLM package (https://cran.r-project.org/src/contrib/Archive/NNLM/) to support NMF.")
-		}
-		register_partition_methods(
-			NMF = function(mat, k, ...) {
-				fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
-				apply(fit$H, 2, which.max)
-			}, scale_method = "rescale"
-		)
+		# if(!requireNamespace("NNLM")) {
+		# 	stop_wrap("You need to install NNLM package (https://cran.r-project.org/src/contrib/Archive/NNLM/) to support NMF.")
+		# }
+		# register_partition_methods(
+		# 	NMF = function(mat, k, ...) {
+		# 		fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
+		# 		apply(fit$H, 2, which.max)
+		# 	}, scale_method = "rescale"
+		# )
 	} else if(package == "NMF") {
 		if(!requireNamespace("NMF")) {
 			stop_wrap("You need to install NMF package to support NMF.")
