@@ -2,16 +2,17 @@
 \alias{register_NMF}
 \title{
 Register NMF partition method
+#
 }
 \description{
 Register NMF partition method
+#
 }
 \usage{
-register_NMF(package = c("NMF", "NNLM"))
+register_NMF()
 }
 \arguments{
-
-  \item{package}{which package to support NMF, \code{NMF} package or \code{NNLM} package.}
+\item{package}{which package to support NMF, \code{NMF} package or \code{NNLM} package.}
 
 }
 \details{
