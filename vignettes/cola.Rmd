@@ -433,28 +433,23 @@ register_partition_methods(
         group
     }
 )
-library(NNLM)
+library(NMF)
 register_partition_methods(
     NMF = function(mat, k, ...) {
-        fit = NMF::nmf(mat, rank = k, ...)
+        fit = nmf(mat, rank = k, ...)
         apply(fit@fit@H, 2, which.max)
     }, scale_method = "rescale"
 )
 ```
 
 For these two methods, users can simply use `register_SOM()` and
-`register_NMF()` functions. For NMF methods, there are two packages supported
-in `register_NMF()` which are
-[**NMF**](https://CRAN.R-project.org/package=NMF) (the default method) and
-[**NNLM**](https://cran.r-project.org/package=NNLM) packages. Following is a
-quick comparison of the two packages on [**the Golub
-dataset**](http://bioconductor.org/packages/golubEsets/). The two heatmaps
-show the __H__ matrix which is the meta-gene matrix (columns correspond to
-samples) calculated by the two packages with rank 3. According to the
-heatmaps, **NMF** package performs better than **NNLM** package because
-**NMF** separates AML and ALL samples very nicely.
+`register_NMF()` functions. 
 
-<img src="NMF_compare.png" />
+```{r, eval = FALSE}
+# code is only for demonstration
+register_SOM()
+register_NMF()
+```
 
 In the code above, there is an additional argument `scale_method` for
 `register_partition_method()`. `scale_method` controls how to scale the matrix

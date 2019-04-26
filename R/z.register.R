@@ -319,16 +319,13 @@ register_partition_methods(
 
 # == title
 # Register NMF partition method
-#
-# == param
-# -package which package to support NMF, ``NMF`` package or ``NNLM`` package.
-#
+##
 # == details
 # Note NMF analysis is very time-consuming.
 #
-register_NMF = function(package = c("NMF", "NNLM")) {
-	package = match.arg(package)[1]
-
+register_NMF = function() {
+	# package = match.arg(package)[1]
+	package = "NMF"
 	if(package == "NNLM") {
 		if(!requireNamespace("NNLM")) {
 			stop_wrap("You need to install NNLM package (https://cran.r-project.org/src/contrib/Archive/NNLM/) to support NMF.")

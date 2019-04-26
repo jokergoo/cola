@@ -44,12 +44,11 @@ Suggests: genefilter,
           pamr,
           venneuler,
           kohonen,
-          NNLM,
           NMF,
           WGCNA,
           Rtsne,
           umap
-Description: Subgroup classification is a basic task in genomic data analysis, 
+Description: Subgroup classification is a basic task in genomic data analysis,
   especially for gene expression data and methylation data. It can predict
   novel subgroups when there is nothing known about the data or it can test
   consistency between predicted subgroups with known annotations. The cola
