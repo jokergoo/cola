@@ -61,4 +61,4 @@ cola_report(rh, output_dir = ...)
 For the hierarchical partition, you can only select one partition method and one top-value method.
 The default partition method is `kmeans()` and the default top-value method is `MAD`.
 
-
+There are five examples on real datasets for cola analysis that can be found at https://jokergoo.github.io/cola_examples/.

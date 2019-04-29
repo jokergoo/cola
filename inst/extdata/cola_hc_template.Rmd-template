@@ -149,8 +149,26 @@ knitr_add_tab_item('get_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%
 knitr_insert_tabs('get-classes-from-hierarchical-partition')
 ```
 
+<% 
+dr_method = NULL
+if(is.null(dr_method)) {
+    oe = try(loadNamespace("umap"), silent = TRUE)
+    if(!inherits(oe, "try-error")) {
+        dr_method = "UMAP"
+    }
+}
+if(is.null(dr_method)) {
+    oe = try(loadNamespace("Rtsne"), silent = TRUE)
+    if(!inherits(oe, "try-error")) {
+        dr_method = "t-SNE"
+    }
+}
+if(is.null(dr_method)) {
+    dr_method = "PCA"
+}
+-%>
 
-### PCA plot
+### <%=dr_method%> plot
 
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
@@ -159,7 +177,7 @@ message(qq("* making PCA plots"), appendLF = FALSE)
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'dimension-reduction-by-depth')
+knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>, method = "<%=dr_method%>")', 'depth = <%=depth%>', prefix = 'dimension-reduction-by-depth')
 <%}-%>
 knitr_insert_tabs('dimension-reduction-by-depth')
 ```
@@ -169,7 +187,7 @@ Or you can also do it for each parent node:
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
 for(p in all_parents) { -%>
-knitr_add_tab_item('dimension_reduction(res_hc, parent_node = "<%=p%>")', 'node = "<%=p%>"', prefix = 'dimension-reduction-by-node')
+knitr_add_tab_item('dimension_reduction(res_hc, parent_node = "<%=p%>", method = "<%=dr_method%>")', 'node = "<%=p%>"', prefix = 'dimension-reduction-by-node')
 <%}-%>
 knitr_insert_tabs('dimension-reduction-by-node')
 ```

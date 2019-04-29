@@ -846,8 +846,9 @@ setMethod(f = "test_to_known_factors",
 # -depth depth of the hierarchy.
 # -top_n top n rows to use. By default it uses all rows in the original matrix.
 # -parent_node parent node. If it is set, the function call is identical to ``dimension_reduction(object[parent_node])``
-# -method which method to reduce the dimension of the data. ``mds`` uses `stats::cmdscale`,
-#         ``pca`` uses `stats::prcomp`.
+# -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
+#         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
+#         `umap::umap`.
 # -silhouette_cutoff cutoff of silhouette score. Data points with values less
 #        than it will be mapped to small points.
 # -scale_rows whether perform scaling on matrix rows.
@@ -869,7 +870,7 @@ setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
 	definition = function(object,
 	depth = max_depth(object), parent_node,
-	top_n = NULL, method = c("PCA", "MDS"),
+	top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
 	silhouette_cutoff = 0.5, scale_rows = TRUE) {
 
 	method = match.arg(method)
