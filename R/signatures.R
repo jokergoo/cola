@@ -225,6 +225,7 @@ setMethod(f = "get_signatures",
 	returned_df = cbind(returned_df, group_mean)
 	returned_df = returned_df[order(returned_df[, "fdr"]), ]
 	returned_obj = returned_df
+	rownames(returned_obj) = NULL
 	attr(returned_obj, "sample_used") = column_used_logical
 
 	if(verbose) qqcat("* @{nrow(mat)} signatures under fdr < @{fdr_cutoff}.\n")
@@ -382,6 +383,7 @@ setMethod(f = "get_signatures",
 					if(length(unique(class)) == 2) row_km = min(row_km, 2)
 					if(row_km > 1) {
 						row_split = kmeans(use_mat1, centers = row_km)$cluster
+						returned_obj$row_km = row_split
 						object@.env[[nm]]$row_split = row_split
 					}
 					if(verbose) qqcat("  - split rows into @{row_km} groups by k-means clustering.\n")
