@@ -387,7 +387,6 @@ setMethod(f = "get_signatures",
 					}
 					if(verbose) qqcat("  - split rows into @{row_km} groups by k-means clustering.\n")
 				}
-				returned_obj$row_km = row_split
 			}
 		}
 	}
