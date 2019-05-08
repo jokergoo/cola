@@ -1,3 +1,6 @@
+Changes in version 1.1.1
++ add `GO_enrichment()` and `map_to_entrez_id()`.
+
 Changes in version 0.99.15
 + support t-SNE and UMAP.
 

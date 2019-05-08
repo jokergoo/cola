@@ -146,7 +146,30 @@ submit_to_david = function(genes, email,
 	return(tb)
 }
 
-
+# == title
+# Perform Gene Ontology Enrichment on Signature Genes
+#
+# == param
+# -object a `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
+# -cutoff Cutoff of FDR to define significant signature genes.
+# -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
+#       named vector should be provided where the names are the gene IDs in the matrix and values
+#       are correspoinding Entrez IDs.
+# -id_mapping_pre_fun Preprocess on the gene IDs before sent to the id mapping. For example,
+#       in some analysis, the gene IDs use Ensembl IDs with keeping the version numbers. The version
+#       numbers can be removed by setting ``id_mapping_pre_fun`` to ``function(x) gsub("\\.\\d+$", "", x)``.
+# -org_db Annotation database.
+# -min_set_size The minimal size of the GO gene sets.
+# -max_set_size The maximal size of the GO gene sets.
+#
+# == details
+# For each method, the signature genes are extracted based on the best k.
+#
+# It calls `GO_enrichment,ConsensusPartition-method` on the consensus partitioning results for each method.
+#
+# == values
+# A list where each element in the list corresponds to enrichment results from a single method.
+#
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartitionList",
     definition = function(object, cutoff = 0.05,
@@ -167,9 +190,31 @@ setMethod(f = "GO_enrichment",
     }
 
     return(lt)
-}
+})
 
 # == title
+# Perform Gene Ontology Enrichment on Signature Genes
+#
+# == param
+# -object a `ConsensusPartition-class` object from `run_all_consensus_partition_methods`.
+# -cutoff Cutoff of FDR to define significant signature genes.
+# -k Number of subgroups.
+# -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
+#       named vector should be provided where the names are the gene IDs in the matrix and values
+#       are correspoinding Entrez IDs.
+# -id_mapping_pre_fun Preprocess on the gene IDs before sent to the id mapping. For example,
+#       in some analysis, the gene IDs use Ensembl IDs with keeping the version numbers. The version
+#       numbers can be removed by setting ``id_mapping_pre_fun`` to ``function(x) gsub("\\.\\d+$", "", x)``.
+# -org_db Annotation database.
+# -min_set_size The minimal size of the GO gene sets.
+# -max_set_size The maximal size of the GO gene sets.
+#
+# == value
+# A list of three data frames which correspond to results for three GO catalogues:
+#
+# - ``BP``: biological processes
+# - ``MF``: molecular functions
+# - ``CC``: cellular components
 #
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartition",
@@ -261,7 +306,7 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
 
     x <- getFromNamespace(qq("@{prefix}@{from}"), ns = org_db)
-    mapped_genes <- mappedkeys(x)
+    mapped_genes <- AnnotationDbi::mappedkeys(x)
     xx <- as.list(x[mapped_genes])
 
     ENTREZID = rep(names(xx), times = sapply(xx, length))
