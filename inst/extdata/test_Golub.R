@@ -20,8 +20,10 @@ m = adjust_matrix(m)
 
 library(preprocessCore)
 cn = colnames(m)
+rn = rownames(m)
 m = normalize.quantiles(m)
 colnames(m) = cn
+rownames(m) = rn
 
 register_NMF()
 

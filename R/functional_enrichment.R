@@ -145,3 +145,130 @@ submit_to_david = function(genes, email,
 	tb$geneIds = gene_ids
 	return(tb)
 }
+
+
+setMethod(f = "GO_enrichment",
+    signature = "ConsensusPartitionList",
+    definition = function(object, cutoff = 0.05,
+    id_mapping = NULL, id_mapping_pre_fun = NULL, org_db = "org.Hs.eg.db",
+    min_set_size = 10, max_set_size = 1000) {
+
+    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
+
+    lt = list()
+    for(i in seq_along(object@list)) {
+        nm = names(object@list)[i]
+        lt[[nm]] = list(BP = NULL, MF = NULL, CC = NULL)
+
+        qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}\n")
+        lt[[nm]] = GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, 
+            id_mapping_pre_fun = id_mapping_pre_fun, org_db = org_db,
+            min_set_size = min_set_size, max_set_size = max_set_size)
+    }
+
+    return(lt)
+}
+
+# == title
+#
+setMethod(f = "GO_enrichment",
+    signature = "ConsensusPartition",
+    definition = function(object, cutoff = 0.05, k = guess_best_k(object),
+    id_mapping = NULL, id_mapping_pre_fun = NULL, org_db = "org.Hs.eg.db",
+    min_set_size = 10, max_set_size = 1000) {
+
+    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
+
+    lt = list(BP = NULL, MF = NULL, CC = NULL)
+    sig_df = get_signatures(object, k = k, plot = FALSE, verbose = FALSE)
+    if(is.null(sig_df)) {
+        sig_gene = NULL
+    } else {
+        sig_gene = rownames(sig_df[sig_df$fdr < cutoff, , drop = FALSE])
+    }
+
+    if(length(sig_gene)) {
+        if(!is.null(id_mapping_pre_fun)) sig_gene = id_mapping_pre_fun(sig_gene)
+        if(!is.null(id_mapping)) sig_gene = id_mapping[sig_gene]
+        sig_gene = sig_gene[!is.na(sig_gene)]
+        sig_gene = unique(sig_gene)
+
+        if(!is.null(id_mapping)) {
+        	if(length(sig_gene) == 0) {
+        		warning_wrap("Cannot match to any gene by the id mapping that user provided.")
+        	}
+        }
+
+        if(length(sig_gene)) {
+            ego = clusterProfiler::enrichGO(gene = sig_gene,
+                OrgDb         = org_db,
+                ont           = "BP",
+                pAdjustMethod = "BH",
+                minGSSize = min_set_size,
+                maxGSSize = max_set_size,
+                pvalueCutoff  = 1,
+                qvalueCutoff  = 1,
+                readable      = TRUE)
+            ego = as.data.frame(ego)
+            lt$BP = ego
+
+            ego = clusterProfiler::enrichGO(gene = sig_gene,
+                OrgDb         = org_db,
+                ont           = "MF",
+                pAdjustMethod = "BH",
+                minGSSize = min_set_size,
+                maxGSSize = max_set_size,
+                pvalueCutoff  = 1,
+                qvalueCutoff  = 1,
+                readable      = TRUE)
+            ego = as.data.frame(ego)
+            lt$MF = ego
+
+            ego = clusterProfiler::enrichGO(gene = sig_gene,
+                OrgDb         = org_db,
+                ont           = "CC",
+                pAdjustMethod = "BH",
+                minGSSize = min_set_size,
+                maxGSSize = max_set_size,
+                pvalueCutoff  = 1,
+                qvalueCutoff  = 1,
+                readable      = TRUE)
+            ego = as.data.frame(ego)
+            lt$CC = ego
+        }
+    }
+    return(lt)
+})
+
+# == title
+# Map to Entrez IDs
+#
+# == param
+# -from The input gene ID type. Valid values should be in, e.g. ``columns(org.Hs.eg.db)``.
+# -org_db The annotation database.
+#
+# == details
+# If there are multiple mappings from the input ID type to an unique Entrez ID, just one is randomly picked.
+#
+# == value
+# A named vectors where names are IDs with input ID type and values are the Entrez IDs.
+#
+# The returned object normally is used in `GO_enrichment`.
+#
+map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
+
+    prefix = gsub("\\.db$", "", org_db)
+    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
+
+    x <- getFromNamespace(qq("@{prefix}@{from}"), ns = org_db)
+    mapped_genes <- mappedkeys(x)
+    xx <- as.list(x[mapped_genes])
+
+    ENTREZID = rep(names(xx), times = sapply(xx, length))
+    df = data.frame(ENTREZID, unlist(xx))
+    names(df) = c("ENTREZID", from)
+    df = df[sample(nrow(df), nrow(df)), ]
+    df = df[!duplicated(df[, 2]), ]
+    x = structure(df[, 1], names = df[, 2])
+    return(x)
+}
