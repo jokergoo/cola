@@ -22,6 +22,10 @@
 # -plot whether to make the plot.
 # -verbose whether to print messages.
 # -seed random seed.
+# -left_annotation Annotation put on the left of the heatmap. It should be a `ComplexHeatmap::HeatmapAnnotation-class` object. 
+#              The number of items should be the same as the number of the original matrix rows. The subsetting to the significant 
+#              rows are automatically performed on the annotation object.
+# -right_annotation Annotation put on the right of the heatmap. Same format as ``left_annotation``.
 # -... other arguments.
 # 
 # == details 
@@ -62,6 +66,7 @@ setMethod(f = "get_signatures",
 	show_row_dend = FALSE,
 	show_column_names = FALSE, use_raster = TRUE,
 	plot = TRUE, verbose = TRUE, seed = 888,
+	left_annotation = NULL, right_annotation = NULL,
 	...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
@@ -210,6 +215,8 @@ setMethod(f = "get_signatures",
 	fdr2 = fdr[l_fdr]
 	# group2 = group[l_fdr]
 	# names(group2) = rownames(mat)
+	if(!is.null(left_annotation)) left_annotation = left_annotation[l_fdr, ]
+	if(!is.null(right_annotation)) right_annotation = right_annotation[l_fdr, ]
 
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2)
 	mat1 = mat[, column_used_logical, drop = FALSE]
@@ -251,6 +258,8 @@ setMethod(f = "get_signatures",
 		mat1 = mat[row_index, column_used_logical, drop = FALSE]
 		mat2 = mat[row_index, !column_used_logical, drop = FALSE]
 		more_than_5k = TRUE
+		if(!is.null(left_annotation)) left_annotation = left_annotation[row_index, ]
+		if(!is.null(right_annotation)) right_annotation = right_annotation[row_index, ]
 	} else if(nrow(mat) > 2000) {
 		more_than_5k = TRUE
 		row_index = sample(1:nrow(mat), 2000)
@@ -261,6 +270,8 @@ setMethod(f = "get_signatures",
 		mat2 = mat[row_index, !column_used_logical, drop = FALSE]
 		# group2 = group2[order(fdr2)[1:top_k_genes]]
 		if(verbose) cat(paste0("  - randomly sample 2000 signatures.\n"))
+		if(!is.null(left_annotation)) left_annotation = left_annotation[row_index, ]
+		if(!is.null(right_annotation)) right_annotation = right_annotation[row_index, ]
 	} else {
 		mat1 = mat[, column_used_logical, drop = FALSE]
 		mat2 = mat[, !column_used_logical, drop = FALSE]
@@ -424,7 +435,8 @@ setMethod(f = "get_signatures",
 		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = {if(internal) NULL else qq("@{ncol(use_mat1)} confident samples")},
 		use_raster = use_raster, raster_resize = raster_resize,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
-		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
+		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")},
+		left_annotation = left_annotation, right_annotation = {if(has_ambiguous) NULL else right_annotation})
  	
 	all_value_positive = !any(data < 0)
  	if(scale_rows && all_value_positive) {
@@ -459,7 +471,8 @@ setMethod(f = "get_signatures",
 			cluster_columns = TRUE, show_column_dend = FALSE,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
 			use_raster = use_raster, raster_resize = raster_resize,
-			bottom_annotation = bottom_anno2, show_column_names = show_column_names)
+			bottom_annotation = bottom_anno2, show_column_names = show_column_names,
+			right_annotation = right_annotation)
 	}
 
 	if(has_ambiguous) {

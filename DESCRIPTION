@@ -1,7 +1,7 @@
 Package: cola
 Type: Package
 Title: A Framework for Consensus and Hierarchical Partitioning
-Version: 1.1.0
+Version: 1.1.1
 Date: 2019-03-14
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
@@ -34,7 +34,8 @@ Imports: grDevices,
          digest,
          impute,
          brew,
-         Rcpp (>= 0.11.0)
+         Rcpp (>= 0.11.0),
+         BiocGenerics
 Suggests: genefilter,
           mvtnorm,
           testthat (>= 0.3),

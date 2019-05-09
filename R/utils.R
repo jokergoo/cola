@@ -233,3 +233,183 @@ os_type <- function() {
 multicore_supported = function() {
 	!(os_type() %in% c("osx", "windows"))
 }
+
+
+# == title
+# Number of Rows in the Matrix
+#
+# == param
+# -x A `ConsensusPartition-class` object.
+#
+setMethod(f = "nrow",
+	signature = "ConsensusPartition",
+	definition = function(x) {
+	nrow(x@.env$data)
+})
+
+
+# == title
+# Number of Rows in the Matrix
+#
+# == param
+# -x A `ConsensusPartitionList-class` object.
+#
+setMethod(f = "nrow",
+	signature = "ConsensusPartitionList",
+	definition = function(x) {
+	nrow(x@.env$data)
+})
+
+# == title
+# Number of Rows in the Matrix
+#
+# == param
+# -x A `HierarchicalPartition-class` object.
+#
+setMethod(f = "nrow",
+	signature = "HierarchicalPartition",
+	definition = function(x) {
+	nrow(x@.env$data)
+})
+
+# == title
+# Number of Columns in the Matrix
+#
+# == param
+# -x A `ConsensusPartition-class` object.
+#
+setMethod(f = "ncol",
+	signature = "ConsensusPartition",
+	definition = function(x) {
+	ncol(x@.env$data)
+})
+
+# == title
+# Number of Columns in the Matrix
+#
+# == param
+# -x A `ConsensusPartitionList-class` object.
+#
+setMethod(f = "ncol",
+	signature = "ConsensusPartitionList",
+	definition = function(x) {
+	ncol(x@.env$data)
+})
+
+# == title
+# Number of Columns in the Matrix
+#
+# == param
+# -x A `HierarchicalPartition-class` object.
+#
+setMethod(f = "ncol",
+	signature = "HierarchicalPartition",
+	definition = function(x) {
+	ncol(x@.env$data)
+})
+
+
+# == title
+# Row Names of the Matrix
+#
+# == param
+# -x A `ConsensusPartition-class` object.
+#
+setMethod(f = "rownames",
+	signature = "ConsensusPartition",
+	definition = function(x) {
+	rownames(x@.env$data)
+})
+
+# == title
+# Row Names of the Matrix
+#
+# == param
+# -x A `ConsensusPartitionList-class` object.
+#
+setMethod(f = "rownames",
+	signature = "ConsensusPartitionList",
+	definition = function(x) {
+	rownames(x@.env$data)
+})
+
+# == title
+# Row Names of the Matrix
+#
+# == param
+# -x A `HierarchicalPartition-class` object.
+#
+setMethod(f = "rownames",
+	signature = "HierarchicalPartition",
+	definition = function(x) {
+	rownames(x@.env$data)
+})
+
+
+# == title
+# Column Names of the Matrix
+#
+# == param
+# -x A `ConsensusPartition-class` object.
+#
+setMethod(f = "colnames",
+	signature = "ConsensusPartition",
+	definition = function(x) {
+	colnames(x@.env$data)
+})
+
+
+# == title
+# Column Names of the Matrix
+#
+# == param
+# -x A `ConsensusPartitionList-class` object.
+#
+setMethod(f = "colnames",
+	signature = "ConsensusPartitionList",
+	definition = function(x) {
+	colnames(x@.env$data)
+})
+
+
+# == title
+# Column Names of the Matrix
+#
+# == param
+# -x A `HierarchicalPartition-class` object.
+#
+setMethod(f = "colnames",
+	signature = "HierarchicalPartition",
+	definition = function(x) {
+	colnames(x@.env$data)
+})
+
+# == title
+# Dimension of the Matrix
+#
+# == param
+# -x A `ConsensusPartition-class` object.
+#
+dim.ConsensusPartition = function(x) {
+	dim(x@.env$data)
+}
+
+# == title
+# Dimension of the Matrix
+#
+# == param
+# -x A `ConsensusPartitionList-class` object.
+#
+dim.ConsensusPartitionList = function(x) {
+	dim(x@.env$data)
+}
+
+# == title
+# Dimension of the Matrix
+#
+# == param
+# -x A `HierarchicalPartition-class` object.
+#
+dim.HierarchicalPartition = function(x) {
+	dim(x@.env$data)
+}
