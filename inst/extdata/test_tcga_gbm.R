@@ -20,16 +20,16 @@ m = adjust_matrix(m)
 
 register_NMF()
 
-# set.seed(123)
-# rl = run_all_consensus_partition_methods(
-# 	m, 
-# 	top_n = c(1000, 2000, 3000, 4000), 
-# 	mc.cores = 4,
-# 	anno = data.frame(subtype = subtype), 
-# 	anno_col = list(subtype = subtype_col)
-# )
-# saveRDS(rl, file = qq("@{root}/project/development/cola_examples/TCGA_GBM/TCGA_GBM_subgroup.rds"))
-# cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_cola_report"), mc.cores = 4)
+set.seed(123)
+rl = run_all_consensus_partition_methods(
+	m, 
+	top_n = c(1000, 2000, 3000, 4000), 
+	mc.cores = 4,
+	anno = data.frame(subtype = subtype), 
+	anno_col = list(subtype = subtype_col)
+)
+saveRDS(rl, file = qq("@{root}/project/development/cola_examples/TCGA_GBM/TCGA_GBM_subgroup.rds"))
+cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_cola_report"), mc.cores = 4)
 
 set.seed(123)
 rh = hierarchical_partition(

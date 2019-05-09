@@ -26,17 +26,17 @@ m = m[gt[rownames(m)] == "protein_coding", , drop = FALSE]
 
 register_NMF()
 
-# set.seed(123)
-# rl = run_all_consensus_partition_methods(
-# 	m,
-# 	top_n = c(1000, 2000, 3000, 4000), 
-# 	mc.cores = 4, 
-# 	anno = anno,
-# 	anno_col = anno_col
-# )
+set.seed(123)
+rl = run_all_consensus_partition_methods(
+	m,
+	top_n = c(1000, 2000, 3000, 4000), 
+	mc.cores = 4, 
+	anno = anno,
+	anno_col = anno_col
+)
 
-# saveRDS(rl, file = qq("@{root}/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup.rds"))
-# cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup_cola_report"), mc.cores = 4)
+saveRDS(rl, file = qq("@{root}/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup.rds"))
+cola_report(rl, output_dir = qq("@{root}/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup_cola_report"), mc.cores = 4)
 
 set.seed(123)
 rh = hierarchical_partition(

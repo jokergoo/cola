@@ -146,6 +146,8 @@ submit_to_david = function(genes, email,
 	return(tb)
 }
 
+
+
 # == title
 # Perform Gene Ontology Enrichment on Signature Genes
 #
@@ -154,10 +156,7 @@ submit_to_david = function(genes, email,
 # -cutoff Cutoff of FDR to define significant signature genes.
 # -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
 #       named vector should be provided where the names are the gene IDs in the matrix and values
-#       are correspoinding Entrez IDs.
-# -id_mapping_pre_fun Preprocess on the gene IDs before sent to the id mapping. For example,
-#       in some analysis, the gene IDs use Ensembl IDs with keeping the version numbers. The version
-#       numbers can be removed by setting ``id_mapping_pre_fun`` to ``function(x) gsub("\\.\\d+$", "", x)``.
+#       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
 # -org_db Annotation database.
 # -min_set_size The minimal size of the GO gene sets.
 # -max_set_size The maximal size of the GO gene sets.
@@ -173,7 +172,7 @@ submit_to_david = function(genes, email,
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartitionList",
     definition = function(object, cutoff = 0.05,
-    id_mapping = NULL, id_mapping_pre_fun = NULL, org_db = "org.Hs.eg.db",
+    id_mapping = NULL, org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
@@ -183,10 +182,10 @@ setMethod(f = "GO_enrichment",
         nm = names(object@list)[i]
         lt[[nm]] = list(BP = NULL, MF = NULL, CC = NULL)
 
-        qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}\n")
-        lt[[nm]] = GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, 
-            id_mapping_pre_fun = id_mapping_pre_fun, org_db = org_db,
-            min_set_size = min_set_size, max_set_size = max_set_size)
+        cat("=================================================================\n")
+        qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
+        lt[[nm]] = GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, org_db = org_db,
+            min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ")
     }
 
     return(lt)
@@ -201,13 +200,11 @@ setMethod(f = "GO_enrichment",
 # -k Number of subgroups.
 # -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
 #       named vector should be provided where the names are the gene IDs in the matrix and values
-#       are correspoinding Entrez IDs.
-# -id_mapping_pre_fun Preprocess on the gene IDs before sent to the id mapping. For example,
-#       in some analysis, the gene IDs use Ensembl IDs with keeping the version numbers. The version
-#       numbers can be removed by setting ``id_mapping_pre_fun`` to ``function(x) gsub("\\.\\d+$", "", x)``.
+#       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
 # -org_db Annotation database.
 # -min_set_size The minimal size of the GO gene sets.
 # -max_set_size The maximal size of the GO gene sets.
+# -... Other arguments.
 #
 # == value
 # A list of three data frames which correspond to results for three GO catalogues:
@@ -219,22 +216,40 @@ setMethod(f = "GO_enrichment",
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartition",
     definition = function(object, cutoff = 0.05, k = guess_best_k(object),
-    id_mapping = NULL, id_mapping_pre_fun = NULL, org_db = "org.Hs.eg.db",
-    min_set_size = 10, max_set_size = 1000) {
+    id_mapping = NULL, org_db = "org.Hs.eg.db",
+    min_set_size = 10, max_set_size = 1000, ...) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
-
+	arg_lt = list(...)
+	if("prefix" %in% names(arg_lt)) {
+		prefix = arg_lt$prefix
+	} else {
+		prefix = ""
+	}
+    
     lt = list(BP = NULL, MF = NULL, CC = NULL)
+    if(is.na(k)) {
+    	qqcat("@{prefix}- no proper number of groups found.\n")
+    	return(lt)
+    }
     sig_df = get_signatures(object, k = k, plot = FALSE, verbose = FALSE)
+    m = get_matrix(object)
     if(is.null(sig_df)) {
         sig_gene = NULL
     } else {
-        sig_gene = rownames(sig_df[sig_df$fdr < cutoff, , drop = FALSE])
+        sig_gene = rownames(m)[ sig_df[sig_df$fdr < cutoff, "which_row"] ]
     }
+    qqcat("@{prefix}- @{length(sig_gene)}/@{nrow(m)} significant genes are taken from @{k}-group comparisons\n")
+    
 
     if(length(sig_gene)) {
-        if(!is.null(id_mapping_pre_fun)) sig_gene = id_mapping_pre_fun(sig_gene)
-        if(!is.null(id_mapping)) sig_gene = id_mapping[sig_gene]
+        if(!is.null(id_mapping)) {
+        	if(is.function(id_mapping)) {
+        		sig_gene = id_mapping(sig_gene)
+        	} else {
+        		sig_gene = id_mapping[sig_gene]
+        	}
+        }
         sig_gene = sig_gene[!is.na(sig_gene)]
         sig_gene = unique(sig_gene)
 
@@ -244,7 +259,12 @@ setMethod(f = "GO_enrichment",
         	}
         }
 
+        if(!is.null(id_mapping)) {
+        	qqcat("@{prefix}- @{length(sig_gene)} genes left after id mapping\n")
+        }
+
         if(length(sig_gene)) {
+        	qqcat("@{prefix}- gene set enrichment, GO:BP\n")
             ego = clusterProfiler::enrichGO(gene = sig_gene,
                 OrgDb         = org_db,
                 ont           = "BP",
@@ -255,8 +275,10 @@ setMethod(f = "GO_enrichment",
                 qvalueCutoff  = 1,
                 readable      = TRUE)
             ego = as.data.frame(ego)
+            ego$geneID = NULL
             lt$BP = ego
 
+            qqcat("@{prefix}- gene set enrichment, GO:MF\n")
             ego = clusterProfiler::enrichGO(gene = sig_gene,
                 OrgDb         = org_db,
                 ont           = "MF",
@@ -267,8 +289,10 @@ setMethod(f = "GO_enrichment",
                 qvalueCutoff  = 1,
                 readable      = TRUE)
             ego = as.data.frame(ego)
+            ego$geneID = NULL
             lt$MF = ego
 
+            qqcat("@{prefix}- gene set enrichment, GO:CC\n")
             ego = clusterProfiler::enrichGO(gene = sig_gene,
                 OrgDb         = org_db,
                 ont           = "CC",
@@ -279,11 +303,13 @@ setMethod(f = "GO_enrichment",
                 qvalueCutoff  = 1,
                 readable      = TRUE)
             ego = as.data.frame(ego)
+            ego$geneID = NULL
             lt$CC = ego
         }
     }
     return(lt)
 })
+
 
 # == title
 # Map to Entrez IDs
@@ -305,9 +331,9 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
     prefix = gsub("\\.db$", "", org_db)
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
 
-    x <- getFromNamespace(qq("@{prefix}@{from}"), ns = org_db)
-    mapped_genes <- AnnotationDbi::mappedkeys(x)
-    xx <- as.list(x[mapped_genes])
+    x = getFromNamespace(qq("@{prefix}@{from}"), ns = org_db)
+    mapped_genes = AnnotationDbi::mappedkeys(x)
+    xx = AnnotationDbi::as.list(x[mapped_genes])
 
     ENTREZID = rep(names(xx), times = sapply(xx, length))
     df = data.frame(ENTREZID, unlist(xx))

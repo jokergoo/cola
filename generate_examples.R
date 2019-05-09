@@ -92,110 +92,6 @@ cola_report(rh, output_dir = qq("@{root}/project/development/cola_examples/TCGA_
 
 
 ### doing function enrichment
-library() 
-setMethod(f = "GO_enrichment",
-    signature = "ConsensusPartitionList",
-    definition = function(object, cutoff = 0.05,
-    id_mapping = NULL, id_mapping_pre_fun = NULL, org_db = "org.Hs.eg.db",
-    min_set_size = 10, max_set_size = 1000) {
-
-    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
-
-    lt = list()
-    for(i in seq_along(object@list)) {
-        nm = names(object@list)[i]
-        lt[[nm]] = list(BP = NULL, MF = NULL, CC = NULL)
-
-        qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}\n")
-        lt[[nm]] = GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, 
-            id_mapping_pre_fun = id_mapping_pre_fun, org_db = org_db,
-            min_set_size = min_set_size, max_set_size = max_set_size)
-    }
-
-    return(lt)
-}
-
-setMethod(f = "GO_enrichment",
-    signature = "ConsensusPartition",
-    definition = function(object, cutoff = 0.05, k = guess_best_k(object),
-    id_mapping = NULL, id_mapping_pre_fun = NULL, org_db = "org.Hs.eg.db",
-    min_set_size = 10, max_set_size = 1000) {
-
-    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
-
-    lt = list(BP = NULL, MF = NULL, CC = NULL)
-    sig_df = get_signatures(object, k = k, plot = FALSE, verbose = FALSE)
-    if(is.null(sig_df)) {
-        sig_gene = NULL
-    } else {
-        sig_gene = rownames(sig_df[sig_df$fdr < cutoff, , drop = FALSE])
-    }
-
-    if(length(sig_gene)) {
-        if(!is.null(id_mapping_pre_fun)) sig_gene = id_mapping_pre_fun(sig_gene)
-        if(!is.null(id_mapping)) sig_gene = id_mapping[sig_gene]
-        sig_gene = sig_gene[!is.na(sig_gene)]
-        sig_gene = unique(sig_gene)
-
-        if(length(sig_gene)) {
-            ego = clusterProfiler::enrichGO(gene = sig_gene,
-                OrgDb         = org_db,
-                ont           = "BP",
-                pAdjustMethod = "BH",
-                minGSSize = min_set_size,
-                maxGSSize = max_set_size,
-                pvalueCutoff  = 1,
-                qvalueCutoff  = 1,
-                readable      = TRUE)
-            ego = as.data.frame(ego)
-            lt$BP = ego
-
-            ego = clusterProfiler::enrichGO(gene = sig_gene,
-                OrgDb         = org_db,
-                ont           = "MF",
-                pAdjustMethod = "BH",
-                minGSSize = min_set_size,
-                maxGSSize = max_set_size,
-                pvalueCutoff  = 1,
-                qvalueCutoff  = 1,
-                readable      = TRUE)
-            ego = as.data.frame(ego)
-            lt$MF = ego
-
-            ego = clusterProfiler::enrichGO(gene = sig_gene,
-                OrgDb         = org_db,
-                ont           = "CC",
-                pAdjustMethod = "BH",
-                minGSSize = min_set_size,
-                maxGSSize = max_set_size,
-                pvalueCutoff  = 1,
-                qvalueCutoff  = 1,
-                readable      = TRUE)
-            ego = as.data.frame(ego)
-            lt$CC = ego
-        }
-    }
-    return(lt)
-})
-
-
-map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
-
-    prefix = gsub("\\.db$", "", org_db)
-    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
-
-    x <- getFromNamespace(qq("@{prefix}@{from}"), ns = org_db)
-    mapped_genes <- mappedkeys(x)
-    xx <- as.list(x[mapped_genes])
-
-    ENTREZID = rep(names(xx), times = sapply(xx, length))
-    df = data.frame(ENTREZID, unlist(xx))
-    names(df) = c("ENTREZID", from)
-    df = df[sample(nrow(df), nrow(df)), ]
-    df = df[!duplicated(df[, 2]), ]
-    x = structure(df[, 1], names = df[, 2])
-    return(x)
-}
 
 # Golub_leukemia: HU6800, hu6800.db
 library(hu6800.db)
@@ -203,17 +99,17 @@ x <- hu6800ENTREZID
 mapped_probes <- mappedkeys(x)
 id_mapping <- unlist(as.list(x[mapped_probes]))
 rl = readRDS(qq("@{root}/project/development/cola_examples/Golub_leukemia/Golub_leukemia_subgroup.rds"))
-GO_enrichment(rl, id_mapping = id_mapping)
+lt = GO_enrichment(rl, id_mapping = id_mapping)
 
-# HSMM single cell: Ensembl, no version numbers
+# HSMM single cell: Ensembl
 id_mapping = map_to_entrez_id("ENSEMBL")
 rl = readRDS(qq("@{root}/project/development/cola_examples/HSMM_single_cell/HSMM_single_cell_subgroup.rds"))
-GO_enrichment(rl, id_mapping = id_mapping)
+lt = GO_enrichment(rl, id_mapping = function(x) id_mapping[gsub("\\.\\d+$", "", x)])
 
-# MCF10CA, Ensembl, gencode 19
+# MCF10CA, Ensembl, no version numbers
 id_mapping = map_to_entrez_id("ENSEMBL")
 rl = readRDS(qq("@{root}/project/development/cola_examples/MCF10CA_scRNAseq/MCF10CA_scRNAseq_subgroup.rds"))
-GO_enrichment(rl, id_mapping = id_mapping, id_mapping_pre_fun = function(x) gsub("\\.\\d+$", "", x))
+lt = GO_enrichment(rl, id_mapping = function(x) id_mapping[gsub("\\.\\d+$", "", x)])
 
 # Ritz ALL: HGU95aV2, hgu95av2.db
 library(hgu95av2.db)
@@ -221,10 +117,10 @@ x <- hgu95av2ENTREZID
 mapped_probes <- mappedkeys(x)
 id_mapping <- unlist(as.list(x[mapped_probes]))
 rl = readRDS(qq("@{root}/project/development/cola_examples/Ritz_ALL/Ritz_ALL_subgroup.rds"))
-GO_enrichment(rl, id_mapping = id_mapping)
+lt = GO_enrichment(rl, id_mapping = id_mapping)
 
 # TCGA GBM, gene symbol
 library(org.Hs.eg.db)
 id_mapping = map_to_entrez_id("SYMBOL")
 rl = readRDS(qq("@{root}/project/development/cola_examples/TCGA_GBM/TCGA_GBM_subgroup.rds"))
-GO_enrichment(rl, id_mapping = id_mapping)
+lt = GO_enrichment(rl, id_mapping = id_mapping)
