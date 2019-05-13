@@ -26,5 +26,4 @@ The returned object normally is used in \code{\link{GO_enrichment}}.
 \examples{
 # There is no example
 NULL
-
 }

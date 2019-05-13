@@ -290,7 +290,7 @@ setMethod(f = "get_classes",
 })
 
 # == title
-# Guess the best number of partitions
+# Suggest the best number of partitions
 #
 # == param
 # -object a `ConsensusPartition-class` object.
@@ -305,7 +305,7 @@ setMethod(f = "get_classes",
 # to improve the robustness of the subgrouping. For this, users can set the cutoff of Rand index by ``rand_index_cutoff`` to
 # get rid of or reduce the effect of such cirsumstances.
 #
-# Honestly, it is hard or maybe impossible to say which k is the best one. `guess_best_k` function only gives suggestion of selecting
+# Honestly, it is hard or maybe impossible to say which k is the best one. `suggest_best_k` function only gives suggestion of selecting
 # a reasonable k. Users still need to look at the plots (e.g. by `select_partition_number` or `consensus_heatmap` functions), or even
 # by checking whether the subgrouping gives a reasonable signatures by `get_signatures`, to pick a reasonable k that best explains their study. 
 #
@@ -318,8 +318,8 @@ setMethod(f = "get_classes",
 # == example
 # data(cola_rl)
 # obj = cola_rl["sd", "kmeans"]
-# guess_best_k(obj)
-setMethod(f = "guess_best_k",
+# suggest_best_k(obj)
+setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
 	definition = function(object, rand_index_cutoff = 0.95) {
 
@@ -348,14 +348,14 @@ setMethod(f = "guess_best_k",
 
 
 # == title
-# Guess the best number of partitions
+# Suggest the best number of partitions
 #
 # == param
 # -object a `ConsensusPartitionList-class` object.
 # -rand_index_cutoff the Rand index compared to previous k is larger than this, it is filtered out.
 #
 # == details
-# It basically gives the best k for each combination of top-value method and partition method by calling `guess_best_k,ConsensusPartition-method`.
+# It basically gives the best k for each combination of top-value method and partition method by calling `suggest_best_k,ConsensusPartition-method`.
 #
 # == value
 # A data frame with the best k and other statistics for each combination of methods.
@@ -365,8 +365,8 @@ setMethod(f = "guess_best_k",
 #
 # == example
 # data(cola_rl)
-# guess_best_k(cola_rl)
-setMethod(f = "guess_best_k",
+# suggest_best_k(cola_rl)
+setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartitionList",
 	definition = function(object, rand_index_cutoff = 0.95) {
 
@@ -379,7 +379,7 @@ setMethod(f = "guess_best_k",
 		for(pm in object@partition_method) {
 			nm = paste0(tm, ":", pm)
 			obj = object@list[[nm]]
-			best_k[nm] = guess_best_k(obj, rand_index_cutoff)
+			best_k[nm] = suggest_best_k(obj, rand_index_cutoff)
 			if(is.na(best_k[nm])) {
 				cophcor[nm] = NA
 				PAC[nm] = NA

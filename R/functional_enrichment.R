@@ -215,7 +215,7 @@ setMethod(f = "GO_enrichment",
 #
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartition",
-    definition = function(object, cutoff = 0.05, k = guess_best_k(object),
+    definition = function(object, cutoff = 0.05, k = suggest_best_k(object),
     id_mapping = NULL, org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, ...) {
 

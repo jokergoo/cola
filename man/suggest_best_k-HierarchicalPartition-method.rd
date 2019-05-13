@@ -1,13 +1,13 @@
-\name{guess_best_k-HierarchicalPartition-method}
-\alias{guess_best_k,HierarchicalPartition-method}
+\name{suggest_best_k-HierarchicalPartition-method}
+\alias{suggest_best_k,HierarchicalPartition-method}
 \title{
-Guess the best number of partitions
+Suggest the best number of partitions
 }
 \description{
-Guess the best number of partitions
+Suggest the best number of partitions
 }
 \usage{
-\S4method{guess_best_k}{HierarchicalPartition}(object)
+\S4method{suggest_best_k}{HierarchicalPartition}(object)
 }
 \arguments{
 
@@ -25,5 +25,5 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rh)
-guess_best_k(cola_rh)
+suggest_best_k(cola_rh)
 }

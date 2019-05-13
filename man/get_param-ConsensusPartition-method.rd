@@ -1,6 +1,5 @@
 \name{get_param-ConsensusPartition-method}
 \alias{get_param,ConsensusPartition-method}
-\alias{get_param}
 \title{
 Get parameters
 }
@@ -34,3 +33,4 @@ get_param(obj)
 get_param(obj, k = 2)
 get_param(obj, unique = FALSE)
 }
+\alias{get_param}

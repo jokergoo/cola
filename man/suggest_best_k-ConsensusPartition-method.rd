@@ -1,13 +1,13 @@
-\name{guess_best_k-ConsensusPartition-method}
-\alias{guess_best_k,ConsensusPartition-method}
+\name{suggest_best_k-ConsensusPartition-method}
+\alias{suggest_best_k,ConsensusPartition-method}
 \title{
-Guess the best number of partitions
+Suggest the best number of partitions
 }
 \description{
-Guess the best number of partitions
+Suggest the best number of partitions
 }
 \usage{
-\S4method{guess_best_k}{ConsensusPartition}(object, rand_index_cutoff = 0.95)
+\S4method{suggest_best_k}{ConsensusPartition}(object, rand_index_cutoff = 0.95)
 }
 \arguments{
 
@@ -24,7 +24,7 @@ is only because of one tiny group of samples are separated and it is better to s
 to improve the robustness of the subgrouping. For this, users can set the cutoff of Rand index by \code{rand_index_cutoff} to
 get rid of or reduce the effect of such cirsumstances.
 
-Honestly, it is hard or maybe impossible to say which k is the best one. \code{\link{guess_best_k}} function only gives suggestion of selecting
+Honestly, it is hard or maybe impossible to say which k is the best one. \code{\link{suggest_best_k}} function only gives suggestion of selecting
 a reasonable k. Users still need to look at the plots (e.g. by \code{\link{select_partition_number}} or \code{\link{consensus_heatmap}} functions), or even
 by checking whether the subgrouping gives a reasonable signatures by \code{\link{get_signatures}}, to pick a reasonable k that best explains their study.
 }
@@ -37,5 +37,5 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 data(cola_rl)
 obj = cola_rl["sd", "kmeans"]
-guess_best_k(obj)
+suggest_best_k(obj)
 }

@@ -18,6 +18,7 @@ Get signature rows
     show_row_dend = FALSE,
     show_column_names = FALSE, use_raster = TRUE,
     plot = TRUE, verbose = TRUE, seed = 888,
+    left_annotation = NULL, right_annotation = NULL,
     ...)
 }
 \arguments{
@@ -37,6 +38,8 @@ Get signature rows
   \item{plot}{whether to make the plot.}
   \item{verbose}{whether to print messages.}
   \item{seed}{random seed.}
+  \item{left_annotation}{Annotation put on the left of the heatmap. It should be a \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.  The number of items should be the same as the number of the original matrix rows. The subsetting to the significant  rows are automatically performed on the annotation object.}
+  \item{right_annotation}{Annotation put on the right of the heatmap. Same format as \code{left_annotation}.}
   \item{...}{other arguments.}
 
 }
@@ -68,5 +71,4 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
-
 }

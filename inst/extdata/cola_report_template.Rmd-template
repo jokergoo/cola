@@ -113,11 +113,11 @@ on the method name in following table leads to the report for a single combinati
 Please go the [the cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13) for the metrics of determining the best number of partitions.
 
 ```{r, eval = FALSE}
-guess_best_k(res_list)
+suggest_best_k(res_list)
 ```
 
 ```{r, echo = FALSE}
-tb = guess_best_k(res_list)
+tb = suggest_best_k(res_list)
 rownames(tb) = qq("[@{rownames(tb)}](#@{gsub(':', '-', rownames(tb))})", collapse = FALSE)
 kable(tb)
 ```

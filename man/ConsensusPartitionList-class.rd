@@ -23,7 +23,7 @@ The \code{\link{ConsensusPartitionList-class}} provides following methods:
   \item{\code{\link{get_matrix,ConsensusPartition-method}}:}{get the original matrix.}
   \item{\code{\link{get_stats,ConsensusPartitionList-method}}:}{get statistics for a specified k.}
   \item{\code{\link{get_membership,ConsensusPartitionList-method}}:}{get consensus membership matrix summarized from all methods.}
-  \item{\code{\link{guess_best_k,ConsensusPartitionList-method}}:}{guess the best number of partitions for all methods.}
+  \item{\code{\link{suggest_best_k,ConsensusPartitionList-method}}:}{guess the best number of partitions for all methods.}
   \item{\code{\link{collect_plots,ConsensusPartitionList-method}}:}{collect plots from all combinations of top-value methods and partition methods with choosing a plotting function.}
   \item{\code{\link{collect_classes,ConsensusPartitionList-method}}:}{make a plot which contains predicted classes from all combinations of top-value methods and partition methods.}
   \item{\code{\link{test_to_known_factors,ConsensusPartitionList-method}}:}{test correlation between predicted classes and known annotations, if provided.}
@@ -38,5 +38,4 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
-
 }

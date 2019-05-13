@@ -17,5 +17,4 @@ Number of Rows in the Matrix
 \examples{
 # There is no example
 NULL
-
 }

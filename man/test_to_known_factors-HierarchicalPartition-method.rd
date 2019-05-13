@@ -18,10 +18,6 @@ Test correspondance between predicted classes and known factors
   \item{verbose}{whether to print messages.}
 
 }
-\details{
-The function test correlation between classes and known annotations at each node in the hierarchy.
-
-}
 \value{
 A data frame with columns:
 

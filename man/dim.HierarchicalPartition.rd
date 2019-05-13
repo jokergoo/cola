@@ -17,5 +17,4 @@ Dimension of the Matrix
 \examples{
 # There is no example
 NULL
-
 }

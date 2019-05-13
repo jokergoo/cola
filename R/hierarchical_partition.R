@@ -11,7 +11,7 @@
 # -`hierarchical_partition`: constructor method.
 # -`collect_classes,HierarchicalPartition-method`: plot the hierarchy of subgroups predicted.
 # -`get_classes,HierarchicalPartition-method`: get the class IDs of subgroups.
-# -`guess_best_k,HierarchicalPartition-method`: guess the best number of partitions for each node.
+# -`suggest_best_k,HierarchicalPartition-method`: guess the best number of partitions for each node.
 # -`get_matrix,HierarchicalPartition-method`: get the original matrix.
 # -`get_signatures,HierarchicalPartition-method`: get the signatures for each subgroup.
 # -`dimension_reduction,HierarchicalPartition-method`: make dimension reduction plots.
@@ -106,7 +106,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 
 		lt = list(obj = part)
 
-	    best_k = guess_best_k(part)
+	    best_k = suggest_best_k(part)
 	    if(is.na(best_k)) {
 	    	if(verbose) qqcat("* Rand index is too high, no meaningful subgroups, stop.\n")
 	    	return(lt)
@@ -202,7 +202,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	hp = new("HierarchicalPartition")
 	hp@hierarchy = .e$hierarchy
 	hp@list = .e$lt
-	hp@best_k = sapply(.e$lt, guess_best_k)
+	hp@best_k = sapply(.e$lt, suggest_best_k)
 	leaves = all_leaves(hp)
 	subgroup = rep(NA, ncol(data))
 	for(le in leaves) {
@@ -536,7 +536,7 @@ setMethod(f = "get_signatures",
 
 	sig_lt = list()
 	for(p in ap) {
-		best_k = guess_best_k(object[[p]])
+		best_k = suggest_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
 		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff, ...)
 		
@@ -904,7 +904,7 @@ setMethod(f = "dimension_reduction",
 			stop_wrap(qq("@{parent_node} has no children nodes."))
 		}
 		obj = object[parent_node]
-		dimension_reduction(obj, k = guess_best_k(obj), top_n = top_n, method = method,
+		dimension_reduction(obj, k = suggest_best_k(obj), top_n = top_n, method = method,
 			silhouette_cutoff = silhouette_cutoff, scale_rows = scale_rows)
 		legend(x = par("usr")[2], y = par("usr")[4], legend = qq("node @{parent_node}"))
 	}
@@ -1066,7 +1066,7 @@ setMethod(f = "get_anno_col",
 })
 
 # == title
-# Guess the best number of partitions
+# Suggest the best number of partitions
 #
 # == param
 # -object a `HierarchicalPartition-class` object.
@@ -1082,8 +1082,8 @@ setMethod(f = "get_anno_col",
 #
 # == example
 # data(cola_rh)
-# guess_best_k(cola_rh)
-setMethod(f = "guess_best_k",
+# suggest_best_k(cola_rh)
+setMethod(f = "suggest_best_k",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 
@@ -1094,7 +1094,7 @@ setMethod(f = "guess_best_k",
 	concordance = NULL
 	for(nm in names(object@list)) {
 		obj = object@list[[nm]]
-		best_k[nm] = guess_best_k(obj)
+		best_k[nm] = suggest_best_k(obj)
 		if(is.na(best_k[nm])) {
 			cophcor[nm] = NA
 			PAC[nm] = NA

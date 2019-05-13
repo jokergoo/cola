@@ -7,7 +7,7 @@ Perform Gene Ontology Enrichment on Signature Genes
 Perform Gene Ontology Enrichment on Signature Genes
 }
 \usage{
-\S4method{GO_enrichment}{ConsensusPartition}(object, cutoff = 0.05, k = guess_best_k(object),
+\S4method{GO_enrichment}{ConsensusPartition}(object, cutoff = 0.05, k = suggest_best_k(object),
     id_mapping = NULL, org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, ...)
 }
@@ -35,5 +35,4 @@ A list of three data frames which correspond to results for three GO catalogues:
 \examples{
 # There is no example
 NULL
-
 }

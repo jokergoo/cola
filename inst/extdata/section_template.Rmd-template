@@ -6,7 +6,7 @@ if(is_hc) {
     mark = ifelse(tb[node, ncol(tb)] == "parent", "(p)", "")
     chunk_prefix = paste("node", node, sep = "-")
 } else {
-    tb = guess_best_k(res_list)
+    tb = suggest_best_k(res_list)
     nm = paste(top_value_method, partition_method, sep = ":")
     mark = tb[nm, 6]
     chunk_prefix = paste(top_value_method, partition_method, sep = "-")
@@ -121,7 +121,7 @@ Guess the best `k` based on these statistics. The rule is as follows:
    concordance. The `k` with highest occurance is taken as the "best `k`".
 
 ```{r <%=chunk_prefix%>-guess-best-k}
-guess_best_k(res)
+suggest_best_k(res)
 ```
 
 The table of the partitions. The membership matrix (columns with name `p*`) is inferred by [`clue::cl_consensus()`](https://www.rdocumentation.org/link/cl_consensus?package=clue)

@@ -530,7 +530,7 @@ setMethod(f = "show",
 	qqcat("  Top rows (@{paste(top_n_str, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
 	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")
 	qqcat("  Performed in total @{object@n_partition} partitions.\n")
-	best_k = guess_best_k(object)
+	best_k = suggest_best_k(object)
 	if(is.na(best_k)) {
 		qqcat("  There is no best k.\n")
 	} else {
@@ -630,7 +630,7 @@ setMethod(f = "select_partition_number",
 
 	plot_ecdf(object, lwd = 1)
 
-	best_k = guess_best_k(object)
+	best_k = suggest_best_k(object)
 	if(is.na(best_k)) best_k = -1
 
 	for(i in seq_len(ncol(m))) {

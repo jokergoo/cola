@@ -12,5 +12,4 @@ register_SOM()
 \examples{
 # There is no example
 NULL
-
 }

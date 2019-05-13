@@ -1,6 +1,5 @@
 \name{select_partition_number-ConsensusPartition-method}
 \alias{select_partition_number,ConsensusPartition-method}
-\alias{select_partition_number}
 \title{
 Several plots for determining the optimized number of partitions
 }
@@ -39,3 +38,4 @@ Zuguang Gu <z.gu@dkfz.de>
 data(cola_rl)
 select_partition_number(cola_rl["sd", "hclust"])
 }
+\alias{select_partition_number}

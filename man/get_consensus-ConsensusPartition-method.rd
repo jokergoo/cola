@@ -1,6 +1,5 @@
 \name{get_consensus-ConsensusPartition-method}
 \alias{get_consensus,ConsensusPartition-method}
-\alias{get_consensus}
 \title{
 Get consensus matrix
 }
@@ -31,3 +30,4 @@ data(cola_rl)
 obj = cola_rl["sd", "kmeans"]
 get_consensus(obj, k = 2)
 }
+\alias{get_consensus}

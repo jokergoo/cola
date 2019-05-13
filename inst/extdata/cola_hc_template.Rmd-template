@@ -113,11 +113,11 @@ message("* guessing best k for each node")
 Best `k` (number of partitions) for each node in the partition hierarchy:
 
 ```{r, eval = FALSE}
-guess_best_k(res_hc)
+suggest_best_k(res_hc)
 ```
 
 ```{r, echo = FALSE}
-tb = guess_best_k(res_hc)
+tb = suggest_best_k(res_hc)
 tb = cbind(node_id = paste0("Node", rownames(tb)), tb, stringsAsFactors = FALSE)
 # ind = which(tb[, ncol(tb)] == "parent")
 # tb$node_id[ind] = qq("[@{tb$node_id[ind]}](#@{tb$node_id[ind]})", collapse = FALSE)

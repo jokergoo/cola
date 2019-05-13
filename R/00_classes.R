@@ -20,7 +20,7 @@
 # -`get_matrix,ConsensusPartition-method`: get the original matrix.
 # -`get_stats,ConsensusPartitionList-method`: get statistics for a specified k.
 # -`get_membership,ConsensusPartitionList-method`: get consensus membership matrix summarized from all methods.
-# -`guess_best_k,ConsensusPartitionList-method`: guess the best number of partitions for all methods.
+# -`suggest_best_k,ConsensusPartitionList-method`: guess the best number of partitions for all methods.
 # -`collect_plots,ConsensusPartitionList-method`: collect plots from all combinations of top-value methods and partition methods with choosing a plotting function.
 # -`collect_classes,ConsensusPartitionList-method`: make a plot which contains predicted classes from all combinations of top-value methods and partition methods.
 # -`test_to_known_factors,ConsensusPartitionList-method`: test correlation between predicted classes and known annotations, if provided.
@@ -67,7 +67,7 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 # -`get_membership,ConsensusPartition-method`: get the membership in random samplings.
 # -`get_stats,ConsensusPartition-method`: get statistics for the consensus clustering.
 # -`get_classes,ConsensusPartition-method`: get the consensus class IDs and other columns.
-# -`guess_best_k,ConsensusPartition-method`: guess the best number of partitions.
+# -`suggest_best_k,ConsensusPartition-method`: guess the best number of partitions.
 # -`test_to_known_factors,ConsensusPartition-method`: test correlation between predicted classes and known factors, if available.
 #
 # == author

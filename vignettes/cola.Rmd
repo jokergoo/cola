@@ -823,7 +823,7 @@ highly similar as $k=3$, thus we ignore $k=4$ and take $k=3$ as the better subgr
 
 ### Rule
 
-**cola** provides a `guess_best_k()` function which suggests the best $k$.
+**cola** provides a `suggest_best_k()` function which suggests the best $k$.
 It is based on following rules:
 
 - All $k$ with Rand index larger than 0.95 are removed because the increase of
@@ -835,7 +835,7 @@ It is based on following rules:
   cophenetic correlation coefficient, lowest PAC score, highest mean
   silhouette and highest concordance is taken as the "best k".
 
-`guess_best_k()` only gives suggestion on selecting a reasonable $k$.
+`suggest_best_k()` only gives suggestion on selecting a reasonable $k$.
 Users still need to look at the plots (e.g. by `select_partition_number()` or
 `consensus_heatmap()` functions), or even by checking whether the subgrouping
 gives a reasonable signatures by `get_signatures()`, to pick a reasonable $k$ that
@@ -944,7 +944,7 @@ Functions on `ConsensusPartitionList` class that are important to use are:
 - `collect_plots()`: Collect plots for all methods.
 - `get_classes()`: The global consensus subgroup by taking subgroups from all methods together.
 - `get_stats()`: Extract the statistics for determining best number of subgroups.
-- `guess_best_k()`: Guess the best $k$ for each method.
+- `suggest_best_k()`: Guess the best $k$ for each method.
 - `test_to_known_factors()`: Apply tests to the annotations if provides. The test will be Chi-squared test or ANOVA depending on the data type of the annotation.
 - `top_rows_heatmap()`: Make heatmaps for `top_n` rows under different top-value methods.
 - `top_rows_overlap()`: Make Venn-Euler diagram for the `top_n` rows under different top-value methods.
@@ -959,7 +959,7 @@ Functions on `ConsensusPartition` class:
 - `get_consensus()`: Get the consensus matrix for a specific $k$.
 - `get_signatures()`: Make the heatmap for the signatures. 
 - `get_stats()`: Extract the statistics for determining best number of subgroups.
-- `guess_best_k()`: Guess the best $k$.
+- `suggest_best_k()`: Guess the best $k$.
 - `membership_heatmap()`: Make the membership heatmap.
 - `plot_ecdf()`: Plot the ECDF of the consensus matrix for all $k$.
 - `select_partition_number()`: Make plots for all statistics for determining the best $k$.
