@@ -182,7 +182,7 @@ setMethod(f = "GO_enrichment",
         nm = names(object@list)[i]
         lt[[nm]] = list(BP = NULL, MF = NULL, CC = NULL)
 
-        cat("=================================================================\n")
+        cat("-----------------------------------------------------------\n")
         qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
         lt[[nm]] = GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, org_db = org_db,
             min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ")
