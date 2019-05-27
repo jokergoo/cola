@@ -47,6 +47,7 @@ run_script(qq("@{root}/project/development/cola/inst/extdata/test_tcga_gbm.R"))
 run_script(qq("@{root}/project/development/cola/inst/extdata/test_Ritz_ALL.R"))
 run_script(qq("@{root}/project/development/cola/inst/extdata/test_HSMM_single_cell.R"))
 run_script(qq("@{root}/project/development/cola/inst/extdata/test_MCF10CA_scRNAseq.R"))
+run_script(qq("@{root}/project/development/cola/inst/extdata/test_gbm_450k.R"))
 
 run_script(qq("@{root}/project/development/cola/inst/extdata/test_cola.R"))
 
