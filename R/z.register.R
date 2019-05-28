@@ -350,7 +350,7 @@ register_NMF = function() {
 				} else {
 					apply(fit@fit@H, 2, which.max)
 				}
-			}, scale_method = "rescale"
+			}, scale_method = "min-max"
 		)
 	}
 }
