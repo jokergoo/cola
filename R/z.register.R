@@ -157,7 +157,7 @@ get_partition_method = function(method, partition_param = list()) {
 # -scale_method normally, data matrix is scaled by rows before sent to
 #        the partition function. The default scaling is applied by `base::scale`.
 #        However, some partition functions may not accept negative values which 
-#        are produced by `base::scale`. Here ``scale_method`` can be set to ``rescale``
+#        are produced by `base::scale`. Here ``scale_method`` can be set to ``min-max``
 #        which scales rows by ``(x - min)/(max - min)``. Note here ``scale_method`` only means
 #        the method to scale rows. When ``scale_rows`` is set to ``FALSE`` in `consensus_partition`
 #        or `run_all_consensus_partition_methods`, there wil be no row scaling when doing partition.
@@ -211,7 +211,7 @@ get_partition_method = function(method, partition_param = list()) {
 # )
 # all_partition_methods()
 # remove_partition_methods("random")
-register_partition_methods = function(..., scale_method = c("standardization", "rescale", "none")) {
+register_partition_methods = function(..., scale_method = c("z-score", "min-max", "none")) {
 	
 	scale_method = match.arg(scale_method)[1]
 	lt = list(...)
@@ -230,9 +230,9 @@ register_partition_methods = function(..., scale_method = c("standardization", "
 	}
 
 	m = matrix(rnorm(100), 10)
-	if(scale_method == "standardization") {
+	if(scale_method == "z-score") {
 		m2 = m
-	} else if(scale_method == "rescale") {
+	} else if(scale_method == "min-max") {
 		m2 = t(apply(m, 1, function(x) {
 			(x - min(x))/(max(x) - min(x))
 		}))
