@@ -1,5 +1,6 @@
 \name{membership_heatmap-ConsensusPartition-method}
 \alias{membership_heatmap,ConsensusPartition-method}
+\alias{membership_heatmap}
 \title{
 Heatmap of membership in each partition
 }
@@ -37,4 +38,3 @@ Zuguang Gu <z.gu@dkfz.de>
 data(cola_rl)
 membership_heatmap(cola_rl["sd", "hclust"], k = 3)
 }
-\alias{membership_heatmap}

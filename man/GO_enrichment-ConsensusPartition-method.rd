@@ -35,4 +35,5 @@ A list of three data frames which correspond to results for three GO catalogues:
 \examples{
 # There is no example
 NULL
+
 }

@@ -13,6 +13,7 @@ if(!exists("strrep")) {
 # -class a vector of class IDs.
 # -ref a vector of reference IDs.
 # -full_set the full set of levels. 
+# -return_map whether return the mapping or the adjusted labels.
 #
 # == details
 # In partition, the exact value of the class ID is not of importance. E.g. for two partitions
@@ -35,7 +36,9 @@ if(!exists("strrep")) {
 # class = c(rep("a", 10), rep("b", 3))
 # ref = c(rep("b", 4), rep("a", 9))
 # relabel_class(class, ref)
-relabel_class = function(class, ref, full_set = union(class, ref)) {
+relabel_class = function(class, ref, full_set = union(class, ref), return_map = TRUE) {
+	md = mode(class)
+
 	class = as.character(class)
 	ref = as.character(ref)
 	full_set = as.character(full_set)
@@ -57,9 +60,18 @@ relabel_class = function(class, ref, full_set = union(class, ref)) {
 		map = c(map, structure(unmapped, names = unmapped))
 	}
 	    	
-	df = data.frame(class = class, adjusted = map[class], ref = ref)
+	df = data.frame(
+		class = class,
+		adjusted = map[class], 
+		ref = ref,
+		stringsAsFactors = FALSE)
 	attr(map, "df") = df
-	return(map)
+
+	if(return_map) {
+		return(map)
+	} else {
+		return(as(df$adjusted, md))
+	}
 }
 
 # columns only in one same level are clustered

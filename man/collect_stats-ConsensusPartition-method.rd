@@ -21,4 +21,5 @@ It is identical to \code{\link{select_partition_number,ConsensusPartition-method
 \examples{
 # There is no example
 NULL
+
 }

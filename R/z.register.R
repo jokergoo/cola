@@ -334,7 +334,7 @@ register_NMF = function() {
 		# 	NMF = function(mat, k, ...) {
 		# 		fit = NNLM::nnmf(A = mat, k = k, verbose = FALSE, ...)
 		# 		apply(fit$H, 2, which.max)
-		# 	}, scale_method = "rescale"
+		# 	}, scale_method = "min-max"
 		# )
 	} else if(package == "NMF") {
 		if(!requireNamespace("NMF")) {
