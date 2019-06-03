@@ -1,5 +1,6 @@
 \name{all_leaves-HierarchicalPartition-method}
 \alias{all_leaves,HierarchicalPartition-method}
+\alias{all_leaves}
 \title{
 All leaves in the hierarchy
 }
@@ -25,4 +26,3 @@ Zuguang Gu <z.gu@dkfz.de>
 data(cola_rh)
 all_leaves(cola_rh)
 }
-\alias{all_leaves}

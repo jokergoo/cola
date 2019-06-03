@@ -7,13 +7,14 @@ Relabel class IDs according to the reference ID
 Relabel class IDs according to the reference ID
 }
 \usage{
-relabel_class(class, ref, full_set = union(class, ref))
+relabel_class(class, ref, full_set = union(class, ref), return_map = TRUE)
 }
 \arguments{
 
   \item{class}{a vector of class IDs.}
   \item{ref}{a vector of reference IDs.}
   \item{full_set}{the full set of levels. }
+  \item{return_map}{whether return the mapping or the adjusted labels.}
 
 }
 \details{

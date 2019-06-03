@@ -120,7 +120,7 @@ Guess the best `k` based on these statistics. The rule is as follows:
 3. The `k` with highest cophenetic correlation coefficient, lowest PAC score, highest mean silhouette and highest
    concordance. The `k` with highest occurance is taken as the "best `k`".
 
-```{r <%=chunk_prefix%>-guess-best-k}
+```{r <%=chunk_prefix%>-suggest-best-k}
 suggest_best_k(res)
 ```
 

@@ -29,4 +29,5 @@ A list of following elements:
 \examples{
 # There is no example
 NULL
+
 }

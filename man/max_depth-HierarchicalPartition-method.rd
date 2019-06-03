@@ -1,5 +1,6 @@
 \name{max_depth-HierarchicalPartition-method}
 \alias{max_depth,HierarchicalPartition-method}
+\alias{max_depth}
 \title{
 Max depth of the hierarchy
 }
@@ -24,4 +25,3 @@ Zuguang Gu <z.gu@dkfz.de>
 data(cola_rh)
 max_depth(cola_rh)
 }
-\alias{max_depth}

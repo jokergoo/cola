@@ -15,4 +15,5 @@ Note NMF analysis is very time-consuming.
 \examples{
 # There is no example
 NULL
+
 }
