@@ -215,7 +215,7 @@ setMethod(f = "GO_enrichment",
 # -org_db Annotation database.
 # -min_set_size The minimal size of the GO gene sets.
 # -max_set_size The maximal size of the GO gene sets.
-# -verobse Whether to print messages.
+# -verbose Whether to print messages.
 # -... Other arguments.
 #
 # == value
@@ -242,7 +242,7 @@ setMethod(f = "GO_enrichment",
     
     lt = list(BP = NULL, MF = NULL, CC = NULL)
     if(is.na(k)) {
-    	if(verbos) qqcat("@{prefix}- no proper number of groups found.\n")
+    	if(verbose) qqcat("@{prefix}- no proper number of groups found.\n")
     	return(lt)
     }
     sig_df = get_signatures(object, k = k, plot = FALSE, verbose = FALSE)
@@ -252,7 +252,7 @@ setMethod(f = "GO_enrichment",
     } else {
         sig_gene = rownames(m)[ sig_df[sig_df$fdr < cutoff, "which_row"] ]
     }
-    if(verbos) qqcat("@{prefix}- @{length(sig_gene)}/@{nrow(m)} significant genes are taken from @{k}-group comparisons\n")
+    if(verbose) qqcat("@{prefix}- @{length(sig_gene)}/@{nrow(m)} significant genes are taken from @{k}-group comparisons\n")
     
 
     if(length(sig_gene)) {
@@ -273,11 +273,11 @@ setMethod(f = "GO_enrichment",
         }
 
         if(!is.null(id_mapping)) {
-        	if(verbos) qqcat("@{prefix}- @{length(sig_gene)} genes left after id mapping\n")
+        	if(verbose) qqcat("@{prefix}- @{length(sig_gene)} genes left after id mapping\n")
         }
 
         if(length(sig_gene)) {
-        	if(verbos) qqcat("@{prefix}- gene set enrichment, GO:BP\n")
+        	if(verbose) qqcat("@{prefix}- gene set enrichment, GO:BP\n")
             ego = clusterProfiler::enrichGO(gene = sig_gene,
                 OrgDb         = org_db,
                 ont           = "BP",
@@ -291,7 +291,7 @@ setMethod(f = "GO_enrichment",
             ego$geneID = NULL
             lt$BP = ego
 
-            if(verbos) qqcat("@{prefix}- gene set enrichment, GO:MF\n")
+            if(verbose) qqcat("@{prefix}- gene set enrichment, GO:MF\n")
             ego = clusterProfiler::enrichGO(gene = sig_gene,
                 OrgDb         = org_db,
                 ont           = "MF",
@@ -305,7 +305,7 @@ setMethod(f = "GO_enrichment",
             ego$geneID = NULL
             lt$MF = ego
 
-            if(verbos) qqcat("@{prefix}- gene set enrichment, GO:CC\n")
+            if(verbose) qqcat("@{prefix}- gene set enrichment, GO:CC\n")
             ego = clusterProfiler::enrichGO(gene = sig_gene,
                 OrgDb         = org_db,
                 ont           = "CC",

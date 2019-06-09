@@ -204,11 +204,11 @@ consensus_partition = function(data,
 	}
 	if(scale_rows) {
 		scale_method = attr(partition_fun, "scale_method")
-		if("standardization" %in% scale_method) {
-			if(verbose) cat("* rows are scaled before sent to partition, method: 'standardization' (x - mean)/sd\n")
+		if("z-score" %in% scale_method) {
+			if(verbose) cat("* rows are scaled before sent to partition, method: 'z-score' (x - mean)/sd\n")
 			data = t(scale(t(data)))
-		} else if("rescale" %in% scale_method) {
-			if(verbose) cat("* rows are scaled before sent to partition, method: 'rescale' (x - min)/(max - min)\n")
+		} else if("min-max" %in% scale_method) {
+			if(verbose) cat("* rows are scaled before sent to partition, method: 'min-max' (x - min)/(max - min)\n")
 			row_min = rowMins(data)
 			row_max = rowMaxs(data)
 			row_range = row_max - row_min
