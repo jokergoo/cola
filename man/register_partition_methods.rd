@@ -7,12 +7,12 @@ Register user-defined partition functions
 Register user-defined partition functions
 }
 \usage{
-register_partition_methods(..., scale_method = c("standardization", "rescale", "none"))
+register_partition_methods(..., scale_method = c("z-score", "min-max", "none"))
 }
 \arguments{
 
   \item{...}{a named list of functions.}
-  \item{scale_method}{normally, data matrix is scaled by rows before sent to the partition function. The default scaling is applied by \code{\link[base]{scale}}. However, some partition functions may not accept negative values which  are produced by \code{\link[base]{scale}}. Here \code{scale_method} can be set to \code{rescale} which scales rows by \code{(x - min)/(max - min)}. Note here \code{scale_method} only means the method to scale rows. When \code{scale_rows} is set to \code{FALSE} in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}, there wil be no row scaling when doing partition. The value for \code{scale_method} can be a vector if user specifies more than one partition function.}
+  \item{scale_method}{normally, data matrix is scaled by rows before sent to the partition function. The default scaling is applied by \code{\link[base]{scale}}. However, some partition functions may not accept negative values which  are produced by \code{\link[base]{scale}}. Here \code{scale_method} can be set to \code{min-max} which scales rows by \code{(x - min)/(max - min)}. Note here \code{scale_method} only means the method to scale rows. When \code{scale_rows} is set to \code{FALSE} in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}, there wil be no row scaling when doing partition. The value for \code{scale_method} can be a vector if user specifies more than one partition function.}
 
 }
 \details{

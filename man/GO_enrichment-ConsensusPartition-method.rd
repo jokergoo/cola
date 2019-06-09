@@ -9,7 +9,8 @@ Perform Gene Ontology Enrichment on Signature Genes
 \usage{
 \S4method{GO_enrichment}{ConsensusPartition}(object, cutoff = 0.05, k = suggest_best_k(object),
     id_mapping = NULL, org_db = "org.Hs.eg.db",
-    min_set_size = 10, max_set_size = 1000, ...)
+    min_set_size = 10, max_set_size = 1000,
+    verbose = TRUE, ...)
 }
 \arguments{
 
@@ -20,6 +21,7 @@ Perform Gene Ontology Enrichment on Signature Genes
   \item{org_db}{Annotation database.}
   \item{min_set_size}{The minimal size of the GO gene sets.}
   \item{max_set_size}{The maximal size of the GO gene sets.}
+  \item{verbose}{Whether to print messages.}
   \item{...}{Other arguments.}
 
 }
