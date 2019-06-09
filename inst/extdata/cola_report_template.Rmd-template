@@ -100,11 +100,11 @@ message(qq("* subgroups are detected by '@{paste(res_list@partition_method, coll
 message(qq("  - in total @{n_method} combinations of methods"))
 ```
 
-### Guess best k
+### Suggest the best k
 
 ```{r, echo = FALSE, message = FALSE}
 t1 = Sys.time()
-message("* guessing best k for each method", appendLF = FALSE)
+message("* Suggesting the best k for each method", appendLF = FALSE)
 ```
 
 Best `k` (number of partitions) for each combination of top-value methods and partition methods. Clicking
