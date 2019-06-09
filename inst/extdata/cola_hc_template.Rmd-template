@@ -104,10 +104,10 @@ message(qq("* top rows are extracted by '@{res_hc[1]@top_value_method}' method")
 message(qq("* subgroups are detected by '@{res_hc[1]@partition_method}' method"))
 ```
 
-### Guess best k
+### Suggest the best k
 
 ```{r, echo = FALSE, message = FALSE}
-message("* guessing best k for each node")
+message("* suggesting the best k for each node")
 ```
 
 Best `k` (number of partitions) for each node in the partition hierarchy:
