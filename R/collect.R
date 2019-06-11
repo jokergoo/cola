@@ -693,7 +693,8 @@ setMethod(f = "collect_stats",
 	all_top_value_methods = object@top_value_method
 	all_parittion_methods = object@partition_method
 
-	all_stat_nm = setdiff(colnames(stats), c("k", "area_increased", "Rand", "Jaccard"))
+	# all_stat_nm = setdiff(colnames(stats), c("k", "area_increased", "Rand", "Jaccard"))
+	all_stat_nm = c("cophcor", "PAC", "mean_silhouette", "concordance")
 
 	grid.newpage()
 	layout_ncol = ceiling(length(all_stat_nm)/2)
@@ -728,6 +729,7 @@ setMethod(f = "collect_stats",
 				r = unit(min(w, h)*0.45*v, "snpc")
 				# grid.circle(x, y, r = r, gp = gpar(fill = fill))
 				grid.rect(x, y, width = r*2, height = r*2, gp = gpar(fill = fill))
+				grid.text(sprintf("%.2f", v), x, y, gp = gpar(fontsize = 0.45*as.numeric(convertHeight(r*2, "points"))))
 			}, column_title = "    ", column_title_side = "bottom", column_title_gp = gpar(fontsize = 18),
 			column_names_side = "top", column_names_rot = 45, 
 			show_heatmap_legend = FALSE)
