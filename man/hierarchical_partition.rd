@@ -8,7 +8,7 @@ Hierarchical partition
 }
 \usage{
 hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmeans",
-    concordance_cutoff = 0.9, PAC_cutoff = 0.2, silhouette_cutoff = 0.5,
+    PAC_cutoff = 0.2, silhouette_cutoff = 0.5,
     min_samples = 6, min_signatures = 50, max_k = 4, verbose = TRUE,
     mc.cores = 1, ...)
 }
@@ -17,7 +17,6 @@ hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmean
   \item{data}{a numeric matrix where subgroups are found by columns.}
   \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}.}
   \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}.}
-  \item{concordance_cutoff}{the cutoff of concordance scores to determine whether to continue looking for subgroups. Currently it is not used.}
   \item{PAC_cutoff}{the cutoff of PAC scores to determine whether to continue looking for subgroups.}
   \item{silhouette_cutoff}{cutoff for silhouette scores.}
   \item{min_samples}{the cutoff of number of samples to determine whether to continue looking for subgroups.}
