@@ -1,5 +1,5 @@
-\name{GO_enrichment-ConsensusPartition-method}
-\alias{GO_enrichment,ConsensusPartition-method}
+\name{GO_enrichment-ANY-method}
+\alias{GO_enrichment,ANY-method}
 \title{
 Perform Gene Ontology Enrichment on Signature Genes
 }
@@ -7,16 +7,15 @@ Perform Gene Ontology Enrichment on Signature Genes
 Perform Gene Ontology Enrichment on Signature Genes
 }
 \usage{
-\S4method{GO_enrichment}{ConsensusPartition}(object, cutoff = 0.05, k = suggest_best_k(object),
-    row_km = NULL, id_mapping = NULL, org_db = "org.Hs.eg.db",
+\S4method{GO_enrichment}{ANY}(object, id_mapping = NULL,
+    org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000,
     verbose = TRUE, ...)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object from \code{\link{run_all_consensus_partition_methods}}.}
+  \item{object}{A vector of gene IDs.}
   \item{cutoff}{Cutoff of FDR to define significant signature genes.}
-  \item{k}{Number of subgroups.}
   \item{id_mapping}{If the gene IDs which are row names of the original matrix are not Entrez IDs, a named vector should be provided where the names are the gene IDs in the matrix and values are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.}
   \item{org_db}{Annotation database.}
   \item{min_set_size}{The minimal size of the GO gene sets.}
@@ -37,5 +36,4 @@ A list of three data frames which correspond to results for three GO catalogues:
 \examples{
 # There is no example
 NULL
-
 }

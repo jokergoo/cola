@@ -40,7 +40,6 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -data a numeric matrix where subgroups are found by columns.
 # -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
 # -partition_method a single partition method. Available methods are in `all_partition_methods`.
-# -concordance_cutoff the cutoff of concordance scores to determine whether to continue looking for subgroups. Currently it is not used.
 # -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
 # -silhouette_cutoff cutoff for silhouette scores.
 # -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
@@ -84,7 +83,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # data(cola_rh)
 # cola_rh
 hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
-	concordance_cutoff = 0.9, PAC_cutoff = 0.2, silhouette_cutoff = 0.5, 
+	PAC_cutoff = 0.1, silhouette_cutoff = 0.5, 
 	min_samples = 6, min_signatures = 50, max_k = 4, verbose = TRUE, 
 	mc.cores = 1, ...) {
 
@@ -155,12 +154,12 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
     	lt2 = lapply(1:2, function(ind) {
 	    	if(length(set1) > min_samples && ind == 1) {
 	    		return(.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1, silhouette_cutoff = silhouette_cutoff,
-	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
+	    			min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
 
 	    	if(length(set2) > min_samples && ind == 2) {
 	    		return(.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2, silhouette_cutoff = silhouette_cutoff,
-	    			concordance_cutoff = concordance_cutoff, min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
+	    			min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
 
 	    	return(NULL)
@@ -174,7 +173,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 
 	.env = new.env()
 	.env$data = data
-	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), concordance_cutoff = concordance_cutoff, 
+	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), 
 		silhouette_cutoff = silhouette_cutoff, min_samples = min_samples, 
 		node_id = "0", max_k = max_k, verbose = verbose, mc.cores = mc.cores, ...)
 

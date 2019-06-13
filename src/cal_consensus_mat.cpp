@@ -30,3 +30,4 @@ NumericMatrix get_consensus_matrix(IntegerMatrix membership_each) {
 	}
 	return consensus_mat;
 }
+

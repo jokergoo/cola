@@ -11,6 +11,7 @@ Get signature rows
     silhouette_cutoff = 0.5,
     fdr_cutoff = ifelse(identical(diff_method, "samr"), 0.05, 0.1),
     scale_rows = object@scale_rows,
+    row_km = NULL,
     diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
     anno = get_anno(object),
     anno_col = get_anno_col(object),
@@ -28,6 +29,7 @@ Get signature rows
   \item{silhouette_cutoff}{cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
   \item{fdr_cutoff}{cutoff for FDR of the difference test between subgroups.}
   \item{scale_rows}{whether apply row scaling when making the heatmap.}
+  \item{row_km}{number of groups for performing k-means clustering on rows.}
   \item{diff_method}{methods to get rows which are significantly different between subgroups, see 'Details' section.}
   \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
   \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}

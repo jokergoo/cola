@@ -209,6 +209,7 @@ setMethod(f = "GO_enrichment",
 # -object a `ConsensusPartition-class` object from `run_all_consensus_partition_methods`.
 # -cutoff Cutoff of FDR to define significant signature genes.
 # -k Number of subgroups.
+# -row_km Number of row clusterings by k-means.
 # -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
@@ -228,7 +229,7 @@ setMethod(f = "GO_enrichment",
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartition",
     definition = function(object, cutoff = 0.05, k = suggest_best_k(object),
-    id_mapping = NULL, org_db = "org.Hs.eg.db",
+    row_km = NULL, id_mapping = NULL, org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, 
     verbose = TRUE, ...) {
 
@@ -240,44 +241,104 @@ setMethod(f = "GO_enrichment",
 		prefix = ""
 	}
     
-    lt = list(BP = NULL, MF = NULL, CC = NULL)
     if(is.na(k)) {
     	if(verbose) qqcat("@{prefix}- no proper number of groups found.\n")
     	return(lt)
     }
-    sig_df = get_signatures(object, k = k, plot = FALSE, verbose = FALSE)
+    sig_df = get_signatures(object, k = k, fdr_cutoff = cutoff, plot = FALSE, verbose = FALSE, row_km = row_km)
     m = get_matrix(object)
     if(is.null(sig_df)) {
         sig_gene = NULL
     } else {
-        sig_gene = rownames(m)[ sig_df[sig_df$fdr < cutoff, "which_row"] ]
+        sig_gene = rownames(m)[ sig_df[, "which_row"]]
     }
     if(verbose) qqcat("@{prefix}- @{length(sig_gene)}/@{nrow(m)} significant genes are taken from @{k}-group comparisons\n")
     
+    if(length(sig_gene) == 0) {
+        if(verbose) qqcat("@{prefix}- no significant genes (fdr < @{cutoff}) found.\n")
+        return(list(BP = NULL, MF = NULL, CC = NULL))
+    }
 
+    if("km" %in% colnames(sig_df)) {
+        lt = list()
+        for(km in sort(unique(sig_df$km))) {
+            l = sig_df$km == km
+            if(verbose) qqcat("@{prefix}- on k-means group @{km}, @{sum(l)} genes\n")
+            lt2 = GO_enrichment(sig_gene[l], id_mapping = id_mapping, org_db = org_db, 
+                min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = paste0(prefix, "  "))
+            names(lt2) = paste0(names(lt2), "_km", km)
+            lt = c(lt, lt2)
+        }
+    } else {
+        lt = GO_enrichment(sig_gene, id_mapping = id_mapping, org_db = org_db, 
+            min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = prefix)
+    }
+    return(lt)
+})
+
+# == title
+# Perform Gene Ontology Enrichment on Signature Genes
+#
+# == param
+# -object A vector of gene IDs.
+# -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
+#       named vector should be provided where the names are the gene IDs in the matrix and values
+#       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
+# -org_db Annotation database.
+# -min_set_size The minimal size of the GO gene sets.
+# -max_set_size The maximal size of the GO gene sets.
+# -verbose Whether to print messages.
+# -... Other arguments.
+#
+# == value
+# A list of three data frames which correspond to results for three GO catalogues:
+#
+# - ``BP``: biological processes
+# - ``MF``: molecular functions
+# - ``CC``: cellular components
+#
+setMethod(f = "GO_enrichment",
+    signature = "ANY",
+    definition = function(object, id_mapping = NULL, 
+    org_db = "org.Hs.eg.db",
+    min_set_size = 10, max_set_size = 1000, 
+    verbose = TRUE, ...) {
+
+    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
+
+    arg_lt = list(...)
+    if("prefix" %in% names(arg_lt)) {
+        prefix = arg_lt$prefix
+    } else {
+        prefix = ""
+    }
+
+    lt = list(BP = NULL, MF = NULL, CC = NULL)
+
+    sig_gene = object
     if(length(sig_gene)) {
         if(!is.null(id_mapping)) {
-        	if(is.function(id_mapping)) {
-        		sig_gene = id_mapping(sig_gene)
-        	} else {
-        		sig_gene = id_mapping[sig_gene]
-        	}
+            if(is.function(id_mapping)) {
+                sig_gene = id_mapping(sig_gene)
+            } else {
+                sig_gene = id_mapping[sig_gene]
+            }
         }
         sig_gene = sig_gene[!is.na(sig_gene)]
         sig_gene = unique(sig_gene)
 
         if(!is.null(id_mapping)) {
-        	if(length(sig_gene) == 0) {
-        		warning_wrap("Cannot match to any gene by the id mapping that user provided.")
-        	}
+            if(length(sig_gene) == 0) {
+                warning_wrap("Cannot match to any gene by the id mapping that user provided.")
+            }
         }
 
         if(!is.null(id_mapping)) {
-        	if(verbose) qqcat("@{prefix}- @{length(sig_gene)} genes left after id mapping\n")
+            if(verbose) qqcat("@{prefix}- @{length(sig_gene)} genes left after id mapping\n")
         }
 
         if(length(sig_gene)) {
-        	if(verbose) qqcat("@{prefix}- gene set enrichment, GO:BP\n")
+            if(verbose) qqcat("@{prefix}- gene set enrichment, GO:BP\n")
             ego = clusterProfiler::enrichGO(gene = sig_gene,
                 OrgDb         = org_db,
                 ont           = "BP",

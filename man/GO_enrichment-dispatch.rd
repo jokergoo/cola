@@ -10,6 +10,7 @@ Method dispatch page for \code{GO_enrichment}.
 \code{GO_enrichment} can be dispatched on following classes:
 
 \itemize{
+\item \code{\link{GO_enrichment,ANY-method}}, \code{\link{ANY-class}} class method
 \item \code{\link{GO_enrichment,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{GO_enrichment,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 }
