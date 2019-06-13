@@ -10,6 +10,7 @@
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
 # -fdr_cutoff cutoff for FDR of the difference test between subgroups.
 # -scale_rows whether apply row scaling when making the heatmap.
+# -row_km number of groups for performing k-means clustering on rows.
 # -diff_method methods to get rows which are significantly different between subgroups, see 'Details' section.
 # -anno a data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
@@ -59,6 +60,7 @@ setMethod(f = "get_signatures",
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = ifelse(identical(diff_method, "samr"), 0.05, 0.1), 
 	scale_rows = object@scale_rows,
+	row_km = NULL,
 	diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
@@ -190,31 +192,10 @@ setMethod(f = "get_signatures",
 
 	fdr[is.na(fdr)] = 1
 
-	# group = character(nrow(data2))
-	# gm = do.call("cbind", tapply(1:ncol(data2), class, function(ind) rowMeans(data2[, ind, drop = FALSE])))
-	# nclass = ncol(gm)
-	# if(nclass == 2) {
-	# 	group = ifelse(gm[, 1] > gm[, 2], colnames(gm)[1], colnames(gm)[2])
-	# } else {
-	# 	group = colnames(gm)[apply(gm, 1, function(x) {
-	# 		od = order(x)
-	# 		n = length(x)
-	# 		diff_min = x[od[2]] - x[od[1]]
-	# 		diff_max = x[od[n]] - x[od[n-1]]
-	# 		# if the minimal is very small
-	# 		if(diff_min > diff_max) {
-	# 			od[1]
-	# 		} else {
-	# 			od[n]
-	# 		}
-	# 	})]
-	# }
-
 	l_fdr = fdr < fdr_cutoff
 	mat = data[l_fdr, , drop = FALSE]
 	fdr2 = fdr[l_fdr]
-	# group2 = group[l_fdr]
-	# names(group2) = rownames(mat)
+	
 	if(!is.null(left_annotation)) left_annotation = left_annotation[l_fdr, ]
 	if(!is.null(right_annotation)) right_annotation = right_annotation[l_fdr, ]
 
@@ -227,15 +208,71 @@ setMethod(f = "get_signatures",
 			rowMeans(mat1[, ind, drop = FALSE])
 		}))
 	}
-
-	colnames(group_mean) = paste0("mean_", unique(class))
+	colnames(group_mean) = paste0("mean_", colnames(group_mean))
 	returned_df = cbind(returned_df, group_mean)
-	returned_df = returned_df[order(returned_df[, "fdr"]), ]
+
+	if(scale_rows) {
+		mat1_scaled = t(scale(t(mat[, column_used_logical, drop = FALSE])))
+		if(nrow(mat) == 1) {
+			group_mean_scaled = matrix(tapply(mat1_scaled, class, mean), nrow = 1)
+		} else {
+			group_mean_scaled = do.call("cbind", tapply(seq_len(ncol(mat1_scaled)), class, function(ind) {
+				rowMeans(mat1_scaled[, ind, drop = FALSE])
+			}))
+		}
+		colnames(group_mean_scaled) = paste0("scaled_mean_", colnames(group_mean_scaled))
+		returned_df = cbind(returned_df, group_mean_scaled)
+	}
+
 	returned_obj = returned_df
 	rownames(returned_obj) = NULL
+
 	attr(returned_obj, "sample_used") = column_used_logical
 
-	if(verbose) qqcat("* @{nrow(mat)} signatures under fdr < @{fdr_cutoff}.\n")
+	## add k-means
+	row_km_fit = NULL
+	if(!internal) {
+		if(nrow(mat1) > 10) {
+			do_kmeans = TRUE
+			if(scale_rows) {
+				mat_for_km = t(scale(t(mat1)))
+				row_km_fit = object@.env[[nm]]$row_km_fit_scaled
+			} else {
+				mat_for_km = mat1
+				row_km_fit = object@.env[[nm]]$row_km_fit_unscaled
+			}
+
+			if(!is.null(row_km_fit)) {
+				if(is.null(row_km) || identical(as.integer(row_km), length(row_km_fit$size))) {
+					returned_obj$km = apply(pdist(row_km_fit$centers, mat_for_km), 2, which.min)
+					do_kmeans = FALSE
+					if(verbose) qqcat("* use k-means partition that are already calculated in previous runs.\n")
+				}
+			}
+			if(do_kmeans) {
+				set.seed(seed)
+				if(is.null(row_km)) {
+					wss = (nrow(mat_for_km)-1)*sum(apply(mat_for_km,2,var))
+					for (i in 2:15) wss[i] = sum(kmeans(mat_for_km, centers = i, iter.max = 50)$withinss)
+					row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
+					if(length(unique(class)) == 1) row_km = 1
+					if(length(unique(class)) == 2) row_km = min(row_km, 2)
+				}
+				if(row_km > 1) {
+					row_km_fit = kmeans(mat_for_km, centers = row_km)
+					returned_obj$km = apply(pdist(row_km_fit$centers, mat_for_km), 2, which.min)
+					if(scale_rows) {
+						object@.env[[nm]]$row_km_fit_scaled = row_km_fit
+					} else {
+						object@.env[[nm]]$row_km_fit_unscaled = row_km_fit
+					}
+				}
+				if(verbose) qqcat("* split rows into @{row_km} groups by k-means clustering.\n")
+			}
+		}
+	}
+
+	if(verbose) qqcat("* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) under fdr < @{fdr_cutoff}.\n")
 
 	if(nrow(mat) == 0) {
 		if(plot) {
@@ -381,24 +418,12 @@ setMethod(f = "get_signatures",
 	row_split = NULL
 	if(!internal) {
 		if(scale_rows) {
-			if(nrow(use_mat1) > 10) {
-				if(!is.null(object@.env[[nm]]$row_split)) {
-					row_split = object@.env[[nm]]$row_split
-					if(verbose) qqcat("  - use k-means partition that are already calculated in previous runs.\n")
-				} else {
-					set.seed(seed)
-					wss <- (nrow(use_mat1)-1)*sum(apply(use_mat1,2,var))
-					for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers = i, iter.max = 50)$withinss)
-					row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
-					if(length(unique(class)) == 1) row_km = 1
-					if(length(unique(class)) == 2) row_km = min(row_km, 2)
-					if(row_km > 1) {
-						row_split = kmeans(use_mat1, centers = row_km)$cluster
-						object@.env[[nm]]$row_split = row_split
-					}
-					if(verbose) qqcat("  - split rows into @{row_km} groups by k-means clustering.\n")
-				}
-			}
+			row_km_fit = object@.env[[nm]]$row_km_fit_scaled
+		} else {
+			row_km_fit = object@.env[[nm]]$row_km_fit_unscaled
+		}
+		if(!is.null(row_km_fit)) {
+			row_split = factor(row_km_fit$cluster[row_index], levels = sort(unique(row_km_fit$cluster[row_index])))
 		}
 	}
 
@@ -431,7 +456,9 @@ setMethod(f = "get_signatures",
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = ha1, row_split = row_split,
-		cluster_columns = TRUE, column_split = class_df$class[column_used_logical], show_column_dend = FALSE,
+		cluster_columns = TRUE, cluster_column_slices = FALSE, cluster_row_slices = FALSE,
+		column_split = factor(class_df$class[column_used_logical], levels = sort(unique(class_df$class[column_used_logical]))), 
+		show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = {if(internal) NULL else qq("@{ncol(use_mat1)} confident samples")},
 		use_raster = use_raster, raster_resize = raster_resize,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
@@ -483,7 +510,7 @@ setMethod(f = "get_signatures",
 	}
 
 	if(do_row_clustering) {
-		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}")),
+		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}")),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal, heatmap_legend_list = heatmap_legend_list)
 		
 		row_order = row_order(ht_list)
@@ -496,7 +523,7 @@ setMethod(f = "get_signatures",
 		
 	} else {
 		if(verbose) cat("  - use row order from cache.\n")
-		draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures with fdr < @{fdr_cutoff}")),
+		draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}")),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = heatmap_legend_list)
 	}

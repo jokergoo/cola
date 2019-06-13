@@ -83,7 +83,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # data(cola_rh)
 # cola_rh
 hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
-	PAC_cutoff = 0.2, silhouette_cutoff = 0.5, 
+	PAC_cutoff = 0.1, silhouette_cutoff = 0.5, 
 	min_samples = 6, min_signatures = 50, max_k = 4, verbose = TRUE, 
 	mc.cores = 1, ...) {
 

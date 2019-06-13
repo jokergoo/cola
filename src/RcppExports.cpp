@@ -16,9 +16,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// pdist
+NumericMatrix pdist(NumericMatrix m1, NumericMatrix m2);
+RcppExport SEXP _cola_pdist(SEXP m1SEXP, SEXP m2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type m1(m1SEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m2(m2SEXP);
+    rcpp_result_gen = Rcpp::wrap(pdist(m1, m2));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cola_get_consensus_matrix", (DL_FUNC) &_cola_get_consensus_matrix, 1},
+    {"_cola_pdist", (DL_FUNC) &_cola_pdist, 2},
     {NULL, NULL, 0}
 };
 
