@@ -151,7 +151,7 @@ entropy = function(p) {
 PAC = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 	x2 = seq(0.7, 0.9, by = 0.02), trim = 0.2) {
 
-	f = ecdf(consensus_mat[lower.tri(consensus_mat)])
+	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
 
 	offset1 = x1
 	offset2 = x2
@@ -159,7 +159,7 @@ PAC = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 	m_score = matrix(nrow = length(offset1), ncol = length(offset2))
 	for(i in seq_along(offset1)) {
 		for(j in seq_along(offset2)) {
-			m_score[i, j] = f(offset2[j]) - f(offset1[i])
+			m_score[i, j] = F(offset2[j]) - F(offset1[i])
 		}
 	}
 	if(length(m_score)*trim > 1) {
@@ -169,6 +169,37 @@ PAC = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 	}
 }
 
+PAC2 = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
+	x2 = seq(0.7, 0.9, by = 0.02)) {
+
+	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
+
+	n1 = length(x1)
+	n2 = length(x2)
+
+	if(n1 == 1) {
+		a1 = 0
+	} else {
+		a1 = sapply(seq_len(n1 - 1), function(i) F(x1[i+1]) - F(x1[i]))
+	}
+
+	x2 = rev(x2)
+	if(n2 == 1) {
+		a2 = 0
+	} else {
+		a2 = sapply(seq_len(n2 - 1), function(i) F(x2[i]) - F(x2[i+1]))
+	}
+
+	a3 = F(x2[n2]) - F(x1[n1])
+
+	sum(a1*(seq_len(n1 - 1)/n1)) + sum(a2*(seq_len(n2 - 1)/n2)) + a3
+}
+
+
+PAC_origin = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
+	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
+	F(x2) - F(x1)
+}
 
 mean_group_dist = function(mat, factor) {
 	le = unique(factor)

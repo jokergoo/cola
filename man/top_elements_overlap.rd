@@ -8,14 +8,14 @@ Overlap of top elements from different metrics
 }
 \usage{
 top_elements_overlap(object, top_n = round(0.25*length(object[[1]])),
-    method = c("venneuler", "venn", "correspondance"), ...)
+    method = c("euler", "venn", "correspondance"), ...)
 }
 \arguments{
 
   \item{object}{a list which contains values from different metrics.}
   \item{top_n}{number of top rows.}
-  \item{method}{\code{venn}: use Venn diagram; \code{venneuler}: use Venn Euler diagram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
-  \item{...}{additional arguments passed to \code{\link{venn_euler}} or \code{\link{correspond_between_rankings}}.}
+  \item{method}{\code{venn}: use Venn diagram; \code{euler}: use Euler diagram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
+  \item{...}{additional arguments passed to \code{\link[eulerr]{plot.euler}} or \code{\link{correspond_between_rankings}}.}
 
 }
 \details{
