@@ -180,15 +180,6 @@ setMethod(f = "get_stats",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k) {
 
-		for(i in seq_along(object@k)) {
-			l = object@object_list[[i]]$class_df[, "silhouette"] >= quantile(object@object_list[[i]]$class_df[, "silhouette"], 0.05)
-			object@object_list[[i]]$stat[["stability"]] = stability(object@object_list[[i]]$consensus[l, l, drop = FALSE])
-		}
-		for(i in seq_along(object@k)) {
-			l = object@object_list[[i]]$class_df[, "silhouette"] >= quantile(object@object_list[[i]]$class_df[, "silhouette"], 0.05)
-			object@object_list[[i]]$stat[["flatness"]] = flatness(object@object_list[[i]]$consensus[l, l, drop = FALSE])
-		}
-
 	m = matrix(nrow = length(object@k), ncol = length(object@object_list[[1]]$stat) - 1)
 	rownames(m) = object@k
 	colnames(m) = setdiff(names(object@object_list[[1]]$stat), "ecdf")
@@ -298,6 +289,26 @@ setMethod(f = "get_classes",
 	lt = object@consensus_class[[as.character(k)]]
 	lt$class_df
 })
+
+recalc_stats = function(rl) {
+	for(j in seq_along(rl@list)) {
+		for(i in seq_along(rl@list[[j]]@k)) {
+			rl@list[[j]]@object_list[[i]]$stat["PAC"] = NULL
+			rl@list[[j]]@object_list[[i]]$stat["cophcor"] = NULL
+			rl@list[[j]]@object_list[[i]]$stat["stability"] = NULL
+			rl@list[[j]]@object_list[[i]]$stat["flatness"] = NULL
+
+
+			l = rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"] >= quantile(rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"], 0.05)
+			rl@list[[j]]@object_list[[i]]$stat[["1-PAC"]] = stability(rl@list[[j]]@object_list[[i]]$consensus[l, l, drop = FALSE])
+		}
+		for(i in seq_along(rl@list[[j]]@k)) {
+			l = rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"] >= quantile(rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"], 0.05)
+			rl@list[[j]]@object_list[[i]]$stat[["FCC"]] = FCC(rl@list[[j]]@object_list[[i]]$consensus[l, l, drop = FALSE])
+		}
+	}
+	return(rl)
+}
 
 # == title
 # Suggest the best number of partitions
