@@ -484,7 +484,6 @@ setMethod(f = "collect_classes",
 		rgb( 1 - (1 - t(col2rgb(col)/255)) * (1 - transparency))
 	}
 
-	pac = get_stats(object, k)[, "PAC"][colnames(class_mat)]
 	consensus_class = get_classes(object, k = k)$class
 	m = t(class_mat)
 	column_order = column_order_by_group(consensus_class, m)

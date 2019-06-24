@@ -1089,31 +1089,28 @@ setMethod(f = "suggest_best_k",
 	definition = function(object) {
 
 	best_k = NULL
-	cophcor = NULL
-	PAC = NULL
+	stability = NULL
 	mean_silhouette = NULL
 	concordance = NULL
 	for(nm in names(object@list)) {
 		obj = object@list[[nm]]
 		best_k[nm] = suggest_best_k(obj)
 		if(is.na(best_k[nm])) {
-			cophcor[nm] = NA
-			PAC[nm] = NA
+			stability[nm] = NA
 			mean_silhouette[nm] = NA
 			concordance[nm] = NA
 		} else {
 			stat = get_stats(obj, k = best_k[nm])
-			cophcor[nm] = stat[1, "cophcor"]
-			PAC[nm] = stat[1, "PAC"]
+			stability[nm] = stat[1, "1-PAC"]
 			mean_silhouette[nm] = stat[1, "mean_silhouette"]
 			concordance[nm] = stat[1, "concordance"]
 		}
 	}
 	tb = data.frame(best_k = best_k,
-		cophcor = cophcor,
-		PAC = PAC,
+		"1-PAC" = stability,
 		mean_silhouette = mean_silhouette,
-		concordance = concordance)
+		concordance = concordance,
+		check.names = FALSE)
 
 	l = rownames(tb) %in% all_leaves(object)
 	tb = cbind(tb, ifelse(l, "leaf", "parent"), stringsAsFactors = FALSE)

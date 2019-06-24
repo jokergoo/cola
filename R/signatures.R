@@ -310,6 +310,7 @@ setMethod(f = "get_signatures",
 		if(!is.null(left_annotation)) left_annotation = left_annotation[row_index, ]
 		if(!is.null(right_annotation)) right_annotation = right_annotation[row_index, ]
 	} else {
+		row_index = seq_len(nrow(mat))
 		mat1 = mat[, column_used_logical, drop = FALSE]
 		mat2 = mat[, !column_used_logical, drop = FALSE]
 		

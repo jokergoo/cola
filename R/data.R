@@ -42,7 +42,7 @@
 #                   matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
 #                   matrix(rnorm(20*20, mean = 1, sd = 0.3), nr = 20))
 #            ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-#   cola_rh = hierarchical_partition(m, top_n = c(20, 30, 40), PAC_cutoff = 0.3)
+#   cola_rh = hierarchical_partition(m, top_n = c(20, 30, 40))
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
