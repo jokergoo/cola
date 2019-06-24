@@ -84,18 +84,20 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # cola_rh
 hierarchical_partition = function(data, top_value_method = "MAD", partition_method = "kmeans",
 	PAC_cutoff = 0.1, silhouette_cutoff = 0.5, 
-	min_samples = 6, min_signatures = 50, max_k = 4, verbose = TRUE, 
+	min_samples = 6, min_signatures = c(50, 0.05), max_k = 4, verbose = TRUE, 
 	mc.cores = 1, ...) {
 
 	cl = match.call()
 
 	if(verbose) qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 
-	.hierarchical_partition = function(.env, column_index, concordance_cutoff = 0.9, node_id = '0', silhouette_cutoff = 0.5,
+	.hierarchical_partition = function(.env, column_index, node_id = '0', silhouette_cutoff = 0.5,
 		min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
-		if(verbose) cat("=========================================================\n")
-		if(verbose) qqcat("* submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
+		prefix = paste0(rep("  ", nchar(node_id) - 1), collapse = "")
+
+		if(verbose) qqcat("@{prefix}=========================================================\n")
+		if(verbose) qqcat("@{prefix}* submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
 		## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
 	   	.env$all_top_value_list = NULL
 	   	.env$column_index = column_index  #note .env$column_index is only for passing to `consensus_partition()` function
@@ -107,7 +109,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 
 	    best_k = suggest_best_k(part)
 	    if(is.na(best_k)) {
-	    	if(verbose) qqcat("* Rand index is too high, no meaningful subgroups, stop.\n")
+	    	if(verbose) qqcat("@{prefix}* Rand index is too high, no meaningful subgroups, stop.\n")
 	    	return(lt)
 	    }
 	    cl = get_classes(part, k = best_k)
@@ -122,28 +124,28 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	    set2 = which(cl$class != s & cl$silhouette >= silhouette_cutoff)
 	    .env$all_top_value_list = NULL
 
-	    if(verbose) qqcat("* best k = @{best_k}, the farthest subgroup: @{s}\n")
-		PAC_score = get_stats(part, k = best_k)[, "PAC"]
+	    if(verbose) qqcat("@{prefix}* best k = @{best_k}, the farthest subgroup: @{s}\n")
+		PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
 	    if(PAC_score > PAC_cutoff) {
-	    	if(verbose) qqcat("* PAC score is too big @{sprintf('%.2f', PAC_score)}, stop.\n")
+	    	if(verbose) qqcat("@{prefix}* PAC score is too big @{sprintf('%.2f', PAC_score)}, stop.\n")
 	    	return(lt)
 	    }
 
     	if(length(set1) <= min_samples || length(set2) <= min_samples) {
-    		if(verbose) cat("* subgroups have too few columns, stop.\n")
+    		if(verbose) qqcat("@{prefix}* subgroups have too few columns, stop.\n")
     		return(lt)
     	}
 
     	sig_df = get_signatures(part, k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff)
     	if(is.null(sig_df)) {
-			if(verbose) qqcat("* unable to find signatures, stop.\n")
+			if(verbose) qqcat("@{prefix}* unable to find signatures, stop.\n")
 	    	return(lt)
-    	} else if(nrow(sig_df) < min_signatures) {
-			if(verbose) qqcat("* number of signatures are too small (@{nrow(sig_df)}), stop.\n")
+    	} else if(nrow(sig_df) < min_signatures[1] & nrow(sig_df)/nrow(mat) < min_signatures[2]) {
+			if(verbose) qqcat("@{prefix}* number of signatures are too small (@{nrow(sig_df)}), stop.\n")
 	    	return(lt)
     	}
 
-    	if(verbose) qqcat("* partitioned into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
+    	if(verbose) qqcat("@{prefix}* partitioned into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
     	# insert the two subgroups into the hierarchy
     	sub_node_1 = paste0(node_id, s)
     	sub_node_2 = paste0(node_id, "0")

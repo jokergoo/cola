@@ -376,10 +376,12 @@ consensus_partition = function(data,
 		l = class_df$silhouette >= quantile(class_df$silhouette, 0.05)
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
-			"1-PAC" = PAC_origin(consensus_mat[l, l, drop = FALSE]),
-			# FCC = FCC(consensus_mat[l, l, drop = FALSE]),
+			"1-PAC" = 1 - PAC_origin(consensus_mat[l, l, drop = FALSE]),
 			mean_silhouette = mean(class_df$silhouette),
-			concordance = concordance(membership_each, class_ids)
+			concordance = concordance(membership_each, class_ids),
+			cophcor = cophcor(consensus_mat),
+			aPAC = aPAC(consensus_mat),
+			FCC = FCC(consensus_mat[l, l, drop = FALSE])
 		)
 
 		# loc = cmdscale(dist(t(data)), k = 2)
@@ -622,7 +624,7 @@ setMethod(f = "select_partition_number",
 	op = par(no.readonly = TRUE)
 
 	m = get_stats(object)
-	m = m[, !colnames(m) %in% c("k", "mean_group_dist_2PC", "mean_group_dist_3PC"), drop = FALSE]
+	m = m[, colnames(m) %in% c(STAT_USED, "area_increased", "Rand", "Jaccard"), drop = FALSE]
 	nm = colnames(m)
 	n = ncol(m)
 	nr = floor(sqrt(n)+1)

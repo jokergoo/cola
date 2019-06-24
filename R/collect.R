@@ -693,7 +693,7 @@ setMethod(f = "collect_stats",
 	all_top_value_methods = object@top_value_method
 	all_parittion_methods = object@partition_method
 
-	all_stat_nm = c("1-PAC", "mean_silhouette", "concordance")
+	all_stat_nm = STAT_USED
 
 	grid.newpage()
 	layout_ncol = ceiling(length(all_stat_nm)/2)
