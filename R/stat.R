@@ -230,7 +230,7 @@ stability = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
 #
 # A flatness larger than 0.9 is treated as stable partitions.
 #
-flatness = function(consensus_mat, diff = 0.1) {
+FCC = function(consensus_mat, diff = 0.1) {
 	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
 	a = seq(0, 0.5, length = 100)
 	b = seq(0.5, 1, length = 100)

@@ -376,8 +376,8 @@ consensus_partition = function(data,
 		l = class_df$silhouette >= quantile(class_df$silhouette, 0.05)
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
-			stability = stability(consensus_mat[l, l, drop = FALSE]),
-			flatness = flatness(consensus_mat[l, l, drop = FALSE]),
+			"1-PAC" = PAC_origin(consensus_mat[l, l, drop = FALSE]),
+			FCC = FCC(consensus_mat[l, l, drop = FALSE]),
 			mean_silhouette = mean(class_df$silhouette),
 			concordance = concordance(membership_each, class_ids)
 		)
