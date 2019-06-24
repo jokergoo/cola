@@ -24,7 +24,7 @@ The \code{\link{ConsensusPartition-class}} has following methods:
   \item{\code{\link{get_matrix,ConsensusPartition-method}}:}{get the original matrix.}
   \item{\code{\link{get_consensus,ConsensusPartition-method}}:}{get the consensus matrix.}
   \item{\code{\link{get_membership,ConsensusPartition-method}}:}{get the membership in random samplings.}
-  \item{\code{\link{get_stats,ConsensusPartition-method}}:}{get statistics for the consensus clustering.}
+  \item{\code{\link{get_stats,ConsensusPartition-method}}:}{get metrics for the consensus clustering.}
   \item{\code{\link{get_classes,ConsensusPartition-method}}:}{get the consensus class IDs and other columns.}
   \item{\code{\link{suggest_best_k,ConsensusPartition-method}}:}{guess the best number of partitions.}
   \item{\code{\link{test_to_known_factors,ConsensusPartition-method}}:}{test correlation between predicted classes and known factors, if available.}

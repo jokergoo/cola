@@ -1,0 +1,32 @@
+\name{aPAC}
+\alias{aPAC}
+\title{
+Adapted PAC scores
+}
+\description{
+Adapted PAC scores
+}
+\usage{
+aPAC(consensus_mat)
+}
+\arguments{
+
+  \item{consensus_mat}{a consensus matrix.}
+
+}
+\details{
+For the consensus values x, it is transformed to 1 - x if x < 0.5.
+After the transformation, for any pair of samples in the consensus matrix,
+If they are always in a same group or always in different groups, the 
+value x is both to 1. Thus, if the consensus matrix shows stable partitions,
+values x will be all close to 1. Reflecting to the CDF of x, the curve is 
+shifted to the right and the area under CDF curve should be very small.
+
+An aPAC value less than 0.05 is considered as stable partitions, which can
+be thought the proportion of abmiguous partitioning is less than 0.05.
+}
+\examples{
+# There is no example
+NULL
+
+}

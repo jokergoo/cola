@@ -377,7 +377,7 @@ consensus_partition = function(data,
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
 			"1-PAC" = PAC_origin(consensus_mat[l, l, drop = FALSE]),
-			FCC = FCC(consensus_mat[l, l, drop = FALSE]),
+			# FCC = FCC(consensus_mat[l, l, drop = FALSE]),
 			mean_silhouette = mean(class_df$silhouette),
 			concordance = concordance(membership_each, class_ids)
 		)
