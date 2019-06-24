@@ -8,14 +8,14 @@ Overlap of top rows from different top-value methods
 }
 \usage{
 \S4method{top_rows_overlap}{ConsensusPartitionList}(object, top_n = min(object@list[[1]]@top_n),
-    method = c("venneuler", "venn", "correspondance"), ...)
+    method = c("euler", "venn", "correspondance"), ...)
 }
 \arguments{
 
   \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
   \item{top_n}{number of top rows.}
-  \item{method}{\code{venn}: use Venn diagram; \code{venneuler}: use Venn Euler diagram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
-  \item{...}{additional arguments passed to \code{\link{venn_euler}} or \code{\link{correspond_between_rankings}}.}
+  \item{method}{\code{venn}: use Venn diagram; \code{euler}: use Euler diagram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
+  \item{...}{additional arguments passed to \code{\link[eulerr]{plot.euler}} or \code{\link{correspond_between_rankings}}.}
 
 }
 \value{

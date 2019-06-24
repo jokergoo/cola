@@ -115,7 +115,7 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 		venn(lt, ...)
 		title(qq("top @{top_n} rows"))
 	} else if(method == "euler") {
-		print(eulerr:::plot.euler(eulerr::euler(lt), main = qq("top @{top_n} rows"), legend = TRUE, ...))
+		print(plot(eulerr::euler(lt), main = qq("top @{top_n} rows"), legend = TRUE, ...))
 	} else if(method == "correspondance") {
 		correspond_between_rankings(object, top_n = top_n, ...)
 	}

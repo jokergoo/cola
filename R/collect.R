@@ -693,8 +693,7 @@ setMethod(f = "collect_stats",
 	all_top_value_methods = object@top_value_method
 	all_parittion_methods = object@partition_method
 
-	# all_stat_nm = setdiff(colnames(stats), c("k", "area_increased", "Rand", "Jaccard"))
-	all_stat_nm = c("cophcor", "PAC", "mean_silhouette", "concordance")
+	all_stat_nm = c("1-PAC", "mean_silhouette", "concordance")
 
 	grid.newpage()
 	layout_ncol = ceiling(length(all_stat_nm)/2)
@@ -709,13 +708,8 @@ setMethod(f = "collect_stats",
 			}
 		}
 
-		if(nm == "PAC") {
-			m = 1 - m
-			nm = "1 - PAC"
-		}
-
 		pushViewport(viewport(layout.pos.row = layout_ir, layout.pos.col = layout_ic))
-		if(nm %in% c("cophcor", "1 - PAC", "mean_silhouette", "concordance")) {
+		if(nm %in% c( "1-PAC", "mean_silhouette", "concordance")) {
 			col_fun = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red"))
 		} else {
 			col_fun = colorRamp2(c(min(m), (min(m) + max(m))/2, max(m)), c("blue", "white", "red"))
