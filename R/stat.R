@@ -92,7 +92,7 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 				v[i] = 1
 			} else {
 				f = ecdf(cor_v)
-				cor_v = seq(min_cor, 1, length = 100)
+				cor_v = seq(min_cor, 1, length = 1000)
 				n2 = length(cor_v)
 				v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
 			}
@@ -196,9 +196,75 @@ PAC2 = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 }
 
 
+# == title
+# The proportion of ambiguous clustering (PAC score)
+#
+# == param
+# -consensus_mat a consensus matrix.
+# -x1 lower bound to define "ambiguous clustering".
+# -x2 upper bound to define "ambihuous clustering".
+# 
+# == details
+# This is the original implementation of PAC method.
+#
 PAC_origin = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
 	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
 	F(x2) - F(x1)
+}
+
+stability = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
+	1 - PAC_origin(consensus_mat, x1, x2)
+}
+
+# == title
+# Flatness of the CDF curve
+#
+# == param
+# -consensus_mat a consensus matrix.
+# -diff Difference of F(b) - F(a)
+#
+# == details
+# For a in [0, 0.5] and for b in [0.5, 1], the flatness measures
+# the flatness of the CDF curve of the consensus matrix, it is 
+# calculated as the maximum width that fits F(b) - F(a) <= diff
+#
+# A flatness larger than 0.9 is treated as stable partitions.
+#
+flatness = function(consensus_mat, diff = 0.1) {
+	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
+	a = seq(0, 0.5, length = 100)
+	b = seq(0.5, 1, length = 100)
+
+	grid = expand.grid(a, b)
+	x = F(grid[, 2]) - F(grid[, 1])
+	ind = which(x <= diff)
+	max(grid[ind, 2] - grid[ind, 1])
+}
+
+# == title
+# Adapted PAC scores
+#
+# == param
+# -consensus_mat a consensus matrix.
+#
+# == details
+# For the consensus values x, it is transformed to 1 - x if x < 0.5.
+# After the transformation, for any pair of samples in the consensus matrix,
+# If they are always in a same group or always in different groups, the 
+# value x is both to 1. Thus, if the consensus matrix shows stable partitions,
+# values x will be all close to 1. Reflecting to the CDF of x, the curve is 
+# shifted to the right and the area under CDF curve should be very small.
+#
+# An aPAC value less than 0.05 is considered as stable partitions, which can
+# be thought the proportion of abmiguous partitioning is less than 0.05.
+#
+aPAC = function(consensus_mat) {
+	x = consensus_mat[lower.tri(consensus_mat)]
+	x = ifelse(x < 0.5, 1 - x, x)
+	x = (x - 0.5)*2
+	F = ecdf(x)
+	breaks = seq(0, 1, length = 1000)
+	sum(F(breaks)*(breaks[2] - breaks[1]))
 }
 
 mean_group_dist = function(mat, factor) {
