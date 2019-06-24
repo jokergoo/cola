@@ -253,22 +253,11 @@ message(qq("* overlaping top rows from different top-value methods"), appendLF =
 
 Overlap of top rows in different top methods:
 
-<% oe = try(loadNamespace("venneuler"), silent = TRUE)
-if(inherits(oe, "try-error")) {
-   venn_method = "venn"
-} else {
-   venn_method = "venneuler"
-}-%>
-
-<% if(venn_method == "venn") { %>
-Failed to load **venneuler** package, use `gplots::venn()` instead.
-<% } %>
-
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(top_n in res_list@list[[1]]@top_n) { -%>
-knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>, method = "<%=venn_method%>")', 'top_n = <%=top_n%>', opt = 'fig.width = 5, fig.height = 5', prefix = 'top-rows-overlap-by-venn')
+knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>, method = "euler")', 'top_n = <%=top_n%>', opt = 'fig.width = 5, fig.height = 5', prefix = 'top-rows-overlap-by-euler')
 <%}-%>
-knitr_insert_tabs('top-rows-overlap-by-venn')
+knitr_insert_tabs('top-rows-overlap-by-euler')
 ```
 
 Also visualize the correspondance of rankings between different top methods:

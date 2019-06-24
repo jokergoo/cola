@@ -179,6 +179,16 @@ setMethod(f = "get_membership",
 setMethod(f = "get_stats",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k) {
+
+		for(i in seq_along(object@k)) {
+			l = object@object_list[[i]]$class_df[, "silhouette"] >= quantile(object@object_list[[i]]$class_df[, "silhouette"], 0.05)
+			object@object_list[[i]]$stat[["stability"]] = stability(object@object_list[[i]]$consensus[l, l, drop = FALSE])
+		}
+		for(i in seq_along(object@k)) {
+			l = object@object_list[[i]]$class_df[, "silhouette"] >= quantile(object@object_list[[i]]$class_df[, "silhouette"], 0.05)
+			object@object_list[[i]]$stat[["flatness"]] = flatness(object@object_list[[i]]$consensus[l, l, drop = FALSE])
+		}
+
 	m = matrix(nrow = length(object@k), ncol = length(object@object_list[[1]]$stat) - 1)
 	rownames(m) = object@k
 	colnames(m) = setdiff(names(object@object_list[[1]]$stat), "ecdf")
@@ -330,13 +340,13 @@ setMethod(f = "suggest_best_k",
 		return(NA)
 	}
 
-	l = stat[, "PAC"] <= 0.1 & stat[, "mean_silhouette"] >= 0.9
+	l = stat[, "flatness"] >= 0.9
 	if(sum(l)) {
 		return(max(as.numeric(rownames(stat)[l])))
 	}
 
-	dec = c(which.max(stat[, "cophcor"]), 
-		    which.min(stat[, "PAC"]),
+	dec = c(which.max(stat[, "stability"]),
+		    which.max(stat[, "flatness"]),
 		    which.max(stat[, "mean_silhouette"]),
 		    which.max(stat[, "concordance"]))
 	
@@ -371,8 +381,8 @@ setMethod(f = "suggest_best_k",
 	definition = function(object, rand_index_cutoff = 0.95) {
 
 	best_k = NULL
-	cophcor = NULL
-	PAC = NULL
+	stability = NULL
+	flatness = NULL
 	mean_silhouette = NULL
 	concordance = NULL
 	for(tm in object@top_value_method) {
@@ -381,31 +391,31 @@ setMethod(f = "suggest_best_k",
 			obj = object@list[[nm]]
 			best_k[nm] = suggest_best_k(obj, rand_index_cutoff)
 			if(is.na(best_k[nm])) {
-				cophcor[nm] = NA
-				PAC[nm] = NA
+				stability[nm] = NA
+				flatness[nm] = NA
 				mean_silhouette[nm] = NA
 				concordance[nm] = NA
 			} else {
 				stat = get_stats(obj, k = best_k[nm])
-				cophcor[nm] = stat[1, "cophcor"]
-				PAC[nm] = stat[1, "PAC"]
+				stability[nm] = stat[1, "stability"]
+				flatness[nm] = stat[1, "flatness"]
 				mean_silhouette[nm] = stat[1, "mean_silhouette"]
 				concordance[nm] = stat[1, "concordance"]
 			}
 		}
 	}
 	tb = data.frame(best_k = best_k,
-		cophcor = cophcor,
-		PAC = PAC,
+		stability = stability,
+		flatness = flatness,
 		mean_silhouette = mean_silhouette,
 		concordance = concordance)
 
 	rntb = rownames(tb)
-	l = tb$PAC <= 0.1 & !is.na(tb$best_k) & tb$mean_silhouette >= 0.9
+	l = tb$flatness >= 0.9 & !is.na(tb$best_k)
 
-	tb = cbind(tb, ifelse(l, ifelse(tb$mean_silhouette >= 0.9 & tb$PAC <= 0.05, "**", "*"), ""), stringsAsFactors = FALSE)
+	tb = cbind(tb, ifelse(l, ifelse(tb$flatness <= 0.95, "*", "**"), ""), stringsAsFactors = FALSE)
 	colnames(tb)[ncol(tb)] = ""
-	return(tb[order(!is.na(tb[, "best_k"]) + 0, tb[, "PAC"]), , drop = FALSE])
+	return(tb[order(!is.na(tb[, "best_k"]) + 0, tb[, "flatness"], decreasing = TRUE), , drop = FALSE])
 })
 
 # == title

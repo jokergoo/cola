@@ -5,8 +5,8 @@
 # == param
 # -object a `ConsensusPartitionList-class` object.
 # -top_n number of top rows.
-# -method ``venn``: use Venn diagram; ``venneuler``: use Venn Euler diagram; ``correspondance``: use `correspond_between_rankings`.
-# -... additional arguments passed to `venn_euler` or `correspond_between_rankings`.
+# -method ``venn``: use Venn diagram; ``euler``: use Euler diagram; ``correspondance``: use `correspond_between_rankings`.
+# -... additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
 #
 # == value
 # No value is returned.
@@ -24,7 +24,7 @@
 setMethod(f = "top_rows_overlap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = min(object@list[[1]]@top_n), 
-		method = c("venneuler", "venn", "correspondance"), ...) {
+		method = c("euler", "venn", "correspondance"), ...) {
 
 	all_top_value_list = object@.env$all_top_value_list
 
@@ -38,8 +38,8 @@ setMethod(f = "top_rows_overlap",
 # -object a numeric matrix.
 # -top_value_method methods defined in `all_top_value_methods`.
 # -top_n number of top rows.
-# -method ``venn``: use Venn diagram; ``venneuler``: use Venn Euler diagram; ``correspondance``: use `correspond_between_rankings`.
-# -... additional arguments passed to `venn_euler` or `correspond_between_rankings`.
+# -method ``venn``: use Venn diagram; ``euler``: use Euler diagram; ``correspondance``: use `correspond_between_rankings`.
+# -... additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
 #
 # == details
 # It first calculates scores for every top-value method and make plot by `top_elements_overlap`.
@@ -61,7 +61,7 @@ setMethod(f = "top_rows_overlap",
 	signature = "matrix",
 	definition = function(object, top_value_method = all_top_value_methods(), 
 		top_n = round(0.25*nrow(object)), 
-		method = c("venneuler", "venn", "correspondance"), ...) {
+		method = c("euler", "venn", "correspondance"), ...) {
 
 	all_top_value_list = lapply(top_value_method, function(x) {
 		get_top_value_fun = get_top_value_method(x)
@@ -81,8 +81,8 @@ setMethod(f = "top_rows_overlap",
 # == param
 # -object a list which contains values from different metrics.
 # -top_n number of top rows.
-# -method ``venn``: use Venn diagram; ``venneuler``: use Venn Euler diagram; ``correspondance``: use `correspond_between_rankings`.
-# -... additional arguments passed to `venn_euler` or `correspond_between_rankings`.
+# -method ``venn``: use Venn diagram; ``euler``: use Euler diagram; ``correspondance``: use `correspond_between_rankings`.
+# -... additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
 #
 # == details
 # The i^th value in all vectors in the input should correspond to a same element from the original data.
@@ -101,7 +101,7 @@ setMethod(f = "top_rows_overlap",
 # top_elements_overlap(lt, top_n = 25, method = "venn")
 # top_elements_overlap(lt, top_n = 25, method = "correspondance")
 top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])), 
-		method = c("venneuler", "venn", "correspondance"), ...) {
+		method = c("euler", "venn", "correspondance"), ...) {
 
 	if(length(unique(sapply(object, length))) > 1) {
 		stop_wrap("Length of all vectors in the input list should be the same.")
@@ -110,17 +110,12 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 	lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
     
     method = match.arg(method)
-    if(method == "venneuler") {
-	    if(!requireNamespace("venneuler")) {
-	    	message_wrap("venneuler package is not installed, use venn() instead.")
-	    	method = "venn"
-	    }
-	}
+
     if(method == "venn") {
 		venn(lt, ...)
 		title(qq("top @{top_n} rows"))
-	} else if(method == "venneuler") {
-		venn_euler(lt, main = qq("top @{top_n} rows"), ...)
+	} else if(method == "euler") {
+		print(eulerr:::plot.euler(eulerr::euler(lt), main = qq("top @{top_n} rows"), legend = TRUE, ...))
 	} else if(method == "correspondance") {
 		correspond_between_rankings(object, top_n = top_n, ...)
 	}
@@ -285,44 +280,3 @@ setMethod(f = "top_rows_heatmap",
 	upViewport()
 })
 
-
-# == title
-# Make Venn Euler diagram from a list
-#
-# == param
-# -lt a list of vectors.
-# -... other arguments passed to `graphics::plot.default`.
-#
-# == details
-# The function calls `gplots::venn` to reformat the data and
-# then calls `venneuler::venneuler` to make the plot.
-#
-# == value
-# No value is returned.
-#
-# == author
-# Zuguang Gu <z.gu@dkfz.de>
-#
-# == example
-# lt = list(a = sample(letters, 13),
-#           b = sample(letters, 13),
-#           c = sample(letters, 13))
-# if(requireNamespace("venneuler")) {
-# 	venn_euler(lt)
-# }
-venn_euler = function(lt, ...) {
-
-	if(!inherits(lt, "list")) {
-		stop_wrap("Input should be a list.")
-	}
-
-    df = venn(lt, show.plot = FALSE)
-    df = df[-1, ]
-    set = df[, "num"]
-    category = df[, -1]
-    names(set) = apply(category, 1, function(x) {
-        paste(colnames(category)[as.logical(x)], collapse = "&")
-    })
-
-    plot(venneuler::venneuler(set), ...)
-}

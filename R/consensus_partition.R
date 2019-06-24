@@ -373,18 +373,19 @@ consensus_partition = function(data,
 		}
 
 		if(verbose) qqcat("@{prefix}calculate statistics for the consensus partition.\n")
+		l = class_df$silhouette >= quantile(class_df$silhouette, 0.05)
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
-			cophcor =  cophcor(consensus_mat),
-			PAC = PAC(consensus_mat),
+			stability = stability(consensus_mat[l, l, drop = FALSE]),
+			flatness = flatness(consensus_mat[l, l, drop = FALSE]),
 			mean_silhouette = mean(class_df$silhouette),
 			concordance = concordance(membership_each, class_ids)
 		)
 
-		loc = cmdscale(dist(t(data)), k = 2)
-		stat$mean_group_dist_2PC = mean_group_dist(loc, class_ids)
-		loc = cmdscale(dist(t(data)), k = 3)
-		stat$mean_group_dist_3PC = mean_group_dist(loc, class_ids)
+		# loc = cmdscale(dist(t(data)), k = 2)
+		# stat$mean_group_dist_2PC = mean_group_dist(loc, class_ids)
+		# loc = cmdscale(dist(t(data)), k = 3)
+		# stat$mean_group_dist_3PC = mean_group_dist(loc, class_ids)
 		
 		return(list(
 			class_df = class_df, 
@@ -438,7 +439,7 @@ consensus_partition = function(data,
 	# an additional metric for determine "best k"
 	ak = sapply(object_list, function(obj) {
 		f = obj$stat$ecdf
-		x = seq(0, 1, length = 100)
+		x = seq(0, 1, length = 1000)
 		n = length(x)
 		sum((x[2:n] - x[1:(n-1)])*f(x[2:n]))
 	})
