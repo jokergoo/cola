@@ -14,3 +14,6 @@ TEMPLATE_DIR = NULL
 .onLoad = function(...) {
 	TEMPLATE_DIR <<- system.file("extdata", package = "cola")
 }
+
+
+STAT_USED = c("1-PAC", "mean_silhouette", "concordance")

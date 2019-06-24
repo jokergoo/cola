@@ -180,9 +180,9 @@ setMethod(f = "get_stats",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k) {
 
-	m = matrix(nrow = length(object@k), ncol = length(object@object_list[[1]]$stat) - 1)
+	m = matrix(nrow = length(object@k), ncol = length(STAT_USED) + 3)
 	rownames(m) = object@k
-	colnames(m) = setdiff(names(object@object_list[[1]]$stat), "ecdf")
+	colnames(m) = c(STAT_USED, "area_increased", "Rand", "Jaccard")
 	for(i in seq_along(object@k)) {
 		m[i, ] = unlist(object@object_list[[i]]$stat[colnames(m)])
 	}
@@ -214,9 +214,9 @@ setMethod(f = "get_stats",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
 	if(missing(k)) stop_wrap("k needs to be provided.")
-	m = matrix(nrow = length(object@list), ncol = length(object@list[[1]]@object_list[[1]]$stat) - 1)
+	m = matrix(nrow = length(object@list), ncol = length(STAT_USED) + 3)
 	rownames(m) = names(object@list)
-	colnames(m) = setdiff(names(object@list[[1]]@object_list[[1]]$stat), c("ecdf"))
+	colnames(m) = c(STAT_USED, "area_increased", "Rand", "Jaccard")
 	for(i in seq_along(object@list)) {
 		ik = which(object@list[[i]]@k == k)
 		m[i, ] = unlist(object@list[[i]]@object_list[[ik]]$stat[colnames(m)])
@@ -358,7 +358,6 @@ setMethod(f = "suggest_best_k",
 	}
 
 	dec = c(which.max(stat[, "1-PAC"]),
-		    # which.max(stat[, "FCC"]),
 		    which.max(stat[, "mean_silhouette"]),
 		    which.max(stat[, "concordance"]))
 	
@@ -394,7 +393,6 @@ setMethod(f = "suggest_best_k",
 
 	best_k = NULL
 	stability = NULL
-	# flatness = NULL
 	mean_silhouette = NULL
 	concordance = NULL
 	for(tm in object@top_value_method) {
@@ -404,13 +402,11 @@ setMethod(f = "suggest_best_k",
 			best_k[nm] = suggest_best_k(obj, rand_index_cutoff)
 			if(is.na(best_k[nm])) {
 				stability[nm] = NA
-				# flatness[nm] = NA
 				mean_silhouette[nm] = NA
 				concordance[nm] = NA
 			} else {
 				stat = get_stats(obj, k = best_k[nm])
 				stability[nm] = stat[1, "1-PAC"]
-				# flatness[nm] = stat[1, "FCC"]
 				mean_silhouette[nm] = stat[1, "mean_silhouette"]
 				concordance[nm] = stat[1, "concordance"]
 			}
@@ -418,7 +414,6 @@ setMethod(f = "suggest_best_k",
 	}
 	tb = data.frame(best_k = best_k,
 		"1-PAC" = stability,
-		# FCC = flatness,
 		mean_silhouette = mean_silhouette,
 		concordance = concordance,
 		check.names = FALSE)

@@ -9,7 +9,7 @@ Hierarchical partition
 \usage{
 hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmeans",
     PAC_cutoff = 0.1, silhouette_cutoff = 0.5,
-    min_samples = 6, min_signatures = 50, max_k = 4, verbose = TRUE,
+    min_samples = 6, min_signatures = c(50, 0.05), max_k = 4, verbose = TRUE,
     mc.cores = 1, ...)
 }
 \arguments{
