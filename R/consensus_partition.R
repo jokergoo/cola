@@ -1024,6 +1024,7 @@ setMethod(f = "dimension_reduction",
 # -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
 #         `umap::umap`.
+# -pc which two principle components to visualize
 # -control a list of parameters for `Rtsne::Rtsne` or `umap::umap`.
 # -pch shape of points.
 # -col color of points.
@@ -1044,7 +1045,7 @@ setMethod(f = "dimension_reduction",
 	definition = function(object, 
 	pch = 16, col = "black", cex = 1, main = "",
 	method = c("PCA", "MDS", "t-SNE", "UMAP"),
-	control = list(), 
+	pc = 1:2, control = list(), 
 	scale_rows = TRUE,
 	internal = FALSE, verbose = TRUE) {
 
@@ -1098,9 +1099,9 @@ setMethod(f = "dimension_reduction",
 	} else if(method == "PCA") {
 		fit = prcomp(t(data))
 		sm = summary(fit)
-		prop = sm$importance[2, 1:2]
-		loc = fit$x[, 1:2]
-		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = qq("PC1 (@{round(prop[1]*100)}%)"), ylab = qq("PC2 (@{round(prop[2]*100)}%)"))
+		prop = sm$importance[2, pc]
+		loc = fit$x[, pc]
+		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = qq("PC@{pc[1]} (@{round(prop[1]*100)}%)"), ylab = qq("PC@{pc[2]} (@{round(prop[2]*100)}%)"))
 	} else if(method == "t-SNE") {
 		param = list(X = t(data))
 		param = c(param, control)
