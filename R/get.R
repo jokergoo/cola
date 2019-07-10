@@ -299,14 +299,15 @@ recalc_stats = function(rl) {
 			rl@list[[j]]@object_list[[i]]$stat["flatness"] = NULL
 			rl@list[[j]]@object_list[[i]]$stat["FCC"] = NULL
 
+			consensus_mat = rl@list[[j]]@object_list[[i]]$consensus
 
 			l = rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"] >= quantile(rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"], 0.05)
-			rl@list[[j]]@object_list[[i]]$stat[["1-PAC"]] = 1 - PAC_origin(rl@list[[j]]@object_list[[i]]$consensus[l, l, drop = FALSE])
+			rl@list[[j]]@object_list[[i]]$stat[["1-PAC"]] = 1 - PAC_origin(consensus_mat[l, l, drop = FALSE])
+			rl@list[[j]]@object_list[[i]]$stat[["cophcor"]] = cophcor(consensus_mat)
+			rl@list[[j]]@object_list[[i]]$stat[["aPAC"]] = aPAC(consensus_mat)
+			rl@list[[j]]@object_list[[i]]$stat[["FCC"]] = FCC(consensus_mat[l, l, drop = FALSE])
 		}
-		# for(i in seq_along(rl@list[[j]]@k)) {
-		# 	l = rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"] >= quantile(rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"], 0.05)
-		# 	rl@list[[j]]@object_list[[i]]$stat[["FCC"]] = FCC(rl@list[[j]]@object_list[[i]]$consensus[l, l, drop = FALSE])
-		# }
+
 	}
 	return(rl)
 }
