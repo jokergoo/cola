@@ -11,11 +11,11 @@ Get annotations
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object}
+  \item{object}{A \code{\link{ConsensusPartitionList-class}} object}
 
 }
 \value{
-A data frame if \code{anno} was specified in \code{\link{run_all_consensus_partition_methods}}, or \code{NULL}.
+A data frame if \code{anno} was specified in \code{\link{run_all_consensus_partition_methods}}, or else \code{NULL}.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

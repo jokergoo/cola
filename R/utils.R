@@ -10,32 +10,42 @@ if(!exists("strrep")) {
 # Relabel class IDs according to the reference ID
 #
 # == param
-# -class a vector of class IDs.
-# -ref a vector of reference IDs.
-# -full_set the full set of levels. 
-# -return_map whether return the mapping or the adjusted labels.
+# -class A vector of class IDs.
+# -ref A vector of reference IDs.
+# -full_set The full set of ID levels. 
+# -return_map Whether return the mapping or the adjusted labels.
 #
 # == details
 # In partition, the exact value of the class ID is not of importance. E.g. for two partitions
 # ``a, a, a, b, b, b, b`` and ``b, b, b, a, a, a, a``, they are the same partitions although the labels
 # of ``a`` and ``b`` are switched in the two partitions. Here `relabel_class` function switches the labels
-# in ``class`` vector accoring to the labels in ``ref`` vector to maximize ``sum(class == ref)``.
+# in ``class`` vector according to the labels in ``ref`` vector to maximize ``sum(class == ref)``.
 #
-# Mathematically, this is called linear sum assignment problem and is solved by `clue::solve_LSAP`.
+# Mathematically, this is called linear sum assignment problem and it is solved by `clue::solve_LSAP`.
 #
 # == value
-# A data frame with three columns:
+# A named vector where names correspond to the IDs in ``class`` and values correspond to ``ref``,
+# which means ``map = relabel_class(class, ref); map[class]`` returns the relabelled IDs.
 #
-# - original IDs
-# - adjusted IDs
-# - reference IDs
+# The returned object attaches a data frame with three columns:
 #
-# The mapping between adjusted IDs and original IDs are stored as the ``map`` attribute of the data frame.
+# - original IDs in ``class``
+# - adjusted IDs according to ``ref``
+# - reference IDs in ``ref``
+#
+# If ``return_map`` in the `relabel_class` is set to `FALSE`, the function simply returns
+# a vector of adjusted class IDs.
+#
+# If the function returns the mapping vector (when ``return_map = TRUE``), the mapping variable
+# is always character, which means, if your ``class`` and ``ref`` are numeric, you need to convert
+# them back to numeric explicitely. If ``return_map = FALSE``, the returned relabelled vector has
+# the same mode as ``class``.
 #
 # == example
 # class = c(rep("a", 10), rep("b", 3))
 # ref = c(rep("b", 4), rep("a", 9))
 # relabel_class(class, ref)
+# relabel_class(class, ref, return_map = FALSE)
 relabel_class = function(class, ref, full_set = union(class, ref), return_map = TRUE) {
 	md = mode(class)
 
@@ -99,8 +109,8 @@ column_order_by_group = function(factor, mat) {
 # Adjust outliers
 #
 # == param
-# -x a numeric vector.
-# -q quantile to adjust.
+# -x A numeric vector.
+# -q Quantile to adjust.
 # 
 # == details
 # Vaules larger than quantile ``1 - q`` are adjusted to the ``1 - q`` quantile and 
@@ -127,9 +137,9 @@ adjust_outlier = function(x, q = 0.05) {
 # Remove rows with low variance and impute missing values
 #
 # == param
-# -m a numeric matrix.
-# -sd_quantile cutoff the quantile of standard deviation Rows with standard deviation less than it are removed.
-# -max_na maximum NA fraction in each row. Rows with NA fraction larger than this value are removed.
+# -m A numeric matrix.
+# -sd_quantile Cutoff of the quantile of standard deviation. Rows with standard deviation less than it are removed.
+# -max_na Maximum NA fraction in each row. Rows with NA fraction larger than it are removed.
 #
 # == details
 # The function uses `impute::impute.knn` to impute missing values, then
@@ -248,7 +258,7 @@ multicore_supported = function() {
 
 
 # == title
-# Number of Rows in the Matrix
+# Number of rows in the matrix
 #
 # == param
 # -x A `ConsensusPartition-class` object.
@@ -261,7 +271,7 @@ setMethod(f = "nrow",
 
 
 # == title
-# Number of Rows in the Matrix
+# Number of rows in the matrix
 #
 # == param
 # -x A `ConsensusPartitionList-class` object.
@@ -273,7 +283,7 @@ setMethod(f = "nrow",
 })
 
 # == title
-# Number of Rows in the Matrix
+# Number of rows in the matrix
 #
 # == param
 # -x A `HierarchicalPartition-class` object.
@@ -285,7 +295,7 @@ setMethod(f = "nrow",
 })
 
 # == title
-# Number of Columns in the Matrix
+# Number of columns in the matrix
 #
 # == param
 # -x A `ConsensusPartition-class` object.
@@ -297,7 +307,7 @@ setMethod(f = "ncol",
 })
 
 # == title
-# Number of Columns in the Matrix
+# Number of columns in the matrix
 #
 # == param
 # -x A `ConsensusPartitionList-class` object.
@@ -309,7 +319,7 @@ setMethod(f = "ncol",
 })
 
 # == title
-# Number of Columns in the Matrix
+# Number of columns in the matrix
 #
 # == param
 # -x A `HierarchicalPartition-class` object.
@@ -322,7 +332,7 @@ setMethod(f = "ncol",
 
 
 # == title
-# Row Names of the Matrix
+# Row names of the matrix
 #
 # == param
 # -x A `ConsensusPartition-class` object.
@@ -334,7 +344,7 @@ setMethod(f = "rownames",
 })
 
 # == title
-# Row Names of the Matrix
+# Row names of the matrix
 #
 # == param
 # -x A `ConsensusPartitionList-class` object.
@@ -346,7 +356,7 @@ setMethod(f = "rownames",
 })
 
 # == title
-# Row Names of the Matrix
+# Row names of the matrix
 #
 # == param
 # -x A `HierarchicalPartition-class` object.
@@ -359,7 +369,7 @@ setMethod(f = "rownames",
 
 
 # == title
-# Column Names of the Matrix
+# Column names of the matrix
 #
 # == param
 # -x A `ConsensusPartition-class` object.
@@ -372,7 +382,7 @@ setMethod(f = "colnames",
 
 
 # == title
-# Column Names of the Matrix
+# Column names of the matrix
 #
 # == param
 # -x A `ConsensusPartitionList-class` object.
@@ -385,7 +395,7 @@ setMethod(f = "colnames",
 
 
 # == title
-# Column Names of the Matrix
+# Column names of the matrix
 #
 # == param
 # -x A `HierarchicalPartition-class` object.
@@ -397,7 +407,7 @@ setMethod(f = "colnames",
 })
 
 # == title
-# Dimension of the Matrix
+# Dimension of the matrix
 #
 # == param
 # -x A `ConsensusPartition-class` object.
@@ -407,7 +417,7 @@ dim.ConsensusPartition = function(x) {
 }
 
 # == title
-# Dimension of the Matrix
+# Dimension of the matrix
 #
 # == param
 # -x A `ConsensusPartitionList-class` object.
@@ -417,7 +427,7 @@ dim.ConsensusPartitionList = function(x) {
 }
 
 # == title
-# Dimension of the Matrix
+# Dimension of the matrix
 #
 # == param
 # -x A `HierarchicalPartition-class` object.

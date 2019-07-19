@@ -37,19 +37,22 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # Hierarchical partition
 #
 # == param
-# -data a numeric matrix where subgroups are found by columns.
-# -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
-# -partition_method a single partition method. Available methods are in `all_partition_methods`.
-# -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
-# -silhouette_cutoff cutoff for silhouette scores.
-# -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
-# -min_signatures minimal number of signatures to determine whether to continue looking for subgroups.
-# -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
+# -data A numeric matrix where subgroups are found by columns.
+# -top_value_method A single top-value method. Available methods are in `all_top_value_methods`.
+# -partition_method A single partition method. Available methods are in `all_partition_methods`.
+# -PAC_cutoff The cutoff of PAC scores to determine whether to continue looking for subgroups.
+# -silhouette_cutoff Cutoff for silhouette scores.
+# -min_samples The cutoff of number of samples to determine whether to continue looking for subgroups.
+# -min_signatures Minimal number of signatures to determine whether to continue looking for subgroups.
+#    The value should be a vector of length two. The first value is the absolute number of signatures
+#    and the second value is the proportion of signatures in the matrix. The hierarchical partitioning
+#    stops when both criterions are met.
+# -max_k Maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
-# -verbose whether print message.
-# -mc.cores multiple cores to use. 
-# -... pass to `consensus_partition`
+# -verbose Whether print message.
+# -mc.cores Multiple cores to use. 
+# -... Pass to `consensus_partition`
 #
 # == details
 # The function looks for subgroups in a hierarchical way.
@@ -140,8 +143,8 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
     	if(is.null(sig_df)) {
 			if(verbose) qqcat("@{prefix}* unable to find signatures, stop.\n")
 	    	return(lt)
-    	} else if(nrow(sig_df) < min_signatures[1] & nrow(sig_df)/nrow(mat) < min_signatures[2]) {
-			if(verbose) qqcat("@{prefix}* number of signatures are too small (@{nrow(sig_df)}), stop.\n")
+    	} else if(nrow(sig_df) < min_signatures[1] && nrow(sig_df)/nrow(mat) < min_signatures[2]) {
+			if(verbose) qqcat("@{prefix}* number of signatures are too small (@{nrow(sig_df)}, @{sprintf('%.1f', nrow(sig_df)/nrow(mat)*100)}%), stop.\n")
 	    	return(lt)
     	}
 
@@ -390,8 +393,8 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 # Get class IDs from the HierarchicalPartition object
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
 #
 # == return
 # A data frame of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
@@ -424,7 +427,7 @@ setMethod(f = "get_classes",
 # Print the HierarchicalPartition object
 #
 # == param
-# -object a `HierarchicalPartition-class` object
+# -object A `HierarchicalPartition-class` object
 #
 # == value
 # No value is returned.
@@ -486,24 +489,25 @@ setMethod(f = "show",
 # Get signatures rows
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
-# -scale_rows whether apply row scaling when making the heatmap.
-# -anno a data frame of annotations for the original matrix columns. 
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+# -scale_rows Whether apply row scaling when making the heatmap.
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `hierarchical_partition`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -show_column_names whether show column names in the heatmap.
-# -verbose whether to print messages.
-# -plot whether to make the plot.
-# -silhouette_cutoff cutoff for silhouette scores. Samples with values 
+# -show_column_names Whether show column names in the heatmap.
+# -verbose Whether to print messages.
+# -plot Whether to make the plot.
+# -silhouette_cutoff Cutoff for silhouette scores. Samples with values 
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
-# -... other arguments
+# -... Other arguments
 # 
 # == details
 # The function calls `get_signatures,ConsensusPartition-method` to find signatures at
-# each node of the partition hierarchy.
+# each node of the partition hierarchy. The final signatures are the union of all signatures
+# at all nodes.
 #
 # == value
 # A list of row indices where rows are significantly different between subgroups in at least one node.
@@ -669,11 +673,11 @@ setMethod(f = "get_signatures",
 # Collect classes from HierarchicalPartition object
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
-# -anno a data frame of annotations for the original matrix columns. 
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `hierarchical_partition`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 #
 # == details
@@ -738,8 +742,8 @@ setMethod(f = "collect_classes",
 # Subset the HierarchicalPartition object
 #
 # == param
-# -x a `HierarchicalPartition-class` object.
-# -i index. The value should be numeric or a node ID.
+# -x A `HierarchicalPartition-class` object.
+# -i Index. The value should be numeric or a node ID.
 #
 # == details
 # On each node, there is a `ConsensusPartition-class` object.
@@ -770,8 +774,8 @@ setMethod(f = "collect_classes",
 # Subset the HierarchicalPartition object
 #
 # == param
-# -x a `HierarchicalPartition-class` object
-# -i index. The value should be numeric or a node ID.
+# -x A `HierarchicalPartition-class` object
+# -i Index. The value should be numeric or a node ID.
 #
 # == details
 # On each node, there is a `ConsensusPartition-class` object.
@@ -794,10 +798,10 @@ setMethod(f = "collect_classes",
 # Test correspondance between predicted classes and known factors
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
-# -known a vector or a data frame with known factors. By default it is the annotation table set in `hierarchical_partition`.
-# -verbose whether to print messages.
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+# -known A vector or a data frame with known factors. By default it is the annotation table set in `hierarchical_partition`.
+# -verbose Whether to print messages.
 #
 # == value
 # A data frame with columns:
@@ -843,16 +847,16 @@ setMethod(f = "test_to_known_factors",
 # Visualize columns after dimension reduction
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
-# -top_n top n rows to use. By default it uses all rows in the original matrix.
-# -parent_node parent node. If it is set, the function call is identical to ``dimension_reduction(object[parent_node])``
-# -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+# -top_n Top n rows to use. By default it uses all rows in the original matrix.
+# -parent_node Parent node. If it is set, the function call is identical to ``dimension_reduction(object[parent_node])``
+# -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
 #         `umap::umap`.
-# -silhouette_cutoff cutoff of silhouette score. Data points with values less
+# -silhouette_cutoff Cutoff of silhouette score. Data points with values less
 #        than it will be mapped to small points.
-# -scale_rows whether perform scaling on matrix rows.
+# -scale_rows Whether perform scaling on matrix rows.
 #
 # == details
 # The class IDs are extract at ``depth``.
@@ -917,7 +921,7 @@ setMethod(f = "dimension_reduction",
 # Max depth of the hierarchy
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == value
 # A numeric value.
@@ -943,8 +947,8 @@ setMethod(f = "max_depth",
 # All nodes in the hierarchy
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth in the hierarchy.
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth in the hierarchy.
 #
 # == value
 # A vector of node ID.
@@ -974,8 +978,8 @@ setMethod(f = "all_nodes",
 # All leaves in the hierarchy
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth in the hierarchy.
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth in the hierarchy.
 #
 # == value
 # A vector of node ID.
@@ -1013,7 +1017,7 @@ get_children = function(object, node = "0") {
 # Get the original matrix
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == value
 # A numeric matrix.
@@ -1032,7 +1036,7 @@ setMethod(f = "get_matrix",
 # Get annotations
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == value
 # A data frame if ``anno`` was specified in `hierarchical_partition`, or ``NULL``.
@@ -1052,7 +1056,7 @@ setMethod(f = "get_anno",
 # Get annotation colors
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == value
 # A list of color vectors or ``NULL``.
@@ -1070,7 +1074,7 @@ setMethod(f = "get_anno_col",
 # Suggest the best number of partitions
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == details
 # It basically gives the best k at each node.

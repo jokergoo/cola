@@ -11,7 +11,7 @@ remove_top_value_methods(method)
 }
 \arguments{
 
-  \item{method}{name of the top-value methods to be removed.}
+  \item{method}{Name of the top-value methods to be removed.}
 
 }
 \value{

@@ -11,9 +11,9 @@ Get membership matrix
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{number of partitions.}
-  \item{each}{whether return the percentage membership matrix which is summarized from all partitions or the individual membership in every random partition.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{k}{Number of partitions.}
+  \item{each}{Whether return the percentage membership matrix which is summarized from all partitions or the individual membership in every random partition.}
 
 }
 \details{

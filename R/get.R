@@ -3,9 +3,9 @@
 # Get parameters
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -k number of partitions.
-# -unique whether apply `base::unique` to rows of the returned data frame.
+# -object A `ConsensusPartition-class` object.
+# -k Number of partitions.
+# -unique Whether apply `base::unique` to rows of the returned data frame.
 #
 # == details
 # It is mainly used internally.
@@ -40,12 +40,12 @@ setMethod(f = "get_param",
 # Get consensus matrix
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -k number of partitions.
+# -object A `ConsensusPartition-class` object.
+# -k Number of partitions.
 #
 # == details
 # For row i and column j in the consensus matrix, the value of corresponding x_ij
-# is the probability of sample i and sample j being in a same group from all partitions.
+# is the probability of sample i and sample j being in the same group from all partitions.
 #
 # == value
 # A consensus matrix corresponding to the current k.
@@ -69,9 +69,9 @@ setMethod(f = "get_consensus",
 # Get membership matrix
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -k number of partitions.
-# -each whether return the percentage membership matrix which is summarized from all partitions
+# -object A `ConsensusPartition-class` object.
+# -k Number of partitions.
+# -each Whether return the percentage membership matrix which is summarized from all partitions
 #       or the individual membership in every random partition.
 #
 # == details
@@ -113,8 +113,8 @@ setMethod(f = "get_membership",
 # Get membership matrix
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
-# -k number of partitions.
+# -object A `ConsensusPartitionList-class` object.
+# -k Number of partitions.
 #
 # == detail
 # The membership matrix (the probability of each sample to be in one group, if assuming columns represent samples) is inferred
@@ -148,14 +148,13 @@ setMethod(f = "get_membership",
 # Get statistics for the consensus partition
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -k number of partitions. The value can be a vector.
+# -object A `ConsensusPartition-class` object.
+# -k Number of partitions. The value can be a vector.
+# -all_stats Whether to show all statistics that were calculated. Used internally.
 #
 # == details
 # The statistics are:
 #
-# -cophcor cophenetic correlation coefficient. It measures if hierarchical clustering is applied
-#          on the consensus matrix, how good it correlates to the consensus matrix itself.
 # -PAC proportion of ambiguous clustering, calculated by `PAC`.
 # -mean_silhouette the mean silhouette score. See https://en.wikipedia.org/wiki/Silhouette_(clustering) .
 # -concordance the mean probability that each partition fits the consensus partition, calculated by `concordance`.
@@ -178,7 +177,9 @@ setMethod(f = "get_membership",
 # get_stats(obj, k = 2)
 setMethod(f = "get_stats",
 	signature = "ConsensusPartition",
-	definition = function(object, k = object@k) {
+	definition = function(object, k = object@k, all_stats = FALSE) {
+
+	if(all_stats) STAT_USED = STAT_ALL
 
 	m = matrix(nrow = length(object@k), ncol = length(STAT_USED) + 3)
 	rownames(m) = object@k
@@ -197,8 +198,9 @@ setMethod(f = "get_stats",
 # Get statistics for consensus partitions from all methods
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
-# -k number of partitions. The value can only be a single value.
+# -object A `ConsensusPartitionList-class` object.
+# -k Number of partitions. The value can only be a single value.
+# -all_stats Whether to show all statistics that were calculated. Used internally.
 #
 # == value
 # A matrix of partition statistics for a selected k. Rows in the 
@@ -212,7 +214,10 @@ setMethod(f = "get_stats",
 # get_stats(cola_rl, k = 2)
 setMethod(f = "get_stats",
 	signature = "ConsensusPartitionList",
-	definition = function(object, k) {
+	definition = function(object, k, all_stats = FALSE) {
+
+	if(all_stats) STAT_USED = STAT_ALL
+
 	if(missing(k)) stop_wrap("k needs to be provided.")
 	m = matrix(nrow = length(object@list), ncol = length(STAT_USED) + 3)
 	rownames(m) = names(object@list)
@@ -230,8 +235,8 @@ setMethod(f = "get_stats",
 # Get class IDs from the ConsensusPartition object
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -k number of partitions.
+# -object A `ConsensusPartition-class` object.
+# -k Number of partitions.
 #
 # == return
 # A data frame with class IDs and other columns which are entropy of the percent membership matrix
@@ -265,8 +270,8 @@ setMethod(f = "get_classes",
 # Get class IDs from the ConsensusPartitionList object
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
-# -k number of partitions.
+# -object A `ConsensusPartitionList-class` object.
+# -k Number of partitions.
 # 
 # == details 
 # The class IDs are inferred by merging partitions from all methods
@@ -290,6 +295,15 @@ setMethod(f = "get_classes",
 	lt$class_df
 })
 
+# == title
+# Recalculate statistics in the ConsensusPartitionList object
+#
+# == param
+# -rl A `ConsensusPartitionList-class` object.
+#
+# == details
+# It updates the statistics slot in the ConsensusPartitionList object, used internally.
+#
 recalc_stats = function(rl) {
 	for(j in seq_along(rl@list)) {
 		for(i in seq_along(rl@list[[j]]@k)) {
@@ -302,7 +316,7 @@ recalc_stats = function(rl) {
 			consensus_mat = rl@list[[j]]@object_list[[i]]$consensus
 
 			l = rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"] >= quantile(rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"], 0.05)
-			rl@list[[j]]@object_list[[i]]$stat[["1-PAC"]] = 1 - PAC_origin(consensus_mat[l, l, drop = FALSE])
+			rl@list[[j]]@object_list[[i]]$stat[["1-PAC"]] = 1 - PAC(consensus_mat[l, l, drop = FALSE])
 			rl@list[[j]]@object_list[[i]]$stat[["cophcor"]] = cophcor(consensus_mat)
 			rl@list[[j]]@object_list[[i]]$stat[["aPAC"]] = aPAC(consensus_mat)
 			rl@list[[j]]@object_list[[i]]$stat[["FCC"]] = FCC(consensus_mat[l, l, drop = FALSE])
@@ -316,22 +330,23 @@ recalc_stats = function(rl) {
 # Suggest the best number of partitions
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -rand_index_cutoff the Rand index compared to previous k is larger than this value, it is filtered out.
+# -object A `ConsensusPartition-class` object.
+# -rand_index_cutoff The cutoff for Rand index compared to previous k.
 #
 # == details
-# The best k is voted from 1) the k with the maximal cophcor value, 2) the k with the minimal PAC value,
-# 3) the k with the maximal mean silhouette value and 4) the k with the maximal concordance value.
+# The best k is selected according to following rules:
 #
-# There are scenarios that a better partition with k groups than k - 1 groups (e.g. for the sense of better sihouette score) 
-# is only because of one tiny group of samples are separated and it is better to still put them back to the original group
-# to improve the robustness of the subgrouping. For this, users can set the cutoff of Rand index by ``rand_index_cutoff`` to
-# get rid of or reduce the effect of such cirsumstances.
+# 1. k with rand index larger than ``rand_index_cutoff`` are removed. If all k are removed, the best k is defined as ``NA``.
+# 2. If there are some k having ``1-PAC`` larger than 0.9, the largest k is selected as the best k.
+# 3. If it does not fit rule 2, the k with highest vote of highest 1-PAC, mean_silhouette and concordance scores is
+#    selected as the best k.
 #
-# Honestly, it is hard or maybe impossible to say which k is the best one. `suggest_best_k` function only gives suggestion of selecting
-# a reasonable k. Users still need to look at the plots (e.g. by `select_partition_number` or `consensus_heatmap` functions), or even
+# `suggest_best_k` function only gives suggestion of selecting
+# a reasonable best k. Users still need to look at the plots (e.g. by `select_partition_number` or `consensus_heatmap` functions), or even
 # by checking whether the subgrouping gives a reasonable signatures by `get_signatures`, to pick a reasonable k that best explains their study. 
 #
+# The best k with 1-PAC larger than 0.9 is treated as a stable partition.
+# 
 # == value
 # The best k.
 #
@@ -373,11 +388,13 @@ setMethod(f = "suggest_best_k",
 # Suggest the best number of partitions
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
-# -rand_index_cutoff the Rand index compared to previous k is larger than this, it is filtered out.
+# -object A `ConsensusPartitionList-class` object.
+# -rand_index_cutoff The cutoff for Rand index compared to previous k.
 #
 # == details
 # It basically gives the best k for each combination of top-value method and partition method by calling `suggest_best_k,ConsensusPartition-method`.
+#
+# 1-PAC score higher than 0.95 is treated as very stable partition and higher than 0.9 is treated as stable partition.
 #
 # == value
 # A data frame with the best k and other statistics for each combination of methods.
@@ -431,7 +448,7 @@ setMethod(f = "suggest_best_k",
 # Get the original matrix
 #
 # == param
-# -object a `ConsensusPartitionList-class` object
+# -object A `ConsensusPartitionList-class` object
 #
 # == value
 # A numeric matrix.
@@ -452,7 +469,7 @@ setMethod(f = "get_matrix",
 # Get the original matrix
 #
 # == param
-# -object a `ConsensusPartition-class` object
+# -object A `ConsensusPartition-class` object
 #
 # == value
 # A numeric matrix.
@@ -474,10 +491,10 @@ setMethod(f = "get_matrix",
 # Get annotations
 #
 # == param
-# -object a `ConsensusPartitionList-class` object
+# -object A `ConsensusPartitionList-class` object
 #
 # == value
-# A data frame if ``anno`` was specified in `run_all_consensus_partition_methods`, or ``NULL``.
+# A data frame if ``anno`` was specified in `run_all_consensus_partition_methods`, or else ``NULL``.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -492,10 +509,10 @@ setMethod(f = "get_anno",
 # Get annotations
 #
 # == param
-# -object a `ConsensusPartition-class` object
+# -object A `ConsensusPartition-class` object
 #
 # == value
-# A data frame if ``anno`` was specified in `run_all_consensus_partition_methods` or `consensus_partition`, or ``NULL``.
+# A data frame if ``anno`` was specified in `run_all_consensus_partition_methods` or `consensus_partition`, or else ``NULL``.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -510,10 +527,10 @@ setMethod(f = "get_anno",
 # Get annotation colors
 #
 # == param
-# -object a `ConsensusPartitionList-class` object
+# -object A `ConsensusPartitionList-class` object
 #
 # == value
-# A list of color vectors or ``NULL``.
+# A list of color vectors or else ``NULL``.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -528,10 +545,10 @@ setMethod(f = "get_anno_col",
 # Get annotation colors
 #
 # == param
-# -object a `ConsensusPartition-class` object
+# -object A `ConsensusPartition-class` object
 #
 # == value
-# A list of color vectors or ``NULL``.
+# A list of color vectors or else ``NULL``.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>

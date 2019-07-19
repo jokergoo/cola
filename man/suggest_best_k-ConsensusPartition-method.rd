@@ -11,22 +11,23 @@ Suggest the best number of partitions
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{rand_index_cutoff}{the Rand index compared to previous k is larger than this value, it is filtered out.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{rand_index_cutoff}{The cutoff for Rand index compared to previous k.}
 
 }
 \details{
-The best k is voted from 1) the k with the maximal cophcor value, 2) the k with the minimal PAC value,
-3) the k with the maximal mean silhouette value and 4) the k with the maximal concordance value.
+The best k is selected according to following rules:
 
-There are scenarios that a better partition with k groups than k - 1 groups (e.g. for the sense of better sihouette score) 
-is only because of one tiny group of samples are separated and it is better to still put them back to the original group
-to improve the robustness of the subgrouping. For this, users can set the cutoff of Rand index by \code{rand_index_cutoff} to
-get rid of or reduce the effect of such cirsumstances.
+1. k with rand index larger than \code{rand_index_cutoff} are removed. If all k are removed, the best k is defined as \code{NA}.
+2. If there are some k having \code{1-PAC} larger than 0.9, the largest k is selected as the best k.
+3. If it does not fit rule 2, the k with highest vote of highest 1-PAC, mean_silhouette and concordance scores is
+   selected as the best k.
 
-Honestly, it is hard or maybe impossible to say which k is the best one. \code{\link{suggest_best_k}} function only gives suggestion of selecting
-a reasonable k. Users still need to look at the plots (e.g. by \code{\link{select_partition_number}} or \code{\link{consensus_heatmap}} functions), or even
+\code{\link{suggest_best_k}} function only gives suggestion of selecting
+a reasonable best k. Users still need to look at the plots (e.g. by \code{\link{select_partition_number}} or \code{\link{consensus_heatmap}} functions), or even
 by checking whether the subgrouping gives a reasonable signatures by \code{\link{get_signatures}}, to pick a reasonable k that best explains their study.
+
+The best k with 1-PAC larger than 0.9 is treated as a stable partition.
 }
 \value{
 The best k.

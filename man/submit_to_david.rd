@@ -13,18 +13,18 @@ submit_to_david(genes, email,
 }
 \arguments{
 
-  \item{genes}{a vector of gene identifiers.}
-  \item{email}{the email that user registered on DAVID web service (\url{https://david.ncifcrf.gov/content.jsp?file=WS.html} ).}
-  \item{catalog}{a vector of function catalogs. Valid values should be in \code{cola:::DAVID_ALL_CATALOGS}.}
+  \item{genes}{A vector of gene identifiers.}
+  \item{email}{The email that user registered on DAVID web service (\url{https://david.ncifcrf.gov/content.jsp?file=WS.html} ).}
+  \item{catalog}{A vector of function catalogs. Valid values should be in \code{cola:::DAVID_ALL_CATALOGS}.}
   \item{idtype}{ID types for the input gene list. Valid values should be in \code{cola:::DAVID_ALL_ID_TYPES}.}
-  \item{species}{full species name if the ID type is not uniquely mapped to one single species.}
+  \item{species}{Full species name if the ID type is not uniquely mapped to one single species.}
 
 }
 \details{
 This function directly sends the HTTP request to DAVID web service (\url{https://david.ncifcrf.gov/content.jsp?file=WS.html} )
 and parses the returned XML. The reason of writing this function is I have problems with other
 R packages doing DAVID analysis (e.g. RDAVIDWebService, \url{https://bioconductor.org/packages/devel/bioc/html/RDAVIDWebService.html} )
-because the rJava package RDAVIDWebService depends on can not be installed on our machine.
+because the rJava package RDAVIDWebService depends on can not be installed on my machine.
 
 Users are encouraged to use more advanced
 gene set enrichment tools such as clusterProfiler (\url{http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html} ), 

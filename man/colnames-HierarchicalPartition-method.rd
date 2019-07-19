@@ -1,10 +1,10 @@
 \name{colnames-HierarchicalPartition-method}
 \alias{colnames,HierarchicalPartition-method}
 \title{
-Column Names of the Matrix
+Column names of the matrix
 }
 \description{
-Column Names of the Matrix
+Column names of the matrix
 }
 \usage{
 \S4method{colnames}{HierarchicalPartition}(x)

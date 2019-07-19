@@ -3,26 +3,26 @@
 # Consensus partition
 #
 # == param
-# -data a numeric matrix where subgroups are found by columns.
-# -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
+# -data A numeric matrix where subgroups are found by columns.
+# -top_value_method A single top-value method. Available methods are in `all_top_value_methods`.
 #                   Use `register_top_value_methods` to add a new top-value method.
-# -top_n number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
+# -top_n Number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
 #        the function only randomly sample 5000 rows from top n rows. If ``top_n`` is a vector, paritition
 #        will be applied to every values in ``top_n`` and consensus partition is summarized from all partitions.
-# -partition_method a single partition method. Available methods are in `all_partition_methods`.
+# -partition_method A single partition method. Available methods are in `all_partition_methods`.
 #                   Use `register_partition_methods` to add a new partition method.
-# -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions.
-# -p_sampling proportion of the top n rows to sample.
-# -partition_repeat number of repeats for the random sampling.
-# -partition_param parameters for the partition method which are passed to ``...`` in a registered partition method. See `register_partition_methods` for detail.
-# -anno a data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation
+# -max_k Maximal number of partitions to try. The function will try ``2:max_k`` partitions.
+# -p_sampling Proportion of the top n rows to sample.
+# -partition_repeat Number of repeats for the random sampling.
+# -partition_param Parameters for the partition method which are passed to ``...`` in a registered partition method. See `register_partition_methods` for detail.
+# -anno A data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation
 #       to predicted subgroups will be tested.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -scale_rows whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
-# -verbose whether print messages.
-# -mc.cores multiple cores to use.
-# -.env an environment, internally used.
+# -scale_rows Whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
+# -verbose Whether print messages.
+# -mc.cores Multiple cores to use.
+# -.env An environment, internally used.
 #
 # == details
 # The function performs analysis in following steps:
@@ -376,7 +376,7 @@ consensus_partition = function(data,
 		l = class_df$silhouette >= quantile(class_df$silhouette, 0.05)
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
-			"1-PAC" = 1 - PAC_origin(consensus_mat[l, l, drop = FALSE]),
+			"1-PAC" = 1 - PAC(consensus_mat[l, l, drop = FALSE]),
 			mean_silhouette = mean(class_df$silhouette),
 			concordance = concordance(membership_each, class_ids),
 			cophcor = cophcor(consensus_mat),
@@ -516,7 +516,7 @@ consensus_partition = function(data,
 # Print the ConsensusPartition object
 #
 # == param
-# -object a `ConsensusPartition-class` object.
+# -object A `ConsensusPartition-class` object.
 #
 # == value
 # No value is returned.
@@ -551,8 +551,8 @@ setMethod(f = "show",
 # Plot the empirical cumulative distribution curve (ECDF) of the consensus matrix
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -... other arguments.
+# -object A `ConsensusPartition-class` object.
+# -... Other arguments.
 #
 # == details
 # It plots ECDF curve for each k.
@@ -595,13 +595,13 @@ setMethod(f = "plot_ecdf",
 # Several plots for determining the optimized number of partitions
 #
 # == param
-# -object a `ConsensusPartition-class` object.
+# -object A `ConsensusPartition-class` object.
+# -all_stats Whether to show all statistics that were calculated. Used internally.
 #
 # == details
 # There are following plots made:
 #
 # - ECDF of the consensus matrix under each k, made by `plot_ecdf,ConsensusPartition-method`,
-# - the cophenetic correlation coefficient,
 # - `PAC` score,
 # - mean sihouette score,
 # - the `concordance` for each partition to the consensus partition,
@@ -620,10 +620,11 @@ setMethod(f = "plot_ecdf",
 # select_partition_number(cola_rl["sd", "hclust"])
 setMethod(f = "select_partition_number",
 	signature = "ConsensusPartition",
-	definition = function(object) {
+	definition = function(object, all_stats = FALSE) {
 	op = par(no.readonly = TRUE)
 
-	m = get_stats(object)
+	m = get_stats(object, all_stats = all_stats)
+	if(all_stats) STAT_USED = STAT_ALL
 	m = m[, colnames(m) %in% c(STAT_USED, "area_increased", "Rand", "Jaccard"), drop = FALSE]
 	nm = colnames(m)
 	n = ncol(m)
@@ -649,17 +650,14 @@ setMethod(f = "select_partition_number",
 	par(xpd = NA, mar = c(4, 2, 1, 1))
 	plot(c(0, 1), c(0, 1), type = "n", axes = FALSE, ann = FALSE)
 	text(x = 0, y = 1,
-"Suggested rule:
-Rand index < 0.95
-If cophcor >= 0.99 or 
-   PAC <= 0.1 or 
-   concordance >= 0.95,
-  take the maximum k,
+"Suggested rules:
+Rand index < 0.95;
+If 1-PAC >= 0.90,
+  take the maximum k;
 else take the k with higest votes of
-  1. max cophcor,
-  2. min PAC,
-  3. max mean_silhouette,
-  4. max concordance.
+  1. max 1-PAC,
+  2. max mean_silhouette,
+  3. max concordance.
 ", cex = 1.2, adj = c(0, 1))
 
 	legend("topright", pch = 16, col = "Red", legend = "best k", cex = 1.5)
@@ -672,14 +670,14 @@ else take the k with higest votes of
 # Heatmap for the consensus matrix
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -k number of partitions.
-# -internal used internally.
-# -anno a data frame of annotations for the original matrix columns. 
+# -object A `ConsensusPartition-class` object.
+# -k Number of partitions.
+# -internal Used internally.
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -show_row_names whether plot row names on the consensus heatmap (which are the column names in the original matrix)
+# -show_row_names Whether plot row names on the consensus heatmap (which are the column names in the original matrix)
 # -... other arguments
 #
 # == details
@@ -779,15 +777,15 @@ setMethod(f = "consensus_heatmap",
 # Heatmap of membership in each partition
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -k number of partitions.
-# -internal used internally.
-# -anno a data frame of annotations for the original matrix columns. 
+# -object A `ConsensusPartition-class` object.
+# -k Number of partitions.
+# -internal Used internally.
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -show_column_names whether show column names in the heatmap (which is the column name in the original matrix).
-# -... other arguments
+# -show_column_names Whether show column names in the heatmap (which is the column name in the original matrix).
+# -... Other arguments
 #
 # == details
 # Each row in the heatmap is the membership in one single partition.
@@ -896,21 +894,21 @@ setMethod(f = "membership_heatmap",
 # Visualize samples (the matrix columns) after dimension reduction
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -k number of partitions.
-# -top_n top n rows to use. By default it uses all rows in the original matrix.
-# -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
+# -object A `ConsensusPartition-class` object.
+# -k Number of partitions.
+# -top_n Top n rows to use. By default it uses all rows in the original matrix.
+# -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
 #         `umap::umap`.
-# -control a list of parameters for `Rtsne::Rtsne` or `umap::umap`.
-# -internal internally used.
-# -silhouette_cutoff cutoff of silhouette score. Data points with values less
+# -control A list of parameters for `Rtsne::Rtsne` or `umap::umap`.
+# -internal Internally used.
+# -silhouette_cutoff Cutoff of silhouette score. Data points with values less
 #        than it will be mapped with cross symbols.
-# -remove whether to remove columns which have less silhouette scores than
+# -remove Whether to remove columns which have less silhouette scores than
 #        the cutoff.
-# -scale_rows whether perform scaling on matrix rows.
-# -verbose whether print messages.
-# -... other arguments.
+# -scale_rows Whether perform scaling on matrix rows.
+# -verbose Whether print messages.
+# -... Other arguments.
 #
 # == value
 # No value is returned.
@@ -1020,19 +1018,19 @@ setMethod(f = "dimension_reduction",
 # Visualize columns after dimension reduction
 #
 # == param
-# -object a numeric matrix.
-# -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
+# -object A numeric matrix.
+# -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
 #         `umap::umap`.
-# -pc which two principle components to visualize
-# -control a list of parameters for `Rtsne::Rtsne` or `umap::umap`.
-# -pch shape of points.
-# -col color of points.
-# -cex size of points.
-# -main title of the plot.
-# -scale_rows whether perform scaling on matrix rows.
-# -internal internally used.
-# -verbose whether print messages.
+# -pc Which two principle components to visualize
+# -control A list of parameters for `Rtsne::Rtsne` or `umap::umap`.
+# -pch Ahape of points.
+# -col Color of points.
+# -cex Aize of points.
+# -main Title of the plot.
+# -scale_rows Whether perform scaling on matrix rows.
+# -internal Internally used.
+# -verbose Whether print messages.
 #
 # == value
 # No value is returned.
@@ -1116,70 +1114,4 @@ setMethod(f = "dimension_reduction",
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "UMAP 1", ylab = "UMAP 2")
 	}
 })
-
-
-# == title
-# Calculate consensus clustering related statistics
-#
-# == param
-# -partition_list a list of partitions. The partitions can be vectors of categorical values or objects
-#       already generated by clue package (the hard partitions only).
-# -k number of classes that are expected.
-#
-# == value
-# A list of following elements:
-#
-# -class_ids consensus class ids.
-# -consensus_matrix consensus matrix.
-# -membership_mat probability to be in each group. 
-# -membership_each original partition list that has been adjusted according to the consensus class ids.
-# -stat statistics for the consensus clustering
-#
-cal_consensus = function(partition_list, k) {
-
-	if(is.atomic(partition_list[[1]])) {
-		partition_list = lapply(partition_list, as.cl_hard_partition)
-	}
-
-	partition_list = cl_ensemble(list = partition_list)
-	partition_consensus = cl_consensus(partition_list)
-
-	class_ids = as.vector(cl_class_ids(partition_consensus))
-
-	membership_mat = cl_membership(partition_consensus)
-	class(membership_mat) = "matrix"
-	if(ncol(membership_mat) < k) {
-		membership_mat = cbind(membership_mat, matrix(0, nrow = nrow(membership_mat), ncol = k - ncol(membership_mat)))
-	}
-
-	colnames(membership_mat) = paste0("p", 1:ncol(membership_mat))
-	rownames(membership_mat) = colnames(data)
-	attr(membership_mat, "n_of_classes") = NULL
-	attr(membership_mat, "is_cl_hard_partition") = NULL
-	
-	membership_each = do.call("cbind", lapply(seq_along(partition_list), function(i) {
-		x = partition_list[[i]]
-		class = as.vector(cl_class_ids(x))
-		map = relabel_class(class, class_ids, full_set = 1:k)
-		class = as.numeric(map[as.character(class)])
-		as.integer(class)
-	}))
-	rownames(membership_each) = rownames(membership_mat)
-
-	consensus_mat = get_consensus_matrix(membership_each)
- 	rownames(consensus_mat) = rownames(membership_mat)
- 	colnames(consensus_mat) = rownames(membership_mat)
-
- 	stat = c(
-			cophcor =  cophcor(consensus_mat),
-			PAC = PAC(consensus_mat),
-			concordance = concordance(membership_each, class_ids)
-	)
-
- 	return(list(class_ids = class_ids,
- 		consensus_mat = consensus_mat,
- 		membership_mat = membership_mat,
- 		membership_each = membership_each,
- 		stat = stat))
-}
 

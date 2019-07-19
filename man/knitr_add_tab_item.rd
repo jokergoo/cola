@@ -13,18 +13,18 @@ knitr_add_tab_item(code, header, prefix, desc = "", opt = NULL,
 \arguments{
 
   \item{code}{R code to execute.}
-  \item{header}{header or the title for the tab.}
-  \item{prefix}{prefix of chunk label.}
-  \item{desc}{decription in the tab.}
-  \item{opt}{options for the knitr chunk.}
-  \item{message}{message to print.}
-  \item{hide_and_show}{whether hide the code output.}
+  \item{header}{Header or the title for the tab.}
+  \item{prefix}{Prefix of chunk label.}
+  \item{desc}{Decription in the tab.}
+  \item{opt}{Options for the knitr chunk.}
+  \item{message}{Message to print.}
+  \item{hide_and_show}{Whether to hide the code output.}
 
 }
 \details{
 Each tab contains the R source code and results generated from it (figure, tables, text, ...).
 
-This function in only for internal use.
+This function is only for internal use.
 }
 \value{
 No value is returned.

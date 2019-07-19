@@ -11,10 +11,10 @@ test_between_factors(x, y = NULL, all_factors = FALSE, verbose = FALSE)
 }
 \arguments{
 
-  \item{x}{a data frame or a vector which contains discrete or continuous variables. if \code{y} is omit, pairwise testing for columns in \code{x} is performed.}
-  \item{y}{a data frame or a vector which contains discrete or continuous variables.}
-  \item{all_factors}{are all columns in \code{x} and \code{y} are enforced to be factors?}
-  \item{verbose}{whether to print messages.}
+  \item{x}{A data frame or a vector which contains discrete or continuous variables. if \code{y} is omit, pairwise testing for all columns in \code{x} is performed.}
+  \item{y}{A data frame or a vector which contains discrete or continuous variables.}
+  \item{all_factors}{Are all columns in \code{x} and \code{y} enforced to be factors?}
+  \item{verbose}{Whether to print messages.}
 
 }
 \details{
@@ -35,8 +35,11 @@ A matrix of p-values. If there are NA values, basically it means there are no ef
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-df = data.frame(v1 = rnorm(100), v2 = sample(letters[1:3], 100, replace = TRUE), 
-    v3 = sample(LETTERS[5:6], 100, replace = TRUE))
+df = data.frame(
+    v1 = rnorm(100), 
+    v2 = sample(letters[1:3], 100, replace = TRUE), 
+    v3 = sample(LETTERS[5:6], 100, replace = TRUE)
+)
 test_between_factors(df)
 x = runif(100)
 test_between_factors(x, df)

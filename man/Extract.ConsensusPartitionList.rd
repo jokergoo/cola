@@ -12,10 +12,10 @@ Subset a ConsensusPartitionList object
 }
 \arguments{
 
-  \item{x}{a \code{\link{ConsensusPartitionList-class}} object.}
-  \item{i}{index for top-value methods, character or nummeric.}
-  \item{j}{index for partition methods, character or nummeric.}
-  \item{drop}{whether drop class}
+  \item{x}{A \code{\link{ConsensusPartitionList-class}} object.}
+  \item{i}{Index for top-value methods, character or nummeric.}
+  \item{j}{Index for partition methods, character or nummeric.}
+  \item{drop}{Whether drop class}
 
 }
 \details{

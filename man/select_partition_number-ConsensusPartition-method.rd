@@ -8,11 +8,12 @@ Several plots for determining the optimized number of partitions
 Several plots for determining the optimized number of partitions
 }
 \usage{
-\S4method{select_partition_number}{ConsensusPartition}(object)
+\S4method{select_partition_number}{ConsensusPartition}(object, all_stats = FALSE)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{all_stats}{Whether to show all statistics that were calculated. Used internally.}
 
 }
 \details{
@@ -20,7 +21,6 @@ There are following plots made:
 
 \itemize{
   \item ECDF of the consensus matrix under each k, made by \code{\link{plot_ecdf,ConsensusPartition-method}},
-  \item the cophenetic correlation coefficient,
   \item \code{\link{PAC}} score,
   \item mean sihouette score,
   \item the \code{\link{concordance}} for each partition to the consensus partition,

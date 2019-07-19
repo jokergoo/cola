@@ -13,17 +13,17 @@ correspond_between_two_rankings(x1, x2, name1, name2,
 }
 \arguments{
 
-  \item{x1}{a vector of scores calculated by one metric.}
-  \item{x2}{a vector of scores calculated by another metric.}
-  \item{name1}{name of the first metric.}
-  \item{name2}{name of the second metric.}
-  \item{col1}{color for the first metric.}
-  \item{col2}{color for the second metric.}
-  \item{top_n}{top n elements to show correspondance.}
-  \item{transparency}{transparency of the connection lines.}
-  \item{pt_size}{size of the points, must be a \code{\link[grid]{unit}} object}
-  \item{newpage}{whether to plot in a new graphic page.}
-  \item{ratio}{ratio of width of the left barplot, connection lines and right barplot. The three values will be scaled to a sum of 1.}
+  \item{x1}{A vector of scores calculated by one metric.}
+  \item{x2}{A vector of scores calculated by another metric.}
+  \item{name1}{Name of the first metric.}
+  \item{name2}{Name of the second metric.}
+  \item{col1}{Color for the first metric.}
+  \item{col2}{Color for the second metric.}
+  \item{top_n}{Top n elements to show correspondance.}
+  \item{transparency}{Transparency of the connection lines.}
+  \item{pt_size}{Size of the points, must be a \code{\link[grid]{unit}} object}
+  \item{newpage}{Whether to plot in a new graphic page.}
+  \item{ratio}{Ratio of width of the left barplot, connection lines and right barplot. The three values will be scaled to a sum of 1.}
 
 }
 \details{

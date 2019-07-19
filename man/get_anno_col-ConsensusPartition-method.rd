@@ -11,11 +11,11 @@ Get annotation colors
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object}
 
 }
 \value{
-A list of color vectors or \code{NULL}.
+A list of color vectors or else \code{NULL}.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

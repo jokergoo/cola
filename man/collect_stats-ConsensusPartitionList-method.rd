@@ -7,14 +7,15 @@ Draw and compare statistics for multiple methods
 Draw and compare statistics for multiple methods
 }
 \usage{
-\S4method{collect_stats}{ConsensusPartitionList}(object, k, layout_nrow = 2, ...)
+\S4method{collect_stats}{ConsensusPartitionList}(object, k, layout_nrow = 2, all_stats = FALSE, ...)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
-  \item{k}{number of partitions}
-  \item{layout_nrow}{number of rows in the layout}
-  \item{...}{other arguments}
+  \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
+  \item{k}{Number of partitions}
+  \item{layout_nrow}{Number of rows in the layout}
+  \item{all_stats}{Whether to show all statistics that were calculated. Used internally.}
+  \item{...}{Other arguments}
 
 }
 \details{

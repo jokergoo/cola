@@ -16,17 +16,17 @@ Visualize samples (the matrix columns) after dimension reduction
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{number of partitions.}
-  \item{top_n}{top n rows to use. By default it uses all rows in the original matrix.}
-  \item{method}{which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}. \code{t-SNE} uses \code{\link[Rtsne]{Rtsne}}. \code{UMAP} uses \code{\link[umap]{umap}}.}
-  \item{control}{a list of parameters for \code{\link[Rtsne]{Rtsne}} or \code{\link[umap]{umap}}.}
-  \item{internal}{internally used.}
-  \item{silhouette_cutoff}{cutoff of silhouette score. Data points with values less than it will be mapped with cross symbols.}
-  \item{remove}{whether to remove columns which have less silhouette scores than the cutoff.}
-  \item{scale_rows}{whether perform scaling on matrix rows.}
-  \item{verbose}{whether print messages.}
-  \item{...}{other arguments.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{k}{Number of partitions.}
+  \item{top_n}{Top n rows to use. By default it uses all rows in the original matrix.}
+  \item{method}{Which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}. \code{t-SNE} uses \code{\link[Rtsne]{Rtsne}}. \code{UMAP} uses \code{\link[umap]{umap}}.}
+  \item{control}{A list of parameters for \code{\link[Rtsne]{Rtsne}} or \code{\link[umap]{umap}}.}
+  \item{internal}{Internally used.}
+  \item{silhouette_cutoff}{Cutoff of silhouette score. Data points with values less than it will be mapped with cross symbols.}
+  \item{remove}{Whether to remove columns which have less silhouette scores than the cutoff.}
+  \item{scale_rows}{Whether perform scaling on matrix rows.}
+  \item{verbose}{Whether print messages.}
+  \item{...}{Other arguments.}
 
 }
 \value{

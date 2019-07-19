@@ -1,26 +1,26 @@
 \name{concordance}
 \alias{concordance}
 \title{
-Concordance of partitions to the consensus partition
+Concordance to the consensus partition
 }
 \description{
-Concordance of partitions to the consensus partition
+Concordance to the consensus partition
 }
 \usage{
 concordance(membership_each, class)
 }
 \arguments{
 
-  \item{membership_each}{a matrix which contains partitions in every single runs.}
-  \item{class}{consensus class IDs.}
+  \item{membership_each}{A matrix which contains partitions in every single runs where columns correspond to runs.}
+  \item{class}{Consensus class IDs.}
 
 }
 \details{
-Class IDs in \code{membership_each} have already be adjusted to the consensus class IDs
+Note class IDs in \code{membership_each} should already be adjusted to the consensus class IDs
 to let \code{sum(x_single == x_consensus)} reach maximum.
 
-The concordance score is the mean probability of fitting the consensus class IDs in all
-partitions.
+The concordance score is the mean proportion of samples having the same class ID as the consensus class ID
+among runs.
 
 This function is used internally.
 }

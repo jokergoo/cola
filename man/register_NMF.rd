@@ -10,7 +10,7 @@ Register NMF partition method
 register_NMF()
 }
 \details{
-Note NMF analysis is very time-consuming.
+NMF analysis is performed by \code{\link[NMF]{nmf}}.
 }
 \examples{
 # There is no example

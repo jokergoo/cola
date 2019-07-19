@@ -11,7 +11,7 @@ Print the ConsensusPartition object
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
 
 }
 \value{

@@ -7,19 +7,19 @@ Get statistics for the consensus partition
 Get statistics for the consensus partition
 }
 \usage{
-\S4method{get_stats}{ConsensusPartition}(object, k = object@k)
+\S4method{get_stats}{ConsensusPartition}(object, k = object@k, all_stats = FALSE)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{number of partitions. The value can be a vector.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{k}{Number of partitions. The value can be a vector.}
+  \item{all_stats}{Whether to show all statistics that were calculated. Used internally.}
 
 }
 \details{
 The statistics are:
 
 \describe{
-  \item{cophcor}{cophenetic correlation coefficient. It measures if hierarchical clustering is applied on the consensus matrix, how good it correlates to the consensus matrix itself.}
   \item{PAC}{proportion of ambiguous clustering, calculated by \code{\link{PAC}}.}
   \item{mean_silhouette}{the mean silhouette score. See \url{https://en.wikipedia.org/wiki/Silhouette_(clustering)} .}
   \item{concordance}{the mean probability that each partition fits the consensus partition, calculated by \code{\link{concordance}}.}

@@ -1,19 +1,19 @@
 
 
 # == title
-# Ability to correlate other rows in the matrix (ATC score)
+# Ability to correlate other rows in the matrix
 #
 # == param
-# -mat a numeric matrix. ATC score is calculated by rows.
-# -cor_fun a function which calculates correlation.
-# -min_cor minimal absolute correlation.
-# -power power on the correlation values.
-# -mc.cores number of cores.
-# -n_sampling when there are too many rows in the matrix, to get the curmulative
+# -mat A numeric matrix. ATC score is calculated by rows.
+# -cor_fun A function which calculates correlations.
+# -min_cor Cutoff for the minimal absolute correlation.
+# -power Power on the correlation values.
+# -mc.cores Mumber of cores.
+# -n_sampling When there are too many rows in the matrix, to get the curmulative
 #           distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000
-#           rows can already give a farely nice estimation.
-# -q_sd percentile of the standard deviation for the rows. Rows with values less than it are ignored.
-# -... pass to ``cor_fun``, e.g. ``method = 'spearman'`` can be passed to ``cor_fun`` if the correlation function is `stats::cor`.
+#           rows can already give a very nice estimation.
+# -q_sd Percentile of the standard deviation for the rows. Rows with values less than it are ignored.
+# -... Pass to ``cor_fun``.
 # 
 # == details 
 # For a given row in a matrix, the ATC score is the area above the curve of the curmulative density
@@ -115,40 +115,8 @@ entropy = function(p) {
 	-sum(p*log2(p))/abs(sum(p2*log2(p2)))
 }
 
-# == title
-# The proportion of ambiguous clustering (PAC score)
-#
-# == param
-# -consensus_mat a consensus matrix.
-# -x1 lower bound to define "ambiguous clustering". The value can be a vector.
-# -x2 upper bound to define "ambihuous clustering". The value can be a vector.
-# -trim percent of extreme values to trim if combinations of ``x1`` and ``x2`` are more than 10.
-# 
-# == details
-# This a variant of the orignial PAC method.
-# 
-# For each ``x_1i`` in ``x1`` and ``x_2j`` in ``x2``, ``PAC_k = F(x_2j) - F(x_1i)``
-# where ``F(x)`` is the cumulative distribution function of the consensus matrix (the lower triangle matrix without diagnals is only used). 
-# The final PAC is the mean of all ``PAC_k`` by removing top ``trim/2`` percent and bottom ``trim/2`` percent of all values.
-# 
-# == return 
-# A single numeric vaule.
-#
-# == see also
-# See https://www.nature.com/articles/srep06207 for explanation of PAC score.
-#
-# == author
-# Zuguang Gu <z.gu@dkfz.de>
-# 
-# == example
-# data(cola_rl)
-# PAC(get_consensus(cola_rl[1, 1], k = 2))
-# PAC(get_consensus(cola_rl[1, 1], k = 3))
-# PAC(get_consensus(cola_rl[1, 1], k = 4))
-# PAC(get_consensus(cola_rl[1, 1], k = 5))
-# PAC(get_consensus(cola_rl[1, 1], k = 6))
-#
-PAC = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
+
+PAC_old = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 	x2 = seq(0.7, 0.9, by = 0.02), trim = 0.2) {
 
 	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
@@ -200,35 +168,61 @@ PAC2 = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 # The proportion of ambiguous clustering (PAC score)
 #
 # == param
-# -consensus_mat a consensus matrix.
-# -x1 lower bound to define "ambiguous clustering".
-# -x2 upper bound to define "ambihuous clustering".
+# -consensus_mat A consensus matrix.
+# -x1 Lower bound to define "ambiguous clustering".
+# -x2 Upper bound to define "ambihuous clustering".
 # 
-# == details
-# This is the original implementation of PAC method.
+# == details 
+# The PAC score is defined as F(x2) - F(x1) where F(x) is the CDF of the consensus matrix.
+# 
+# == return 
+# A single numeric vaule.
 #
-PAC_origin = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
+# == see also
+# See https://www.nature.com/articles/srep06207 for explanation of PAC score.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+# 
+# == example
+# data(cola_rl)
+# PAC(get_consensus(cola_rl[1, 1], k = 2))
+# PAC(get_consensus(cola_rl[1, 1], k = 3))
+# PAC(get_consensus(cola_rl[1, 1], k = 4))
+# PAC(get_consensus(cola_rl[1, 1], k = 5))
+# PAC(get_consensus(cola_rl[1, 1], k = 6))
+#
+PAC = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
 	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
 	F(x2) - F(x1)
 }
 
 stability = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
-	1 - PAC_origin(consensus_mat, x1, x2)
+	1 - PAC(consensus_mat, x1, x2)
 }
 
 # == title
 # Flatness of the CDF curve
 #
 # == param
-# -consensus_mat a consensus matrix.
-# -diff Difference of F(b) - F(a)
+# -consensus_mat A consensus matrix.
+# -diff Difference of F(b) - F(a).
 #
 # == details
 # For a in [0, 0.5] and for b in [0.5, 1], the flatness measures
-# the flatness of the CDF curve of the consensus matrix, it is 
+# the flatness of the CDF curve of the consensus matrix. It is 
 # calculated as the maximum width that fits F(b) - F(a) <= diff
 #
-# A flatness larger than 0.9 is treated as stable partitions.
+# == value
+# A numeric value.
+#
+# == example
+# data(cola_rl)
+# FCC(get_consensus(cola_rl[1, 1], k = 2))
+# FCC(get_consensus(cola_rl[1, 1], k = 3))
+# FCC(get_consensus(cola_rl[1, 1], k = 4))
+# FCC(get_consensus(cola_rl[1, 1], k = 5))
+# FCC(get_consensus(cola_rl[1, 1], k = 6))
 #
 FCC = function(consensus_mat, diff = 0.1) {
 	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
@@ -245,18 +239,29 @@ FCC = function(consensus_mat, diff = 0.1) {
 # Adapted PAC scores
 #
 # == param
-# -consensus_mat a consensus matrix.
+# -consensus_mat A consensus matrix.
 #
 # == details
 # For the consensus values x, it is transformed to 1 - x if x < 0.5.
 # After the transformation, for any pair of samples in the consensus matrix,
 # If they are always in a same group or always in different groups, the 
 # value x is both to 1. Thus, if the consensus matrix shows stable partitions,
-# values x will be all close to 1. Reflecting to the CDF of x, the curve is 
+# values x will be all close to 1. Reflected in the CDF of x, the curve is 
 # shifted to the right and the area under CDF curve should be very small.
 #
-# An aPAC value less than 0.05 is considered as stable partitions, which can
+# An aPAC value less than 0.05 is considered as the stable partition, which can
 # be thought the proportion of abmiguous partitioning is less than 0.05.
+#
+# == value
+# A numeric value.
+#
+# == example
+# data(cola_rl)
+# aPAC(get_consensus(cola_rl[1, 1], k = 2))
+# aPAC(get_consensus(cola_rl[1, 1], k = 3))
+# aPAC(get_consensus(cola_rl[1, 1], k = 4))
+# aPAC(get_consensus(cola_rl[1, 1], k = 5))
+# aPAC(get_consensus(cola_rl[1, 1], k = 6))
 #
 aPAC = function(consensus_mat) {
 	x = consensus_mat[lower.tri(consensus_mat)]
@@ -293,18 +298,18 @@ cophcor = function(consensus_mat) {
 }
 
 # == title
-# Concordance of partitions to the consensus partition
+# Concordance to the consensus partition
 #
 # == param
-# -membership_each a matrix which contains partitions in every single runs.
-# -class consensus class IDs.
+# -membership_each A matrix which contains partitions in every single runs where columns correspond to runs.
+# -class Consensus class IDs.
 #
 # == details
-# Class IDs in ``membership_each`` have already be adjusted to the consensus class IDs
+# Note class IDs in ``membership_each`` should already be adjusted to the consensus class IDs
 # to let ``sum(x_single == x_consensus)`` reach maximum.
 #
-# The concordance score is the mean probability of fitting the consensus class IDs in all
-# partitions.
+# The concordance score is the mean proportion of samples having the same class ID as the consensus class ID
+# among runs.
 #
 # This function is used internally.
 #

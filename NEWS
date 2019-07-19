@@ -1,3 +1,6 @@
+Changes in version 1.1.2
++ improve documentations
+
 Changes in version 1.1.1
 + add `GO_enrichment()` and `map_to_entrez_id()`.
 + add `ncol()`/`nrow()`/`colnames()`/`rownames()`/`dim()` helper functions.

@@ -11,8 +11,8 @@ Get class IDs from the ConsensusPartition object
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{number of partitions.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{k}{Number of partitions.}
 
 }
 \value{

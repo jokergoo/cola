@@ -11,7 +11,7 @@ remove_partition_methods(method)
 }
 \arguments{
 
-  \item{method}{name of the partition methods to be removed.}
+  \item{method}{Name of the partition methods to be removed.}
 
 }
 \value{

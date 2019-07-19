@@ -1,10 +1,10 @@
 \name{ncol-ConsensusPartitionList-method}
 \alias{ncol,ConsensusPartitionList-method}
 \title{
-Number of Columns in the Matrix
+Number of columns in the matrix
 }
 \description{
-Number of Columns in the Matrix
+Number of columns in the matrix
 }
 \usage{
 \S4method{ncol}{ConsensusPartitionList}(x)

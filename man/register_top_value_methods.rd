@@ -11,12 +11,12 @@ register_top_value_methods(...)
 }
 \arguments{
 
-  \item{...}{a named list of functions.}
+  \item{...}{A named list of functions.}
 
 }
 \details{
 The user-defined function should accept one argument which is the data
-matrix and the scores are calculated by rows. Rows with top scores are treated
+matrix where the scores are calculated by rows. Rows with top scores are treated
 as "top rows" in cola analysis. Following is how we register "sd" (standard deviation) top-value method:
 
   \preformatted{
@@ -35,7 +35,7 @@ There are four default top-value methods:
 
 \describe{
   \item{"sd"}{standard deviation, by \code{\link[matrixStats]{rowSds}}.}
-  \item{"cv"}{coefficient variance, calculated as \code{sd/(mean+s)} where \code{s} is the 10th percentile of all row means.}
+  \item{"cv"}{coefficient variance, calculated as \code{sd/(mean+s)} where \code{s} is the 10^th percentile of all row means.}
   \item{"MAD"}{median absolute deviation, by \code{\link[matrixStats:rowSds]{rowMads}}.}
   \item{"ATC"}{the \code{\link{ATC}} method.}
 }

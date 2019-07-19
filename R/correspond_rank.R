@@ -3,17 +3,17 @@
 # Correspond two rankings
 #
 # == param
-# -x1 a vector of scores calculated by one metric.
-# -x2 a vector of scores calculated by another metric.
-# -name1 name of the first metric.
-# -name2 name of the second metric.
-# -col1 color for the first metric.
-# -col2 color for the second metric.
-# -top_n top n elements to show correspondance.
-# -transparency transparency of the connection lines.
-# -pt_size size of the points, must be a `grid::unit` object
-# -newpage whether to plot in a new graphic page.
-# -ratio ratio of width of the left barplot, connection lines and right barplot. The three values will be scaled to a sum of 1.
+# -x1 A vector of scores calculated by one metric.
+# -x2 A vector of scores calculated by another metric.
+# -name1 Name of the first metric.
+# -name2 Name of the second metric.
+# -col1 Color for the first metric.
+# -col2 Color for the second metric.
+# -top_n Top n elements to show correspondance.
+# -transparency Transparency of the connection lines.
+# -pt_size Size of the points, must be a `grid::unit` object
+# -newpage Whether to plot in a new graphic page.
+# -ratio Ratio of width of the left barplot, connection lines and right barplot. The three values will be scaled to a sum of 1.
 # 
 # == details
 # In ``x1`` and ``x2``, the i^{th} element is the same object (e.g. same row if they are calculated from a matrix) but with different 
@@ -111,10 +111,10 @@ correspond_between_two_rankings = function(x1, x2, name1, name2,
 # Correspond between a list of rankings
 #
 # == param
-# -lt a list of scores under different metrics.
-# -top_n top n elements to show correspondance.
-# -col a vector of colors for ``lt``.
-# -... pass to `correspond_between_two_rankings`.
+# -lt A list of scores under different metrics.
+# -top_n Top n elements to show correspondance.
+# -col A vector of colors for ``lt``.
+# -... Pass to `correspond_between_two_rankings`.
 # 
 # == details
 # It makes plots for every pairwise comparisons in ``lt``.

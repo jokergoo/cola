@@ -12,8 +12,8 @@ Subset the HierarchicalPartition object
 }
 \arguments{
 
-  \item{x}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{i}{index. The value should be numeric or a node ID.}
+  \item{x}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{i}{Index. The value should be numeric or a node ID.}
 
 }
 \details{

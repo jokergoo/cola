@@ -10,17 +10,17 @@ DAVID_ALL_CATALOGS = strsplit(DAVID_ALL_CATALOGS, ",")[[1]]
 # Perform DAVID analysis
 #
 # == param
-# -genes a vector of gene identifiers.
-# -email the email that user registered on DAVID web service (https://david.ncifcrf.gov/content.jsp?file=WS.html ).
-# -catalog a vector of function catalogs. Valid values should be in ``cola:::DAVID_ALL_CATALOGS``.
+# -genes A vector of gene identifiers.
+# -email The email that user registered on DAVID web service (https://david.ncifcrf.gov/content.jsp?file=WS.html ).
+# -catalog A vector of function catalogs. Valid values should be in ``cola:::DAVID_ALL_CATALOGS``.
 # -idtype ID types for the input gene list. Valid values should be in ``cola:::DAVID_ALL_ID_TYPES``.
-# -species full species name if the ID type is not uniquely mapped to one single species.
+# -species Full species name if the ID type is not uniquely mapped to one single species.
 #
 # == details
 # This function directly sends the HTTP request to DAVID web service (https://david.ncifcrf.gov/content.jsp?file=WS.html )
 # and parses the returned XML. The reason of writing this function is I have problems with other
 # R packages doing DAVID analysis (e.g. RDAVIDWebService, https://bioconductor.org/packages/devel/bioc/html/RDAVIDWebService.html )
-# because the rJava package RDAVIDWebService depends on can not be installed on our machine.
+# because the rJava package RDAVIDWebService depends on can not be installed on my machine.
 #
 # Users are encouraged to use more advanced
 # gene set enrichment tools such as clusterProfiler (http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html ), 
@@ -152,7 +152,7 @@ submit_to_david = function(genes, email,
 # Perform Gene Ontology Enrichment on Signature Genes
 #
 # == param
-# -object a `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
+# -object A `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
 # -cutoff Cutoff of FDR to define significant signature genes.
 # -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
 #       named vector should be provided where the names are the gene IDs in the matrix and values
@@ -209,7 +209,7 @@ setMethod(f = "GO_enrichment",
 # -object a `ConsensusPartition-class` object from `run_all_consensus_partition_methods`.
 # -cutoff Cutoff of FDR to define significant signature genes.
 # -k Number of subgroups.
-# -row_km Number of row clusterings by k-means.
+# -row_km Number of row clusterings by k-means to separate the matrix that only contains signatures.
 # -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
@@ -389,17 +389,21 @@ setMethod(f = "GO_enrichment",
 # Map to Entrez IDs
 #
 # == param
-# -from The input gene ID type. Valid values should be in, e.g. ``columns(org.Hs.eg.db)``.
+# -from The input gene ID type. Valid values should be in, e.g. ``columns(org.Hs.eg.db::org.Hs.eg.db)``.
 # -org_db The annotation database.
 #
 # == details
-# If there are multiple mappings from the input ID type to an unique Entrez ID, just one is randomly picked.
+# If there are multiple mappings from the input ID type to an unique Entrez ID, randomly picked one.
 #
 # == value
 # A named vectors where names are IDs with input ID type and values are the Entrez IDs.
 #
 # The returned object normally is used in `GO_enrichment`.
 #
+# == example
+# \dontrun{
+#     map_to_entrez_id("ENSEMBL")
+# }
 map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
 
     prefix = gsub("\\.db$", "", org_db)
@@ -410,7 +414,7 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
     xx = AnnotationDbi::as.list(x[mapped_genes])
 
     ENTREZID = rep(names(xx), times = sapply(xx, length))
-    df = data.frame(ENTREZID, unlist(xx))
+    df = data.frame(ENTREZID, unlist(xx), stringsAsFactors = FALSE)
     names(df) = c("ENTREZID", from)
     df = df[sample(nrow(df), nrow(df)), ]
     df = df[!duplicated(df[, 2]), ]

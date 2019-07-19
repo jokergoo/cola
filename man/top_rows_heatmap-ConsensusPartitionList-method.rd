@@ -13,12 +13,12 @@ Heatmap of top rows from different top-value methods
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
-  \item{top_n}{number of top rows.}
-  \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{run_all_consensus_partition_methods}}.}
-  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
-  \item{scale_rows}{wether scale rows. }
-  \item{...}{pass to \code{\link{top_rows_heatmap,matrix-method}}}
+  \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
+  \item{top_n}{Number of top rows.}
+  \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{run_all_consensus_partition_methods}}.}
+  \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
+  \item{scale_rows}{Wether scale rows. }
+  \item{...}{Pass to \code{\link{top_rows_heatmap,matrix-method}}}
 
 }
 \value{

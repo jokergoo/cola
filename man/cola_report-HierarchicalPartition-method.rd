@@ -11,10 +11,10 @@ Make HTML report from the HierarchicalPartition object
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{output_dir}{the output directory where the report is put.}
-  \item{mc.cores}{multiple cores to use.}
-  \item{env}{where the objects in the report are found, internally used.}
+  \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{output_dir}{The output directory where the report is put.}
+  \item{mc.cores}{Multiple cores to use.}
+  \item{env}{where The objects in the report are found, internally used.}
 
 }
 \details{

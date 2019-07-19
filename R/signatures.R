@@ -4,30 +4,30 @@
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k number of partitions.
-# -silhouette_cutoff cutoff for silhouette scores. Samples with values 
+# -k Number of partitions.
+# -silhouette_cutoff Cutoff for silhouette scores. Samples with values 
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
-# -fdr_cutoff cutoff for FDR of the difference test between subgroups.
-# -scale_rows whether apply row scaling when making the heatmap.
-# -row_km number of groups for performing k-means clustering on rows.
-# -diff_method methods to get rows which are significantly different between subgroups, see 'Details' section.
-# -anno a data frame of annotations for the original matrix columns. 
+# -fdr_cutoff Cutoff for FDR of the difference test between subgroups.
+# -scale_rows Whether apply row scaling when making the heatmap.
+# -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
+# -diff_method Methods to get rows which are significantly different between subgroups, see 'Details' section.
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -internal used internally.
-# -show_row_dend whether show row dendrogram.
-# -show_column_names whether show column names in the heatmap.
-# -use_raster internally used.
-# -plot whether to make the plot.
-# -verbose whether to print messages.
-# -seed random seed.
+# -internal Used internally.
+# -show_row_dend Whether show row dendrogram.
+# -show_column_names Whether show column names in the heatmap.
+# -use_raster Internally used.
+# -plot Whether to make the plot.
+# -verbose Whether to print messages.
+# -seed Random seed.
 # -left_annotation Annotation put on the left of the heatmap. It should be a `ComplexHeatmap::HeatmapAnnotation-class` object. 
 #              The number of items should be the same as the number of the original matrix rows. The subsetting to the significant 
 #              rows are automatically performed on the annotation object.
 # -right_annotation Annotation put on the right of the heatmap. Same format as ``left_annotation``.
-# -... other arguments.
+# -... Other arguments.
 # 
 # == details 
 # Basically the function applies statistical test for the difference in subgroups for every
@@ -40,6 +40,8 @@
 #        take the minimal p-value as the final p-value. 
 # -samr/pamr use SAM (from samr package)/PAM (from pamr package) method to find significantly different rows between subgroups.
 # -Ftest use F-test to find significantly different rows between subgroups.
+# -one_vs_others For each subgroup i in each row, it uses t-test to compare samples in current 
+#        subgroup to all other samples, denoted as p_i. The p-value for current row is selected as min(p_i).
 #
 # ``diff_method`` can also be a self-defined function. The function needs two arguments which are the matrix for the analysis
 # and the predicted classes. The function should returns a vector of FDR from the difference test.
@@ -49,6 +51,7 @@
 #
 # -``which_row``: row index corresponding to the original matrix.
 # -``fdr``: the FDR.
+# -``km``: the k-means groups if ``row_km`` is set.
 # -other_columns: the mean expression (depending rows are scaled or not) in each subgroup.
 # 
 # == author

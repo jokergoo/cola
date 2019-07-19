@@ -1,10 +1,10 @@
 \name{dim.ConsensusPartition}
 \alias{dim.ConsensusPartition}
 \title{
-Dimension of the Matrix
+Dimension of the matrix
 }
 \description{
-Dimension of the Matrix
+Dimension of the matrix
 }
 \usage{
 \method{dim}{ConsensusPartition}(x)

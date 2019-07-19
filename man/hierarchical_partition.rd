@@ -14,17 +14,17 @@ hierarchical_partition(data, top_value_method = "MAD", partition_method = "kmean
 }
 \arguments{
 
-  \item{data}{a numeric matrix where subgroups are found by columns.}
-  \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}.}
-  \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}.}
-  \item{PAC_cutoff}{the cutoff of PAC scores to determine whether to continue looking for subgroups.}
-  \item{silhouette_cutoff}{cutoff for silhouette scores.}
-  \item{min_samples}{the cutoff of number of samples to determine whether to continue looking for subgroups.}
-  \item{min_signatures}{minimal number of signatures to determine whether to continue looking for subgroups.}
-  \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}
-  \item{verbose}{whether print message.}
-  \item{mc.cores}{multiple cores to use. }
-  \item{...}{pass to \code{\link{consensus_partition}}}
+  \item{data}{A numeric matrix where subgroups are found by columns.}
+  \item{top_value_method}{A single top-value method. Available methods are in \code{\link{all_top_value_methods}}.}
+  \item{partition_method}{A single partition method. Available methods are in \code{\link{all_partition_methods}}.}
+  \item{PAC_cutoff}{The cutoff of PAC scores to determine whether to continue looking for subgroups.}
+  \item{silhouette_cutoff}{Cutoff for silhouette scores.}
+  \item{min_samples}{The cutoff of number of samples to determine whether to continue looking for subgroups.}
+  \item{min_signatures}{Minimal number of signatures to determine whether to continue looking for subgroups. The value should be a vector of length two. The first value is the absolute number of signatures and the second value is the proportion of signatures in the matrix. The hierarchical partitioning stops when both criterions are met.}
+  \item{max_k}{Maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}
+  \item{verbose}{Whether print message.}
+  \item{mc.cores}{Multiple cores to use. }
+  \item{...}{Pass to \code{\link{consensus_partition}}}
 
 }
 \details{

@@ -28,14 +28,14 @@ options(width = 100)
 library(cola)
 ```
 
-Assume your matrix is stored in an object called `mat`, to perform consensus partition,
+Assume your matrix is stored in an object called `mat`, to perform consensus partitioning,
 you only need to run following code:
 
 ```{r, eval = FALSE}
 # code only for demonstration
 mat = adjust_matrix(mat)  # optional
 rl = run_all_consensus_partition_methods(mat, mc.cores = ...)
-cola_report(rl, output_dir = ...)
+cola_report(rl, output_dir = ..., mc.cores = ...)
 ```
 
 In above code, there are three steps:
@@ -43,22 +43,21 @@ In above code, there are three steps:
 1. Adjust the matrix. In this step, rows with too many `NA`s are removed. Rows with very low variance
 are removed. `NA` values are imputed if there are not too many in each row. Outliers are adjusted in each
 row. This step is optional.
-2. Run consensus partition with multiple methods. The default partition methods are `hclust`,
+2. Run consensus partitioning with multiple methods. The default partition methods are `hclust`,
 `kmeans`, `skmeans::skmeans`, `cluster::pam` and `Mclust::mclust`. The default methods to
-extract top n rows are `sd`, `cv`, `MAD` and `ATC`. It will try five different numbers of top rows,
-and in each partition, it randomly samples 80% from the top n rows.
+extract top n rows are `sd`, `cv`, `MAD` and `ATC`.
 3. Generate a detailed HTML report for the complete analysis.
 
 
-To perform hierarchical partition, run following code:
+To perform hierarchical partitioning, run following code:
 
 ```{r, eval = FALSE}
 # code only for demonstration
 rh = hierarchical_partition(mat, mc.cores = ...)
-cola_report(rh, output_dir = ...)
+cola_report(rh, output_dir = ..., mc.cores = ...)
 ```
 
 For the hierarchical partition, you can only select one partition method and one top-value method.
-The default partition method is `kmeans()` and the default top-value method is `MAD`.
+The default partition method is `kmeans` and the default top-value method is `MAD`.
 
-There are five examples on real datasets for cola analysis that can be found at https://jokergoo.github.io/cola_examples/.
+There are examples on real datasets for cola analysis that can be found at https://jokergoo.github.io/cola_examples/.

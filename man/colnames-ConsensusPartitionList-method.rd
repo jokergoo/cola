@@ -1,10 +1,10 @@
 \name{colnames-ConsensusPartitionList-method}
 \alias{colnames,ConsensusPartitionList-method}
 \title{
-Column Names of the Matrix
+Column names of the matrix
 }
 \description{
-Column Names of the Matrix
+Column names of the matrix
 }
 \usage{
 \S4method{colnames}{ConsensusPartitionList}(x)

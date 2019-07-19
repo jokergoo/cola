@@ -11,8 +11,8 @@ Collect plots from ConsensusPartition object
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{verbose}{whether print messages.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{verbose}{Whether print messages.}
 
 }
 \details{

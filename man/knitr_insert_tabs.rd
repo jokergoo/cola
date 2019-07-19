@@ -11,7 +11,7 @@ knitr_insert_tabs(uid)
 }
 \arguments{
 
-  \item{uid}{a unique identifier for the div.}
+  \item{uid}{A unique identifier for the div.}
 
 }
 \details{
