@@ -46,7 +46,7 @@ res_hc = <%=var_name%>
 res_hc = object
 ```
 
-All available functions which can be applied to `res_hc` object.
+The partition hierarchy and all available functions which can be applied to `res_hc` object.
 
 ```{r}
 res_hc
@@ -91,13 +91,24 @@ densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hc),
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))))
 ```
 
-About the hierarchy:
+Some values about the hierarchy:
 
 ```{r}
 max_depth(res_hc)
 all_nodes(res_hc)
 all_leaves(res_hc)
 ```
+
+**cola** uses a special way to encode the node in the hierarchy. The length of
+the node name is the depth of the node in the hierarchy and the substring
+excluding the last digit is the node name of the parent node. E.g. for the
+node 0011, the depth is 4 and the parent node is 001. For each node, the last
+digit represents the index of the subgroup detected in parent node. and 0
+represents all other subgroups. E.g. 02 means this node contains samples which
+belong to subgroup 2 when doing consensus partition at node 0 (subgroup 2 is
+selected as a node because the intra-group distance is smallest compared to
+other subgroups), and 00 contains samples which do not belong to subgroup 2 at
+node 0.
 
 ```{r, echo = FALSE, message = FALSE}
 message(qq("* top rows are extracted by '@{res_hc[1]@top_value_method}' method"))
@@ -110,7 +121,7 @@ message(qq("* subgroups are detected by '@{res_hc[1]@partition_method}' method")
 message("* suggesting the best k for each node")
 ```
 
-Best `k` (number of partitions) for each node in the partition hierarchy:
+Following table shows the best `k` (number of partitions) for each node in the partition hierarchy:
 
 ```{r, eval = FALSE}
 suggest_best_k(res_hc)
@@ -122,7 +133,7 @@ tb = cbind(node_id = paste0("Node", rownames(tb)), tb, stringsAsFactors = FALSE)
 # ind = which(tb[, ncol(tb)] == "parent")
 # tb$node_id[ind] = qq("[@{tb$node_id[ind]}](#@{tb$node_id[ind]})", collapse = FALSE)
 tb$node_id = qq("[@{tb$node_id}](#@{tb$node_id})", collapse = FALSE)
-colnames(tb)[ncol(tb)] = ""
+colnames(tb) = c("The best k", "1-PAC", "Mean silhouette", "Concordance", "Number of samples", "")
 kable(tb, row.names = FALSE)
 ```
 
@@ -141,6 +152,9 @@ knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)', 'depth = <%=de
 <% } -%>
 knitr_insert_tabs('collect-classes-from-hierarchical-partition')
 ```
+
+Following shows the table of the partitions (You need to click the **show/hide
+code output** link to see it).
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
@@ -170,6 +184,8 @@ if(is.null(dr_method)) {
 
 ### <%=dr_method%> plot
 
+<%=dr_method%> plot which shows how samples are separated.
+
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making PCA plots"), appendLF = FALSE)
@@ -182,7 +198,7 @@ knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>, method = "<%
 knitr_insert_tabs('dimension-reduction-by-depth')
 ```
 
-Or you can also do it for each parent node:
+Or you can also do it on each parent node:
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
@@ -196,7 +212,8 @@ knitr_insert_tabs('dimension-reduction-by-node')
 
 ### Signature heatmap
 
-Signature genes:
+Signatures on the heatmap are the union of all signatures found on every node
+on the hierarchy. The number of k-means on rows are automatically selected by the function.
 
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
@@ -222,7 +239,9 @@ has_known_anno = TRUE -%>
 
 ### Test to known annotations
 
-Test correlation between subgroups and known annotations:
+Test correlation between subgroups and known annotations. If the known
+annotation is numeric, one-way ANOVA test is applied, and if the known
+annotation is discrete, chi-squared contingency table test is applied.
 
 ```{r, echo = FALSE, message = FALSE}
 message(qq("* testing correlation of subgroups to known annotations"))

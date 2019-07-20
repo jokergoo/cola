@@ -967,7 +967,7 @@ setMethod(f = "all_nodes",
 		return("0")
 	}
 
-	all_nodes = unique(as.vector(object@hierarchy))
+	all_nodes = names(object@list)
 	if(!is.null(depth)) {
 		all_nodes = all_nodes[nchar(all_nodes) <= depth]
 	}
@@ -1096,9 +1096,11 @@ setMethod(f = "suggest_best_k",
 	stability = NULL
 	mean_silhouette = NULL
 	concordance = NULL
+	n_sample = NULL
 	for(nm in names(object@list)) {
 		obj = object@list[[nm]]
 		best_k[nm] = suggest_best_k(obj)
+		n_sample[nm] = length(obj@column_index)
 		if(is.na(best_k[nm])) {
 			stability[nm] = NA
 			mean_silhouette[nm] = NA
@@ -1114,6 +1116,7 @@ setMethod(f = "suggest_best_k",
 		"1-PAC" = stability,
 		mean_silhouette = mean_silhouette,
 		concordance = concordance,
+		n_sample = n_sample,
 		check.names = FALSE)
 
 	l = rownames(tb) %in% all_leaves(object)
