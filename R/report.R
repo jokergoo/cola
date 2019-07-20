@@ -39,7 +39,7 @@ knitr_add_tab_item = function(code, header, prefix, desc = "", opt = NULL,
 	tab = qq("tab-@{prefix}-@{KNITR_TAB_ENV$current_tab_index}")
 	if(!is.null(KNITR_TAB_ENV$prefix)) {
 		if(KNITR_TAB_ENV$prefix != prefix) {
-			stop_wrap("prefix should be the same as the previous one.")
+			stop_wrap(qq("prefix ('@{prefix}') should be the same as the previous one ('@{KNITR_TAB_ENV$prefix}')."))
 		}
 	}
 	KNITR_TAB_ENV$prefix = prefix
@@ -276,6 +276,8 @@ make_report = function(var_name, object, output_dir, mc.cores = 1, class = class
 		if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
 		mc.cores = 1
 	}
+
+	KNITR_TAB_ENV$prefix = NULL
 
 	.t1 = Sys.time()
 	template_file = c("HierarchicalPartition" = "cola_hc_template.Rmd-template",

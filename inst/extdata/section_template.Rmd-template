@@ -5,11 +5,14 @@
 if(is_hc) {
     mark = ifelse(tb[node, ncol(tb)] == "parent", "(p)", "")
     chunk_prefix = paste("node", node, sep = "-")
+    res = res_hc[node]
 } else {
     tb = suggest_best_k(res_list)
     nm = paste(top_value_method, partition_method, sep = ":")
     mark = tb[nm, 6]
     chunk_prefix = paste(top_value_method, partition_method, sep = "-")
+    res = res_list[top_value_method, partition_method]
+
 } -%>
 
 <% if(is_hc) { %>
@@ -204,7 +207,7 @@ message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')", appen
 ```
 <%}-%>
 
-<% if(res_list@list[[1]]@scale_rows) { %>
+<% if(res@scale_rows) { %>
 Signature heatmaps where rows are scaled:
 <% } %>
 
@@ -215,7 +218,7 @@ knitr_add_tab_item('get_signatures(res, k = <%=k%>)', 'k = <%=k%>', opt = 'resul
 knitr_insert_tabs('<%=chunk_prefix%>-get-signatures')
 ```
 
-<% if(res_list@list[[1]]@scale_rows) { %>
+<% if(res@scale_rows) { %>
 
 Signature heatmaps where rows are not scaled:
 
