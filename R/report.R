@@ -167,6 +167,8 @@ $( function() {
 #
 # The report generation may take a while because it generates A LOT of heatmaps.
 #
+# Examples of reports can be found at https://jokergoo.github.io/cola_examples/
+#
 # == value
 # No value is returned.
 #
@@ -237,6 +239,8 @@ setMethod(f = "cola_report",
 # == details
 # This function generates a HTML report which contains all plots for all nodes
 # in the partition hierarchy.
+#
+# Examples of reports can be found at https://jokergoo.github.io/cola_examples/
 #
 # == value
 # No value is returned.

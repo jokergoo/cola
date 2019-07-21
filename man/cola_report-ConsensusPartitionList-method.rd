@@ -23,6 +23,8 @@ This function generates a HTML report which contains all plots and tables for ev
 of top-value method and partition method.
 
 The report generation may take a while because it generates A LOT of heatmaps.
+
+Examples of reports can be found at \url{https://jokergoo.github.io/cola_examples/}
 }
 \value{
 No value is returned.

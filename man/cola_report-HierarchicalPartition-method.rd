@@ -20,6 +20,8 @@ Make HTML report from the HierarchicalPartition object
 \details{
 This function generates a HTML report which contains all plots for all nodes
 in the partition hierarchy.
+
+Examples of reports can be found at \url{https://jokergoo.github.io/cola_examples/}
 }
 \value{
 No value is returned.

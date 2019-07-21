@@ -938,6 +938,7 @@ Functions on `ConsensusPartitionList` class that are important to use are:
 - `test_to_known_factors()`: Apply tests to the annotations if provides. The test will be Chi-squared test or ANOVA depending on the data type of the annotation.
 - `top_rows_heatmap()`: Make heatmaps for `top_n` rows under different top-value methods.
 - `top_rows_overlap()`: Make Venn-Euler diagram for the `top_n` rows under different top-value methods.
+- `GO_enrichment()`: If rows can be associated to genes, it applies Gene ontology enrichment analysis.
 
 Functions on `ConsensusPartition` class:
 
@@ -954,6 +955,7 @@ Functions on `ConsensusPartition` class:
 - `plot_ecdf()`: Plot the ECDF of the consensus matrix for all $k$.
 - `select_partition_number()`: Make plots for all statistics for determining the best $k$.
 - `test_to_known_factors()`: Apply tests to the annotations if provides. The test will be Fisher's exact test or ANOVA depending on the data type of the annotation.
+- `GO_enrichment()`: If rows can be associated to genes, it applies Gene ontology enrichment analysis.
 
 
 ## Visualizations
@@ -1207,7 +1209,7 @@ get_signatures(rh["001"], k = 2)
 found in every node in the partition hierarchy.
 
 ```{r}
-get_signatures(rh)
+get_signatures(rh, verbose = FALSE)
 ```
 
 Similar as the `ConsensusPartitionList` object, `cola_report()` function

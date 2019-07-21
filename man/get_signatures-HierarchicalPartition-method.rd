@@ -37,6 +37,7 @@ at all nodes.
 }
 \value{
 A list of row indices where rows are significantly different between subgroups in at least one node.
+Other columns in the returned data frames are whether the rows are significantly different in the node.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>
