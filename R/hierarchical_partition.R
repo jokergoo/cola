@@ -511,6 +511,7 @@ setMethod(f = "show",
 #
 # == value
 # A list of row indices where rows are significantly different between subgroups in at least one node.
+# Other columns in the returned data frames are whether the rows are significantly different in the node.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -539,25 +540,24 @@ setMethod(f = "get_signatures",
 	alf = all_leaves(object, depth = depth)
 	ap = setdiff(all_nodes(object, depth = depth), all_leaves(object, depth = depth))
 
-	sig_lt = list()
+	obj = data.frame(all_index = rep(NA, nrow(object)))
 	for(p in ap) {
 		best_k = suggest_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
 		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff, ...)
 		
-		sig_lt[[p]] = sig_tb
+		obj$all_index[ sig_tb[, 1] ] = sig_tb[, 1]
+		obj[[p]] = FALSE
+		obj[[p]][ sig_tb[, 1] ] = TRUE
 		if(verbose) qqcat("  - find @{nrow(sig_tb)} signatures at node @{p}\n")
 	}
-
-	all_index = sort(unique(unlist(lapply(sig_lt, function(x) x[, 1]))))
-
-	sig = data.frame(which_row = all_index)
-	
+	returned_obj = obj[!is.na(obj$all_index), , drop = FALSE]
+		
 	if(!plot) {
-		return(invisible(sig))
+		return(invisible(returned_obj))
 	}
 
-	all_sig = all_index
+	all_sig = returned_obj$all_index
 	if(verbose) qqcat("* in total @{length(all_sig)} signatures in all classes found\n")
 
 	m = object@.env$data[all_sig, , drop = FALSE]
@@ -666,7 +666,7 @@ setMethod(f = "get_signatures",
 	}
 
 	draw(ht_list)
-	return(invisible(sig))
+	return(invisible(returned_obj))
 })
 
 # == title
