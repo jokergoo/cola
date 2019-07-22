@@ -265,7 +265,8 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 					x[i] = attr(dend_env$dend[[i]], "x")
 				}
 				pos = (max(x) + min(x))/2
-				midpoint = (max(x) - min(x))/2
+				x_left = unlist(dendrapply(dend_env$dend[[1]], function(d) if(is.leaf(d)) attr(d, "x") else NULL))
+				midpoint = (max(x) - min(x))/2 + (max(x_left) - min(x_left))/2
 			}
 		} else {
 			if(is.leaf(dend_env$dend[[index]])) {
@@ -280,11 +281,13 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 					x[i] = attr(dend_env$dend[[c(index, i)]], "x")
 				}
 				pos = (max(x) + min(x))/2
-				midpoint = (max(x) - min(x))/2
+				x_left = unlist(dendrapply(dend_env$dend[[c(index, 1)]], function(d) if(is.leaf(d)) attr(d, "x") else NULL))
+				midpoint = (max(x) - min(x))/2 + (max(x_left) - min(x_left))/2
 			}
 		}
 		if(is.null(index)) {
 			attr(dend_env$dend, "x") = pos
+			attr(dend_env$dend, "midpoint") = midpoint
 		} else {
 			attr(dend_env$dend[[index]], "x") = pos
 			attr(dend_env$dend[[index]], "midpoint") = midpoint
@@ -294,14 +297,45 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 
 	# reorder(dend_env$dend, wts = order(labels(dend_env$dend)))
 	dend = dend_env$dend
-	dendrapply(dend, function(d) {
+	dend = dendrapply(dend, function(d) {
 		if(is.leaf(d)) {
 			attr(d, "height") = 0
 		}
 		d
 	})
+
+	update_label = function(dend) {
+		l1 = is.leaf(dend[[1]])
+		l2 = is.leaf(dend[[2]])
+		if(!l1) {
+			dend[[1]] = update_label(dend[[1]])
+		}
+		if(!l2) {
+			dend[[2]] = update_label(dend[[2]])
+		}
+
+		label = attr(dend[[1]], "label")
+		attr(dend, "label") = substr(label, 1, nchar(label) - 1)
+		attr(dend, "edgetext") = substr(label, 1, nchar(label) - 1)
+		return(dend)
+	}
+
+	dend = update_label(dend)
+	attr(dend, "edgetext") = NULL
+
+	return(dend)
 }
 
+# == title
+# Get the partition hierarchy
+#
+# == param
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+#
+# == value
+# A `stats::dendrogram` object.
+#
 get_hierarchy = function(object, depth = max_depth(object)) {
 
 	hierarchy = object@hierarchy
@@ -339,7 +373,7 @@ calc_dend = function(object, depth = max_depth(object)) {
 	dend = merge_dendrogram(pd, cd_list)
 	dend = adjust_dend_by_x(dend)
 	dend = dendextend::`order.dendrogram<-`(dend, value = structure(1:length(classes), names = names(classes))[labels(dend)])
-	dend
+	dend  ## can not be plotted by plot.dendrogram
 }
 
 tightest_subgroup = function(mat, subgroup, top_n) {
@@ -1124,5 +1158,14 @@ setMethod(f = "suggest_best_k",
 	colnames(tb)[ncol(tb)] = ""
 
 	return(tb)
+})
+
+
+setMethod(f = "collect_plots",
+	signature = "HierarchicalPartition",
+	definition = function(object, depth = max_depth(object)) {
+
+	dend = get_hierarchy(rh, depth)
+	# use circlize to visualize this hierarchy
 })
 
