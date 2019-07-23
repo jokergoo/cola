@@ -12,18 +12,18 @@ Test correspondance between predicted classes and known factors
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{number of partitions. It uses all \code{k} if it is not set.}
-  \item{known}{a vector or a data frame with known factors. By default it is the annotation table set in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
-  \item{silhouette_cutoff}{cutoff for sihouette scores. Samples with value less than this are omit.}
-  \item{verbose}{whether to print messages.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{k}{Number of partitions. It uses all \code{k} if it is not set.}
+  \item{known}{A vector or a data frame with known factors. By default it is the annotation table set in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
+  \item{silhouette_cutoff}{Cutoff for sihouette scores. Samples with value less than it are omit.}
+  \item{verbose}{Whether to print messages.}
 
 }
 \value{
 A data frame with columns:
 
 \itemize{
-  \item number of samples used to test after filtering by \code{silhouette_cutoff}
+  \item number of samples used to test after filtered by \code{silhouette_cutoff}
   \item p-values from the tests
   \item number of partitions
 }

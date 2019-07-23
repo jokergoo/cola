@@ -3,15 +3,15 @@
 # Collect plots from ConsensusPartitionList object
 #
 # == param
-# -object a `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
-# -k number of partitions.
-# -fun function used to generate plots. Valid functions are `consensus_heatmap`,
+# -object A `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
+# -k Number of partitions.
+# -fun Function used to generate plots. Valid functions are `consensus_heatmap`,
 #        `plot_ecdf`, `membership_heatmap`, `get_signatures` and `dimension_reduction`.
-# -top_value_method a vector of top-value methods.
-# -partition_method a vector of partition methods.
-# -verbose whether to print message.
-# -mc.cores number of cores. On OSX it is enforced to be 1.
-# -... other arguments passed to corresponding ``fun``.
+# -top_value_method A vector of top-value methods.
+# -partition_method A vector of partition methods.
+# -verbose Whether to print message.
+# -mc.cores Number of cores. On OSX it is enforced to be 1.
+# -... other Arguments passed to corresponding ``fun``.
 #
 # == details
 # Plots for all combinations of top-value methods and parittion methods are arranged in one single page.
@@ -167,8 +167,8 @@ setMethod(f = "collect_plots",
 # Collect plots from ConsensusPartition object
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -verbose whether print messages.
+# -object A `ConsensusPartition-class` object.
+# -verbose Whether print messages.
 # 
 # == details
 # Plots by `plot_ecdf`, `collect_classes,ConsensusPartition-method`, `consensus_heatmap`, `membership_heatmap` 
@@ -417,12 +417,12 @@ All individual plots can be made by following functions:
 # Collect classes from ConsensusPartitionList object
 #
 # == param
-# -object a `ConsensusPartitionList-class` object returned by `run_all_consensus_partition_methods`.
-# -k number of partitions.
-# -show_column_names whether show column names in the heatmap (which is the column name in the original matrix).
-# -anno a data frame of annotations for the original matrix columns. 
+# -object A `ConsensusPartitionList-class` object returned by `run_all_consensus_partition_methods`.
+# -k Number of partitions.
+# -show_column_names Whether show column names in the heatmap (which is the column name in the original matrix).
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 #
 # == details
@@ -551,12 +551,12 @@ setMethod(f = "collect_classes",
 # Collect classes from ConsensusPartition object
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -internal used internally.
-# -show_row_names whether show row names in the heatmap (which is the column name in the original matrix).
-# -anno a data frame of annotations for the original matrix columns. 
+# -object A `ConsensusPartition-class` object.
+# -internal Used internally.
+# -show_row_names Whether show row names in the heatmap (which is the column name in the original matrix).
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 #
 # == details
@@ -651,8 +651,8 @@ setMethod(f = "collect_classes",
 # Draw and compare statistics for a single method
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -... other arguments.
+# -object A `ConsensusPartition-class` object.
+# -... Other arguments.
 #
 # == details
 # It is identical to `select_partition_number,ConsensusPartition-method`.
@@ -669,10 +669,11 @@ setMethod(f = "collect_stats",
 # Draw and compare statistics for multiple methods
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
-# -k number of partitions
-# -layout_nrow number of rows in the layout
-# -... other arguments
+# -object A `ConsensusPartitionList-class` object.
+# -k Number of partitions
+# -layout_nrow Number of rows in the layout
+# -all_stats Whether to show all statistics that were calculated. Used internally.
+# -... Other arguments
 #
 # == details
 # It draws heatmaps for statistics for multiple methods in parallel, so that users can compare which combination
@@ -683,11 +684,11 @@ setMethod(f = "collect_stats",
 # collect_stats(cola_rl, k = 3)
 setMethod(f = "collect_stats",
 	signature = "ConsensusPartitionList",
-	definition = function(object, k, layout_nrow = 2, ...) {
+	definition = function(object, k, layout_nrow = 2, all_stats = FALSE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
-	stats = get_stats(object, k = k)
+	stats = get_stats(object, k = k, all_stats = all_stats)
 
 	all_top_value_methods = object@top_value_method
 	all_parittion_methods = object@partition_method

@@ -14,14 +14,14 @@ Collect plots from ConsensusPartitionList object
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object from \code{\link{run_all_consensus_partition_methods}}.}
-  \item{k}{number of partitions.}
-  \item{fun}{function used to generate plots. Valid functions are \code{\link{consensus_heatmap}}, \code{\link{plot_ecdf}}, \code{\link{membership_heatmap}}, \code{\link{get_signatures}} and \code{\link{dimension_reduction}}.}
-  \item{top_value_method}{a vector of top-value methods.}
-  \item{partition_method}{a vector of partition methods.}
-  \item{verbose}{whether to print message.}
-  \item{mc.cores}{number of cores. On OSX it is enforced to be 1.}
-  \item{...}{other arguments passed to corresponding \code{fun}.}
+  \item{object}{A \code{\link{ConsensusPartitionList-class}} object from \code{\link{run_all_consensus_partition_methods}}.}
+  \item{k}{Number of partitions.}
+  \item{fun}{Function used to generate plots. Valid functions are \code{\link{consensus_heatmap}}, \code{\link{plot_ecdf}}, \code{\link{membership_heatmap}}, \code{\link{get_signatures}} and \code{\link{dimension_reduction}}.}
+  \item{top_value_method}{A vector of top-value methods.}
+  \item{partition_method}{A vector of partition methods.}
+  \item{verbose}{Whether to print message.}
+  \item{mc.cores}{Number of cores. On OSX it is enforced to be 1.}
+  \item{...}{other Arguments passed to corresponding \code{fun}.}
 
 }
 \details{

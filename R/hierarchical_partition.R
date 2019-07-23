@@ -37,19 +37,22 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # Hierarchical partition
 #
 # == param
-# -data a numeric matrix where subgroups are found by columns.
-# -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
-# -partition_method a single partition method. Available methods are in `all_partition_methods`.
-# -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
-# -silhouette_cutoff cutoff for silhouette scores.
-# -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
-# -min_signatures minimal number of signatures to determine whether to continue looking for subgroups.
-# -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
+# -data A numeric matrix where subgroups are found by columns.
+# -top_value_method A single top-value method. Available methods are in `all_top_value_methods`.
+# -partition_method A single partition method. Available methods are in `all_partition_methods`.
+# -PAC_cutoff The cutoff of PAC scores to determine whether to continue looking for subgroups.
+# -silhouette_cutoff Cutoff for silhouette scores.
+# -min_samples The cutoff of number of samples to determine whether to continue looking for subgroups.
+# -min_signatures Minimal number of signatures to determine whether to continue looking for subgroups.
+#    The value should be a vector of length two. The first value is the absolute number of signatures
+#    and the second value is the proportion of signatures in the matrix. The hierarchical partitioning
+#    stops when both criterions are met.
+# -max_k Maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
-# -verbose whether print message.
-# -mc.cores multiple cores to use. 
-# -... pass to `consensus_partition`
+# -verbose Whether print message.
+# -mc.cores Multiple cores to use. 
+# -... Pass to `consensus_partition`
 #
 # == details
 # The function looks for subgroups in a hierarchical way.
@@ -140,8 +143,8 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
     	if(is.null(sig_df)) {
 			if(verbose) qqcat("@{prefix}* unable to find signatures, stop.\n")
 	    	return(lt)
-    	} else if(nrow(sig_df) < min_signatures[1] & nrow(sig_df)/nrow(mat) < min_signatures[2]) {
-			if(verbose) qqcat("@{prefix}* number of signatures are too small (@{nrow(sig_df)}), stop.\n")
+    	} else if(nrow(sig_df) < min_signatures[1] && nrow(sig_df)/nrow(mat) < min_signatures[2]) {
+			if(verbose) qqcat("@{prefix}* number of signatures are too small (@{nrow(sig_df)}, @{sprintf('%.1f', nrow(sig_df)/nrow(mat)*100)}%), stop.\n")
 	    	return(lt)
     	}
 
@@ -262,7 +265,8 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 					x[i] = attr(dend_env$dend[[i]], "x")
 				}
 				pos = (max(x) + min(x))/2
-				midpoint = (max(x) - min(x))/2
+				x_left = unlist(dendrapply(dend_env$dend[[1]], function(d) if(is.leaf(d)) attr(d, "x") else NULL))
+				midpoint = (max(x) - min(x))/2 + (max(x_left) - min(x_left))/2
 			}
 		} else {
 			if(is.leaf(dend_env$dend[[index]])) {
@@ -277,11 +281,13 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 					x[i] = attr(dend_env$dend[[c(index, i)]], "x")
 				}
 				pos = (max(x) + min(x))/2
-				midpoint = (max(x) - min(x))/2
+				x_left = unlist(dendrapply(dend_env$dend[[c(index, 1)]], function(d) if(is.leaf(d)) attr(d, "x") else NULL))
+				midpoint = (max(x) - min(x))/2 + (max(x_left) - min(x_left))/2
 			}
 		}
 		if(is.null(index)) {
 			attr(dend_env$dend, "x") = pos
+			attr(dend_env$dend, "midpoint") = midpoint
 		} else {
 			attr(dend_env$dend[[index]], "x") = pos
 			attr(dend_env$dend[[index]], "midpoint") = midpoint
@@ -291,14 +297,45 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 
 	# reorder(dend_env$dend, wts = order(labels(dend_env$dend)))
 	dend = dend_env$dend
-	dendrapply(dend, function(d) {
+	dend = dendrapply(dend, function(d) {
 		if(is.leaf(d)) {
 			attr(d, "height") = 0
 		}
 		d
 	})
+
+	update_label = function(dend) {
+		l1 = is.leaf(dend[[1]])
+		l2 = is.leaf(dend[[2]])
+		if(!l1) {
+			dend[[1]] = update_label(dend[[1]])
+		}
+		if(!l2) {
+			dend[[2]] = update_label(dend[[2]])
+		}
+
+		label = attr(dend[[1]], "label")
+		attr(dend, "label") = substr(label, 1, nchar(label) - 1)
+		attr(dend, "edgetext") = substr(label, 1, nchar(label) - 1)
+		return(dend)
+	}
+
+	dend = update_label(dend)
+	attr(dend, "edgetext") = NULL
+
+	return(dend)
 }
 
+# == title
+# Get the partition hierarchy
+#
+# == param
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+#
+# == value
+# A `stats::dendrogram` object.
+#
 get_hierarchy = function(object, depth = max_depth(object)) {
 
 	hierarchy = object@hierarchy
@@ -336,7 +373,7 @@ calc_dend = function(object, depth = max_depth(object)) {
 	dend = merge_dendrogram(pd, cd_list)
 	dend = adjust_dend_by_x(dend)
 	dend = dendextend::`order.dendrogram<-`(dend, value = structure(1:length(classes), names = names(classes))[labels(dend)])
-	dend
+	dend  ## can not be plotted by plot.dendrogram
 }
 
 tightest_subgroup = function(mat, subgroup, top_n) {
@@ -390,8 +427,8 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 # Get class IDs from the HierarchicalPartition object
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
 #
 # == return
 # A data frame of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
@@ -424,7 +461,7 @@ setMethod(f = "get_classes",
 # Print the HierarchicalPartition object
 #
 # == param
-# -object a `HierarchicalPartition-class` object
+# -object A `HierarchicalPartition-class` object
 #
 # == value
 # No value is returned.
@@ -486,27 +523,29 @@ setMethod(f = "show",
 # Get signatures rows
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
-# -scale_rows whether apply row scaling when making the heatmap.
-# -anno a data frame of annotations for the original matrix columns. 
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+# -scale_rows Whether apply row scaling when making the heatmap.
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `hierarchical_partition`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -show_column_names whether show column names in the heatmap.
-# -verbose whether to print messages.
-# -plot whether to make the plot.
-# -silhouette_cutoff cutoff for silhouette scores. Samples with values 
+# -show_column_names Whether show column names in the heatmap.
+# -verbose Whether to print messages.
+# -plot Whether to make the plot.
+# -silhouette_cutoff Cutoff for silhouette scores. Samples with values 
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
-# -... other arguments
+# -... Other arguments
 # 
 # == details
 # The function calls `get_signatures,ConsensusPartition-method` to find signatures at
-# each node of the partition hierarchy.
+# each node of the partition hierarchy. The final signatures are the union of all signatures
+# at all nodes.
 #
 # == value
 # A list of row indices where rows are significantly different between subgroups in at least one node.
+# Other columns in the returned data frames are whether the rows are significantly different in the node.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -535,25 +574,24 @@ setMethod(f = "get_signatures",
 	alf = all_leaves(object, depth = depth)
 	ap = setdiff(all_nodes(object, depth = depth), all_leaves(object, depth = depth))
 
-	sig_lt = list()
+	obj = data.frame(all_index = rep(NA, nrow(object)))
 	for(p in ap) {
 		best_k = suggest_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
 		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff, ...)
 		
-		sig_lt[[p]] = sig_tb
+		obj$all_index[ sig_tb[, 1] ] = sig_tb[, 1]
+		obj[[p]] = FALSE
+		obj[[p]][ sig_tb[, 1] ] = TRUE
 		if(verbose) qqcat("  - find @{nrow(sig_tb)} signatures at node @{p}\n")
 	}
-
-	all_index = sort(unique(unlist(lapply(sig_lt, function(x) x[, 1]))))
-
-	sig = data.frame(which_row = all_index)
-	
+	returned_obj = obj[!is.na(obj$all_index), , drop = FALSE]
+		
 	if(!plot) {
-		return(invisible(sig))
+		return(invisible(returned_obj))
 	}
 
-	all_sig = all_index
+	all_sig = returned_obj$all_index
 	if(verbose) qqcat("* in total @{length(all_sig)} signatures in all classes found\n")
 
 	m = object@.env$data[all_sig, , drop = FALSE]
@@ -662,18 +700,18 @@ setMethod(f = "get_signatures",
 	}
 
 	draw(ht_list)
-	return(invisible(sig))
+	return(invisible(returned_obj))
 })
 
 # == title
 # Collect classes from HierarchicalPartition object
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
-# -anno a data frame of annotations for the original matrix columns. 
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `hierarchical_partition`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 #
 # == details
@@ -738,8 +776,8 @@ setMethod(f = "collect_classes",
 # Subset the HierarchicalPartition object
 #
 # == param
-# -x a `HierarchicalPartition-class` object.
-# -i index. The value should be numeric or a node ID.
+# -x A `HierarchicalPartition-class` object.
+# -i Index. The value should be numeric or a node ID.
 #
 # == details
 # On each node, there is a `ConsensusPartition-class` object.
@@ -770,8 +808,8 @@ setMethod(f = "collect_classes",
 # Subset the HierarchicalPartition object
 #
 # == param
-# -x a `HierarchicalPartition-class` object
-# -i index. The value should be numeric or a node ID.
+# -x A `HierarchicalPartition-class` object
+# -i Index. The value should be numeric or a node ID.
 #
 # == details
 # On each node, there is a `ConsensusPartition-class` object.
@@ -794,10 +832,10 @@ setMethod(f = "collect_classes",
 # Test correspondance between predicted classes and known factors
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
-# -known a vector or a data frame with known factors. By default it is the annotation table set in `hierarchical_partition`.
-# -verbose whether to print messages.
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+# -known A vector or a data frame with known factors. By default it is the annotation table set in `hierarchical_partition`.
+# -verbose Whether to print messages.
 #
 # == value
 # A data frame with columns:
@@ -843,16 +881,16 @@ setMethod(f = "test_to_known_factors",
 # Visualize columns after dimension reduction
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
-# -top_n top n rows to use. By default it uses all rows in the original matrix.
-# -parent_node parent node. If it is set, the function call is identical to ``dimension_reduction(object[parent_node])``
-# -method which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth of the hierarchy.
+# -top_n Top n rows to use. By default it uses all rows in the original matrix.
+# -parent_node Parent node. If it is set, the function call is identical to ``dimension_reduction(object[parent_node])``
+# -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
 #         `umap::umap`.
-# -silhouette_cutoff cutoff of silhouette score. Data points with values less
+# -silhouette_cutoff Cutoff of silhouette score. Data points with values less
 #        than it will be mapped to small points.
-# -scale_rows whether perform scaling on matrix rows.
+# -scale_rows Whether perform scaling on matrix rows.
 #
 # == details
 # The class IDs are extract at ``depth``.
@@ -917,7 +955,7 @@ setMethod(f = "dimension_reduction",
 # Max depth of the hierarchy
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == value
 # A numeric value.
@@ -943,8 +981,8 @@ setMethod(f = "max_depth",
 # All nodes in the hierarchy
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth in the hierarchy.
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth in the hierarchy.
 #
 # == value
 # A vector of node ID.
@@ -963,7 +1001,7 @@ setMethod(f = "all_nodes",
 		return("0")
 	}
 
-	all_nodes = unique(as.vector(object@hierarchy))
+	all_nodes = names(object@list)
 	if(!is.null(depth)) {
 		all_nodes = all_nodes[nchar(all_nodes) <= depth]
 	}
@@ -974,8 +1012,8 @@ setMethod(f = "all_nodes",
 # All leaves in the hierarchy
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -depth depth in the hierarchy.
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth in the hierarchy.
 #
 # == value
 # A vector of node ID.
@@ -1013,7 +1051,7 @@ get_children = function(object, node = "0") {
 # Get the original matrix
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == value
 # A numeric matrix.
@@ -1032,7 +1070,7 @@ setMethod(f = "get_matrix",
 # Get annotations
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == value
 # A data frame if ``anno`` was specified in `hierarchical_partition`, or ``NULL``.
@@ -1052,7 +1090,7 @@ setMethod(f = "get_anno",
 # Get annotation colors
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == value
 # A list of color vectors or ``NULL``.
@@ -1070,7 +1108,7 @@ setMethod(f = "get_anno_col",
 # Suggest the best number of partitions
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
+# -object A `HierarchicalPartition-class` object.
 #
 # == details
 # It basically gives the best k at each node.
@@ -1092,9 +1130,11 @@ setMethod(f = "suggest_best_k",
 	stability = NULL
 	mean_silhouette = NULL
 	concordance = NULL
+	n_sample = NULL
 	for(nm in names(object@list)) {
 		obj = object@list[[nm]]
 		best_k[nm] = suggest_best_k(obj)
+		n_sample[nm] = length(obj@column_index)
 		if(is.na(best_k[nm])) {
 			stability[nm] = NA
 			mean_silhouette[nm] = NA
@@ -1110,6 +1150,7 @@ setMethod(f = "suggest_best_k",
 		"1-PAC" = stability,
 		mean_silhouette = mean_silhouette,
 		concordance = concordance,
+		n_sample = n_sample,
 		check.names = FALSE)
 
 	l = rownames(tb) %in% all_leaves(object)
@@ -1117,5 +1158,14 @@ setMethod(f = "suggest_best_k",
 	colnames(tb)[ncol(tb)] = ""
 
 	return(tb)
+})
+
+
+setMethod(f = "collect_plots",
+	signature = "HierarchicalPartition",
+	definition = function(object, depth = max_depth(object)) {
+
+	dend = get_hierarchy(rh, depth)
+	# use circlize to visualize this hierarchy
 })
 

@@ -12,10 +12,10 @@ Collect classes from HierarchicalPartition object
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{depth of the hierarchy.}
-  \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{hierarchical_partition}}.}
-  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
+  \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{depth}{Depth of the hierarchy.}
+  \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{hierarchical_partition}}.}
+  \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
 
 }
 \details{

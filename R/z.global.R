@@ -17,3 +17,4 @@ TEMPLATE_DIR = NULL
 
 
 STAT_USED = c("1-PAC", "mean_silhouette", "concordance")
+STAT_ALL = c("1-PAC", "mean_silhouette", "concordance", "cophcor", "aPAC", "FCC")

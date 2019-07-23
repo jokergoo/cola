@@ -1,10 +1,10 @@
 \name{nrow-HierarchicalPartition-method}
 \alias{nrow,HierarchicalPartition-method}
 \title{
-Number of Rows in the Matrix
+Number of rows in the matrix
 }
 \description{
-Number of Rows in the Matrix
+Number of rows in the matrix
 }
 \usage{
 \S4method{nrow}{HierarchicalPartition}(x)

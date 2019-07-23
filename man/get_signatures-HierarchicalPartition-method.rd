@@ -18,24 +18,26 @@ Get signatures rows
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{depth of the hierarchy.}
-  \item{scale_rows}{whether apply row scaling when making the heatmap.}
-  \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{hierarchical_partition}}.}
-  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
-  \item{show_column_names}{whether show column names in the heatmap.}
-  \item{verbose}{whether to print messages.}
-  \item{plot}{whether to make the plot.}
-  \item{silhouette_cutoff}{cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
-  \item{...}{other arguments}
+  \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{depth}{Depth of the hierarchy.}
+  \item{scale_rows}{Whether apply row scaling when making the heatmap.}
+  \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{hierarchical_partition}}.}
+  \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
+  \item{show_column_names}{Whether show column names in the heatmap.}
+  \item{verbose}{Whether to print messages.}
+  \item{plot}{Whether to make the plot.}
+  \item{silhouette_cutoff}{Cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
+  \item{...}{Other arguments}
 
 }
 \details{
 The function calls \code{\link{get_signatures,ConsensusPartition-method}} to find signatures at
-each node of the partition hierarchy.
+each node of the partition hierarchy. The final signatures are the union of all signatures
+at all nodes.
 }
 \value{
 A list of row indices where rows are significantly different between subgroups in at least one node.
+Other columns in the returned data frames are whether the rows are significantly different in the node.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

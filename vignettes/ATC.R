@@ -7,7 +7,7 @@ ATC_definition = function() {
 	x = seq(0, 1, length = 100)
 	y = f(x)
 
-	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x", ylab = "P(X <= x)")
+	plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x = |correlation|", ylab = "P(X <= x)")
 	x2 = seq(0, 1, length = 100)
 	polygon(c(x2, rev(x2)), c(f(x2), rep(1, length(x2))), col = "#FF000040", border = NA)
 	polygon(c(x2, rev(x2)), c(f(x2), rep(0, length(x2))), col = "#00FF0040", border = NA)

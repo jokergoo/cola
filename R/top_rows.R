@@ -3,10 +3,11 @@
 # Overlap of top rows from different top-value methods
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
-# -top_n number of top rows.
-# -method ``venn``: use Venn diagram; ``euler``: use Euler diagram; ``correspondance``: use `correspond_between_rankings`.
-# -... additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
+# -object A `ConsensusPartitionList-class` object.
+# -top_n Number of top rows.
+# -method ``euler``: plot Euler diagram by `eulerr::euler`; ``venn``: plot Venn diagram by `gplots::venn`; 
+#         ``correspondance``: use `correspond_between_rankings`.
+# -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
 #
 # == value
 # No value is returned.
@@ -35,11 +36,12 @@ setMethod(f = "top_rows_overlap",
 # Overlap of top rows from different top-value methods
 #
 # == param
-# -object a numeric matrix.
-# -top_value_method methods defined in `all_top_value_methods`.
-# -top_n number of top rows.
-# -method ``venn``: use Venn diagram; ``euler``: use Euler diagram; ``correspondance``: use `correspond_between_rankings`.
-# -... additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
+# -object A numeric matrix.
+# -top_value_method Methods defined in `all_top_value_methods`.
+# -top_n Number of top rows.
+# -method ``euler``: plot Euler diagram by `eulerr::euler`; ``venn``: plot Venn diagram by `gplots::venn`; 
+#         ``correspondance``: use `correspond_between_rankings`.
+# -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
 #
 # == details
 # It first calculates scores for every top-value method and make plot by `top_elements_overlap`.
@@ -79,13 +81,14 @@ setMethod(f = "top_rows_overlap",
 # Overlap of top elements from different metrics
 #
 # == param
-# -object a list which contains values from different metrics.
-# -top_n number of top rows.
-# -method ``venn``: use Venn diagram; ``euler``: use Euler diagram; ``correspondance``: use `correspond_between_rankings`.
-# -... additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
+# -object A list which contains values from different metrics.
+# -top_n Number of top rows.
+# -method ``euler``: plot Euler diagram by `eulerr::euler`; ``venn``: plot Venn diagram by `gplots::venn`; 
+#         ``correspondance``: use `correspond_between_rankings`.
+# -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
 #
 # == details
-# The i^th value in all vectors in the input should correspond to a same element from the original data.
+# The i^th value in every vectors in ``object`` should correspond to the same element from the original data.
 #
 # == value
 # No value is returned.
@@ -126,14 +129,14 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 # Heatmap of top rows from different top-value methods
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
-# -top_n number of top rows.
-# -anno a data frame of annotations for the original matrix columns. 
+# -object A `ConsensusPartitionList-class` object.
+# -top_n Number of top rows.
+# -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
-# -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -scale_rows wether scale rows. 
-# -... pass to `top_rows_heatmap,matrix-method`
+# -scale_rows Wether scale rows. 
+# -... Pass to `top_rows_heatmap,matrix-method`
 #
 # == value
 # No value is returned.
@@ -184,13 +187,13 @@ setMethod(f = "top_rows_heatmap",
 # Heatmap of top rows from different top-value methods
 #
 # == param
-# -object a numeric matrix.
-# -all_top_value_list top-values that have already been calculated from the matrix. If it is ``NULL``
+# -object A numeric matrix.
+# -all_top_value_list Top-values that have already been calculated from the matrix. If it is ``NULL``
 #              the values are calculated by methods in ``top_value_method`` argument.
-# -top_value_method methods defined in `all_top_value_methods`.
-# -bottom_annotation a `ComplexHeatmap::HeatmapAnnotation-class` object.
-# -top_n number of top rows to show in the heatmap.
-# -scale_rows whether scale rows.
+# -top_value_method Methods defined in `all_top_value_methods`.
+# -bottom_annotation A `ComplexHeatmap::HeatmapAnnotation-class` object.
+# -top_n Number of top rows to show in the heatmap.
+# -scale_rows Whether scale rows.
 #
 # == details
 # The function makes heatmaps where the rows are scaled (or not scaled) for the top n rows

@@ -11,10 +11,10 @@ Make HTML report from the ConsensusPartitionList object
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
-  \item{output_dir}{the output directory where the report is put.}
-  \item{mc.cores}{multiple cores to use.}
-  \item{env}{where the objects in the report are found, internally used.}
+  \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
+  \item{output_dir}{The output directory where the report is put.}
+  \item{mc.cores}{Multiple cores to use.}
+  \item{env}{Where The objects in the report are found, internally used.}
 
 }
 \details{
@@ -24,7 +24,7 @@ of top-value method and partition method.
 
 The report generation may take a while because it generates A LOT of heatmaps.
 
-Icon (\url{https://www.flaticon.com/free-icon/can_1366373} ) of the HTML page is made by photo3idea_studio (\url{https://www.flaticon.com/authors/photo3idea-studio} ) from \url{http://www.flaticon.com} licensed by CC 3.0 BY.
+Examples of reports can be found at \url{https://jokergoo.github.io/cola_examples/}
 }
 \value{
 No value is returned.

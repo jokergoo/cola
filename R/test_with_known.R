@@ -3,11 +3,11 @@
 # Test whether a list of factors are correlated
 #
 # == param
-# -x a data frame or a vector which contains discrete or continuous variables.
-#    if ``y`` is omit, pairwise testing for columns in ``x`` is performed.
-# -y a data frame or a vector which contains discrete or continuous variables.
-# -all_factors are all columns in ``x`` and ``y`` are enforced to be factors?
-# -verbose whether to print messages.
+# -x A data frame or a vector which contains discrete or continuous variables.
+#    if ``y`` is omit, pairwise testing for all columns in ``x`` is performed.
+# -y A data frame or a vector which contains discrete or continuous variables.
+# -all_factors Are all columns in ``x`` and ``y`` enforced to be factors?
+# -verbose Whether to print messages.
 # 
 # == details
 # Pairwise test is applied to every two columns in the data frames. Methods are:
@@ -25,8 +25,11 @@
 # Zuguang Gu <z.gu@dkfz.de>
 # 
 # == examples
-# df = data.frame(v1 = rnorm(100), v2 = sample(letters[1:3], 100, replace = TRUE), 
-#     v3 = sample(LETTERS[5:6], 100, replace = TRUE))
+# df = data.frame(
+#     v1 = rnorm(100), 
+#     v2 = sample(letters[1:3], 100, replace = TRUE), 
+#     v3 = sample(LETTERS[5:6], 100, replace = TRUE)
+# )
 # test_between_factors(df)
 # x = runif(100)
 # test_between_factors(x, df)
@@ -129,16 +132,16 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 # Test correspondance between predicted classes and known factors
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -k number of partitions. It uses all ``k`` if it is not set.
-# -known a vector or a data frame with known factors. By default it is the annotation table set in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
-# -verbose whether to print messages.
+# -object A `ConsensusPartition-class` object.
+# -k Number of partitions. It uses all ``k`` if it is not set.
+# -known A vector or a data frame with known factors. By default it is the annotation table set in `consensus_partition` or `run_all_consensus_partition_methods`.
+# -silhouette_cutoff Cutoff for sihouette scores. Samples with value less than it are omit.
+# -verbose Whether to print messages.
 #
 # == value
 # A data frame with columns:
 #
-# - number of samples used to test after filtering by ``silhouette_cutoff``
+# - number of samples used to test after filtered by ``silhouette_cutoff``
 # - p-values from the tests
 # - number of partitions
 #
@@ -190,11 +193,11 @@ setMethod(f = "test_to_known_factors",
 # Test correspondance between predicted classes and known factors
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
-# -k number of partitions. It uses all ``k`` if it is not set.
-# -known a vector or a data frame with known factors. By default it is the annotation table set in `consensus_partition` or `run_all_consensus_partition_methods`.
-# -silhouette_cutoff cutoff for sihouette scores. Samples with value less than this are omit.
-# -verbose whether to print messages.
+# -object A `ConsensusPartitionList-class` object.
+# -k Number of partitions. It uses all ``k`` if it is not set.
+# -known A vector or a data frame with known factors. By default it is the annotation table set in `consensus_partition` or `run_all_consensus_partition_methods`.
+# -silhouette_cutoff Cutoff for sihouette scores. Samples with value less than this are omit.
+# -verbose Whether to print messages.
 #
 # == details
 # The function basically sends each `ConsensusPartition-class` object to
@@ -203,7 +206,7 @@ setMethod(f = "test_to_known_factors",
 # == value
 # A data frame with columns:
 #
-# - number of samples used to test after filtering by ``silhouette_cutoff``
+# - number of samples used to test after filtered by ``silhouette_cutoff``
 # - p-values from the tests
 # - number of partitions
 #

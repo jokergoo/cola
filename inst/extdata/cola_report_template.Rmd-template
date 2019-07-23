@@ -67,8 +67,9 @@ dim(mat)
 
 ### Density distribution
 
-The density distribution for each sample is visualized as one column in the following heatmap.
-The clustering is based on the distance which is the Kolmogorov-Smirnov statistic between two distributions.
+The density distribution for each sample is visualized as in one column in the
+following heatmap. The clustering is based on the distance which is the
+Kolmogorov-Smirnov statistic between two distributions.
 
 ```{r, echo = FALSE, message = FALSE}
 t1 = Sys.time()
@@ -107,10 +108,13 @@ t1 = Sys.time()
 message("* Suggesting the best k for each method", appendLF = FALSE)
 ```
 
-Best `k` (number of partitions) for each combination of top-value methods and partition methods. Clicking
-on the method name in following table leads to the report for a single combination of methods.
+Folowing table shows the best `k` (number of partitions) for each combination
+of top-value methods and partition methods. Clicking on the method name in
+the table goes to the section for a single combination of methods.
 
-Please go the [the cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13) for the metrics of determining the best number of partitions.
+[The cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13)
+explains the definition of the metrics used for determining the best
+number of partitions.
 
 ```{r, eval = FALSE}
 suggest_best_k(res_list)
@@ -119,10 +123,11 @@ suggest_best_k(res_list)
 ```{r, echo = FALSE}
 tb = suggest_best_k(res_list)
 rownames(tb) = qq("[@{rownames(tb)}](#@{gsub(':', '-', rownames(tb))})", collapse = FALSE)
+colnames(tb) = c("The best k", "1-PAC", "Mean silhouette", "Concordance", "")
 kable(tb)
 ```
 
-\*\*: concordance > 0.95, \*: concordance > 0.9
+\*\*: 1-PAC > 0.95, \*: 1-PAC > 0.9
 
 
 ```{r, echo = FALSE}
@@ -131,7 +136,7 @@ fs = min(c(3*n_top_value_method, 14))/n_partition_method
 
 ### CDF of consensus matrices
 
-Cumulative distribution function curve of consensus matrix for all methods:
+Cumulative distribution function curves of consensus matrix for all methods.
 
 ```{r, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
@@ -149,7 +154,7 @@ message(qq("* making consensus heatmaps for all methods"), appendLF = FALSE)
 
 ### Consensus heatmap
 
-Consensus heatmaps for all methods. [link to cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_9)
+Consensus heatmaps for all methods. ([What is a consensus heatmap?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_9))
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% all_k = res_list@list[[1]]@k
@@ -172,7 +177,7 @@ message(qq("* making membership heatmaps for all methods"), appendLF = FALSE)
 
 ### Membership heatmap
 
-Membership heatmaps for all methods. [link to cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_12)
+Membership heatmaps for all methods. ([What is a membership heatmap?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_12))
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -190,7 +195,11 @@ message(qq("* making signature heatmaps for all methods"), appendLF = FALSE)
 
 ### Signature heatmap
 
-Signature heatmaps for all methods. [link to cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_22)
+Signature heatmaps for all methods. ([What is a signature heatmap?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_22))
+
+<% if(res_list@list[[1]]@scale_rows) { %>
+Note in following heatmaps, rows are scaled.
+<% } %>
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -208,7 +217,9 @@ message(qq("* getting statistics for all methods"), appendLF = FALSE)
 
 ### Statistics table
 
-Get statistics for all methods. [link to cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13)
+The statistics used for measuring the stability of consensus partitioning.
+([How are they
+defined?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13))
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -217,7 +228,10 @@ knitr_add_tab_item('get_stats(res_list, k = <%=k%>)', 'k = <%=k%>', prefix = 'ge
 knitr_insert_tabs('get-stats-from-consensus-partition-list')
 ```
 
-Compare statistics for all methods.
+Following heatmap plots the partition for each combination of methods and the
+lightness correspond to the silhouette scores for samples in each method. On
+top the consensus subgroup is inferred from all methods by taking the mean
+silhouette scores as weight.
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -251,7 +265,7 @@ message(qq("* overlaping top rows from different top-value methods"), appendLF =
 
 ### Top rows overlap
 
-Overlap of top rows in different top methods:
+Overlap of top rows from different top-row methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(top_n in res_list@list[[1]]@top_n) { -%>
@@ -260,7 +274,7 @@ knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>, method = "eul
 knitr_insert_tabs('top-rows-overlap-by-euler')
 ```
 
-Also visualize the correspondance of rankings between different top methods:
+Also visualize the correspondance of rankings between different top-row methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(top_n in res_list@list[[1]]@top_n) { -%>
@@ -269,7 +283,7 @@ knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>, method = "cor
 knitr_insert_tabs('top-rows-overlap-by-correspondance')
 ```
 
-Heatmaps for the top rows:
+Heatmaps of the top rows:
 
 <% 
 n_top_value_method = length(res_list@top_value_method)
@@ -305,7 +319,9 @@ has_known_anno = TRUE -%>
 message(qq("* testing correlation of subgroups to known annotations"))
 ```
 
-Test correlation between subgroups and known annotations:
+Test correlation between subgroups and known annotations. If the known
+annotation is numeric, one-way ANOVA test is applied, and if the known
+annotation is discrete, chi-squared contingency table test is applied.
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>

@@ -12,14 +12,14 @@ top_elements_overlap(object, top_n = round(0.25*length(object[[1]])),
 }
 \arguments{
 
-  \item{object}{a list which contains values from different metrics.}
-  \item{top_n}{number of top rows.}
-  \item{method}{\code{venn}: use Venn diagram; \code{euler}: use Euler diagram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
-  \item{...}{additional arguments passed to \code{\link[eulerr]{plot.euler}} or \code{\link{correspond_between_rankings}}.}
+  \item{object}{A list which contains values from different metrics.}
+  \item{top_n}{Number of top rows.}
+  \item{method}{\code{euler}: plot Euler diagram by \code{\link[eulerr]{euler}}; \code{venn}: plot Venn diagram by \code{\link[gplots]{venn}};  \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
+  \item{...}{Additional arguments passed to \code{\link[eulerr]{plot.euler}} or \code{\link{correspond_between_rankings}}.}
 
 }
 \details{
-The i^th value in all vectors in the input should correspond to a same element from the original data.
+The i^th value in every vectors in \code{object} should correspond to the same element from the original data.
 }
 \value{
 No value is returned.

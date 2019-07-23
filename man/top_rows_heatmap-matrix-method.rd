@@ -14,12 +14,12 @@ Heatmap of top rows from different top-value methods
 }
 \arguments{
 
-  \item{object}{a numeric matrix.}
-  \item{all_top_value_list}{top-values that have already been calculated from the matrix. If it is \code{NULL} the values are calculated by methods in \code{top_value_method} argument.}
-  \item{top_value_method}{methods defined in \code{\link{all_top_value_methods}}.}
-  \item{bottom_annotation}{a \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.}
-  \item{top_n}{number of top rows to show in the heatmap.}
-  \item{scale_rows}{whether scale rows.}
+  \item{object}{A numeric matrix.}
+  \item{all_top_value_list}{Top-values that have already been calculated from the matrix. If it is \code{NULL} the values are calculated by methods in \code{top_value_method} argument.}
+  \item{top_value_method}{Methods defined in \code{\link{all_top_value_methods}}.}
+  \item{bottom_annotation}{A \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.}
+  \item{top_n}{Number of top rows to show in the heatmap.}
+  \item{scale_rows}{Whether scale rows.}
 
 }
 \details{

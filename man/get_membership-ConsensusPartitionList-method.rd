@@ -11,8 +11,8 @@ Get membership matrix
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
-  \item{k}{number of partitions.}
+  \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
+  \item{k}{Number of partitions.}
 
 }
 \details{

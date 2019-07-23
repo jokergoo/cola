@@ -12,8 +12,8 @@ All leaves in the hierarchy
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{depth in the hierarchy.}
+  \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{depth}{Depth in the hierarchy.}
 
 }
 \value{

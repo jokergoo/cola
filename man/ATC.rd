@@ -1,10 +1,10 @@
 \name{ATC}
 \alias{ATC}
 \title{
-Ability to correlate other rows in the matrix (ATC score)
+Ability to correlate other rows in the matrix
 }
 \description{
-Ability to correlate other rows in the matrix (ATC score)
+Ability to correlate other rows in the matrix
 }
 \usage{
 ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
@@ -12,14 +12,14 @@ ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 }
 \arguments{
 
-  \item{mat}{a numeric matrix. ATC score is calculated by rows.}
-  \item{cor_fun}{a function which calculates correlation.}
-  \item{min_cor}{minimal absolute correlation.}
-  \item{power}{power on the correlation values.}
-  \item{mc.cores}{number of cores.}
-  \item{n_sampling}{when there are too many rows in the matrix, to get the curmulative distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000 rows can already give a farely nice estimation.}
-  \item{q_sd}{percentile of the standard deviation for the rows. Rows with values less than it are ignored.}
-  \item{...}{pass to \code{cor_fun}, e.g. \code{method = 'spearman'} can be passed to \code{cor_fun} if the correlation function is \code{\link[stats]{cor}}.}
+  \item{mat}{A numeric matrix. ATC score is calculated by rows.}
+  \item{cor_fun}{A function which calculates correlations.}
+  \item{min_cor}{Cutoff for the minimal absolute correlation.}
+  \item{power}{Power on the correlation values.}
+  \item{mc.cores}{Mumber of cores.}
+  \item{n_sampling}{When there are too many rows in the matrix, to get the curmulative distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000 rows can already give a very nice estimation.}
+  \item{q_sd}{Percentile of the standard deviation for the rows. Rows with values less than it are ignored.}
+  \item{...}{Pass to \code{cor_fun}.}
 
 }
 \details{

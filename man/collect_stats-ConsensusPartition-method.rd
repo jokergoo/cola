@@ -11,8 +11,8 @@ Draw and compare statistics for a single method
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{...}{other arguments.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{...}{Other arguments.}
 
 }
 \details{

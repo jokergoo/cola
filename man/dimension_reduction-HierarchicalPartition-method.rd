@@ -14,13 +14,13 @@ Visualize columns after dimension reduction
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{depth of the hierarchy.}
-  \item{top_n}{top n rows to use. By default it uses all rows in the original matrix.}
-  \item{parent_node}{parent node. If it is set, the function call is identical to \code{dimension_reduction(object[parent_node])}}
-  \item{method}{which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}. \code{t-SNE} uses \code{\link[Rtsne]{Rtsne}}. \code{UMAP} uses \code{\link[umap]{umap}}.}
-  \item{silhouette_cutoff}{cutoff of silhouette score. Data points with values less than it will be mapped to small points.}
-  \item{scale_rows}{whether perform scaling on matrix rows.}
+  \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{depth}{Depth of the hierarchy.}
+  \item{top_n}{Top n rows to use. By default it uses all rows in the original matrix.}
+  \item{parent_node}{Parent node. If it is set, the function call is identical to \code{dimension_reduction(object[parent_node])}}
+  \item{method}{Which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}. \code{t-SNE} uses \code{\link[Rtsne]{Rtsne}}. \code{UMAP} uses \code{\link[umap]{umap}}.}
+  \item{silhouette_cutoff}{Cutoff of silhouette score. Data points with values less than it will be mapped to small points.}
+  \item{scale_rows}{Whether perform scaling on matrix rows.}
 
 }
 \details{

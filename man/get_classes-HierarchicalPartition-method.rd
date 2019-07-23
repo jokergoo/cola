@@ -11,8 +11,8 @@ Get class IDs from the HierarchicalPartition object
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{depth of the hierarchy.}
+  \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{depth}{Depth of the hierarchy.}
 
 }
 \value{

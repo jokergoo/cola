@@ -5,11 +5,14 @@
 if(is_hc) {
     mark = ifelse(tb[node, ncol(tb)] == "parent", "(p)", "")
     chunk_prefix = paste("node", node, sep = "-")
+    res = res_hc[node]
 } else {
     tb = suggest_best_k(res_list)
     nm = paste(top_value_method, partition_method, sep = ":")
     mark = tb[nm, 6]
     chunk_prefix = paste(top_value_method, partition_method, sep = "-")
+    res = res_list[top_value_method, partition_method]
+
 } -%>
 
 <% if(is_hc) { %>
@@ -67,32 +70,48 @@ message("  - collecting all plots (k = '<%=paste(all_k, collapse=', ')%>')", app
 all_k = res@k
 ```
 
-The plots are:
-
-- The first row: a plot of the ECDF (Empirical cumulative distribution function) curves of the consensus matrix for each `k` and the heatmap of predicted
-  classes for each `k`.
-- The second row: heatmaps of the consensus matrix for each `k`.
-- The third row: heatmaps of the membership matrix for each `k`.
-- The fouth row: heatmaps of the signatures for each `k`.
-
-All the plots in panels can be made by individual functions and they are plotted later in this section.
 
 ```{r <%=chunk_prefix%>-collect-plots, fig.width = <%=fs*length(all_k)%>, fig.height = <%=fs*4%>, results = "hide"}
 collect_plots(res)
 ```
 
-`select_partition_number()` produces several plots showing different statistics for choosing "optimized" `k`. There are following statistics:
+The plots are:
+
+- The first row: a plot of the ECDF (Empirical cumulative distribution
+  function) curves of the consensus matrix for each `k` and the heatmap of
+  predicted classes for each `k`.
+- The second row: heatmaps of the consensus matrix for each `k`.
+- The third row: heatmaps of the membership matrix for each `k`.
+- The fouth row: heatmaps of the signatures for each `k`.
+
+All the plots in panels can be made by individual functions and they are
+plotted later in this section.
+
+`select_partition_number()` produces several plots showing different
+statistics for choosing "optimized" `k`. There are following statistics:
 
 - ECDF curves of the consensus matrix for each `k`;
-- cophenetic correlation coefficient. It measures if hierarchical clustering is applied on the consensus matrix, how good it correlates to the consensus matrix itself. 
-- PAC. This a variant of the orignial PAC (proportion of ambiguous clustering) method. For each $x_{1i}$ in `seq(0.1, 0.3, by = 0.02)` and $x_{2j}$ in `seq(0.7, 0.9, by = 0.02)`, $PAC_k = F(x_{2j}) - F(x_{1i})$ where $F(x)$ is the ECDF of the consensus matrix (the lower triangle matrix without diagnals). The final PAC is the mean of all $PAC_k$ by removing top 10 percent and bottom 10 percent of all values.
-- mean silhouette score.
-- concordance. The mean probability of fiting the consensus class ids in all partitions.
-- area increased. Denote $A_k$ as the area under the ECDF curve for current `k`, the area increased is defined as $A_k - A_{k-1}$.
-- Rand index. The percent of pairs of samples that are both in a same cluster or both are not in a same cluster in the partition of k and k-1.
-- Jaccard index. The ratio of pairs of samples are both in a same cluster in the partition of k and k-1 and the pairs of samples are both in a same cluster in the partition k or k-1.
+- 1-PAC. [The PAC
+  score](https://en.wikipedia.org/wiki/Consensus_clustering#Over-interpretation_potential_of_consensus_clustering)
+  measures the proportion of the ambiguous subgrouping.
+- Mean silhouette score.
+- Concordance. The mean probability of fiting the consensus class ids in all
+  partitions.
+- Area increased. Denote $A_k$ as the area under the ECDF curve for current
+  `k`, the area increased is defined as $A_k - A_{k-1}$.
+- Rand index. The percent of pairs of samples that are both in a same cluster
+  or both are not in a same cluster in the partition of k and k-1.
+- Jaccard index. The ratio of pairs of samples are both in a same cluster in
+  the partition of k and k-1 and the pairs of samples are both in a same
+  cluster in the partition k or k-1.
 
-Generally speaking, higher cophenetic correlation coefficient, lower PAC score, higher mean silhouette score or higher concordance corresponds to better partition. Rand index and Jaccard index measure how similar the current partition is compared to partition with `k-1`. If they are too similar, we won't accept `k` is better than `k-1`.
+The detailed explanations of these statistics can be found in [the cola
+vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13).
+
+Generally speaking, lower PAC score, higher mean silhouette score or higher
+concordance corresponds to better partition. Rand index and Jaccard index
+measure how similar the current partition is compared to partition with `k-1`.
+If they are too similar, we won't accept `k` is better than `k-1`.
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message2, echo = FALSE, message = FALSE}
@@ -111,25 +130,30 @@ The numeric values for all these statistics can be obtained by `get_stats()`.
 get_stats(res)
 ```
 
-Guess the best `k` based on these statistics. The rule is as follows:
+`suggest_best_k()` suggests the best `k` based on these statistics. The rules are as follows:
 
-1. All `k` with Rand index larger than 0.95 are removed because the partition number increasement
-  does not provides enough extra information.
-2. For `k` with cophenetic correlation coefficient larger than 0.99 or PAC score less than 0.1 or oncordance larger than 0.95,
-  the maximum `k` is taken as the "best `k`".
-3. The `k` with highest cophenetic correlation coefficient, lowest PAC score, highest mean silhouette and highest
-   concordance. The `k` with highest occurance is taken as the "best `k`".
+- All $k$ with Rand index larger than 0.95 are removed because the increase of
+  the partition number does not provides enough extra information. If all $k$ are removed,
+  the best $k$ is assigned by `NA`.
+- For $k$ with 1-PAC larger than 0.9, the maximal $k$ is taken as the "best k".
+- If it does not fit the second rule. The $k$ with the highest vote of highest
+  1-PAC, mean silhouette and concordance is taken as the "best k".
 
 ```{r <%=chunk_prefix%>-suggest-best-k}
 suggest_best_k(res)
 ```
 
-The table of the partitions. The membership matrix (columns with name `p*`) is inferred by [`clue::cl_consensus()`](https://www.rdocumentation.org/link/cl_consensus?package=clue)
-function with the `SE` method. Basically the value in the membership matrix represents the probability to belong
-to a certain group. The finall class label for an item is determined with the group with highest probability it belongs to.
+Following shows the table of the partitions (You need to click the **show/hide
+code output** link to see it). The membership matrix (columns with name `p*`)
+is inferred by
+[`clue::cl_consensus()`](https://www.rdocumentation.org/link/cl_consensus?package=clue)
+function with the `SE` method. Basically the value in the membership matrix
+represents the probability to belong to a certain group. The finall class
+label for an item is determined with the group with highest probability it
+belongs to.
 
-In `get_classes()` function, the entropy is calculated from the membership matrix and the silhouette score
-is calculated from the consensus matrix.
+In `get_classes()` function, the entropy is calculated from the membership
+matrix and the silhouette score is calculated from the consensus matrix.
 
 ```{r <%=chunk_prefix%>-get-classes, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -138,7 +162,8 @@ knitr_add_tab_item('cbind(get_classes(res, k = <%=k%>), get_membership(res, k = 
 knitr_insert_tabs('<%=chunk_prefix%>-get-classes')
 ```
 
-Heatmaps for the consensus matrix:
+Heatmaps for the consensus matrix. It visualizes the probability of two
+samples to be in a same group.
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message3, echo = FALSE, message = FALSE}
@@ -163,6 +188,7 @@ message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')
 ```
 <%}-%>
 
+
 ```{r <%=chunk_prefix%>-membership-heatmap, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
 knitr_add_tab_item('membership_heatmap(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-membership-heatmap')
@@ -170,10 +196,9 @@ knitr_add_tab_item('membership_heatmap(res, k = <%=k%>)', 'k = <%=k%>', prefix =
 knitr_insert_tabs('<%=chunk_prefix%>-membership-heatmap')
 ```
 
-As soon as we have had the classes for columns, we can look for signatures which are significantly
-different between classes which can be candidate marks for certain classes.
-
-Heatmaps for signatures:
+As soon as we have had the classes for columns, we can look for signatures
+which are significantly different between classes which can be candidate marks
+for certain classes. Following are the heatmaps for signatures.
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message5, echo = FALSE, message = FALSE}
@@ -182,6 +207,10 @@ message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')", appen
 ```
 <%}-%>
 
+<% if(res@scale_rows) { %>
+Signature heatmaps where rows are scaled:
+<% } %>
+
 ```{r <%=chunk_prefix%>-signature, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
 knitr_add_tab_item('get_signatures(res, k = <%=k%>)', 'k = <%=k%>', opt = 'results = "hide"', prefix = '<%=chunk_prefix%>-get-signatures')
@@ -189,12 +218,18 @@ knitr_add_tab_item('get_signatures(res, k = <%=k%>)', 'k = <%=k%>', opt = 'resul
 knitr_insert_tabs('<%=chunk_prefix%>-get-signatures')
 ```
 
+<% if(res@scale_rows) { %>
+
+Signature heatmaps where rows are not scaled:
+
 ```{r <%=chunk_prefix%>-signature-no-scale, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
 knitr_add_tab_item('get_signatures(res, k = <%=k%>, scale_rows = FALSE)', 'k = <%=k%>', opt = 'results = "hide"', prefix = '<%=chunk_prefix%>-get-signatures-no-scale')
 <%}-%>
 knitr_insert_tabs('<%=chunk_prefix%>-get-signatures-no-scale')
 ```
+
+<% } %>
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}
@@ -222,7 +257,7 @@ if(is.null(dr_method)) {
 }
 -%>
 
-<%=dr_method%> plots:
+<%=dr_method%> plot which shows how samples are separated.
 
 ```{r <%=chunk_prefix%>-mds, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -238,7 +273,7 @@ message("  - collecting classifications for all k", appendLF = FALSE)
 ```
 <%}-%>
 
-How subgroups split when increasing `k`:
+Following heatmap shows how subgroups are split when increasing `k`:
 
 ```{r <%=chunk_prefix%>-collect-classes}
 collect_classes(res)
@@ -253,7 +288,9 @@ message(qq("  - testing correlation of subgroups to known annotations"), appendL
 ```
 <%}-%>
 
-Test to known annotations:
+Test correlation between subgroups and known annotations. If the known
+annotation is numeric, one-way ANOVA test is applied, and if the known
+annotation is discrete, chi-squared contingency table test is applied.
 
 ```{r <%=chunk_prefix%>-test-to-known-factors}
 test_to_known_factors(res)
@@ -272,4 +309,5 @@ message("")
 ```
 <%} }-%>
 
-Consider to use `submit_to_david()` to do function enrichment for each signature list.
+If matrix rows can be associated to genes, consider to use `GO_Enrichment(res,
+...)` to perform function enrichment for the signature genes.

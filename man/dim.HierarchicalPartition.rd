@@ -1,10 +1,10 @@
 \name{dim.HierarchicalPartition}
 \alias{dim.HierarchicalPartition}
 \title{
-Dimension of the Matrix
+Dimension of the matrix
 }
 \description{
-Dimension of the Matrix
+Dimension of the matrix
 }
 \usage{
 \method{dim}{HierarchicalPartition}(x)

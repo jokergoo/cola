@@ -11,9 +11,9 @@ adjust_matrix(m, sd_quantile = 0.05, max_na = 0.25)
 }
 \arguments{
 
-  \item{m}{a numeric matrix.}
-  \item{sd_quantile}{cutoff the quantile of standard deviation Rows with standard deviation less than it are removed.}
-  \item{max_na}{maximum NA fraction in each row. Rows with NA fraction larger than this value are removed.}
+  \item{m}{A numeric matrix.}
+  \item{sd_quantile}{Cutoff of the quantile of standard deviation. Rows with standard deviation less than it are removed.}
+  \item{max_na}{Maximum NA fraction in each row. Rows with NA fraction larger than it are removed.}
 
 }
 \details{

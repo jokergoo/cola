@@ -7,23 +7,17 @@ The proportion of ambiguous clustering (PAC score)
 The proportion of ambiguous clustering (PAC score)
 }
 \usage{
-PAC(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
-    x2 = seq(0.7, 0.9, by = 0.02), trim = 0.2)
+PAC(consensus_mat, x1 = 0.1, x2 = 0.9)
 }
 \arguments{
 
-  \item{consensus_mat}{a consensus matrix.}
-  \item{x1}{lower bound to define "ambiguous clustering". The value can be a vector.}
-  \item{x2}{upper bound to define "ambihuous clustering". The value can be a vector.}
-  \item{trim}{percent of extreme values to trim if combinations of \code{x1} and \code{x2} are more than 10.}
+  \item{consensus_mat}{A consensus matrix.}
+  \item{x1}{Lower bound to define "ambiguous clustering".}
+  \item{x2}{Upper bound to define "ambihuous clustering".}
 
 }
 \details{
-This a variant of the orignial PAC method.
-
-For each \code{x_1i} in \code{x1} and \code{x_2j} in \code{x2}, \code{PAC_k = F(x_2j) - F(x_1i)}
-where \code{F(x)} is the cumulative distribution function of the consensus matrix (the lower triangle matrix without diagnals is only used). 
-The final PAC is the mean of all \code{PAC_k} by removing top \code{trim/2} percent and bottom \code{trim/2} percent of all values.
+The PAC score is defined as F(x2) - F(x1) where F(x) is the CDF of the consensus matrix.
 }
 \value{
 A single numeric vaule.

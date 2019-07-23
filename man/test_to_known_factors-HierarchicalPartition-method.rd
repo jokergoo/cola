@@ -12,10 +12,10 @@ Test correspondance between predicted classes and known factors
 }
 \arguments{
 
-  \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{depth of the hierarchy.}
-  \item{known}{a vector or a data frame with known factors. By default it is the annotation table set in \code{\link{hierarchical_partition}}.}
-  \item{verbose}{whether to print messages.}
+  \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{depth}{Depth of the hierarchy.}
+  \item{known}{A vector or a data frame with known factors. By default it is the annotation table set in \code{\link{hierarchical_partition}}.}
+  \item{verbose}{Whether to print messages.}
 
 }
 \value{

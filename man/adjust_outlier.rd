@@ -11,8 +11,8 @@ adjust_outlier(x, q = 0.05)
 }
 \arguments{
 
-  \item{x}{a numeric vector.}
-  \item{q}{quantile to adjust.}
+  \item{x}{A numeric vector.}
+  \item{q}{Quantile to adjust.}
 
 }
 \details{

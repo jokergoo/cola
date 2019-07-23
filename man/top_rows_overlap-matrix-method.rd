@@ -13,11 +13,11 @@ Overlap of top rows from different top-value methods
 }
 \arguments{
 
-  \item{object}{a numeric matrix.}
-  \item{top_value_method}{methods defined in \code{\link{all_top_value_methods}}.}
-  \item{top_n}{number of top rows.}
-  \item{method}{\code{venn}: use Venn diagram; \code{euler}: use Euler diagram; \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
-  \item{...}{additional arguments passed to \code{\link[eulerr]{plot.euler}} or \code{\link{correspond_between_rankings}}.}
+  \item{object}{A numeric matrix.}
+  \item{top_value_method}{Methods defined in \code{\link{all_top_value_methods}}.}
+  \item{top_n}{Number of top rows.}
+  \item{method}{\code{euler}: plot Euler diagram by \code{\link[eulerr]{euler}}; \code{venn}: plot Venn diagram by \code{\link[gplots]{venn}};  \code{correspondance}: use \code{\link{correspond_between_rankings}}.}
+  \item{...}{Additional arguments passed to \code{\link[eulerr]{plot.euler}} or \code{\link{correspond_between_rankings}}.}
 
 }
 \details{

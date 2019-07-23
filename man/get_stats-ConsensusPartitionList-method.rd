@@ -7,12 +7,13 @@ Get statistics for consensus partitions from all methods
 Get statistics for consensus partitions from all methods
 }
 \usage{
-\S4method{get_stats}{ConsensusPartitionList}(object, k)
+\S4method{get_stats}{ConsensusPartitionList}(object, k, all_stats = FALSE)
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartitionList-class}} object.}
-  \item{k}{number of partitions. The value can only be a single value.}
+  \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
+  \item{k}{Number of partitions. The value can only be a single value.}
+  \item{all_stats}{Whether to show all statistics that were calculated. Used internally.}
 
 }
 \value{

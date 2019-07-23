@@ -12,9 +12,9 @@ Get parameters
 }
 \arguments{
 
-  \item{object}{a \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{number of partitions.}
-  \item{unique}{whether apply \code{\link[base]{unique}} to rows of the returned data frame.}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{k}{Number of partitions.}
+  \item{unique}{Whether apply \code{\link[base]{unique}} to rows of the returned data frame.}
 
 }
 \details{

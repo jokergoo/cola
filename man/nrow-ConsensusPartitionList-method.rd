@@ -1,10 +1,10 @@
 \name{nrow-ConsensusPartitionList-method}
 \alias{nrow,ConsensusPartitionList-method}
 \title{
-Number of Rows in the Matrix
+Number of rows in the matrix
 }
 \description{
-Number of Rows in the Matrix
+Number of rows in the matrix
 }
 \usage{
 \S4method{nrow}{ConsensusPartitionList}(x)

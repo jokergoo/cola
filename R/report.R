@@ -12,17 +12,17 @@ KNITR_TAB_ENV$css_added = FALSE
 #
 # == param
 # -code R code to execute.
-# -header header or the title for the tab.
-# -prefix prefix of chunk label.
-# -desc decription in the tab.
-# -opt options for the knitr chunk.
-# -message message to print.
-# -hide_and_show whether hide the code output.
+# -header Header or the title for the tab.
+# -prefix Prefix of chunk label.
+# -desc Decription in the tab.
+# -opt Options for the knitr chunk.
+# -message Message to print.
+# -hide_and_show Whether to hide the code output.
 #
 # == details
 # Each tab contains the R source code and results generated from it (figure, tables, text, ...).
 #
-# This function in only for internal use.
+# This function is only for internal use.
 #
 # == value
 # No value is returned.
@@ -39,7 +39,7 @@ knitr_add_tab_item = function(code, header, prefix, desc = "", opt = NULL,
 	tab = qq("tab-@{prefix}-@{KNITR_TAB_ENV$current_tab_index}")
 	if(!is.null(KNITR_TAB_ENV$prefix)) {
 		if(KNITR_TAB_ENV$prefix != prefix) {
-			stop_wrap("prefix should be the same as the previous one.")
+			stop_wrap(qq("prefix ('@{prefix}') should be the same as the previous one ('@{KNITR_TAB_ENV$prefix}')."))
 		}
 	}
 	KNITR_TAB_ENV$prefix = prefix
@@ -101,7 +101,7 @@ $('#@{tab}-a').click(function(){
 # Generate the HTML fragment for the JavaScript tabs.
 #
 # == param
-# -uid a unique identifier for the div.
+# -uid A unique identifier for the div.
 #
 # == details
 # The jQuery UI is used to generate html tabs (https://jqueryui.com/tabs/ ).
@@ -155,10 +155,10 @@ $( function() {
 # Make HTML report from the ConsensusPartitionList object
 #
 # == param
-# -object a `ConsensusPartitionList-class` object.
-# -output_dir the output directory where the report is put.
-# -mc.cores multiple cores to use.
-# -env where the objects in the report are found, internally used.
+# -object A `ConsensusPartitionList-class` object.
+# -output_dir The output directory where the report is put.
+# -mc.cores Multiple cores to use.
+# -env Where The objects in the report are found, internally used.
 #
 # == details
 # The `ConsensusPartitionList-class` object contains results for all top-value methods and all partition methods.
@@ -167,7 +167,7 @@ $( function() {
 #
 # The report generation may take a while because it generates A LOT of heatmaps.
 #
-# Icon (https://www.flaticon.com/free-icon/can_1366373 ) of the HTML page is made by photo3idea_studio (https://www.flaticon.com/authors/photo3idea-studio ) from http://www.flaticon.com licensed by CC 3.0 BY.
+# Examples of reports can be found at https://jokergoo.github.io/cola_examples/
 #
 # == value
 # No value is returned.
@@ -197,8 +197,8 @@ setMethod(f = "cola_report",
 # Make HTML report from the ConsensusPartition object
 #
 # == param
-# -object a `ConsensusPartition-class` object.
-# -output_dir the output directory where the report is put.
+# -object A `ConsensusPartition-class` object.
+# -output_dir The output directory where the report is put.
 #
 # == details
 # Please generate report on the `ConsensusPartitionList-class` object directly.
@@ -231,14 +231,16 @@ setMethod(f = "cola_report",
 # Make HTML report from the HierarchicalPartition object
 #
 # == param
-# -object a `HierarchicalPartition-class` object.
-# -output_dir the output directory where the report is put.
-# -mc.cores multiple cores to use.
-# -env where the objects in the report are found, internally used.
+# -object A `HierarchicalPartition-class` object.
+# -output_dir The output directory where the report is put.
+# -mc.cores Multiple cores to use.
+# -env where The objects in the report are found, internally used.
 #
 # == details
 # This function generates a HTML report which contains all plots for all nodes
 # in the partition hierarchy.
+#
+# Examples of reports can be found at https://jokergoo.github.io/cola_examples/
 #
 # == value
 # No value is returned.
@@ -278,6 +280,8 @@ make_report = function(var_name, object, output_dir, mc.cores = 1, class = class
 		if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
 		mc.cores = 1
 	}
+
+	KNITR_TAB_ENV$prefix = NULL
 
 	.t1 = Sys.time()
 	template_file = c("HierarchicalPartition" = "cola_hc_template.Rmd-template",

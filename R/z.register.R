@@ -18,11 +18,11 @@ get_top_value_method = function(method) {
 # Register user-defined top-value methods
 #
 # == param
-# -... a named list of functions.
+# -... A named list of functions.
 # 
 # == details 
 # The user-defined function should accept one argument which is the data
-# matrix and the scores are calculated by rows. Rows with top scores are treated
+# matrix where the scores are calculated by rows. Rows with top scores are treated
 # as "top rows" in cola analysis. Following is how we register "sd" (standard deviation) top-value method:
 #
 #   register_top_value_methods(sd = function(mat) apply(mat, 1, sd))
@@ -38,7 +38,7 @@ get_top_value_method = function(method) {
 # There are four default top-value methods:
 #
 # -"sd" standard deviation, by `matrixStats::rowSds`.
-# -"cv" coefficient variance, calculated as ``sd/(mean+s)`` where ``s`` is the 10th percentile of all row means.
+# -"cv" coefficient variance, calculated as ``sd/(mean+s)`` where ``s`` is the 10^th percentile of all row means.
 # -"MAD" median absolute deviation, by `matrixStats::rowMads`.
 # -"ATC" the `ATC` method.
 #
@@ -153,8 +153,8 @@ get_partition_method = function(method, partition_param = list()) {
 # Register user-defined partition functions
 #
 # == param
-# -... a named list of functions.
-# -scale_method normally, data matrix is scaled by rows before sent to
+# -... A named list of functions.
+# -scale_method Normally, data matrix is scaled by rows before sent to
 #        the partition function. The default scaling is applied by `base::scale`.
 #        However, some partition functions may not accept negative values which 
 #        are produced by `base::scale`. Here ``scale_method`` can be set to ``min-max``
@@ -194,6 +194,8 @@ get_partition_method = function(method, partition_param = list()) {
 # -"skmeans" by `skmeans::skmeans`.
 # -"pam" by `cluster::pam`.
 # -"mclust" by `mclust::Mclust`. mclust is applied to the first three principle components from rows.
+#
+# Users can register other two pre-defined partition methods by `register_NMF` and `register_SOM`.
 #
 # == value
 # No value is returned.
@@ -266,7 +268,10 @@ register_partition_methods = function(..., scale_method = c("z-score", "min-max"
 # == examples
 # all_partition_methods()
 all_partition_methods = function() {
-	.ENV$ALL_PARTITION_METHODS
+	x = .ENV$ALL_PARTITION_METHODS
+	scale_method = sapply(x, function(nm) attr(.ENV$ALL_PARTITION_FUN[[nm]], "scale_method"))
+	x = structure(x, scale_method = unname(scale_method))
+	return(x)
 }
 
 register_partition_methods(
@@ -321,7 +326,7 @@ register_partition_methods(
 # Register NMF partition method
 #
 # == details
-# Note NMF analysis is very time-consuming.
+# NMF analysis is performed by `NMF::nmf`.
 #
 register_NMF = function() {
 	# package = match.arg(package)[1]
@@ -358,6 +363,9 @@ register_NMF = function() {
 # == title
 # Register SOM partition method
 #
+# == details
+# The SOM analysis is performed by `kohonen::som`.
+#
 register_SOM = function() {
 	register_partition_methods(
 	    SOM = function(mat, k, ...) {
@@ -381,7 +389,7 @@ register_SOM = function() {
 # Remove top-value methods
 #
 # == param
-# -method name of the top-value methods to be removed.
+# -method Name of the top-value methods to be removed.
 #
 # == value
 # No value is returned.
@@ -400,7 +408,7 @@ remove_top_value_methods = function(method) {
 # Remove partition methods
 #
 # == param
-# -method name of the partition methods to be removed.
+# -method Name of the partition methods to be removed.
 #
 # == value
 # No value is returned.

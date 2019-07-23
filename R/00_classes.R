@@ -69,6 +69,7 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 # -`get_classes,ConsensusPartition-method`: get the consensus class IDs and other columns.
 # -`suggest_best_k,ConsensusPartition-method`: guess the best number of partitions.
 # -`test_to_known_factors,ConsensusPartition-method`: test correlation between predicted classes and known factors, if available.
+# -`GO_enrichment,ConsensusPartition-method`: perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>

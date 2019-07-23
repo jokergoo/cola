@@ -12,8 +12,8 @@ Subset a ConsensusPartitionList object
 }
 \arguments{
 
-  \item{x}{a \code{\link{ConsensusPartitionList-class}} object.}
-  \item{i}{character index for combination of top-value methods and partition method.}
+  \item{x}{A \code{\link{ConsensusPartitionList-class}} object.}
+  \item{i}{Character index for combination of top-value methods and partition method in a form of e.g. \code{sd:MAD}.}
 
 }
 \value{

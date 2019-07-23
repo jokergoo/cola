@@ -25,24 +25,24 @@ Get signature rows
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{number of partitions.}
-  \item{silhouette_cutoff}{cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
-  \item{fdr_cutoff}{cutoff for FDR of the difference test between subgroups.}
-  \item{scale_rows}{whether apply row scaling when making the heatmap.}
-  \item{row_km}{number of groups for performing k-means clustering on rows.}
-  \item{diff_method}{methods to get rows which are significantly different between subgroups, see 'Details' section.}
-  \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
-  \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
-  \item{internal}{used internally.}
-  \item{show_row_dend}{whether show row dendrogram.}
-  \item{show_column_names}{whether show column names in the heatmap.}
-  \item{use_raster}{internally used.}
-  \item{plot}{whether to make the plot.}
-  \item{verbose}{whether to print messages.}
-  \item{seed}{random seed.}
+  \item{k}{Number of partitions.}
+  \item{silhouette_cutoff}{Cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
+  \item{fdr_cutoff}{Cutoff for FDR of the difference test between subgroups.}
+  \item{scale_rows}{Whether apply row scaling when making the heatmap.}
+  \item{row_km}{Number of groups for performing k-means clustering on rows. By default it is automatically selected.}
+  \item{diff_method}{Methods to get rows which are significantly different between subgroups, see 'Details' section.}
+  \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
+  \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
+  \item{internal}{Used internally.}
+  \item{show_row_dend}{Whether show row dendrogram.}
+  \item{show_column_names}{Whether show column names in the heatmap.}
+  \item{use_raster}{Internally used.}
+  \item{plot}{Whether to make the plot.}
+  \item{verbose}{Whether to print messages.}
+  \item{seed}{Random seed.}
   \item{left_annotation}{Annotation put on the left of the heatmap. It should be a \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.  The number of items should be the same as the number of the original matrix rows. The subsetting to the significant  rows are automatically performed on the annotation object.}
   \item{right_annotation}{Annotation put on the right of the heatmap. Same format as \code{left_annotation}.}
-  \item{...}{other arguments.}
+  \item{...}{Other arguments.}
 
 }
 \details{
@@ -53,6 +53,7 @@ row. There are following methods which test significance of the difference:
   \item{ttest}{First it looks for the subgroup with highest mean value, compare to each of the  other subgroups with t-test and take the maximum p-value. Second it looks for the subgroup with lowest mean value, compare to each of the other subgroups again with t-test and take the maximum p-values. Later for these two list of p-values take the minimal p-value as the final p-value. }
   \item{samr/pamr}{use SAM (from samr package)/PAM (from pamr package) method to find significantly different rows between subgroups.}
   \item{Ftest}{use F-test to find significantly different rows between subgroups.}
+  \item{one_vs_others}{For each subgroup i in each row, it uses t-test to compare samples in current  subgroup to all other samples, denoted as p_i. The p-value for current row is selected as min(p_i).}
 }
 
 \code{diff_method} can also be a self-defined function. The function needs two arguments which are the matrix for the analysis
@@ -64,6 +65,7 @@ A data frame with more than two columns:
 \describe{
   \item{\code{which_row}:}{row index corresponding to the original matrix.}
   \item{\code{fdr}:}{the FDR.}
+  \item{\code{km}:}{the k-means groups if \code{row_km} is set.}
   \item{other_columns:}{the mean expression (depending rows are scaled or not) in each subgroup.}
 }
 }
