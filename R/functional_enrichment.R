@@ -421,3 +421,59 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
     x = structure(df[, 1], names = df[, 2])
     return(x)
 }
+
+			  
+# == title
+# Perform Gene Ontology Enrichment on Signature Genes
+#
+# == param
+# -object A `HierarchicalPartition-class` object.
+# -cutoff Cutoff of FDR to define significant signature genes.
+# -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
+#       named vector should be provided where the names are the gene IDs in the matrix and values
+#       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
+# -org_db Annotation database.
+# -min_set_size The minimal size of the GO gene sets.
+# -max_set_size The maximal size of the GO gene sets.
+# -mc.cores Number of cores.
+#
+# == details
+# On each node of the partition hierarchy, the signature genes are extracted based on the best k.
+#
+# It calls `GO_enrichment,ConsensusPartition-method` on the consensus partitioning results on each node.
+#
+# == values
+# A list where each element in the list corresponds to enrichment results on a node.
+#
+setMethod(f = "GO_enrichment",
+    signature = "HierarchicalPartition,
+    definition = function(object, cutoff = 0.05,
+    id_mapping = NULL, org_db = "org.Hs.eg.db",
+    min_set_size = 10, max_set_size = 1000, mc.cores = 1) {
+
+    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
+
+    if(mc.cores == 1) {
+        lt = list()
+        for(i in seq_along(object@list)) {
+            nm = names(object@list)[i]
+
+            cat("-----------------------------------------------------------\n")
+            qqcat("* enrich signature genes to GO terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
+            lt[[nm]] = GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, org_db = org_db,
+                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ")
+        }
+    } else {
+        lt = mclapply(seq_along(object@list), function(i) {
+            nm = names(object@list)[i]
+
+            qqcat("* enrich signature genes to GO terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
+            GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, org_db = org_db,
+                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE)
+        }, mc.cores = mc.cores)
+        names(lt) = names(object@list)
+    }
+
+    return(lt)
+})
+			  
