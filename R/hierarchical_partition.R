@@ -1163,9 +1163,81 @@ setMethod(f = "suggest_best_k",
 
 setMethod(f = "collect_plots",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object)) {
+	definition = function(object, depth = max_depth(object), 
+		fun = consensus_heatmap, verbose = TRUE, mc.cores = 1, ...) {
 
-	dend = get_hierarchy(rh, depth)
+	dend = get_hierarchy(object, depth)
 	# use circlize to visualize this hierarchy
+	h = attr(dend, "height")
+	x = unlist(dend)
+	rg = c(min(x), max(x))
+
+	circos.clear()
+	circos.initialize("a", xlim = c(rg[1] - 1, rg[2] + 1))
+	circos.track(ylim = c(0, h), bg.border = NA, track.height = 0.8)
+	circos.dendrogram(dend, use_x_attr = TRUE)
+
+	fun_name = deparse(substitute(fun))
+
+	## make plot
+	dev.null()
+	image = mclapply(names(object@list), function(nm, ...) {
+		
+		if(verbose) qqcat("* applying @{fun_name}() on node @{nm}.\n")
+	    res = object[nm]
+
+		if(is.null(.ENV$TEMP_DIR)) {
+			file_name = tempfile(fileext = ".png", tmpdir = ".")
+	        png(file_name, width = image_width, height = image_height, res = resolution)
+	        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, verbose = FALSE, ...), silent = TRUE)
+	        dev.off2()
+	        if(!inherits(oe, "try-error")) {
+				return(structure(file_name, cache = FALSE))
+		    } else {
+		    	return(structure(NA, error = oe))
+		    }
+		} else {
+			file_name = file.path(.ENV$TEMP_DIR, qq("node_@{nm}_@{fun_name}.png"))
+			if(file.exists(file_name)) {
+				if(verbose) qqcat("  - use cache png: node_@{nm}_@{fun_name}.png.\n")
+				return(structure(file_name, cache = TRUE))
+			} else {
+				png(file_name, width = image_width, height = image_height, res = resolution)
+		        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...), silent = TRUE)
+		        dev.off2()
+		        if(!inherits(oe, "try-error")) {
+					return(structure(file_name, cache = TRUE))
+			    } else {
+			    	return(structure(NA, error = oe))
+			    }
+			}
+		}
+	}, mc.cores = mc.cores, ...)
+	dev.off2()
+
+	if(any(sapply(image, inherits, "try-error"))) {
+		print(image)
+		stop_wrap("You have errors when generating the plots.")
+	}
+
+	dendrapply(dend, function(d) {
+		x = attr(d, "x")
+		y = h - attr(d, "height")
+		node_id = attr(d, "label")
+		circos.text(x, y, node_id, facing = "downward")
+
+		if(is.na(image[[node_id]])) {
+    		qqcat("* Caught an error on node @{node_id}:\n@{attr(image[[ind]], 'error')}\n")
+    	} else {
+    		circos.raster(readPNG(image[[ind]]), x, y, facing = "downward")
+			if(!attr(image[[ind]], "cache")) {
+				file.remove(image[[ind]])
+			}
+		}
+	})
+
+	circos.clear()
+
+	return(invisible(NULL))
 })
 

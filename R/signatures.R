@@ -27,6 +27,7 @@
 #              The number of items should be the same as the number of the original matrix rows. The subsetting to the significant 
 #              rows are automatically performed on the annotation object.
 # -right_annotation Annotation put on the right of the heatmap. Same format as ``left_annotation``.
+# -col Colors.
 # -... Other arguments.
 # 
 # == details 
@@ -61,7 +62,7 @@ setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
 	silhouette_cutoff = 0.5, 
-	fdr_cutoff = ifelse(identical(diff_method, "samr"), 0.05, 0.1), 
+	fdr_cutoff = 0.05, 
 	scale_rows = object@scale_rows,
 	row_km = NULL,
 	diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
@@ -72,6 +73,7 @@ setMethod(f = "get_signatures",
 	show_column_names = FALSE, use_raster = TRUE,
 	plot = TRUE, verbose = TRUE, seed = 888,
 	left_annotation = NULL, right_annotation = NULL,
+	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
 	...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
@@ -375,13 +377,13 @@ setMethod(f = "get_signatures",
 		use_mat2[is.infinite(use_mat2)] = 0
 		use_mat2[is.na(use_mat2)] = 0
 		mat_range = quantile(abs(scaled_mat1), 0.95, na.rm = TRUE)
-		col_fun = colorRamp2(c(-mat_range, 0, mat_range), c("green", "white", "red"))
+		col_fun = colorRamp2(c(-mat_range, 0, mat_range), col)
 		heatmap_name = "z-score"
 	} else {
 		use_mat1 = mat1
 		use_mat2 = mat2
 		mat_range = quantile(mat1, c(0.05, 0.95))
-		col_fun = colorRamp2(c(mat_range[1], mean(mat_range), mat_range[2]), c("blue", "white", "red"))
+		col_fun = colorRamp2(c(mat_range[1], mean(mat_range), mat_range[2]), col)
 		heatmap_name = "expr"
 	}
 
@@ -466,7 +468,6 @@ setMethod(f = "get_signatures",
 		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = {if(internal) NULL else qq("@{ncol(use_mat1)} confident samples")},
 		use_raster = use_raster, raster_resize = raster_resize,
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
-		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")},
 		left_annotation = left_annotation, right_annotation = {if(has_ambiguous) NULL else right_annotation})
  	
 	all_value_positive = !any(data < 0)
@@ -529,7 +530,9 @@ setMethod(f = "get_signatures",
 		if(verbose) cat("  - use row order from cache.\n")
 		draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}")),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
-			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = heatmap_legend_list)
+			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = heatmap_legend_list,
+			row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")}
+		)
 	}
 	# the cutoff
 	# https://www.stat.berkeley.edu/~s133/Cluster2a.html

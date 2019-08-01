@@ -98,6 +98,7 @@ consensus_partition = function(data,
 		verbose = verbose,
 		mc.cores = mc.cores,
 		.env = .env))
+	res@hash = digest(res)
 	res@running_time = t[["elapsed"]]
 
 	if(verbose) {

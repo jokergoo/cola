@@ -88,5 +88,8 @@ ConsensusPartition = setClass("ConsensusPartition",
 		column_index = "numeric",
 		running_time = "ANY",
 		cache = "list",
+		hash = "character",
 		.env = "environment"
-))
+	),
+	prototype = list(hash = "")
+)

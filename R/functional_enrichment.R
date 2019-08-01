@@ -446,7 +446,7 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
 # A list where each element in the list corresponds to enrichment results on a node.
 #
 setMethod(f = "GO_enrichment",
-    signature = "HierarchicalPartition,
+    signature = "HierarchicalPartition",
     definition = function(object, cutoff = 0.05,
     id_mapping = NULL, org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, mc.cores = 1) {
