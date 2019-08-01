@@ -21,4 +21,5 @@ A \code{\link[stats]{dendrogram}} object.
 \examples{
 # There is no example
 NULL
+
 }

@@ -9,7 +9,7 @@ Get signature rows
 \usage{
 \S4method{get_signatures}{ConsensusPartition}(object, k,
     silhouette_cutoff = 0.5,
-    fdr_cutoff = ifelse(identical(diff_method, "samr"), 0.05, 0.1),
+    fdr_cutoff = 0.05,
     scale_rows = object@scale_rows,
     row_km = NULL,
     diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
@@ -20,6 +20,7 @@ Get signature rows
     show_column_names = FALSE, use_raster = TRUE,
     plot = TRUE, verbose = TRUE, seed = 888,
     left_annotation = NULL, right_annotation = NULL,
+    col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
     ...)
 }
 \arguments{
@@ -42,6 +43,7 @@ Get signature rows
   \item{seed}{Random seed.}
   \item{left_annotation}{Annotation put on the left of the heatmap. It should be a \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.  The number of items should be the same as the number of the original matrix rows. The subsetting to the significant  rows are automatically performed on the annotation object.}
   \item{right_annotation}{Annotation put on the right of the heatmap. Same format as \code{left_annotation}.}
+  \item{col}{Colors.}
   \item{...}{Other arguments.}
 
 }

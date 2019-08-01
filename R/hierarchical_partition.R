@@ -1161,10 +1161,38 @@ setMethod(f = "suggest_best_k",
 })
 
 
+# == title
+# Collect plots from HierarchicalPartition object
+#
+# == param
+# -object A `HierarchicalPartition-class` object.
+# -depth Depth in the hierarchy.
+# -fun Function used to generate plots. Valid functions are `consensus_heatmap`,
+#        `plot_ecdf`, `membership_heatmap`, `get_signatures` and `dimension_reduction`.
+# -verbose Whether to print message.
+# -mc.cores Number of cores. On OSX it is enforced to be 1.
+# -... other Arguments passed to corresponding ``fun``.
+#
+# == details
+# The hierarchy represents as a circular dendrogram where plots are on the nodes.
+#
+# == value
+# No value is returned.
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+# == example
+# data(cola_rh)
+# collect_plots(cola_rh)
+# \dontrun{
+# collect_plots(cola_rh, fun = membership_heatmap)
+# collect_plots(cola_rh, fun = get_signatures)
+# }
 setMethod(f = "collect_plots",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object), 
-		fun = consensus_heatmap, verbose = TRUE, mc.cores = 1, ...) {
+	fun = consensus_heatmap, verbose = TRUE, mc.cores = 1, ...) {
 
 	dend = get_hierarchy(object, depth)
 	# use circlize to visualize this hierarchy
@@ -1179,6 +1207,16 @@ setMethod(f = "collect_plots",
 
 	fun_name = deparse(substitute(fun))
 
+	if(identical(fun, plot_ecdf) || fun_name %in% c("plot_ecdf", "dimension_reduction")) {
+		image_width = 500
+		image_height = 500
+		resolution = 150
+	} else {
+		image_width = 800
+		image_height = 800
+		resolution = NA
+	}
+
 	## make plot
 	dev.null()
 	image = mclapply(names(object@list), function(nm, ...) {
@@ -1189,7 +1227,7 @@ setMethod(f = "collect_plots",
 		if(is.null(.ENV$TEMP_DIR)) {
 			file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height, res = resolution)
-	        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, verbose = FALSE, ...), silent = TRUE)
+	        oe = try(fun(res, k = suggest_best_k(res), internal = TRUE, use_raster = TRUE, verbose = FALSE, ...), silent = TRUE)
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
 				return(structure(file_name, cache = FALSE))
@@ -1197,13 +1235,17 @@ setMethod(f = "collect_plots",
 		    	return(structure(NA, error = oe))
 		    }
 		} else {
-			file_name = file.path(.ENV$TEMP_DIR, qq("node_@{nm}_@{fun_name}.png"))
+			png_file = qq("node_@{nm}_@{fun_name}.png")
+			if("hash" %in% slotNames(res)) {
+				png_file = qq("@{res@hash}_@{png_file}")
+			}
+			file_name = file.path(.ENV$TEMP_DIR, png_file)
 			if(file.exists(file_name)) {
-				if(verbose) qqcat("  - use cache png: node_@{nm}_@{fun_name}.png.\n")
+				if(verbose) qqcat("  - use cache png: @{png_file}.\n")
 				return(structure(file_name, cache = TRUE))
 			} else {
 				png(file_name, width = image_width, height = image_height, res = resolution)
-		        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...), silent = TRUE)
+		        oe = try(fun(res, k = suggest_best_k(res), internal = TRUE, use_raster = TRUE, ...), silent = TRUE)
 		        dev.off2()
 		        if(!inherits(oe, "try-error")) {
 					return(structure(file_name, cache = TRUE))
@@ -1220,6 +1262,8 @@ setMethod(f = "collect_plots",
 		stop_wrap("You have errors when generating the plots.")
 	}
 
+	names(image) = names(object@list)
+
 	dendrapply(dend, function(d) {
 		x = attr(d, "x")
 		y = h - attr(d, "height")
@@ -1227,11 +1271,11 @@ setMethod(f = "collect_plots",
 		circos.text(x, y, node_id, facing = "downward")
 
 		if(is.na(image[[node_id]])) {
-    		qqcat("* Caught an error on node @{node_id}:\n@{attr(image[[ind]], 'error')}\n")
+    		qqcat("* Caught an error on node @{node_id}:\n@{attr(image[[node_id]], 'error')}\n")
     	} else {
-    		circos.raster(readPNG(image[[ind]]), x, y, facing = "downward")
-			if(!attr(image[[ind]], "cache")) {
-				file.remove(image[[ind]])
+    		circos.raster(readPNG(image[[node_id]]), x, y, width = "3cm", facing = "downward")
+			if(!attr(image[[node_id]], "cache")) {
+				file.remove(image[[node_id]])
 			}
 		}
 	})
