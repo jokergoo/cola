@@ -33,4 +33,5 @@ A list where each element in the list corresponds to enrichment results on a nod
 \examples{
 # There is no example
 NULL
+
 }

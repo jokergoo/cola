@@ -1,37 +1,4 @@
 
-# == title
-# The HierarchicalPartition class
-#
-# == alias
-# HierarchicalPartition
-#
-# == methods
-# The `HierarchicalPartition-class` has following methods:
-#
-# -`hierarchical_partition`: constructor method.
-# -`collect_classes,HierarchicalPartition-method`: plot the hierarchy of subgroups predicted.
-# -`get_classes,HierarchicalPartition-method`: get the class IDs of subgroups.
-# -`suggest_best_k,HierarchicalPartition-method`: guess the best number of partitions for each node.
-# -`get_matrix,HierarchicalPartition-method`: get the original matrix.
-# -`get_signatures,HierarchicalPartition-method`: get the signatures for each subgroup.
-# -`dimension_reduction,HierarchicalPartition-method`: make dimension reduction plots.
-# -`test_to_known_factors,HierarchicalPartition-method`: test correlation between predicted subgrouping and known annotations, if available.
-# -`cola_report,HierarchicalPartition-method`: generate a HTML report for the whole analysis.
-#
-# == author
-# Zuguang Gu <z.gu@dkfz.de>
-#
-HierarchicalPartition = setClass("HierarchicalPartition",
-    slots = list(
-        list = "list",
-        best_k = "numeric",
-        hierarchy = "matrix",
-        subgroup = "character",
-        subgroup_col = "character",
-        call = "ANY",
-        .env = "environment"
-    )
-)
 
 # == title
 # Hierarchical partition

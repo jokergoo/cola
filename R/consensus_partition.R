@@ -222,7 +222,7 @@ consensus_partition = function(data,
 	# in case NA is produced in scaling
 	l = apply(data, 1, function(x) any(is.na(x)))
 	if(any(l)) {
-		if(verbose) qqcat("* remove @{sum(l)} rows with NA values after row scaling.\n")
+		if(verbose) qqcat("* remove @{sum(l)} rows with NA values.\n")
 		data = data[!l, , drop = FALSE]
 		all_top_value = all_top_value[!l]
 		l = top_n <= nrow(data)
