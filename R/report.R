@@ -95,7 +95,7 @@ $('#@{tab}-a').click(function(){
 }
 
 # TEMPLATE_DIR = system.file("extdata", package = "cola")
-# TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
+# TEMPLATE_DIR = "/desktop-home/guz/project/development/cola/inst/extdata"
 
 # == title
 # Generate the HTML fragment for the JavaScript tabs.
@@ -199,15 +199,10 @@ setMethod(f = "cola_report",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -output_dir The output directory where the report is put.
+# -env Where The objects in the report are found, internally used.
 #
 # == details
-# Please generate report on the `ConsensusPartitionList-class` object directly.
-#
-# If you want to make report only for one single method, you can subset the 
-# `ConsensusPartitionList-class` object and then call ``cola_report``, e.g.
-#
-#     cola_report(res_list["sd", "hclust", drop = FALSE], output_dir = ...)
-#
+# It generates report for a specific combination of top-value method and partition method.
 #
 # == value
 # No value is returned.
@@ -220,10 +215,13 @@ setMethod(f = "cola_report",
 #
 setMethod(f = "cola_report",
 	signature = "ConsensusPartition",
-	definition = function(object, output_dir) {
+	definition = function(object, output_dir = getwd(), env = parent.frame()) {
 
-	qqcat("Please call `cola_report()` on `ConsensusPartitionList` object directly.\n")
-	return(invisible(NULL))
+	if(!requireNamespace("genefilter")) {
+		stop_wrap("You need to install genefilter package (from Bioconductor).")
+	}
+	var_name = deparse(substitute(object, env = env))
+	make_report(var_name, object, output_dir, mc.cores = 1, class = "ConsensusPartition")
 })
 
 
@@ -285,9 +283,11 @@ make_report = function(var_name, object, output_dir, mc.cores = 1, class = class
 
 	.t1 = Sys.time()
 	template_file = c("HierarchicalPartition" = "cola_hc_template.Rmd-template",
-		              "ConsensusPartitionList" = "cola_report_template.Rmd-template")
+		              "ConsensusPartitionList" = "cola_report_template.Rmd-template",
+		              "ConsensusPartition" = "cola_single_report_template.Rmd-template")
 	html_file = c("HierarchicalPartition" = "cola_hc.html",
-		          "ConsensusPartitionList" = "cola_report.html")
+		          "ConsensusPartitionList" = "cola_report.html",
+		          "ConsensusPartition" = "cola_single.html")
 
 	cola_opt$raster_resize = TRUE
 
@@ -384,7 +384,7 @@ make_report = function(var_name, object, output_dir, mc.cores = 1, class = class
 	lines[ind] = paste0('<link rel="ICON" type="image/x-icon" href="favicon.ico" />\n', lines[ind])
 	
 	### add loading flag
-	ind = which(grepl("^<hr/>", lines[1:500]))
+	ind = which(grepl("^<hr/>", lines[1:500]))[1]
 	lines[ind] = paste0("<p id='loadingflag' style='text-align:center;'>Document is loading... <img src='Ellipsis-4.2s-119px.gif' style='vertical-align:middle;' /></p>\n", lines[ind])
 
 	## add toc js at the end of the html

@@ -540,7 +540,8 @@ setMethod(f = "collect_classes",
 	ht = Heatmap(m, name = "Class", col = brewer_pal_set2_col, column_order = column_order,
 		show_column_names = show_column_names,
 		column_title = qq("classification from all methods, k = @{k}"),
-		row_names_side = "left", cluster_rows = hclust(m_diss), cluster_columns = FALSE,
+		row_names_side = "left", cluster_rows = {if(nrow(m) == 1) FALSE else hclust(m_diss)}, 
+		cluster_columns = FALSE,
 		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
 		layer_fun = function(j, i, x, y, w, h, fill) {
 			col = adjust_by_transparency(fill, 1 - pindex(silhouette_mat, j, i))

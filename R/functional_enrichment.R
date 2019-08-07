@@ -173,10 +173,13 @@ submit_to_david = function(genes, email,
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartitionList",
     definition = function(object, cutoff = 0.05,
-    id_mapping = NULL, org_db = "org.Hs.eg.db",
+    id_mapping = guess_id_mapping(rownames(object), org_db), 
+    org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, mc.cores = 1) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
+
+    id_mapping = id_mapping
 
     if(mc.cores == 1) {
         lt = list()
@@ -229,7 +232,8 @@ setMethod(f = "GO_enrichment",
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartition",
     definition = function(object, cutoff = 0.05, k = suggest_best_k(object),
-    row_km = NULL, id_mapping = NULL, org_db = "org.Hs.eg.db",
+    row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db), 
+    org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, 
     verbose = TRUE, ...) {
 
@@ -240,6 +244,8 @@ setMethod(f = "GO_enrichment",
 	} else {
 		prefix = ""
 	}
+
+    id_mapping = id_mapping
     
     if(is.na(k)) {
     	if(verbose) qqcat("@{prefix}- no proper number of groups found.\n")
@@ -299,7 +305,8 @@ setMethod(f = "GO_enrichment",
 #
 setMethod(f = "GO_enrichment",
     signature = "ANY",
-    definition = function(object, id_mapping = NULL, 
+    definition = function(object, 
+    id_mapping = guess_id_mapping(object, org_db), 
     org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, 
     verbose = TRUE, ...) {
@@ -384,6 +391,66 @@ setMethod(f = "GO_enrichment",
     return(lt)
 })
 
+guess_id_type = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
+    l = grepl("^ENS.*G", id)
+    if(sum(l)/length(l) > 0.5) {
+        return("ENSEMBL")
+    }
+    l = grepl("^ENS.*T", id)
+    if(sum(l)/length(l) > 0.5) {
+        return("ENSEMBLTRANS")
+    }
+
+    if(!grepl("\\.db$", org_db)) {
+        org_db = paste0(org_db, ".db")
+    }
+
+    all_var = getNamespaceExports(org_db)
+    col = eval(parse(text = qq("columns(@{org_db})")))
+
+    l = all_var %in% paste0(gsub(".db$", "", org_db), col)
+    all_var = all_var[l]
+    col = gsub(gsub(".db$", "", org_db), "", all_var)
+
+    p_match = numeric(length(all_var))
+    for(i in seq_along(all_var)) {
+        oe = try(all_ids <- AnnotationDbi::contents(getFromNamespace(all_var[i], ns = org_db)), silent = TRUE)
+        if(inherits(oe, "try-error")) {
+            next
+        }
+        if(verbose) qqcat("testing @{all_var[i]}...\n")
+        all_ids = unlist(all_ids)
+        l = sample(id, min(100, length(id))) %in% all_ids
+        p_match[i] = sum(l)/length(l)
+    }
+
+    if(max(p_match) < 0.5) {
+        return(NULL)
+    } else {
+        col[which.max(p_match)]
+    }
+}
+
+
+guess_id_mapping = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
+    col = guess_id_type(id, org_db, verbose = verbose)
+    if(is.null(col)) {
+        return(NULL)
+    }
+
+    id_mapping = map_to_entrez_id(col, org_db)
+
+    l = grepl("^ENS.*(G|T)", id)
+    if(sum(l)/length(l) > 0.5) {
+        fun = function(x) {
+            gsub("\\.\\d+$", "", x)
+            id_mapping[x]
+        }
+        return(fun)
+    } else {
+        return(id_mapping)
+    }
+}
 
 # == title
 # Map to Entrez IDs
@@ -448,10 +515,13 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
 setMethod(f = "GO_enrichment",
     signature = "HierarchicalPartition",
     definition = function(object, cutoff = 0.05,
-    id_mapping = NULL, org_db = "org.Hs.eg.db",
+    id_mapping = guess_id_mapping(rownames(object), org_db), 
+    org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, mc.cores = 1) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
+
+    id_mapping = id_mapping
 
     if(mc.cores == 1) {
         lt = list()

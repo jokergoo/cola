@@ -207,7 +207,7 @@ setMethod(f = "get_signatures",
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2)
 	mat1 = mat[, column_used_logical, drop = FALSE]
 	if(nrow(mat) == 1) {
-		group_mean = matrix(tapply(mat1, class, mean), nrow = 1)
+		group_mean = rbind(tapply(mat1, class, mean))
 	} else {
 		group_mean = do.call("cbind", tapply(seq_len(ncol(mat1)), class, function(ind) {
 			rowMeans(mat1[, ind, drop = FALSE])
@@ -219,7 +219,7 @@ setMethod(f = "get_signatures",
 	if(scale_rows) {
 		mat1_scaled = t(scale(t(mat[, column_used_logical, drop = FALSE])))
 		if(nrow(mat) == 1) {
-			group_mean_scaled = matrix(tapply(mat1_scaled, class, mean), nrow = 1)
+			group_mean_scaled = rbind(tapply(mat1_scaled, class, mean))
 		} else {
 			group_mean_scaled = do.call("cbind", tapply(seq_len(ncol(mat1_scaled)), class, function(ind) {
 				rowMeans(mat1_scaled[, ind, drop = FALSE])
@@ -258,8 +258,9 @@ setMethod(f = "get_signatures",
 				set.seed(seed)
 				if(is.null(row_km)) {
 					wss = (nrow(mat_for_km)-1)*sum(apply(mat_for_km,2,var))
-					for (i in 2:15) wss[i] = sum(kmeans(mat_for_km, centers = i, iter.max = 50)$withinss)
-					row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
+					max_km = min(c(nrow(mat_for_km) - 1, 15))
+					for (i in 2:max_km) wss[i] = sum(kmeans(mat_for_km, centers = i, iter.max = 50)$withinss)
+					row_km = min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
 					if(length(unique(class)) == 1) row_km = 1
 					if(length(unique(class)) == 2) row_km = min(row_km, 2)
 				}
@@ -800,3 +801,35 @@ Ftest = function(mat, class) {
 # 	}
 # 	par(op)
 # })
+
+
+# == title
+# Compare Signatures from Different k
+#
+# == param
+# -object A `ConsensusPartition-class` object. 
+# -k Number of partitions. Value should be a vector.
+# -... Other arguments passed to `get_signatures,ConsensusPartition-method`.
+#
+# == details
+# It plots an Euler diagram showing the overlap of signatures from different k.
+#
+setMethod(f = "compare_signatures",
+	signature = "ConsensusPartition",
+	definition = function(object, k = object@k, ...) {
+
+	sig_list = sapply(k, function(x) {
+		tb = get_signatures(object, k = x, ..., plot = FALSE)
+		if(is.null(tb)) {
+			return(integer(0))
+		} else {
+			return(tb$which_row)
+		}
+	})
+
+	names(sig_list) = paste(k, "-group", sep = "")
+
+	plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different k")
+
+})
+

@@ -7,7 +7,8 @@ Perform Gene Ontology Enrichment on Signature Genes
 Perform Gene Ontology Enrichment on Signature Genes
 }
 \usage{
-\S4method{GO_enrichment}{ANY}(object, id_mapping = NULL,
+\S4method{GO_enrichment}{ANY}(object,
+    id_mapping = guess_id_mapping(object, org_db),
     org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000,
     verbose = TRUE, ...)

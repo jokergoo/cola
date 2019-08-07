@@ -7,17 +7,22 @@ if(is_hc) {
     chunk_prefix = paste("node", node, sep = "-")
     res = res_hc[node]
 } else {
-    tb = suggest_best_k(res_list)
-    nm = paste(top_value_method, partition_method, sep = ":")
-    mark = tb[nm, 6]
-    chunk_prefix = paste(top_value_method, partition_method, sep = "-")
-    res = res_list[top_value_method, partition_method]
+    if(single_report) {
+        chunk_prefix = paste(top_value_method, partition_method, sep = "-")
+    } else {
+        tb = suggest_best_k(res_list)
+        nm = paste(top_value_method, partition_method, sep = ":")
+        mark = tb[nm, colnames(tb) == ""]
+        chunk_prefix = paste(top_value_method, partition_method, sep = "-")
+        res = res_list[top_value_method, partition_method]
+    }
+} 
+-%>
 
-} -%>
-
+<% if(!single_report) { %>
 <% if(is_hc) { %>
 ### Node<%=node%><%=mark%>
-<% } else { %>
+<% } else if(!single_report) { %>
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
 <% } %>
 
@@ -25,6 +30,7 @@ if(is_hc) {
 ```{r <%=chunk_prefix%>-message-blank, echo = FALSE, message = FALSE}
 message("-----------------------------------------------------------------")
 ```
+<% } -%>
 <% } -%>
 
 <% if(is_hc) { -%>
@@ -37,6 +43,7 @@ message("* generating plots for <%=top_value_method%>:<%=partition_method%> (<%=
 ```
 <% } -%>
 
+<% if(!single_report) { %>
 The object with results only for a single top-value method and a single partition method 
 can be extracted as:
 
@@ -49,6 +56,7 @@ res = res_list["<%=top_value_method%>", "<%=partition_method%>"]
 # res = res_list["<%=top_value_method%>:<%=partition_method%>"]
 <% } -%>
 ```
+<% } -%>
 
 A summary of `res` and all the functions that can be applied to it:
 
@@ -135,7 +143,7 @@ get_stats(res)
 - All $k$ with Rand index larger than 0.95 are removed because the increase of
   the partition number does not provides enough extra information. If all $k$ are removed,
   the best $k$ is assigned by `NA`.
-- For $k$ with 1-PAC larger than 0.9, the maximal $k$ is taken as the "best k".
+- For $k$ with 1-PAC larger than 0.9, the maximal $k$ is taken as the "best k". Other $k$ is called "optional k"
 - If it does not fit the second rule. The $k$ with the highest vote of highest
   1-PAC, mean silhouette and concordance is taken as the "best k".
 
@@ -154,6 +162,7 @@ belongs to.
 
 In `get_classes()` function, the entropy is calculated from the membership
 matrix and the silhouette score is calculated from the consensus matrix.
+
 
 ```{r <%=chunk_prefix%>-get-classes, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -230,6 +239,13 @@ knitr_insert_tabs('<%=chunk_prefix%>-get-signatures-no-scale')
 ```
 
 <% } %>
+
+Compare the overlap of signatures from different k:
+
+```{r <%=chunk_prefix%>-signature_compare, results = "hide"}
+compare_signatures(res)
+```
+
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}

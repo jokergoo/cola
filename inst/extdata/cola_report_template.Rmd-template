@@ -123,7 +123,11 @@ suggest_best_k(res_list)
 ```{r, echo = FALSE}
 tb = suggest_best_k(res_list)
 rownames(tb) = qq("[@{rownames(tb)}](#@{gsub(':', '-', rownames(tb))})", collapse = FALSE)
-colnames(tb) = c("The best k", "1-PAC", "Mean silhouette", "Concordance", "")
+if(ncol(tb) == 5) {
+    colnames(tb) = c("The best k", "1-PAC", "Mean silhouette", "Concordance", "")
+} else {
+    colnames(tb) = c("The best k", "1-PAC", "Mean silhouette", "Concordance", "", "Optional k")
+}
 kable(tb)
 ```
 
@@ -265,6 +269,8 @@ message(qq("* overlaping top rows from different top-value methods"), appendLF =
 
 ### Top rows overlap
 
+<% if(length(res_list@top_value_method) > 1) { -%>
+
 Overlap of top rows from different top-row methods:
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
@@ -282,6 +288,8 @@ knitr_add_tab_item('top_rows_overlap(res_list, top_n = <%=top_n%>, method = "cor
 <%}-%>
 knitr_insert_tabs('top-rows-overlap-by-correspondance')
 ```
+
+<% }-%>
 
 Heatmaps of the top rows:
 
@@ -338,6 +346,7 @@ knitr_insert_tabs('test-to-known-factors-from-consensus-partition-list')
 ```{r, results = "asis", echo = FALSE}
 fs = min(c(3*length(res_list@top_value_method), 14))/length(res_list@top_value_method)
 is_hc = FALSE
+single_report = FALSE
 node = NULL
 n_section = n_top_value_method * n_partition_method
 i_section = 0

@@ -7,22 +7,17 @@ Make HTML report from the ConsensusPartition object
 Make HTML report from the ConsensusPartition object
 }
 \usage{
-\S4method{cola_report}{ConsensusPartition}(object, output_dir)
+\S4method{cola_report}{ConsensusPartition}(object, output_dir = getwd(), env = parent.frame())
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
   \item{output_dir}{The output directory where the report is put.}
+  \item{env}{Where The objects in the report are found, internally used.}
 
 }
 \details{
-Please generate report on the \code{\link{ConsensusPartitionList-class}} object directly.
-
-If you want to make report only for one single method, you can subset the 
-\code{\link{ConsensusPartitionList-class}} object and then call \code{cola_report}, e.g.
-
-  \preformatted{
-    cola_report(res_list["sd", "hclust", drop = FALSE], output_dir = ...)  }
+It generates report for a specific combination of top-value method and partition method.
 }
 \value{
 No value is returned.

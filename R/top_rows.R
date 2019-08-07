@@ -27,7 +27,7 @@ setMethod(f = "top_rows_overlap",
 	definition = function(object, top_n = min(object@list[[1]]@top_n), 
 		method = c("euler", "venn", "correspondance"), ...) {
 
-	all_top_value_list = object@.env$all_top_value_list
+	all_top_value_list = object@.env$all_top_value_list[object@top_value_method]
 
 	top_elements_overlap(all_top_value_list, top_n = top_n, method = method, ...)
 })
@@ -111,6 +111,10 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 	}
 
 	lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
+
+	if(length(lt) == 1) {
+		stop_wrap("Expect at least two lists.")
+	}
     
     method = match.arg(method)
 

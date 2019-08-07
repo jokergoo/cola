@@ -369,8 +369,12 @@ setMethod(f = "suggest_best_k",
 	}
 
 	l = stat[, "1-PAC"] >= 0.9
-	if(sum(l)) {
-		return(max(as.numeric(rownames(stat)[l])))
+	if(sum(l) == 1) {
+		return(as.numeric(rownames(stat)[l]))
+	} else if(sum(l) > 1) {
+		best_k = as.numeric(rownames(stat)[l])
+		best_k = structure(max(best_k), optional = setdiff(best_k, max(best_k)))
+		return(best_k)
 	}
 
 	dec = c(which.max(stat[, "1-PAC"]),
@@ -413,11 +417,19 @@ setMethod(f = "suggest_best_k",
 	stability = NULL
 	mean_silhouette = NULL
 	concordance = NULL
+	optional_k = NULL
 	for(tm in object@top_value_method) {
 		for(pm in object@partition_method) {
 			nm = paste0(tm, ":", pm)
 			obj = object@list[[nm]]
-			best_k[nm] = suggest_best_k(obj, rand_index_cutoff)
+			k = suggest_best_k(obj, rand_index_cutoff)
+			best_k[nm] = k
+			op = attr(k, "optional")
+			if(is.null(op)) {
+				optional_k[nm] = ""
+			} else {
+				optional_k[nm] = paste(op, collapse = ",")
+			}
 			if(is.na(best_k[nm])) {
 				stability[nm] = NA
 				mean_silhouette[nm] = NA
@@ -430,6 +442,7 @@ setMethod(f = "suggest_best_k",
 			}
 		}
 	}
+
 	tb = data.frame(best_k = best_k,
 		"1-PAC" = stability,
 		mean_silhouette = mean_silhouette,
@@ -441,6 +454,9 @@ setMethod(f = "suggest_best_k",
 
 	tb = cbind(tb, ifelse(l, ifelse(tb$`1-PAC` <= 0.95, "*", "**"), ""), stringsAsFactors = FALSE)
 	colnames(tb)[ncol(tb)] = ""
+	if(any(optional_k != "")) {
+		tb$optional_k = optional_k
+	}
 	return(tb[order(!is.na(tb[, "best_k"]) + 0, tb[, "1-PAC"], decreasing = TRUE), , drop = FALSE])
 })
 
