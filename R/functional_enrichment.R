@@ -153,7 +153,7 @@ submit_to_david = function(genes, email,
 #
 # == param
 # -object A `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
-# -cutoff Cutoff of FDR to define significant signature genes.
+# -gene_fdr_cutoff Cutoff of FDR to define significant signature genes.
 # -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
@@ -172,7 +172,7 @@ submit_to_david = function(genes, email,
 #
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartitionList",
-    definition = function(object, cutoff = 0.05,
+    definition = function(object, gene_fdr_cutoff = 0.05,
     id_mapping = guess_id_mapping(rownames(object), org_db), 
     org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, mc.cores = 1) {
@@ -188,7 +188,7 @@ setMethod(f = "GO_enrichment",
 
             cat("-----------------------------------------------------------\n")
             qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
-            lt[[nm]] = GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, org_db = org_db,
+            lt[[nm]] = GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
                 min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ")
         }
     } else {
@@ -196,7 +196,7 @@ setMethod(f = "GO_enrichment",
             nm = names(object@list)[i]
 
             qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
-            GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, org_db = org_db,
+            GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
                 min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE)
         }, mc.cores = mc.cores)
         names(lt) = names(object@list)
@@ -210,7 +210,7 @@ setMethod(f = "GO_enrichment",
 #
 # == param
 # -object a `ConsensusPartition-class` object from `run_all_consensus_partition_methods`.
-# -cutoff Cutoff of FDR to define significant signature genes.
+# -gene_fdr_cutoff Cutoff of FDR to define significant signature genes.
 # -k Number of subgroups.
 # -row_km Number of row clusterings by k-means to separate the matrix that only contains signatures.
 # -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
@@ -231,7 +231,7 @@ setMethod(f = "GO_enrichment",
 #
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartition",
-    definition = function(object, cutoff = 0.05, k = suggest_best_k(object),
+    definition = function(object, gene_fdr_cutoff = 0.05, k = suggest_best_k(object),
     row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db), 
     org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, 
@@ -251,7 +251,7 @@ setMethod(f = "GO_enrichment",
     	if(verbose) qqcat("@{prefix}- no proper number of groups found.\n")
     	return(lt)
     }
-    sig_df = get_signatures(object, k = k, fdr_cutoff = cutoff, plot = FALSE, verbose = FALSE, row_km = row_km)
+    sig_df = get_signatures(object, k = k, fdr_cutoff = gene_fdr_cutoff, plot = FALSE, verbose = FALSE, row_km = row_km)
     m = get_matrix(object)
     if(is.null(sig_df)) {
         sig_gene = NULL
@@ -261,7 +261,7 @@ setMethod(f = "GO_enrichment",
     if(verbose) qqcat("@{prefix}- @{length(sig_gene)}/@{nrow(m)} significant genes are taken from @{k}-group comparisons\n")
     
     if(length(sig_gene) == 0) {
-        if(verbose) qqcat("@{prefix}- no significant genes (fdr < @{cutoff}) found.\n")
+        if(verbose) qqcat("@{prefix}- no significant genes (fdr < @{gene_fdr_cutoff}) found.\n")
         return(list(BP = NULL, MF = NULL, CC = NULL))
     }
 
@@ -400,6 +400,10 @@ guess_id_type = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
     if(sum(l)/length(l) > 0.5) {
         return("ENSEMBLTRANS")
     }
+    l = grepl("^(NC|NG|NM|NR|NP|XM|XR|XP|WP)_\\d+", id)
+    if(sum(l)/length(l) > 0.5) {
+        return("REFSEQ")
+    }
 
     if(!grepl("\\.db$", org_db)) {
         org_db = paste0(org_db, ".db")
@@ -412,6 +416,14 @@ guess_id_type = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
     all_var = all_var[l]
     col = gsub(gsub(".db$", "", org_db), "", all_var)
 
+    od_ensembl = which(col == "ENSEMBL")
+    od_refseq = which(col == "REFSEQ")
+    od_symbol = which(col == "SYMBOL")
+
+    od = c(od_ensembl, od_refseq, od_symbol, setdiff(seq_along(col), c(od_ensembl, od_refseq, od_symbol)))
+    col = col[od]
+    all_var = all_var[od]
+
     p_match = numeric(length(all_var))
     for(i in seq_along(all_var)) {
         oe = try(all_ids <- AnnotationDbi::contents(getFromNamespace(all_var[i], ns = org_db)), silent = TRUE)
@@ -422,13 +434,12 @@ guess_id_type = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
         all_ids = unlist(all_ids)
         l = sample(id, min(100, length(id))) %in% all_ids
         p_match[i] = sum(l)/length(l)
-    }
 
-    if(max(p_match) < 0.5) {
-        return(NULL)
-    } else {
-        col[which.max(p_match)]
+        if(p_match[i] > 0.5) {
+            return(col[i])
+        }
     }
+    return(NULL)
 }
 
 
@@ -440,12 +451,15 @@ guess_id_mapping = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
 
     id_mapping = map_to_entrez_id(col, org_db)
 
-    l = grepl("^ENS.*(G|T)", id)
+    l = grepl("^ENS.*(G|T)", id) | grepl("^(NC|NG|NM|NR|NP|XM|XR|XP|WP)_\\d+", id)
     if(sum(l)/length(l) > 0.5) {
-        fun = function(x) {
-            gsub("\\.\\d+$", "", x)
-            id_mapping[x]
-        }
+        fun = local({
+            id_mapping = id_mapping
+            function(x) {
+                x = gsub("\\.\\d+$", "", x)
+                id_mapping[x]
+            }
+        })
         return(fun)
     } else {
         return(id_mapping)
@@ -486,6 +500,7 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
     df = df[sample(nrow(df), nrow(df)), ]
     df = df[!duplicated(df[, 2]), ]
     x = structure(df[, 1], names = df[, 2])
+    x = x[!is.na(x)]
     return(x)
 }
 
@@ -495,7 +510,7 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -cutoff Cutoff of FDR to define significant signature genes.
+# -gene_fdr_cutoff Cutoff of FDR to define significant signature genes.
 # -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
@@ -514,7 +529,7 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
 #
 setMethod(f = "GO_enrichment",
     signature = "HierarchicalPartition",
-    definition = function(object, cutoff = 0.05,
+    definition = function(object, gene_fdr_cutoff = 0.05,
     id_mapping = guess_id_mapping(rownames(object), org_db), 
     org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, mc.cores = 1) {
@@ -530,7 +545,7 @@ setMethod(f = "GO_enrichment",
 
             cat("-----------------------------------------------------------\n")
             qqcat("* enrich signature genes to GO terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
-            lt[[nm]] = GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, org_db = org_db,
+            lt[[nm]] = GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
                 min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ")
         }
     } else {
@@ -538,7 +553,7 @@ setMethod(f = "GO_enrichment",
             nm = names(object@list)[i]
 
             qqcat("* enrich signature genes to GO terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
-            GO_enrichment(object@list[[i]], cutoff = cutoff, id_mapping = id_mapping, org_db = org_db,
+            GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
                 min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE)
         }, mc.cores = mc.cores)
         names(lt) = names(object@list)

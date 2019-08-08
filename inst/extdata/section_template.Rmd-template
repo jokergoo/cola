@@ -138,18 +138,25 @@ The numeric values for all these statistics can be obtained by `get_stats()`.
 get_stats(res)
 ```
 
-`suggest_best_k()` suggests the best `k` based on these statistics. The rules are as follows:
+`suggest_best_k()` suggests the best $k$ based on these statistics. The rules are as follows:
 
 - All $k$ with Rand index larger than 0.95 are removed because the increase of
   the partition number does not provides enough extra information. If all $k$ are removed,
   the best $k$ is assigned by `NA`.
-- For $k$ with 1-PAC larger than 0.9, the maximal $k$ is taken as the "best k". Other $k$ is called "optional k"
+- For $k$ with 1-PAC larger than 0.9, the maximal $k$ is taken as the "best k". Other $k$ is called "optional k".
 - If it does not fit the second rule. The $k$ with the highest vote of highest
   1-PAC, mean silhouette and concordance is taken as the "best k".
 
 ```{r <%=chunk_prefix%>-suggest-best-k}
 suggest_best_k(res)
 ```
+
+<% best_k = suggest_best_k(res)
+opt_k = attr(best_k, "optional")
+if(!is.null(opt_k)) { 
+opt_k = gsub(",", ", ", opt_k) -%>
+There is also optional best $k$ = <%=opt_k%> that is worth to check.
+<% } -%>
 
 Following shows the table of the partitions (You need to click the **show/hide
 code output** link to see it). The membership matrix (columns with name `p*`)
@@ -245,6 +252,36 @@ Compare the overlap of signatures from different k:
 ```{r <%=chunk_prefix%>-signature_compare, results = "hide"}
 compare_signatures(res)
 ```
+
+`get_signature()` returns a data frame invisibly. TO get the list of signatures, the function
+call should be assigned to a variable explicitly. In following code, if `plot` argument is set
+to `FALSE`, no heatmap is plotted while only the differential analysis is performed.
+
+```{r, eval = FALSE}
+# code only for demonstration
+tb = get_signature(res, k = ..., plot = FALSE)
+```
+
+An example of the output of `tb` is:
+
+```
+#>   which_row         fdr    mean_1    mean_2 scaled_mean_1 scaled_mean_2 km
+#> 1        38 0.042760348  8.373488  9.131774    -0.5533452     0.5164555  1
+#> 2        40 0.018707592  7.106213  8.469186    -0.6173731     0.5762149  1
+#> 3        55 0.019134737 10.221463 11.207825    -0.6159697     0.5749050  1
+#> 4        59 0.006059896  5.921854  7.869574    -0.6899429     0.6439467  1
+#> 5        60 0.018055526  8.928898 10.211722    -0.6204761     0.5791110  1
+#> 6        98 0.009384629 15.714769 14.887706     0.6635654    -0.6193277  2
+...
+```
+
+The columns in `tb` are:
+
+1. `which_row`: row indices corresponding to the input matrix.
+2. `fdr`: FDR for the differential test.
+3. `mean_x`: The mean value in group x.
+4. `scaled_mean_x`: The mean value in group x after rows are scaled.
+5. `km`: Row groups if k-means clustering is applied to rows.
 
 
 <% if(mc.cores == 1) { -%>
