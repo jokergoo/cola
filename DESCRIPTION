@@ -22,7 +22,6 @@ Imports: grDevices,
          cluster, 
          skmeans, 
          png, 
-         gplots, 
          mclust, 
          crayon, 
          methods, 
@@ -50,7 +49,8 @@ Suggests: genefilter,
           Rtsne,
           umap,
           clusterProfiler,
-          AnnotationDbi
+          AnnotationDbi,
+          gplots
 Description: Subgroup classification is a basic task in genomic data analysis,
   especially for gene expression data and methylation data. It can predict
   novel subgroups when there is nothing known about the data or it can test

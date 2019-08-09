@@ -119,7 +119,7 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
     method = match.arg(method)
 
     if(method == "venn") {
-		venn(lt, ...)
+		gplots::venn(lt, ...)
 		title(qq("top @{top_n} rows"))
 	} else if(method == "euler") {
 		print(plot(eulerr::euler(lt), main = qq("top @{top_n} rows"), legend = TRUE, ...))

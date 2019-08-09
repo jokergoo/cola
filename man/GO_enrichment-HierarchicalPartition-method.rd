@@ -8,7 +8,7 @@ Perform Gene Ontology Enrichment on Signature Genes
 }
 \usage{
 \S4method{GO_enrichment}{HierarchicalPartition}(object, gene_fdr_cutoff = 0.05,
-    id_mapping = guess_id_mapping(rownames(object), org_db),
+    id_mapping = guess_id_mapping(rownames(object), org_db, FALSE),
     org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000, mc.cores = 1)
 }
