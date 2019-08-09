@@ -28,6 +28,7 @@ The \code{\link{ConsensusPartitionList-class}} provides following methods:
   \item{\code{\link{collect_classes,ConsensusPartitionList-method}}:}{make a plot which contains predicted classes from all combinations of top-value methods and partition methods.}
   \item{\code{\link{test_to_known_factors,ConsensusPartitionList-method}}:}{test correlation between predicted classes and known annotations, if provided.}
   \item{\code{\link{cola_report,ConsensusPartitionList-method}}:}{generate a HTML report for the whole analysis.}
+  \item{\code{\link{GO_enrichment,ConsensusPartitionList-method}}:}{perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.}
 }}
 \seealso{
 The \code{\link{ConsensusPartition-class}}.

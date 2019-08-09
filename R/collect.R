@@ -301,8 +301,8 @@ setMethod(f = "collect_plots",
 		} else {
 			png_file = qq("@{top_value_method}_@{partition_method}_consensus_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png")
 			file_name = file.path(.ENV$TEMP_DIR, png_file)
-			if("hash" %in% slotNames(res)) {
-				png_file = qq("@{res@hash}_@{png_file}")
+			if("hash" %in% slotNames(object)) {
+				png_file = qq("@{object@hash}_@{png_file}")
 			}
 			if(file.exists(file_name)) {
 				if(verbose) qqcat("  - use cache png: @{png_file}.\n")
@@ -345,8 +345,8 @@ setMethod(f = "collect_plots",
 		} else {
 			png_file = qq("@{top_value_method}_@{partition_method}_membership_heatmap_@{all_k[i]}_@{digest(object@column_index)}.png")
 			file_name = file.path(.ENV$TEMP_DIR, png_file)
-			if("hash" %in% slotNames(res)) {
-				png_file = qq("@{res@hash}_@{png_file}")
+			if("hash" %in% slotNames(object)) {
+				png_file = qq("@{object@hash}_@{png_file}")
 			}
 			if(file.exists(file_name)) {
 				if(verbose) qqcat("  - use cache png: @{png_file}.\n")
@@ -389,8 +389,8 @@ setMethod(f = "collect_plots",
 		} else {
 			png_file = qq("@{top_value_method}_@{partition_method}_get_signatures_@{all_k[i]}_@{digest(object@column_index)}.png")
 			file_name = file.path(.ENV$TEMP_DIR, png_file)
-			if("hash" %in% slotNames(res)) {
-				png_file = qq("@{res@hash}_@{png_file}")
+			if("hash" %in% slotNames(object)) {
+				png_file = qq("@{object@hash}_@{png_file}")
 			}
 			if(file.exists(file_name)) {
 				if(verbose) qqcat("  - use cache png: @{png_file}.\n")

@@ -23,11 +23,10 @@ knitr::opts_chunk$set(
     message = FALSE,
     fig.align = "center")
 options(width = 100)
-library(cola)
 ```
 
 
-```{r, results = "hide"}
+```{r, results = "hide", eval = FALSE}
 library(cola)
 download.file("https://github.com/jokergoo/cola_examples/raw/master/TCGA_GBM/TCGA_GBM_subgroup.rds", 
     destfile = "TCGA_GBM_subgroup.rds", quiet = TRUE)
@@ -37,12 +36,10 @@ file.remove("TCGA_GBM_subgroup.rds")
 res = rl["ATC:skmeans"]
 ```
 
-```{r}
-get_signatures(res)
+```{r, eval = FALSE}
+get_signatures(res, k = 4)
 ```
 
-```{r}
-library(org.Hs.eg.db)
-id_mapping = map_to_entrez_id("SYMBOL")
-GO_enrichment(res, id_mapping = id_mapping)
+```{r, eval = FALSE}
+GO_enrichment(res, k = 4, ontology = "BP")
 ```

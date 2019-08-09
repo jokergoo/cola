@@ -2,19 +2,19 @@ Package: cola
 Type: Package
 Title: A Framework for Consensus and Hierarchical Partitioning
 Version: 1.1.2
-Date: 2019-07-19
+Date: 2019-08-09
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
-Depends: R (>= 3.3.0)
+Depends: R (>= 3.5.0)
 Imports: grDevices, 
          graphics, 
          grid, 
          stats, 
          utils,
-         ComplexHeatmap (>= 1.99.0), 
+         ComplexHeatmap (>= 2.0.0), 
          matrixStats, 
          GetoptLong, 
-         circlize (>= 0.4.5), 
+         circlize (>= 0.4.7), 
          GlobalOptions (>= 0.1.0),
          clue, 
          parallel, 

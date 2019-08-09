@@ -8,7 +8,8 @@ Collect plots from HierarchicalPartition object
 }
 \usage{
 \S4method{collect_plots}{HierarchicalPartition}(object, depth = max_depth(object),
-    fun = consensus_heatmap, verbose = TRUE, mc.cores = 1, ...)
+    fun = consensus_heatmap, verbose = TRUE, mc.cores = 1, heatmap_size = "2cm",
+    add_labels = TRUE, ...)
 }
 \arguments{
 
@@ -17,6 +18,8 @@ Collect plots from HierarchicalPartition object
   \item{fun}{Function used to generate plots. Valid functions are \code{\link{consensus_heatmap}}, \code{\link{plot_ecdf}}, \code{\link{membership_heatmap}}, \code{\link{get_signatures}} and \code{\link{dimension_reduction}}.}
   \item{verbose}{Whether to print message.}
   \item{mc.cores}{Number of cores. On OSX it is enforced to be 1.}
+  \item{heatmap_size}{Size of the heatmaps on the plot. The value should be in e.g. "2cm", "10mm" or "0.5inche".}
+  \item{add_labels}{Whether add node IDs.}
   \item{...}{other Arguments passed to corresponding \code{fun}.}
 
 }

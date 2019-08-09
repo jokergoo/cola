@@ -73,6 +73,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	   	.env$column_index = column_index  #note .env$column_index is only for passing to `consensus_partition()` function
 		part = consensus_partition(verbose = FALSE, .env = .env, max_k = max_k, 
 			top_value_method = top_value_method, partition_method = partition_method, mc.cores = mc.cores, ...)
+		
 		attr(part, "node_id") = node_id
 
 		lt = list(obj = part)
@@ -80,6 +81,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	    best_k = suggest_best_k(part)
 	    if(is.na(best_k)) {
 	    	if(verbose) qqcat("@{prefix}* Rand index is too high, no meaningful subgroups, stop.\n")
+	    	lt$obj@others$reason = "Too high Rand index"
 	    	return(lt)
 	    }
 	    cl = get_classes(part, k = best_k)
@@ -98,20 +100,24 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 		PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
 	    if(PAC_score > PAC_cutoff) {
 	    	if(verbose) qqcat("@{prefix}* PAC score is too big @{sprintf('%.2f', PAC_score)}, stop.\n")
+	    	lt$obj@others$reason = "Too high PAC score"
 	    	return(lt)
 	    }
 
     	if(length(set1) <= min_samples || length(set2) <= min_samples) {
     		if(verbose) qqcat("@{prefix}* subgroups have too few columns, stop.\n")
+    		lt$obj@others$reason = "Too few columns"
     		return(lt)
     	}
 
     	sig_df = get_signatures(part, k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff)
     	if(is.null(sig_df)) {
 			if(verbose) qqcat("@{prefix}* unable to find signatures, stop.\n")
+			lt$obj@others$reason = "No signatures"
 	    	return(lt)
     	} else if(nrow(sig_df) < min_signatures[1] && nrow(sig_df)/nrow(mat) < min_signatures[2]) {
 			if(verbose) qqcat("@{prefix}* number of signatures are too small (@{nrow(sig_df)}, @{sprintf('%.1f', nrow(sig_df)/nrow(mat)*100)}%), stop.\n")
+	    	lt$obj@others$reason = "Too few signatures"
 	    	return(lt)
     	}
 
@@ -1138,6 +1144,8 @@ setMethod(f = "suggest_best_k",
 #        `plot_ecdf`, `membership_heatmap`, `get_signatures` and `dimension_reduction`.
 # -verbose Whether to print message.
 # -mc.cores Number of cores. On OSX it is enforced to be 1.
+# -heatmap_size Size of the heatmaps on the plot. The value should be in e.g. "2cm", "10mm" or "0.5inche".
+# -add_labels Whether add node IDs.
 # -... other Arguments passed to corresponding ``fun``.
 #
 # == details
@@ -1159,7 +1167,8 @@ setMethod(f = "suggest_best_k",
 setMethod(f = "collect_plots",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object), 
-	fun = consensus_heatmap, verbose = TRUE, mc.cores = 1, ...) {
+	fun = consensus_heatmap, verbose = TRUE, mc.cores = 1, heatmap_size = "2cm", 
+	add_labels = TRUE, ...) {
 
 	dend = get_hierarchy(object, depth)
 	# use circlize to visualize this hierarchy
@@ -1168,6 +1177,7 @@ setMethod(f = "collect_plots",
 	rg = c(min(x), max(x))
 
 	circos.clear()
+	circos.par(start.degree = 90, gap.degree = 0)
 	circos.initialize("a", xlim = c(rg[1] - 1, rg[2] + 1))
 	circos.track(ylim = c(0, h), bg.border = NA, track.height = 0.8)
 	circos.dendrogram(dend, use_x_attr = TRUE)
@@ -1235,16 +1245,16 @@ setMethod(f = "collect_plots",
 		x = attr(d, "x")
 		y = h - attr(d, "height")
 		node_id = attr(d, "label")
-		circos.text(x, y, node_id, facing = "downward")
-
+		
 		if(is.na(image[[node_id]])) {
     		qqcat("* Caught an error on node @{node_id}:\n@{attr(image[[node_id]], 'error')}\n")
     	} else {
-    		circos.raster(readPNG(image[[node_id]]), x, y, width = "3cm", facing = "downward")
+    		circos.raster(readPNG(image[[node_id]]), x, y, width = heatmap_size, facing = "downward")
 			if(!attr(image[[node_id]], "cache")) {
 				file.remove(image[[node_id]])
 			}
 		}
+		if(add_labels) circos.text(x, y, node_id, facing = "downward")
 	})
 
 	circos.clear()

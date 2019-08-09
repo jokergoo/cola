@@ -278,11 +278,10 @@ An example of the output of `tb` is:
 The columns in `tb` are:
 
 1. `which_row`: row indices corresponding to the input matrix.
-2. `fdr`: FDR for the differential test.
+2. `fdr`: FDR for the differential test. 
 3. `mean_x`: The mean value in group x.
 4. `scaled_mean_x`: The mean value in group x after rows are scaled.
 5. `km`: Row groups if k-means clustering is applied to rows.
-
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}

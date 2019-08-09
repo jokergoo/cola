@@ -108,7 +108,7 @@ setMethod(f = "get_signatures",
 			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
 			grid.text("not enough samples", gp = gpar(fontsize = fontsize))
 		}
-		return(invisible(NULL))
+		return(invisible(data.frame(which_row = integer(0))))
 	}
 	if(length(unique(class)) <= 1) {
 		if(plot) {
@@ -116,7 +116,7 @@ setMethod(f = "get_signatures",
 			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
 			grid.text("not enough classes", gp = gpar(fontsize = fontsize))
 		}
-		return(invisible(NULL))
+		return(invisible(data.frame(which_row = integer(0))))
 	}
 
 	do_row_clustering = TRUE

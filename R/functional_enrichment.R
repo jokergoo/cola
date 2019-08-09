@@ -158,6 +158,7 @@ submit_to_david = function(genes, email,
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
 # -org_db Annotation database.
+# -ontology "BP": biological processes, "MF": molecular functions, "CC": cellular components. 
 # -min_set_size The minimal size of the GO gene sets.
 # -max_set_size The maximal size of the GO gene sets.
 # -mc.cores Number of cores.
@@ -173,8 +174,8 @@ submit_to_david = function(genes, email,
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartitionList",
     definition = function(object, gene_fdr_cutoff = 0.05,
-    id_mapping = guess_id_mapping(rownames(object), org_db), 
-    org_db = "org.Hs.eg.db",
+    id_mapping = guess_id_mapping(rownames(object), org_db, verbose), 
+    org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
     min_set_size = 10, max_set_size = 1000, mc.cores = 1) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
@@ -189,7 +190,7 @@ setMethod(f = "GO_enrichment",
             cat("-----------------------------------------------------------\n")
             qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
             lt[[nm]] = GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
-                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ")
+                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", ontology = ontology)
         }
     } else {
         lt = mclapply(seq_along(object@list), function(i) {
@@ -197,7 +198,7 @@ setMethod(f = "GO_enrichment",
 
             qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
             GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
-                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE)
+                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE, ontology = ontology)
         }, mc.cores = mc.cores)
         names(lt) = names(object@list)
     }
@@ -217,6 +218,7 @@ setMethod(f = "GO_enrichment",
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
 # -org_db Annotation database.
+# -ontology "BP": biological processes, "MF": molecular functions, "CC": cellular components. 
 # -min_set_size The minimal size of the GO gene sets.
 # -max_set_size The maximal size of the GO gene sets.
 # -verbose Whether to print messages.
@@ -232,8 +234,8 @@ setMethod(f = "GO_enrichment",
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartition",
     definition = function(object, gene_fdr_cutoff = 0.05, k = suggest_best_k(object),
-    row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db), 
-    org_db = "org.Hs.eg.db",
+    row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db, verbose), 
+    org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
     min_set_size = 10, max_set_size = 1000, 
     verbose = TRUE, ...) {
 
@@ -269,14 +271,14 @@ setMethod(f = "GO_enrichment",
         lt = list()
         for(km in sort(unique(sig_df$km))) {
             l = sig_df$km == km
-            if(verbose) qqcat("@{prefix}- on k-means group @{km}, @{sum(l)} genes\n")
-            lt2 = GO_enrichment(sig_gene[l], id_mapping = id_mapping, org_db = org_db, 
+            if(verbose) qqcat("@{prefix}- on k-means group @{km}/@{max(sig_df$km)}, @{sum(l)} genes\n")
+            lt2 = GO_enrichment(sig_gene[l], id_mapping = id_mapping, org_db = org_db, ontology = ontology,
                 min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = paste0(prefix, "  "))
             names(lt2) = paste0(names(lt2), "_km", km)
             lt = c(lt, lt2)
         }
     } else {
-        lt = GO_enrichment(sig_gene, id_mapping = id_mapping, org_db = org_db, 
+        lt = GO_enrichment(sig_gene, id_mapping = id_mapping, org_db = org_db, ontology = ontology,
             min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = prefix)
     }
     return(lt)
@@ -291,6 +293,7 @@ setMethod(f = "GO_enrichment",
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
 # -org_db Annotation database.
+# -ontology "BP": biological processes, "MF": molecular functions, "CC": cellular components. 
 # -min_set_size The minimal size of the GO gene sets.
 # -max_set_size The maximal size of the GO gene sets.
 # -verbose Whether to print messages.
@@ -306,8 +309,8 @@ setMethod(f = "GO_enrichment",
 setMethod(f = "GO_enrichment",
     signature = "ANY",
     definition = function(object, 
-    id_mapping = guess_id_mapping(object, org_db), 
-    org_db = "org.Hs.eg.db",
+    id_mapping = guess_id_mapping(object, org_db, verbose), 
+    org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
     min_set_size = 10, max_set_size = 1000, 
     verbose = TRUE, ...) {
 
@@ -320,7 +323,11 @@ setMethod(f = "GO_enrichment",
         prefix = ""
     }
 
-    lt = list(BP = NULL, MF = NULL, CC = NULL)
+    if(length(setdiff(ontology, c("BP", "MF", "CC")))) {
+        stop_wrap("ontology can only be in 'BP', 'MF' and 'CC'")
+    }
+
+    lt = list(BP = NULL, MF = NULL, CC = NULL)[ontology]
 
     sig_gene = object
     if(length(sig_gene)) {
@@ -345,47 +352,55 @@ setMethod(f = "GO_enrichment",
         }
 
         if(length(sig_gene)) {
-            if(verbose) qqcat("@{prefix}- gene set enrichment, GO:BP\n")
-            ego = clusterProfiler::enrichGO(gene = sig_gene,
-                OrgDb         = org_db,
-                ont           = "BP",
-                pAdjustMethod = "BH",
-                minGSSize = min_set_size,
-                maxGSSize = max_set_size,
-                pvalueCutoff  = 1,
-                qvalueCutoff  = 1,
-                readable      = TRUE)
-            ego = as.data.frame(ego)
-            ego$geneID = NULL
-            lt$BP = ego
+            if("BP" %in% ontology) {
+                if(verbose) qqcat("@{prefix}- gene set enrichment, GO:BP\n")
+                ego = clusterProfiler::enrichGO(gene = sig_gene,
+                    OrgDb         = org_db,
+                    ont           = "BP",
+                    pAdjustMethod = "BH",
+                    minGSSize = min_set_size,
+                    maxGSSize = max_set_size,
+                    pvalueCutoff  = 1,
+                    qvalueCutoff  = 1,
+                    readable      = TRUE)
+                ego = as.data.frame(ego)
+                ego$geneID = NULL
+                lt$BP = ego
+            }
 
-            if(verbose) qqcat("@{prefix}- gene set enrichment, GO:MF\n")
-            ego = clusterProfiler::enrichGO(gene = sig_gene,
-                OrgDb         = org_db,
-                ont           = "MF",
-                pAdjustMethod = "BH",
-                minGSSize = min_set_size,
-                maxGSSize = max_set_size,
-                pvalueCutoff  = 1,
-                qvalueCutoff  = 1,
-                readable      = TRUE)
-            ego = as.data.frame(ego)
-            ego$geneID = NULL
-            lt$MF = ego
+            if("MF" %in% ontology) {
+                if(verbose) qqcat("@{prefix}- gene set enrichment, GO:MF\n")
+                ego = clusterProfiler::enrichGO(gene = sig_gene,
+                    OrgDb         = org_db,
+                    ont           = "MF",
+                    pAdjustMethod = "BH",
+                    minGSSize = min_set_size,
+                    maxGSSize = max_set_size,
+                    pvalueCutoff  = 1,
+                    qvalueCutoff  = 1,
+                    readable      = TRUE)
+                ego = as.data.frame(ego)
+                ego$geneID = NULL
+                lt$MF = ego
+            }
 
-            if(verbose) qqcat("@{prefix}- gene set enrichment, GO:CC\n")
-            ego = clusterProfiler::enrichGO(gene = sig_gene,
-                OrgDb         = org_db,
-                ont           = "CC",
-                pAdjustMethod = "BH",
-                minGSSize = min_set_size,
-                maxGSSize = max_set_size,
-                pvalueCutoff  = 1,
-                qvalueCutoff  = 1,
-                readable      = TRUE)
-            ego = as.data.frame(ego)
-            ego$geneID = NULL
-            lt$CC = ego
+            if("CC" %in% ontology) {
+                if(verbose) qqcat("@{prefix}- gene set enrichment, GO:CC\n")
+                ego = clusterProfiler::enrichGO(gene = sig_gene,
+                    OrgDb         = org_db,
+                    ont           = "CC",
+                    pAdjustMethod = "BH",
+                    minGSSize = min_set_size,
+                    maxGSSize = max_set_size,
+                    pvalueCutoff  = 1,
+                    qvalueCutoff  = 1,
+                    readable      = TRUE)
+                ego = as.data.frame(ego)
+                ego$geneID = NULL
+                lt$CC = ego
+            }
+
+            lt = lt[ontology]
         }
     }
     return(lt)
@@ -410,7 +425,7 @@ guess_id_type = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
     }
 
     all_var = getNamespaceExports(org_db)
-    col = eval(parse(text = qq("columns(@{org_db})")))
+    col = eval(parse(text = qq("AnnotationDbi::columns(@{org_db}::@{org_db})")))
 
     l = all_var %in% paste0(gsub(".db$", "", org_db), col)
     all_var = all_var[l]
@@ -436,9 +451,11 @@ guess_id_type = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
         p_match[i] = sum(l)/length(l)
 
         if(p_match[i] > 0.5) {
+            if(verbose) qqcat("  gene id might be @{col[i]} (p = @{sprintf('%.3f', p_match[i])})\n")
             return(col[i])
         }
     }
+    if(verbose) qqcat("  cannot decide which gene id to use.\n")
     return(NULL)
 }
 

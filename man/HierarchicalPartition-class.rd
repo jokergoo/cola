@@ -21,6 +21,7 @@ The \code{\link{HierarchicalPartition-class}} has following methods:
   \item{\code{\link{dimension_reduction,HierarchicalPartition-method}}:}{make dimension reduction plots.}
   \item{\code{\link{test_to_known_factors,HierarchicalPartition-method}}:}{test correlation between predicted subgrouping and known annotations, if available.}
   \item{\code{\link{cola_report,HierarchicalPartition-method}}:}{generate a HTML report for the whole analysis.}
+  \item{\code{\link{GO_enrichment,HierarchicalPartition-method}}:}{perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.}
 }}
 \author{
 Zuguang Gu <z.gu@dkfz.de>

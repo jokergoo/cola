@@ -25,6 +25,7 @@
 # -`collect_classes,ConsensusPartitionList-method`: make a plot which contains predicted classes from all combinations of top-value methods and partition methods.
 # -`test_to_known_factors,ConsensusPartitionList-method`: test correlation between predicted classes and known annotations, if provided.
 # -`cola_report,ConsensusPartitionList-method`: generate a HTML report for the whole analysis.
+# -`GO_enrichment,ConsensusPartitionList-method`: perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.
 #
 # == seealso
 # The `ConsensusPartition-class`.
@@ -69,6 +70,7 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 # -`get_classes,ConsensusPartition-method`: get the consensus class IDs and other columns.
 # -`suggest_best_k,ConsensusPartition-method`: guess the best number of partitions.
 # -`test_to_known_factors,ConsensusPartition-method`: test correlation between predicted classes and known factors, if available.
+# -`cola_report,ConsensusPartition-method`: generate a HTML report for the whole analysis.
 # -`GO_enrichment,ConsensusPartition-method`: perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.
 #
 # == author
@@ -88,6 +90,7 @@ ConsensusPartition = setClass("ConsensusPartition",
 		column_index = "numeric",
 		running_time = "ANY",
 		cache = "list",
+		others = "list",
 		hash = "character",
 		.env = "environment"
 	),
@@ -114,6 +117,7 @@ ConsensusPartition = setClass("ConsensusPartition",
 # -`dimension_reduction,HierarchicalPartition-method`: make dimension reduction plots.
 # -`test_to_known_factors,HierarchicalPartition-method`: test correlation between predicted subgrouping and known annotations, if available.
 # -`cola_report,HierarchicalPartition-method`: generate a HTML report for the whole analysis.
+# -`GO_enrichment,HierarchicalPartition-method`: perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
