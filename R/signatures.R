@@ -517,7 +517,10 @@ setMethod(f = "get_signatures",
 
 	if(do_row_clustering) {
 		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}")),
-			show_heatmap_legend = !internal, show_annotation_legend = !internal, heatmap_legend_list = heatmap_legend_list)
+			show_heatmap_legend = !internal, show_annotation_legend = !internal,
+			heatmap_legend_list = heatmap_legend_list,
+			row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")}
+		)
 		
 		row_order = row_order(ht_list)
 		if(!is.list(row_order)) row_order = list(row_order)
