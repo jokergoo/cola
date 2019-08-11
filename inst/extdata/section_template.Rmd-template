@@ -3,7 +3,7 @@
 
 <% 
 if(is_hc) {
-    mark = ifelse(tb[node, ncol(tb)] == "parent", "(p)", "")
+    mark = ifelse(tbTCGA_GBM_subgroup.rds[node, ncol(tb)] == "parent", "(p)", "")
     chunk_prefix = paste("node", node, sep = "-")
     res = res_hc[node]
 } else {
@@ -257,7 +257,7 @@ compare_signatures(res)
 call should be assigned to a variable explicitly. In following code, if `plot` argument is set
 to `FALSE`, no heatmap is plotted while only the differential analysis is performed.
 
-```{r, eval = FALSE}
+```{r <%=chunk_prefix%>-signature-no-run, eval = FALSE}
 # code only for demonstration
 tb = get_signature(res, k = ..., plot = FALSE)
 ```
