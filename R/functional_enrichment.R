@@ -161,7 +161,6 @@ submit_to_david = function(genes, email,
 # -ontology "BP": biological processes, "MF": molecular functions, "CC": cellular components. 
 # -min_set_size The minimal size of the GO gene sets.
 # -max_set_size The maximal size of the GO gene sets.
-# -mc.cores Number of cores.
 #
 # == details
 # For each method, the signature genes are extracted based on the best k.
@@ -176,19 +175,21 @@ setMethod(f = "GO_enrichment",
     definition = function(object, gene_fdr_cutoff = 0.05,
     id_mapping = guess_id_mapping(rownames(object), org_db, FALSE), 
     org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
-    min_set_size = 10, max_set_size = 1000, mc.cores = 1) {
+    min_set_size = 10, max_set_size = 1000) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
 
     id_mapping = id_mapping
+    mc.cores = 1
 
     if(mc.cores == 1) {
         lt = list()
         for(i in seq_along(object@list)) {
             nm = names(object@list)[i]
 
+            best_k = suggest_best_k(object@list[[i]])
             cat("-----------------------------------------------------------\n")
-            qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
+            qqcat("* enrich signature genes (k = @{best_k}) to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
             lt[[nm]] = GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
                 min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", ontology = ontology)
         }
@@ -196,7 +197,8 @@ setMethod(f = "GO_enrichment",
         lt = mclapply(seq_along(object@list), function(i) {
             nm = names(object@list)[i]
 
-            qqcat("* enrich signature genes to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
+            best_k = suggest_best_k(object@list[[i]])
+            qqcat("* enrich signature genes (k = @{best_k}) to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
             GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
                 min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE, ontology = ontology)
         }, mc.cores = mc.cores)
@@ -246,6 +248,11 @@ setMethod(f = "GO_enrichment",
 	} else {
 		prefix = ""
 	}
+
+    if(is.na(k)) {
+        if(verbose) qqcat("@{prefix}- no best k was defined.\n")
+        return(list(BP = NULL, MF = NULL, CC = NULL))
+    }
 
     id_mapping = id_mapping
     
@@ -534,7 +541,6 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
 # -org_db Annotation database.
 # -min_set_size The minimal size of the GO gene sets.
 # -max_set_size The maximal size of the GO gene sets.
-# -mc.cores Number of cores.
 #
 # == details
 # On each node of the partition hierarchy, the signature genes are extracted based on the best k.
@@ -549,11 +555,12 @@ setMethod(f = "GO_enrichment",
     definition = function(object, gene_fdr_cutoff = 0.05,
     id_mapping = guess_id_mapping(rownames(object), org_db, FALSE), 
     org_db = "org.Hs.eg.db",
-    min_set_size = 10, max_set_size = 1000, mc.cores = 1) {
+    min_set_size = 10, max_set_size = 1000) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
 
     id_mapping = id_mapping
+    mc.cores = 1
 
     if(mc.cores == 1) {
         lt = list()
