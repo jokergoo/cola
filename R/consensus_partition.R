@@ -138,7 +138,7 @@ consensus_partition = function(data,
 		if(is.data.frame(data)) data = as.matrix(data)
 		# if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
 
-		.env = new.env()
+		.env = new.env(parent = emptyenv())
 		.env$data = data
 		.env$column_index = seq_len(ncol(data))
 	} else if(is.null(.env$data)) {

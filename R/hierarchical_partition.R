@@ -149,7 +149,7 @@ hierarchical_partition = function(data, top_value_method = "MAD", partition_meth
 	    return(lt)
 	}
 
-	.env = new.env()
+	.env = new.env(parent = emptyenv())
 	.env$data = data
 	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), 
 		silhouette_cutoff = silhouette_cutoff, min_samples = min_samples, 

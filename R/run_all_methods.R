@@ -59,7 +59,7 @@ run_all_consensus_partition_methods = function(data,
 	
 	cl = match.call()
 
-	.env = new.env()
+	.env = new.env(parent = emptyenv())
 	
 	if(is.data.frame(data)) data = as.matrix(data)
 	if(is.null(rownames(data))) rownames(data) = seq_len(nrow(data))
