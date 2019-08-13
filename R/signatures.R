@@ -9,6 +9,7 @@
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
 # -fdr_cutoff Cutoff for FDR of the difference test between subgroups.
+# -group_diff Cutoff for the maximal difference between group means.
 # -scale_rows Whether apply row scaling when making the heatmap.
 # -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
 # -diff_method Methods to get rows which are significantly different between subgroups, see 'Details' section.
@@ -62,7 +63,7 @@ setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
 	silhouette_cutoff = 0.5, 
-	fdr_cutoff = 0.05, 
+	fdr_cutoff = 0.05, group_diff = ifelse(scale_rows, 0, 0.2),
 	scale_rows = object@scale_rows,
 	row_km = NULL,
 	diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
@@ -133,6 +134,8 @@ setMethod(f = "get_signatures",
 		               n_group = k, 
 		               diff_method = diff_method,
 		               column_index = object@column_index,
+		               fdr_cutoff = fdr_cutoff,
+		               group_diff = group_diff,
 		               seed = seed),
 				algo = "md5")
 	nm = paste0("signature_fdr_", hash)
@@ -184,6 +187,7 @@ setMethod(f = "get_signatures",
 	object@.env[[nm]]$fdr_cutoff = fdr_cutoff
 	object@.env[[nm]]$fdr = fdr
 	object@.env[[nm]]$n_sample_used = n_sample_used
+	object@.env[[nm]]$group_diff = group_diff
 
 	if(scale_rows && !is.null(object@.env[[nm]]$row_order_scaled)) {
 		row_order = object@.env[[nm]]$row_order_scaled
@@ -195,6 +199,7 @@ setMethod(f = "get_signatures",
 		do_row_clustering = FALSE
 	}
 
+	# filter by fdr
 	fdr[is.na(fdr)] = 1
 
 	l_fdr = fdr < fdr_cutoff
@@ -205,6 +210,8 @@ setMethod(f = "get_signatures",
 	if(!is.null(right_annotation)) right_annotation = right_annotation[l_fdr, ]
 
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2)
+
+	# filter by group_diff
 	mat1 = mat[, column_used_logical, drop = FALSE]
 	if(nrow(mat) == 1) {
 		group_mean = rbind(tapply(mat1, class, mean))
@@ -215,6 +222,14 @@ setMethod(f = "get_signatures",
 	}
 	colnames(group_mean) = paste0("mean_", colnames(group_mean))
 	returned_df = cbind(returned_df, group_mean)
+	returned_df$group_diff = apply(group_mean, 1, function(x) max(x) - min(x))
+
+	if(group_diff > 0) {
+		l_diff = returned_df$group_diff >= group_diff
+		mat = mat[l_diff, , drop = FALSE]
+		mat1 = mat1[l_diff, , drop = FALSE]
+		returned_df = returned_df[l_diff, , drop = FALSE]
+	}
 
 	if(scale_rows) {
 		mat1_scaled = t(scale(t(mat[, column_used_logical, drop = FALSE])))
@@ -278,7 +293,7 @@ setMethod(f = "get_signatures",
 		}
 	}
 
-	if(verbose) qqcat("* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) under fdr < @{fdr_cutoff}.\n")
+	if(verbose) qqcat("* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) under fdr < @{fdr_cutoff}, group_diff > @{group_diff}.\n")
 
 	if(nrow(mat) == 0) {
 		if(plot) {
@@ -516,7 +531,7 @@ setMethod(f = "get_signatures",
 	}
 
 	if(do_row_clustering) {
-		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}")),
+		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}")),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			heatmap_legend_list = heatmap_legend_list,
 			row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")}
@@ -532,7 +547,7 @@ setMethod(f = "get_signatures",
 		
 	} else {
 		if(verbose) cat("  - use row order from cache.\n")
-		draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}")),
+		draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}")),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = heatmap_legend_list,
 			row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")}
