@@ -7,7 +7,7 @@ Perform Gene Ontology Enrichment on Signature Genes
 Perform Gene Ontology Enrichment on Signature Genes
 }
 \usage{
-\S4method{GO_enrichment}{ConsensusPartitionList}(object, gene_fdr_cutoff = 0.05,
+\S4method{GO_enrichment}{ConsensusPartitionList}(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
     id_mapping = guess_id_mapping(rownames(object), org_db, FALSE),
     org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
     min_set_size = 10, max_set_size = 1000)

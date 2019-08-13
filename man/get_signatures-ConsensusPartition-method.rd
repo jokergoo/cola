@@ -9,7 +9,8 @@ Get signature rows
 \usage{
 \S4method{get_signatures}{ConsensusPartition}(object, k,
     silhouette_cutoff = 0.5,
-    fdr_cutoff = 0.05, group_diff = cola_opt$group_diff,
+    fdr_cutoff = cola_opt$fdr_cutoff,
+    group_diff = cola_opt$group_diff,
     scale_rows = object@scale_rows,
     row_km = NULL,
     diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),

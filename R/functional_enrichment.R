@@ -172,7 +172,7 @@ submit_to_david = function(genes, email,
 #
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartitionList",
-    definition = function(object, gene_fdr_cutoff = 0.05,
+    definition = function(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
     id_mapping = guess_id_mapping(rownames(object), org_db, FALSE), 
     org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
     min_set_size = 10, max_set_size = 1000) {
@@ -235,7 +235,7 @@ setMethod(f = "GO_enrichment",
 #
 setMethod(f = "GO_enrichment",
     signature = "ConsensusPartition",
-    definition = function(object, gene_fdr_cutoff = 0.05, k = suggest_best_k(object),
+    definition = function(object, gene_fdr_cutoff = cola_opt$fdr_cutoff, k = suggest_best_k(object),
     row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db, verbose), 
     org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
     min_set_size = 10, max_set_size = 1000, 
@@ -552,7 +552,7 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
 #
 setMethod(f = "GO_enrichment",
     signature = "HierarchicalPartition",
-    definition = function(object, gene_fdr_cutoff = 0.05,
+    definition = function(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
     id_mapping = guess_id_mapping(rownames(object), org_db, FALSE), 
     org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000) {
