@@ -6,8 +6,27 @@ brewer_pal_set2_col = c(brewer.pal(8, "Set2"), brewer.pal(8, "Accent"))
 names(brewer_pal_set2_col) = 1:16
 
 
+# == title
+# Global Parameters
+#
+# == param
+# -... Arguments for the parameters, see "details" section
+# -RESET reset to default values
+# -READ.ONLY please ignore
+# -LOCAL please ignore
+# -ADD please ignore
+# 
+# == details
+# There are following global parameters:
+#
+# -``group_diff`` Used in `get_signatures,ConsensusPartition,method`.
+#
 cola_opt = setGlobalOptions(
-	raster_resize = FALSE
+	raster_resize = list(
+		.value = FALSE,
+		.visible = FALSE
+	),
+	group_diff = 0
 )
 
 TEMPLATE_DIR = NULL

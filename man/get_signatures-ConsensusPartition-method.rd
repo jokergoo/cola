@@ -9,7 +9,7 @@ Get signature rows
 \usage{
 \S4method{get_signatures}{ConsensusPartition}(object, k,
     silhouette_cutoff = 0.5,
-    fdr_cutoff = 0.05,
+    fdr_cutoff = 0.05, group_diff = cola_opt$group_diff,
     scale_rows = object@scale_rows,
     row_km = NULL,
     diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
@@ -29,6 +29,7 @@ Get signature rows
   \item{k}{Number of partitions.}
   \item{silhouette_cutoff}{Cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
   \item{fdr_cutoff}{Cutoff for FDR of the difference test between subgroups.}
+  \item{group_diff}{Cutoff for the maximal difference between group means.}
   \item{scale_rows}{Whether apply row scaling when making the heatmap.}
   \item{row_km}{Number of groups for performing k-means clustering on rows. By default it is automatically selected.}
   \item{diff_method}{Methods to get rows which are significantly different between subgroups, see 'Details' section.}
