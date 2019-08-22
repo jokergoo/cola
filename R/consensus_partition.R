@@ -966,9 +966,11 @@ setMethod(f = "dimension_reduction",
 		top_n = min(c(top_n, nrow(data)))
 		all_value = object@.env$all_top_value_list[[object@top_value_method]]
 		ind = order(all_value)[1:top_n]
+		if(length(ind) > 5000) ind = sample(ind, 5000)
 		data = data[ind, , drop = FALSE]
 	} else {
 		top_n = nrow(data)
+		if(nrow(data) > 5000) data = data[sample(1:nrow(data), 5000), , drop = FALSE]
 	}
 
 	class_df = get_classes(object, k)
