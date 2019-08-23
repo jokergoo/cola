@@ -3,7 +3,7 @@
 
 <% 
 if(is_hc) {
-    mark = ifelse(tbTCGA_GBM_subgroup.rds[node, ncol(tb)] == "parent", "(p)", "")
+    mark = ifelse(tb[node, ncol(tb)] == "parent", "(p)", "")
     chunk_prefix = paste("node", node, sep = "-")
     res = res_hc[node]
 } else {
@@ -371,12 +371,10 @@ If matrix rows can be associated to genes, consider to use `GO_Enrichment(res,
 section_t2 = Sys.time()
 if(is_hc) { -%>
 ```{r <%=chunk_prefix%>-message10, echo = FALSE, message = FALSE}
-message("  - section node <%=node%> used", appendLF = FALSE)
-message(paste0(", ", gsub("^ +", "", format(section_t2 - section_t1))));
+message(paste0("  - section node <%=node%> used", ", ", gsub("^ +", "", format(section_t2 - section_t1))))
 ```
 <% } else { -%>
 ```{r <%=chunk_prefix%>-message10, echo = FALSE, message = FALSE}
-message("  - section <%=top_value_method%>:<%=partition_method%> used", appendLF = FALSE)
-message(paste0(", ", gsub("^ +", "", format(section_t2 - section_t1))));
+message(paste0("  - section <%=top_value_method%>:<%=partition_method%> used", ", ", gsub("^ +", "", format(section_t2 - section_t1))))
 ```
 <% } -%>
