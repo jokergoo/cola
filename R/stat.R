@@ -171,6 +171,7 @@ PAC2 = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 # -consensus_mat A consensus matrix.
 # -x1 Lower bound to define "ambiguous clustering".
 # -x2 Upper bound to define "ambihuous clustering".
+# -class class IDs. If it is provided, samples with silhouette score less than 5th percential are removed.
 # 
 # == details 
 # The PAC score is defined as F(x2) - F(x1) where F(x) is the CDF of the consensus matrix.
@@ -192,9 +193,19 @@ PAC2 = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 # PAC(get_consensus(cola_rl[1, 1], k = 5))
 # PAC(get_consensus(cola_rl[1, 1], k = 6))
 #
-PAC = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
-	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
-	F(x2) - F(x1)
+PAC = function(consensus_mat, x1 = 0.1, x2 = 0.9, class = NULL) {
+	if(is.null(class)) {
+		F = ecdf(consensus_mat[lower.tri(consensus_mat)])
+		F(x2) - F(x1)
+	} else {
+		silhouette = cluster::silhouette(class, dist(t(consensus_mat)))[, "sil_width"]
+		if(length(unique(class)) == 1) {
+			PAC(consensus_mat, x1, x2)
+		} else {
+			l = silhouette >= quantile(silhouette, 0.05)
+			PAC(consensus_mat[l, l, drop = FALSE], x1, x2)
+		}
+	}
 }
 
 stability = function(consensus_mat, x1 = 0.1, x2 = 0.9) {

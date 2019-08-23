@@ -22,10 +22,12 @@ cola_opt(..., RESET = FALSE, READ.ONLY = NULL, LOCAL = FALSE, ADD = FALSE)
 There are following global parameters:
 
 \describe{
-  \item{\code{group_diff}}{Used in \code{\link{get_signatures,ConsensusPartition,method}}.}
+  \item{\code{group_diff}}{Used in \code{\link{get_signatures,ConsensusPartition-method}}.}
+  \item{\code{fdr_cutoff}}{Used in \code{\link{get_signatures,ConsensusPartition-method}}.}
 }
 }
 \examples{
 # There is no example
 NULL
+
 }

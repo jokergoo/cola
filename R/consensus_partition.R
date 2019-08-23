@@ -58,11 +58,11 @@
 # cp = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
 # cp
 consensus_partition = function(data,
-	top_value_method = "MAD",
+	top_value_method = "ATC",
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
 		        min(5000, round(nrow(data)*0.5)), 
 		        length.out = 5),
-	partition_method = "kmeans",
+	partition_method = "skmeans",
 	max_k = 6, 
 	p_sampling = 0.8,
 	partition_repeat = 50,

@@ -8,11 +8,11 @@ Consensus partition
 }
 \usage{
 consensus_partition(data,
-    top_value_method = "MAD",
+    top_value_method = "ATC",
     top_n = seq(min(1000, round(nrow(data)*0.1)),
     min(5000, round(nrow(data)*0.5)),
     length.out = 5),
-    partition_method = "kmeans",
+    partition_method = "skmeans",
     max_k = 6,
     p_sampling = 0.8,
     partition_repeat = 50,
