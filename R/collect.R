@@ -713,8 +713,8 @@ setMethod(f = "collect_stats",
 	all_stat_nm = STAT_USED
 
 	grid.newpage()
-	layout_ncol = ceiling(length(all_stat_nm)/2)
-	pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = layout_ncol)))
+	layout_ncol = ceiling(length(all_stat_nm)/layout_nrow)
+	pushViewport(viewport(layout = grid.layout(nrow = layout_nrow, ncol = layout_ncol)))
 	layout_ir = 1
 	layout_ic = 1
 	for(nm in all_stat_nm) {

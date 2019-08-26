@@ -331,12 +331,12 @@ recalc_stats = function(rl) {
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -rand_index_cutoff The cutoff for Rand index compared to previous k.
+# -jaccard_index_cutoff The cutoff for Jaccard index compared to previous k.
 #
 # == details
 # The best k is selected according to following rules:
 #
-# 1. k with rand index larger than ``rand_index_cutoff`` are removed. If all k are removed, the best k is defined as ``NA``.
+# 1. k with rand index larger than ``jaccard_index_cutoff`` are removed. If all k are removed, the best k is defined as ``NA``.
 # 2. If there are some k having ``1-PAC`` larger than 0.9, the largest k is selected as the best k.
 # 3. If it does not fit rule 2, the k with highest vote of highest 1-PAC, mean_silhouette and concordance scores is
 #    selected as the best k.
@@ -359,10 +359,10 @@ recalc_stats = function(rl) {
 # suggest_best_k(obj)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
-	definition = function(object, rand_index_cutoff = 0.95) {
+	definition = function(object, jaccard_index_cutoff = 0.95) {
 
 	stat = get_stats(object)
-	stat = stat[stat[, "Rand"] < rand_index_cutoff, , drop = FALSE]
+	stat = stat[stat[, "Jaccard"] < jaccard_index_cutoff, , drop = FALSE]
 
 	if(nrow(stat) == 0) {
 		return(NA)
@@ -393,7 +393,7 @@ setMethod(f = "suggest_best_k",
 #
 # == param
 # -object A `ConsensusPartitionList-class` object.
-# -rand_index_cutoff The cutoff for Rand index compared to previous k.
+# -jaccard_index_cutoff The cutoff for Jaccard index compared to previous k.
 #
 # == details
 # It basically gives the best k for each combination of top-value method and partition method by calling `suggest_best_k,ConsensusPartition-method`.
@@ -411,7 +411,7 @@ setMethod(f = "suggest_best_k",
 # suggest_best_k(cola_rl)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartitionList",
-	definition = function(object, rand_index_cutoff = 0.95) {
+	definition = function(object, jaccard_index_cutoff = 0.95) {
 
 	best_k = NULL
 	stability = NULL
@@ -422,7 +422,7 @@ setMethod(f = "suggest_best_k",
 		for(pm in object@partition_method) {
 			nm = paste0(tm, ":", pm)
 			obj = object@list[[nm]]
-			k = suggest_best_k(obj, rand_index_cutoff)
+			k = suggest_best_k(obj, jaccard_index_cutoff)
 			best_k[nm] = k
 			op = attr(k, "optional")
 			if(is.null(op)) {
