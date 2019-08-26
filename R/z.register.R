@@ -132,7 +132,7 @@ get_partition_method = function(method, partition_param = list()) {
 			}
 			partition = as.vector(cl_class_ids(partition))
 		}
-		partition2 = rep(NA, ncol(mat))
+		partition2 = rep(NA_integer_, ncol(mat))
 		partition2[column_index] = partition
 
 		x = as.cl_hard_partition(partition2)

@@ -7,12 +7,12 @@ Suggest the best number of partitions
 Suggest the best number of partitions
 }
 \usage{
-\S4method{suggest_best_k}{ConsensusPartitionList}(object, rand_index_cutoff = 0.95)
+\S4method{suggest_best_k}{ConsensusPartitionList}(object, jaccard_index_cutoff = 0.95)
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
-  \item{rand_index_cutoff}{The cutoff for Rand index compared to previous k.}
+  \item{jaccard_index_cutoff}{The cutoff for Jaccard index compared to previous k.}
 
 }
 \details{

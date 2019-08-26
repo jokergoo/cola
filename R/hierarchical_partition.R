@@ -451,7 +451,7 @@ setMethod(f = "show",
 
 	qqcat("A 'HierarchicalPartition' object with '@{object@list[[1]]@top_value_method}:@{object@list[[1]]@partition_method}' method.\n")
 	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
-	qqcat("  Performed in total @{object@list[[1]]@n_partition*length(object@list)} partitions.\n")
+	qqcat("  Performed in total @{object@list[[1]]@n_partition*length(object@list)} partitions by @{object@list[[1]]@sample_by} resampling.\n")
 	qqcat("  There are @{length(all_leaves(object))} groups.\n")
 	cat("\n")
 

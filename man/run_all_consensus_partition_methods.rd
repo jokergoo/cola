@@ -15,8 +15,8 @@ run_all_consensus_partition_methods(data,
     min(5000, round(nrow(data)*0.5)),
     length.out = 5),
     mc.cores = 1, anno = NULL, anno_col = NULL,
-    p_sampling = 0.8, partition_repeat = 50, scale_rows = NULL,
-    verbose = TRUE)
+    sample_by = "row", p_sampling = 0.8, partition_repeat = 50,
+    scale_rows = NULL, verbose = TRUE)
 }
 \arguments{
 
@@ -28,6 +28,7 @@ run_all_consensus_partition_methods(data,
   \item{mc.cores}{Number of cores to use.}
   \item{anno}{A data frame with known annotation of columns.}
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
+  \item{sample_by}{Should randomly sample the matrix by rows or by columns?}
   \item{p_sampling}{Proportion of the top n rows to sample.}
   \item{partition_repeat}{Number of repeats for the random sampling.}
   \item{scale_rows}{Whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}

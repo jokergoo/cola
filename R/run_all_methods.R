@@ -17,6 +17,7 @@
 # -anno A data frame with known annotation of columns.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
+# -sample_by Should randomly sample the matrix by rows or by columns?
 # -p_sampling Proportion of the top n rows to sample.
 # -partition_repeat Number of repeats for the random sampling.
 # -scale_rows Whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
@@ -54,8 +55,8 @@ run_all_consensus_partition_methods = function(data,
 		        min(5000, round(nrow(data)*0.5)), 
 		        length.out = 5),
 	mc.cores = 1, anno = NULL, anno_col = NULL,
-	p_sampling = 0.8, partition_repeat = 50, scale_rows = NULL,
-	verbose = TRUE) {
+	sample_by = "row", p_sampling = 0.8, partition_repeat = 50, 
+	scale_rows = NULL, verbose = TRUE) {
 	
 	cl = match.call()
 
@@ -131,7 +132,7 @@ run_all_consensus_partition_methods = function(data,
 		if(verbose) qqcat("* running partition by @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
 		try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k,
 			anno = anno, anno_col = anno_col, .env = .env, verbose = verbose,
-			top_n = top_n, p_sampling = p_sampling, partition_repeat = partition_repeat, scale_rows = scale_rows,
+			top_n = top_n, sample_by = sample_by, p_sampling = p_sampling, partition_repeat = partition_repeat, scale_rows = scale_rows,
 			mc.cores = mc.cores), qq("You have an error when doing partition for @{tm}:@{pm}."))
 		return(res)
 	})
@@ -313,7 +314,7 @@ setMethod(f = "show",
 	qqcat("  Top rows are extracted by '@{paste(object@top_value_method, collapse = ', ')}' methods.\n")
 	qqcat("  Subgroups are detected by '@{paste(object@partition_method, collapse = ', ')}' method.\n")
 	qqcat("  Number of partitions are tried for k = @{paste(object@list[[1]]@k, collapse = ', ')}.\n")
-	qqcat("  Performed in total @{object@list[[1]]@n_partition*length(object@top_value_method)*length(object@partition_method)} partitions.\n")
+	qqcat("  Performed in total @{object@list[[1]]@n_partition*length(object@top_value_method)*length(object@partition_method)} partitions by @{object@list[[1]]@sample_by} resampling.\n")
 	qqcat("\n")
 	qqcat("Following methods can be applied to this 'ConsensusPartitionList' object:\n")
 	txt = showMethods(classes = "ConsensusPartitionList", where = topenv(), printTo = FALSE)

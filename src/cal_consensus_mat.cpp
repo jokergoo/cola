@@ -1,27 +1,31 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-float nequal(IntegerVector x1, IntegerVector x2) {
+float p_equal(IntegerVector x1, IntegerVector x2) {
 	int n = x1.size();
 	int x = 0;
+	int s = 0;
 	for(int i = 0; i < n; i ++) {
+		if(x1[i] == 0 || x2[i] == 0) {
+			continue;
+		}
 		if(x1[i] == x2[i]) {
 			x ++;
 		}
+		s ++;
 	}
-	return x;
+	return x/(s + 0.0);
 }
 
 // [[Rcpp::export]]
 NumericMatrix get_consensus_matrix(IntegerMatrix membership_each) {
 	int n = membership_each.nrow();
-	int nc = membership_each.ncol();
 
 	NumericMatrix consensus_mat(n, n);
 
 	for(int i = 0; i < n - 1; i ++) {
 		for(int j = i+1; j < n; j ++) {
-			consensus_mat(i, j) = nequal(membership_each(i, _), membership_each(j, _))/(nc + 0.0);
+			consensus_mat(i, j) = p_equal(membership_each(i, _), membership_each(j, _));
 			consensus_mat(j, i) = consensus_mat(i, j);
 		}
 	}

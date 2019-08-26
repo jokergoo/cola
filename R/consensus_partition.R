@@ -12,7 +12,8 @@
 # -partition_method A single partition method. Available methods are in `all_partition_methods`.
 #                   Use `register_partition_methods` to add a new partition method.
 # -max_k Maximal number of partitions to try. The function will try ``2:max_k`` partitions.
-# -p_sampling Proportion of the top n rows to sample.
+# -sample_by Should randomly sample the matrix by rows or by columns?
+# -p_sampling Proportion of the submatrix which contains the top n rows to sample.
 # -partition_repeat Number of repeats for the random sampling.
 # -partition_param Parameters for the partition method which are passed to ``...`` in a registered partition method. See `register_partition_methods` for detail.
 # -anno A data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation
@@ -29,7 +30,7 @@
 #
 # - calculate scores for rows by top-value method,
 # - for each top_n value, take top n rows,
-# - randomly sample ``p_sampling`` rows from the top_n rows and perform partitioning for ``partition_repeats`` times,
+# - randomly sample ``p_sampling`` rows from the top_n-row matrix and perform partitioning for ``partition_repeats`` times,
 # - collect partitions from all partitions and calculate consensus partitions.
 #
 # == return
@@ -64,6 +65,7 @@ consensus_partition = function(data,
 		        length.out = 5),
 	partition_method = "skmeans",
 	max_k = 6, 
+	sample_by = "row",
 	p_sampling = 0.8,
 	partition_repeat = 50,
 	partition_param = list(),
@@ -89,7 +91,7 @@ consensus_partition = function(data,
 		partition_method = partition_method,
 		k = 2:max_k, 
 		p_sampling = p_sampling,
-		sample_by = "row",
+		sample_by = sample_by,
 		partition_repeat = partition_repeat,
 		partition_param = partition_param,
 		anno = anno,
@@ -289,7 +291,11 @@ consensus_partition = function(data,
 
 		partition_list = cl_ensemble(list = partition_list)
 		if(verbose) qqcat("@{prefix}merge @{length(partition_list)} (@{partition_repeat}x@{length(top_n)}) partitions into a single ensemble object.\n")
-		partition_consensus = cl_consensus(partition_list)
+		if(sample_by == "row") {
+			partition_consensus = cl_consensus(partition_list)
+		} else {
+			partition_consensus = cl_consensus2(partition_list, k)
+		}
 
 		# note: number of class_ids may be less than k
 		class_ids = as.vector(cl_class_ids(partition_consensus))
@@ -331,7 +337,11 @@ consensus_partition = function(data,
 		
 		if(verbose) qqcat("@{prefix}adjust class labels for every single partition.\n")
 		class_ids_by_top_n = tapply(seq_along(partition_list), param$top_n, function(ind) {
-			partition_consensus = cl_consensus(cl_ensemble(list = partition_list[ind]))
+			if(sample_by == "row") {
+				partition_consensus = cl_consensus(cl_ensemble(list = partition_list[ind]))
+			} else {
+				partition_consensus = cl_consensus2(cl_ensemble(list = partition_list[ind]), k)
+			}
 			ci = as.vector(cl_class_ids(partition_consensus))
 			map = relabel_class(ci, class_ids, full_set = 1:k)
 			as.numeric(map[as.character(ci)])
@@ -356,7 +366,9 @@ consensus_partition = function(data,
 		# 		consensus_mat[j, i] = consensus_mat[i, j]
 		# 	}
 	 # 	}
-		consensus_mat = get_consensus_matrix(membership_each)
+		membership_each2 = membership_each
+		membership_each2[is.na(membership_each2)] = as.integer(0)
+		consensus_mat = get_consensus_matrix(membership_each2)
 	 	rownames(consensus_mat) = rownames(membership_mat)
 	 	colnames(consensus_mat) = rownames(membership_mat)
 
@@ -508,7 +520,8 @@ consensus_partition = function(data,
 
 	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n) * length(k),  
 		partition_method = partition_method, top_value_method = top_value_method, top_n = top_n,
-		anno = anno, anno_col = anno_col, scale_rows = scale_rows, column_index = .env$column_index, .env = .env)
+		anno = anno, anno_col = anno_col, scale_rows = scale_rows, sample_by = sample_by,
+		column_index = .env$column_index, .env = .env)
 
 	return(res)
 }
@@ -533,7 +546,7 @@ setMethod(f = "show",
 	top_n_str = object@top_n
 	qqcat("  Top rows (@{paste(top_n_str, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
 	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")
-	qqcat("  Performed in total @{object@n_partition} partitions.\n")
+	qqcat("  Performed in total @{object@n_partition} partitions by @{object@sample_by} resampling.\n")
 	best_k = suggest_best_k(object)
 	if(is.na(best_k)) {
 		qqcat("  There is no best k.\n")

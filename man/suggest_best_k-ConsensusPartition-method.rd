@@ -7,18 +7,18 @@ Suggest the best number of partitions
 Suggest the best number of partitions
 }
 \usage{
-\S4method{suggest_best_k}{ConsensusPartition}(object, rand_index_cutoff = 0.95)
+\S4method{suggest_best_k}{ConsensusPartition}(object, jaccard_index_cutoff = 0.95)
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{rand_index_cutoff}{The cutoff for Rand index compared to previous k.}
+  \item{jaccard_index_cutoff}{The cutoff for Jaccard index compared to previous k.}
 
 }
 \details{
 The best k is selected according to following rules:
 
-1. k with rand index larger than \code{rand_index_cutoff} are removed. If all k are removed, the best k is defined as \code{NA}.
+1. k with rand index larger than \code{jaccard_index_cutoff} are removed. If all k are removed, the best k is defined as \code{NA}.
 2. If there are some k having \code{1-PAC} larger than 0.9, the largest k is selected as the best k.
 3. If it does not fit rule 2, the k with highest vote of highest 1-PAC, mean_silhouette and concordance scores is
    selected as the best k.

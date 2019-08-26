@@ -14,6 +14,7 @@ consensus_partition(data,
     length.out = 5),
     partition_method = "skmeans",
     max_k = 6,
+    sample_by = "row",
     p_sampling = 0.8,
     partition_repeat = 50,
     partition_param = list(),
@@ -31,7 +32,8 @@ consensus_partition(data,
   \item{top_n}{Number of rows with top values. The value can be a vector with length > 1. When n > 5000,  the function only randomly sample 5000 rows from top n rows. If \code{top_n} is a vector, paritition will be applied to every values in \code{top_n} and consensus partition is summarized from all partitions.}
   \item{partition_method}{A single partition method. Available methods are in \code{\link{all_partition_methods}}. Use \code{\link{register_partition_methods}} to add a new partition method.}
   \item{max_k}{Maximal number of partitions to try. The function will try \code{2:max_k} partitions.}
-  \item{p_sampling}{Proportion of the top n rows to sample.}
+  \item{sample_by}{Should randomly sample the matrix by rows or by columns?}
+  \item{p_sampling}{Proportion of the submatrix which contains the top n rows to sample.}
   \item{partition_repeat}{Number of repeats for the random sampling.}
   \item{partition_param}{Parameters for the partition method which are passed to \code{...} in a registered partition method. See \code{\link{register_partition_methods}} for detail.}
   \item{anno}{A data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation to predicted subgroups will be tested.}
@@ -48,7 +50,7 @@ The function performs analysis in following steps:
 \itemize{
   \item calculate scores for rows by top-value method,
   \item for each top_n value, take top n rows,
-  \item randomly sample \code{p_sampling} rows from the top_n rows and perform partitioning for \code{partition_repeats} times,
+  \item randomly sample \code{p_sampling} rows from the top_n-row matrix and perform partitioning for \code{partition_repeats} times,
   \item collect partitions from all partitions and calculate consensus partitions.
 }
 }
