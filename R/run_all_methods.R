@@ -128,7 +128,7 @@ run_all_consensus_partition_methods = function(data,
 	lt = lapply(seq_len(nrow(comb)), function(i) {
 		tm = comb[i, 1]
 		pm = comb[i, 2]
-		if(interactive() && verbose) qqcat("------------------------------------------------------------\n")
+		if(verbose) qqcat("------------------------------------------------------------\n")
 		if(verbose) qqcat("* running partition by @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
 		try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k,
 			anno = anno, anno_col = anno_col, .env = .env, verbose = verbose,
