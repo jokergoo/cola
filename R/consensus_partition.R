@@ -665,7 +665,7 @@ setMethod(f = "select_partition_number",
 	plot(c(0, 1), c(0, 1), type = "n", axes = FALSE, ann = FALSE)
 	text(x = 0, y = 1,
 "Suggested rules:
-Rand index < 0.95;
+Jaccard index < 0.95;
 If 1-PAC >= 0.90,
   take the maximum k;
 else take the k with higest votes of

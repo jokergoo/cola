@@ -143,7 +143,7 @@ get_stats(res)
 
 `suggest_best_k()` suggests the best $k$ based on these statistics. The rules are as follows:
 
-- All $k$ with Rand index larger than 0.95 are removed because the increase of
+- All $k$ with Jaccard index larger than 0.95 are removed because the increase of
   the partition number does not provides enough extra information. If all $k$ are removed,
   the best $k$ is assigned by `NA`.
 - For $k$ with 1-PAC larger than 0.9, the maximal $k$ is taken as the "best k". Other $k$ is called "optional k".
