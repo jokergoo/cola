@@ -541,6 +541,12 @@ consensus_partition = function(data,
 setMethod(f = "show",
 	signature = "ConsensusPartition",
 	definition = function(object) {
+
+	# fix older version where there was no sample_by slot
+	error = try(object@sample_by, silent = TRUE)
+	if(inherits(error, "try-error")) {
+		object@sample_by = "row"
+	}
 	qqcat("A 'ConsensusPartition' object with k = @{paste(object@k, collapse = ', ')}.\n")
 	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{length(object@column_index)} columns.\n")
 	top_n_str = object@top_n
