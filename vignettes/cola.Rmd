@@ -905,7 +905,7 @@ demonstrated [here](https://jokergoo.github.io/cola_examples/) (Running cola ana
 is always time-consuming, so we use the object that has already be generated.).
 
 ```{r, results = "hide"}
-download.file("https://github.com/jokergoo/cola_examples/raw/master/TCGA_GBM/TCGA_GBM_subgroup.rds", 
+download.file("https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup.rds", 
     destfile = "TCGA_GBM_subgroup.rds", quiet = TRUE)
 rl = readRDS("TCGA_GBM_subgroup.rds")
 file.remove("TCGA_GBM_subgroup.rds")
@@ -1146,7 +1146,7 @@ rh = hierarchical_partition(mat, top_n = c(1000, 2000, 3000, 4000),
 `rh` is already generated and can be downloaded from [here](https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_hierarchical_partition.rds).
 
 ```{r, results = "hide"}
-download.file("https://github.com/jokergoo/cola_examples/raw/master/TCGA_GBM/TCGA_GBM_subgroup_hierarchical_partition.rds", 
+download.file("https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_hierarchical_partition.rds", 
   destfile = "TCGA_GBM_subgroup_hierarchical_partition.rds", quiet = TRUE)
 rh = readRDS("TCGA_GBM_subgroup_hierarchical_partition.rds")
 file.remove("TCGA_GBM_subgroup_hierarchical_partition.rds")
