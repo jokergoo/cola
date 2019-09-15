@@ -852,3 +852,23 @@ setMethod(f = "compare_signatures",
 
 })
 
+
+# == title
+# Find a best k for the k-means clustering
+#
+# == param
+# -mat A matrix where k-means clustering is executed by rows.
+# -max_km Maximal k to try.
+#
+# == details
+# The best k is determined by looking for the knee/elbow of the WSS curve (within-cluster sum of square).
+#
+# Note this function is only for a rough and quick determination of the best k.
+#
+find_best_km = function(mat, max_km = 15) {
+	wss = (nrow(mat)-1)*sum(apply(mat,2,var))
+	max_km = min(c(nrow(mat) - 1, max_km))
+	for (i in 2:max_km) wss[i] = sum(kmeans(mat, centers = i, iter.max = 50)$withinss)
+	row_km = min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
+	return(row_km)
+}

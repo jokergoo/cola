@@ -1124,6 +1124,16 @@ setMethod(f = "dimension_reduction",
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "t-SNE 1", ylab = "t-SNE 2")
 	} else if(method == "UMAP") {
 		param = list(d = t(data))
+		if(!"config" %in% names(control)) {
+			# reset n_neighbors for small dataset
+			control$config = umap::umap.defaults
+			control$config$n_neighbors = min(umap::umap.defaults$n_neighbors, round(ncol(data)/2))
+		} else {
+			if(!"n_neighbors" %in% names(control$config)) {
+				# reset n_neighbors for small dataset
+				control$config$n_neighbors = min(umap::umap.defaults$n_neighbors, round(ncol(data)/2))
+			}
+		}
 		param = c(param, control)
 		fit = do.call(umap::umap, param)
 		loc = fit$layout
