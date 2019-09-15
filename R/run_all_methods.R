@@ -309,6 +309,11 @@ setMethod(f = "show",
 	# obj_name = deparse(substitute(object, env = env))
 	obj_name = "object"
 
+	error = try(object@list[[1]]@sample_by, silent = TRUE)
+	if(inherits(error, "try-error")) {
+		object@list[[1]]@sample_by = "row"
+	}
+
 	qqcat("A 'ConsensusPartitionList' object with @{length(object@top_value_method)*length(object@partition_method)} methods.\n")
 	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
 	qqcat("  Top rows are extracted by '@{paste(object@top_value_method, collapse = ', ')}' methods.\n")
