@@ -8,4 +8,4 @@ repos:
   BioCann: https://bioconductor.org/packages/devel/data/annotation
   BioCexp: https://bioconductor.org/packages/devel/data/experiment
 install:
-  - R -e 'install.packages("devtools"); devtools::install_deps(dep = NA)'
+  - R -e 'install.packages(c("ComplexHeatmap","matrixStats","GetoptLong","circlize","GlobalOptions","clue","RColorBrewer","cluster","skmeans","png","mclust","crayon","xml2","microbenchmark","httr","knitr","markdown","digest","impute","brew","Rcpp","BiocGenerics","eulerr"))'
