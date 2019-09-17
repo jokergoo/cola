@@ -31,3 +31,5 @@ r_packages:
   - BiocGenerics
   - eulerr
   - RColorBrewer
+install:
+  - R -e 'NULL'
