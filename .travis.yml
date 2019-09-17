@@ -7,29 +7,5 @@ repos:
   BioCsoft: https://bioconductor.org/packages/devel/bioc
   BioCann: https://bioconductor.org/packages/devel/data/annotation
   BioCexp: https://bioconductor.org/packages/devel/data/experiment
-r_packages:
-  - ComplexHeatmap
-  - matrixStats
-  - GetoptLong
-  - circlize
-  - GlobalOptions
-  - clue
-  - RColorBrewer
-  - skmeans
-  - png
-  - mclust
-  - crayon
-  - xml2
-  - microbenchmark
-  - httr
-  - knitr
-  - markdown
-  - digest
-  - impute
-  - brew
-  - Rcpp
-  - BiocGenerics
-  - eulerr
-  - RColorBrewer
 install:
-  - R -e 'NULL'
+  - R -e 'devtools::install_deps(dep = NA)'
