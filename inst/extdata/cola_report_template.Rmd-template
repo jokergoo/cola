@@ -1,4 +1,4 @@
-Cola Report for Consensus Partitioning
+cola Report for Consensus Partitioning
 ==================
 
 **Date**: `r format(as.POSIXlt(Sys.time()), usetz = TRUE)`, **cola version**: `r installed.packages()["cola", "Version"]`

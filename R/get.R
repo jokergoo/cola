@@ -377,6 +377,12 @@ setMethod(f = "suggest_best_k",
 		return(best_k)
 	}
 
+	l = stat[-nrow(stat), "area_increased"] >= stat[-1, "area_increased"]
+	if(sum(l) == 0) {
+		return(NA)
+	}
+	stat = stat[l, , drop = FALSE]
+
 	dec = c(which.max(stat[, "1-PAC"]),
 		    which.max(stat[, "mean_silhouette"]),
 		    which.max(stat[, "concordance"]))
