@@ -230,6 +230,8 @@ run_all_consensus_partition_methods = function(data,
 	res_list@comb = comb
 	res_list@call = cl
 
+	if(verbose) qqcat("------------------------------------------------------------\n")
+
 	return(res_list)
 }
 
