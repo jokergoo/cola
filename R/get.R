@@ -315,7 +315,12 @@ recalc_stats = function(rl) {
 
 			consensus_mat = rl@list[[j]]@object_list[[i]]$consensus
 
-			l = rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"] >= quantile(rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"], 0.05)
+			if(length(rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"])*0.05 > 1) {
+				l = rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"] >= quantile(rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"], 0.05)
+			} else {
+				l = rep(TRUE, length(rl@list[[j]]@object_list[[i]]$class_df[, "silhouette"]))
+			}
+
 			rl@list[[j]]@object_list[[i]]$stat[["1-PAC"]] = 1 - PAC(consensus_mat[l, l, drop = FALSE])
 			rl@list[[j]]@object_list[[i]]$stat[["cophcor"]] = cophcor(consensus_mat)
 			rl@list[[j]]@object_list[[i]]$stat[["aPAC"]] = aPAC(consensus_mat)

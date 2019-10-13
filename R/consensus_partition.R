@@ -386,7 +386,11 @@ consensus_partition = function(data,
 		}
 
 		if(verbose) qqcat("@{prefix}calculate statistics for the consensus partition.\n")
-		l = class_df$silhouette >= quantile(class_df$silhouette, 0.05)
+		if(length(class_df$silhouette)*0.05 > 1) {
+			l = class_df$silhouette >= quantile(class_df$silhouette, 0.05)
+		} else {
+			l = rep(TRUE, length(class_df$silhouette))
+		}
 		stat = list(
 			ecdf = ecdf(consensus_mat[lower.tri(consensus_mat)]),
 			"1-PAC" = 1 - PAC(consensus_mat[l, l, drop = FALSE]),
