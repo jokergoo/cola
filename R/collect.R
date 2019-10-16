@@ -440,6 +440,7 @@ All individual plots can be made by following functions:
 #       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
+# -... Pass to `ComplexHeatmap::draw,HeatmapList-method`.
 #
 # == details
 # There are following panels in the plot:
@@ -465,7 +466,7 @@ All individual plots can be made by following functions:
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, show_column_names = FALSE,
-	anno = get_anno(object), anno_col = get_anno_col(object)) {
+	anno = get_anno(object), anno_col = get_anno_col(object), ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
@@ -539,9 +540,9 @@ setMethod(f = "collect_classes",
 
 	ht = Heatmap(m, name = "Class", col = brewer_pal_set2_col, column_order = column_order,
 		show_column_names = show_column_names,
-		column_title = qq("classification from all methods, k = @{k}"),
+		column_title = qq("classification from all @{nrow(m)} methods, k = @{k}"),
 		row_names_side = "left", cluster_rows = {if(nrow(m) == 1) FALSE else hclust(m_diss)}, 
-		cluster_columns = FALSE,
+		cluster_columns = FALSE, row_title = NULL,
 		show_column_dend = FALSE, rect_gp = gpar(type = "none"),
 		layer_fun = function(j, i, x, y, w, h, fill) {
 			col = adjust_by_transparency(fill, 1 - pindex(silhouette_mat, j, i))
@@ -551,16 +552,19 @@ setMethod(f = "collect_classes",
 			col = list(consensus_class = brewer_pal_set2_col),
 			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE),
 		bottom_annotation = bottom_anno,
-		left_annotation = rowAnnotation("Top value method" = top_value_method_vec, 
+		left_annotation = rowAnnotation("Top-value method" = top_value_method_vec, 
 			"Partition method" = partition_method_vec,
 			annotation_name_side = "bottom",
-			col = list("Top value method" = structure(names = top_value_method, brewer_pal_set1_col[seq_along(top_value_method)]),
+			col = list("Top-value method" = structure(names = top_value_method, brewer_pal_set1_col[seq_along(top_value_method)]),
 			           "Partition method" = structure(names = partition_method, brewer_pal_set2_col[seq_along(partition_method)])),
 			width = unit(10, "mm"),
-			show_annotation_name = FALSE)) + 
-		rowAnnotation(mean_silhouette = row_anno_barplot(get_stats(object, k = k)[colnames(class_mat), "mean_silhouette"], baseline = 0, axis = TRUE),
+			show_annotation_name = FALSE))
+
+	stat = get_stats(object, k = k)[colnames(class_mat), "1-PAC"]
+	is_stable_k = is_stable_k(object, k = k)[colnames(class_mat)]
+	ht = ht + rowAnnotation("1-PAC" = row_anno_barplot(stat, gp = gpar(fill = ifelse(is_stable_k, "red", "grey")), baseline = 0, axis = TRUE),
 			width = unit(2, "cm"))
-	draw(ht)
+	draw(ht, heatmap_legend_list = list(Legend(title = "Barplot", labels = c("Stable partition", "unstable partition"), legend_gp = gpar(fill = c("red", "grey"), pch = 15))), ...)
 })
 
 

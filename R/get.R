@@ -404,6 +404,55 @@ setMethod(f = "suggest_best_k",
 
 
 # == title
+# Test whether the current k is the best/optional k
+#
+# == param
+# -object A `ConsensusPartition-class` object.
+# -k Number of subgroups.
+# -...  Pass to `suggest_best_k,ConsensusPartition-method`
+#
+# == value
+# Logical scalar.
+#
+setMethod(f = "is_best_k",
+	signature = "ConsensusPartition",
+	definition = function(object, k, ...) {
+
+	best_k = suggest_best_k(object, ...)
+	if(is.na(best_k)) {
+		return(FALSE)
+	} else {
+		if(k == best_k) {
+			return(TRUE)
+		} else {
+			if(k %in% attr(best_k, "optional")) {
+				return(TRUE)
+			}
+		}
+	}
+	return(FALSE)
+})
+
+
+# == title
+# Test whether the current k corresponds to a stable partition
+#
+# == param
+# -object A `ConsensusPartition-class` object.
+# -k Number of subgroups.
+# -...  Pass to `suggest_best_k,ConsensusPartition-method`
+#
+# == value
+# Logical scalar
+#
+setMethod(f = "is_stable_k",
+	signature = "ConsensusPartition",
+	definition = function(object, k, ...) {
+
+	is_best_k(object, k, ...) & get_stats(object, k = k)[, "1-PAC"] >= 0.9
+})
+
+# == title
 # Suggest the best number of partitions
 #
 # == param
@@ -473,6 +522,46 @@ setMethod(f = "suggest_best_k",
 		tb$optional_k = optional_k
 	}
 	return(tb[order(!is.na(tb[, "best_k"]) + 0, tb[, "1-PAC"], decreasing = TRUE), , drop = FALSE])
+})
+
+# == title
+# Test whether the current k is the best/optional k
+#
+# == param
+# -object A `ConsensusPartitionList-class` object.
+# -k Number of subgroups.
+# -...  Pass to `suggest_best_k,ConsensusPartitionList-method`
+#
+# == value
+# Logical vector
+#
+setMethod(f = "is_best_k",
+	signature = "ConsensusPartitionList",
+	definition = function(object, k, ...) {
+
+	x = sapply(object@list, function(x) is_best_k(x, k, ...))
+	names(x) = names(object@list)
+	return(x)
+})
+
+# == title
+# Test whether the current k corresponds to a stable partition
+#
+# == param
+# -object A `ConsensusPartitionList-class` object.
+# -k Number of subgroups.
+# -...  Pass to `suggest_best_k,ConsensusPartitionList-method`
+#
+# == value
+# Logical vector
+#
+setMethod(f = "is_stable_k",
+	signature = "ConsensusPartitionList",
+	definition = function(object, k, ...) {
+
+	x = sapply(object@list, function(x) is_stable_k(x, k, ...))
+	names(x) = names(object@list)
+	return(x)
 })
 
 # == title

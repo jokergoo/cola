@@ -240,7 +240,7 @@ get_consensus_from_multiple_methods = function(object, k) {
 	res = object
 	partition_list = NULL
 	mean_cophcor = NULL
-	mean_silhouette = NULL
+	pac_score = NULL
 	reference_class = NULL
 	for(tm in object@top_value_method) {
 		for(pm in object@partition_method) {
@@ -259,12 +259,11 @@ get_consensus_from_multiple_methods = function(object, k) {
 			}
 
 			partition_list = c(partition_list, list(as.cl_partition(membership)))
-			mean_silhouette = c(mean_silhouette, mean(get_classes(obj, k)[, "silhouette"]))
+			pac_score = c(pac_score, mean(get_classes(obj, k)[, "1-PAC"]))
 		}
 	}
 
-	mean_silhouette[mean_silhouette < 0] = 0
-	consensus = cl_consensus(cl_ensemble(list = partition_list), weights = mean_silhouette)
+	consensus = cl_consensus(cl_ensemble(list = partition_list), weights = pac_score)
 	m = cl_membership(consensus)
 	class(m) = "matrix"
 	colnames(m) = paste0("p", 1:k)

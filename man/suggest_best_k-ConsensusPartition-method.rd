@@ -7,7 +7,7 @@ Suggest the best number of partitions
 Suggest the best number of partitions
 }
 \usage{
-\S4method{suggest_best_k}{ConsensusPartition}(object, jaccard_index_cutoff = 0.95)
+\S4method{suggest_best_k}{ConsensusPartition}(object, jaccard_index_cutoff = 0.95, verbose = TRUE)
 }
 \arguments{
 

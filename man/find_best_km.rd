@@ -23,4 +23,5 @@ Note this function is only for a rough and quick determination of the best k.
 \examples{
 # There is no example
 NULL
+
 }
