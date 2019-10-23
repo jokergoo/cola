@@ -364,7 +364,7 @@ recalc_stats = function(rl) {
 # suggest_best_k(obj)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
-	definition = function(object, jaccard_index_cutoff = 0.95, verbose = TRUE) {
+	definition = function(object, jaccard_index_cutoff = 0.95) {
 
 	# if(verbose) {
 	# 	cat("This function only suggests the best k. It is recommended that users look ...")
