@@ -1,0 +1,7 @@
+pandoc: 1.12.3.1
+pkgdown: 1.4.1
+pkgdown_sha: ~
+articles:
+  a_quick_start: a_quick_start.html
+  cola: cola.html
+
