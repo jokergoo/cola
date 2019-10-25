@@ -514,6 +514,7 @@ setMethod(f = "show",
 # -silhouette_cutoff Cutoff for silhouette scores. Samples with values 
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
+# -simplify Only used internally.
 # -... Other arguments
 # 
 # == details
@@ -542,6 +543,7 @@ setMethod(f = "get_signatures",
 	show_column_names = FALSE, 
 	verbose = TRUE, plot = TRUE,
 	silhouette_cutoff = 0.5, 
+	simplify = FALSE,
 	...) {
 
 	if(max_depth(object) == 1) {
@@ -671,7 +673,7 @@ setMethod(f = "get_signatures",
 		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
 
 	all_value_positive = !any(m < 0)
- 	if(scale_rows && all_value_positive) {
+ 	if(scale_rows && all_value_positive && !simplify) {
 		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm")) +
 			Heatmap(rel_diff, col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")), 
 				show_row_names = FALSE, name = "rel_diff", width = unit(5, "mm"))
@@ -889,6 +891,34 @@ setMethod(f = "dimension_reduction",
 	depth = max_depth(object), parent_node,
 	top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
 	silhouette_cutoff = 0.5, scale_rows = TRUE) {
+
+	cl = as.list(match.call())
+	# default value
+	if(! "method" %in% names(cl)) {
+		method = NULL
+		if(is.null(method)) {
+			oe = try(loadNamespace("umap"), silent = TRUE)
+			if(inherits(oe, "try-error")) {
+				if(verbose) cat("umap package is not installed.\n")
+			} else {
+				if(verbose) cat("use UMAP\n")
+				method = "UMAP"
+			}
+		}
+		if(is.null(method)) {
+			oe = try(loadNamespace("Rtsne"), silent = TRUE)
+			if(inherits(oe, "try-error")) {
+				if(verbose) cat("Rtsne package is not installed.\n")
+			} else {
+				if(verbose) cat("use t-SNE\n")
+				method = "t-SNE"
+			}
+		}
+		if(is.null(method)) {
+			if(verbose) cat("use PCA\n")
+			method = "PCA"
+		}
+	}
 
 	method = match.arg(method)
 	data = object@list[[1]]@.env$data

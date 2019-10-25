@@ -259,7 +259,7 @@ get_consensus_from_multiple_methods = function(object, k) {
 			}
 
 			partition_list = c(partition_list, list(as.cl_partition(membership)))
-			pac_score = c(pac_score, mean(get_classes(obj, k)[, "1-PAC"]))
+			pac_score = c(pac_score, get_stats(obj, k)[, "1-PAC"])
 		}
 	}
 

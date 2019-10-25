@@ -29,6 +29,7 @@
 #              rows are automatically performed on the annotation object.
 # -right_annotation Annotation put on the right of the heatmap. Same format as ``left_annotation``.
 # -col Colors.
+# -simplify Only use internally.
 # -... Other arguments.
 # 
 # == details 
@@ -76,6 +77,7 @@ setMethod(f = "get_signatures",
 	plot = TRUE, verbose = TRUE, seed = 888,
 	left_annotation = NULL, right_annotation = NULL,
 	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
+	simplify = FALSE,
 	...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
@@ -488,7 +490,7 @@ setMethod(f = "get_signatures",
 		left_annotation = left_annotation, right_annotation = {if(has_ambiguous) NULL else right_annotation})
  	
 	all_value_positive = !any(data < 0)
- 	if(scale_rows && all_value_positive) {
+ 	if(scale_rows && all_value_positive && !simplify) {
 		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"), show_column_names = !internal) +
 			Heatmap(rel_diff, col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")), 
 				show_row_names = FALSE, show_column_names = !internal, name = "rel_diff", width = unit(5, "mm"))
