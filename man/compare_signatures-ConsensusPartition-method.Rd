@@ -1,5 +1,6 @@
 \name{compare_signatures-ConsensusPartition-method}
 \alias{compare_signatures,ConsensusPartition-method}
+\alias{compare_signatures}
 \title{
 Compare Signatures from Different k
 }
@@ -19,8 +20,8 @@ Compare Signatures from Different k
 \details{
 It plots an Euler diagram showing the overlap of signatures from different k.
 }
-\alias{compare_signatures}
 \examples{
 # There is no example
 NULL
+
 }

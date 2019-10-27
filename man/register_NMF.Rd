@@ -15,4 +15,5 @@ NMF analysis is performed by \code{\link[NMF]{nmf}}.
 \examples{
 # There is no example
 NULL
+
 }

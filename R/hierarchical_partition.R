@@ -871,6 +871,7 @@ setMethod(f = "test_to_known_factors",
 # -silhouette_cutoff Cutoff of silhouette score. Data points with values less
 #        than it will be mapped to small points.
 # -scale_rows Whether perform scaling on matrix rows.
+# -verbose Whether print messages.
 #
 # == details
 # The class IDs are extract at ``depth``.
@@ -890,7 +891,7 @@ setMethod(f = "dimension_reduction",
 	definition = function(object,
 	depth = max_depth(object), parent_node,
 	top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
-	silhouette_cutoff = 0.5, scale_rows = TRUE) {
+	silhouette_cutoff = 0.5, scale_rows = TRUE, verbose = TRUE) {
 
 	cl = as.list(match.call())
 	# default value

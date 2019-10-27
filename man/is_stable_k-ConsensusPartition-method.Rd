@@ -22,4 +22,5 @@ Logical scalar
 \examples{
 # There is no example
 NULL
+
 }

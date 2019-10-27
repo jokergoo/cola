@@ -29,4 +29,5 @@ There are following global parameters:
 \examples{
 # There is no example
 NULL
+
 }

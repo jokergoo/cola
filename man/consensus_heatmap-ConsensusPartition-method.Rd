@@ -1,5 +1,6 @@
 \name{consensus_heatmap-ConsensusPartition-method}
 \alias{consensus_heatmap,ConsensusPartition-method}
+\alias{consensus_heatmap}
 \title{
 Heatmap for the consensus matrix
 }
@@ -52,4 +53,3 @@ Zuguang Gu <z.gu@dkfz.de>
 data(cola_rl)
 consensus_heatmap(cola_rl["sd", "hclust"], k = 3)
 }
-\alias{consensus_heatmap}

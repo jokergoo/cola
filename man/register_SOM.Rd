@@ -15,4 +15,5 @@ The SOM analysis is performed by \code{\link[kohonen:supersom]{som}}.
 \examples{
 # There is no example
 NULL
+
 }

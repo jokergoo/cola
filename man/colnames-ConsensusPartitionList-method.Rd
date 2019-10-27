@@ -17,4 +17,5 @@ Column names of the matrix
 \examples{
 # There is no example
 NULL
+
 }

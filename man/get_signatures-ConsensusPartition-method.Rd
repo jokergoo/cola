@@ -22,6 +22,7 @@ Get signature rows
     plot = TRUE, verbose = TRUE, seed = 888,
     left_annotation = NULL, right_annotation = NULL,
     col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
+    simplify = FALSE,
     ...)
 }
 \arguments{
@@ -46,6 +47,7 @@ Get signature rows
   \item{left_annotation}{Annotation put on the left of the heatmap. It should be a \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.  The number of items should be the same as the number of the original matrix rows. The subsetting to the significant  rows are automatically performed on the annotation object.}
   \item{right_annotation}{Annotation put on the right of the heatmap. Same format as \code{left_annotation}.}
   \item{col}{Colors.}
+  \item{simplify}{Only use internally.}
   \item{...}{Other arguments.}
 
 }
@@ -79,4 +81,5 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 # There is no example
 NULL
+
 }

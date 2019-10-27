@@ -20,4 +20,5 @@ It updates the statistics slot in the ConsensusPartitionList object, used intern
 \examples{
 # There is no example
 NULL
+
 }

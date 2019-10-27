@@ -14,6 +14,7 @@ Get signatures rows
     show_column_names = FALSE,
     verbose = TRUE, plot = TRUE,
     silhouette_cutoff = 0.5,
+    simplify = FALSE,
     ...)
 }
 \arguments{
@@ -27,6 +28,7 @@ Get signatures rows
   \item{verbose}{Whether to print messages.}
   \item{plot}{Whether to make the plot.}
   \item{silhouette_cutoff}{Cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
+  \item{simplify}{Only used internally.}
   \item{...}{Other arguments}
 
 }
