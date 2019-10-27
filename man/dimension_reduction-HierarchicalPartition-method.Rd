@@ -10,7 +10,7 @@ Visualize columns after dimension reduction
 \S4method{dimension_reduction}{HierarchicalPartition}(object,
     depth = max_depth(object), parent_node,
     top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
-    silhouette_cutoff = 0.5, scale_rows = TRUE)
+    silhouette_cutoff = 0.5, scale_rows = TRUE, verbose = TRUE)
 }
 \arguments{
 
@@ -21,6 +21,7 @@ Visualize columns after dimension reduction
   \item{method}{Which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}. \code{t-SNE} uses \code{\link[Rtsne]{Rtsne}}. \code{UMAP} uses \code{\link[umap]{umap}}.}
   \item{silhouette_cutoff}{Cutoff of silhouette score. Data points with values less than it will be mapped to small points.}
   \item{scale_rows}{Whether perform scaling on matrix rows.}
+  \item{verbose}{Whether print messages.}
 
 }
 \details{
