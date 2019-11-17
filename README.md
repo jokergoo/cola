@@ -7,7 +7,7 @@
 
 # cola
 
-A General Framework for Consensus and Hierarchical Partitioning
+A General Framework for Consensus Partitioning
 
 ## Features
 
@@ -18,9 +18,7 @@ A General Framework for Consensus and Hierarchical Partitioning
    functionalities to compare results in a straightforward way.
 4. It provides a new method to extract features which are more efficient to
    separate subgroups.
-5. It allows doing partitioning in a hierarchical way to detect subgroups
-   with relatively smaller difference.
-6. It generates detailed HTML reports for the complete analysis.
+5. It generates detailed HTML reports for the complete analysis.
 
 ## Install
 
@@ -46,7 +44,7 @@ Several examples for cola analysis can be found at https://jokergoo.github.io/co
 ## Vignettes
 
 1. [A Quick Start of Using cola Package](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/a_quick_start.html)
-2. [A Framework for Consensus and Hierarchical Partitioning](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html)
+2. [A Framework for Consensus Partitioning](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html)
 
 ## Consensus Partition
 
@@ -96,30 +94,6 @@ Following plots compare consensus heatmaps with k = 4 under all combinations of 
 
 <img src="https://user-images.githubusercontent.com/449218/52631118-3a66f280-2ebe-11e9-8dea-0172d9beab91.png" />
 
-
-## Hierarchical Partition
-
-**cola** supports to look for subgroups in a hierarchical way, which is efficient to found secondary subgroups with small difference.
-
-<img width="500" src="https://user-images.githubusercontent.com/449218/52628768-9a5a9a80-2eb8-11e9-9de1-974afd10bfc2.png" />
-
-### Usage
-
-```r
-rh = hierarchical_partition(
-    mat,
-    top_value_method = "MAD", 
-    partition_method = "kmeans",
-    mc.cores = ...
-)
-cola_report(rh, output_dir = ...)
-```
-
-### Plots
-
-The hierarchy of the subgroups:
-
-<img src="https://user-images.githubusercontent.com/449218/48982041-8be0bc00-f0dd-11e8-80ab-2732daedad94.png">
 
 ## License
 
