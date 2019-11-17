@@ -1,5 +1,5 @@
-\name{GO_enrichment-HierarchicalPartition-method}
-\alias{GO_enrichment,HierarchicalPartition-method}
+\name{functional_enrichment-HierarchicalPartition-method}
+\alias{functional_enrichment,HierarchicalPartition-method}
 \title{
 Perform Gene Ontology Enrichment on Signature Genes
 }
@@ -7,7 +7,7 @@ Perform Gene Ontology Enrichment on Signature Genes
 Perform Gene Ontology Enrichment on Signature Genes
 }
 \usage{
-\S4method{GO_enrichment}{HierarchicalPartition}(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
+\S4method{functional_enrichment}{HierarchicalPartition}(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
     id_mapping = guess_id_mapping(rownames(object), org_db, FALSE),
     org_db = "org.Hs.eg.db",
     min_set_size = 10, max_set_size = 1000)
@@ -25,7 +25,7 @@ Perform Gene Ontology Enrichment on Signature Genes
 \details{
 On each node of the partition hierarchy, the signature genes are extracted based on the best k.
 
-It calls \code{\link{GO_enrichment,ConsensusPartition-method}} on the consensus partitioning results on each node.
+It calls \code{\link{functional_enrichment,ConsensusPartition-method}} on the consensus partitioning results on each node.
 }
 \value{
 A list where each element in the list corresponds to enrichment results on a node.

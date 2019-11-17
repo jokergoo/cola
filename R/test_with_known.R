@@ -34,7 +34,7 @@
 # x = runif(100)
 # test_between_factors(x, df)
 test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALSE) {
-	
+
 	if(is.null(y)) {
 		df = x
 		if(is.matrix(df)) {
@@ -48,6 +48,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 		nm = colnames(df)
 		n = ncol(df)
 		p.value = matrix(NA, nrow = n, ncol = n, dimnames = list(nm, nm))
+
 		for(i in seq_len(n-1)) {
 			if(length(df[[i]]) < 2) {
 				p.value[i, ] = NA
@@ -58,10 +59,12 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 						p.value[i, j] = cor.test(df[[i]], df[[j]])$p.value
 					} else if(is.numeric(df[[i]]) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
-						try({p.value[i, j] = oneway.test(df[[i]] ~ df[[j]])$p.value}, silent = TRUE)
+						l = df[[j]] %in% df[[j]][duplicated(df[[j]])]
+						try({p.value[i, j] = oneway.test(df[[i]][l] ~ df[[j]][l])$p.value}, silent = TRUE)
 					} else if(is.numeric(df[[j]]) && (is.character(df[[i]]) || is.factor(df[[i]]))) {
 						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
-						try({p.value[i, j] = oneway.test(df[[j]] ~ df[[i]])$p.value}, silent = TRUE)
+						l = df[[i]] %in% df[[i]][duplicated(df[[i]])]
+						try({p.value[i, j] = oneway.test(df[[j]][l] ~ df[[i]][l])$p.value}, silent = TRUE)
 					} else if ((is.character(df[[i]]) || is.factor(df[[i]])) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: Chi-squared test\n")
 						try({p.value[i, j] = chisq.test(df[[i]], df[[j]])$p.value}, silent = TRUE)
@@ -113,10 +116,12 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 						p.value[i, j] = cor.test(df1[[i]], df2[[j]])$p.value
 					} else if(is.numeric(df1[[i]]) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
 						if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: oneway ANOVA test\n")
-						try({p.value[i, j] = oneway.test(df1[[i]] ~ df2[[j]])$p.value}, silent = TRUE)
+						l = df2[[j]] %in% df2[[j]][duplicated(df2[[j]])]
+						try({p.value[i, j] = oneway.test(df1[[i]][l] ~ df2[[j]][l])$p.value}, silent = TRUE)
 					} else if((is.character(df1[[i]]) || is.factor(df1[[i]])) && is.numeric(df2[[j]])) {
 						if(verbose) qqcat("@{nm2[j]} ~ @{nm1[i]}: oneway ANOVA test\n")
-						try({p.value[i, j] = oneway.test(df2[[j]] ~ df1[[i]])$p.value}, silent = TRUE)
+						l = df1[[i]] %in% df1[[i]][duplicated(df1[[i]])]
+						try({p.value[i, j] = oneway.test(df2[[j]][l] ~ df1[[i]][l])$p.value}, silent = TRUE)
 					} else if ((is.character(df1[[i]]) || is.factor(df1[[i]])) && (is.character(df2[[j]]) || is.factor(df2[[j]]))) {
 						if(verbose) qqcat("@{nm1[i]} ~ @{nm2[j]}: Chi-squared test\n")
 						try({suppressWarnings(p.value[i, j] <- chisq.test(df1[[i]], df2[[j]])$p.value)}, silent = TRUE)

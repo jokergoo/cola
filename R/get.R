@@ -377,6 +377,10 @@ setMethod(f = "suggest_best_k",
 		return(NA)
 	}
 
+	if(nrow(stat) == 1) {
+		return(stat[, "k"])
+	}
+
 	l = stat[, "1-PAC"] >= 0.9
 	if(sum(l) == 1) {
 		return(as.numeric(rownames(stat)[l]))

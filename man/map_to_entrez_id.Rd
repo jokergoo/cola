@@ -21,7 +21,7 @@ If there are multiple mappings from the input ID type to an unique Entrez ID, ra
 \value{
 A named vectors where names are IDs with input ID type and values are the Entrez IDs.
 
-The returned object normally is used in \code{\link{GO_enrichment}}.
+The returned object normally is used in \code{\link{functional_enrichment}}.
 }
 \examples{
 \dontrun{

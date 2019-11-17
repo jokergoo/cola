@@ -1,5 +1,6 @@
 \name{get_signatures-ConsensusPartition-method}
 \alias{get_signatures,ConsensusPartition-method}
+\alias{get_signatures}
 \title{
 Get signature rows
 }
@@ -72,7 +73,7 @@ A data frame with more than two columns:
   \item{\code{which_row}:}{row index corresponding to the original matrix.}
   \item{\code{fdr}:}{the FDR.}
   \item{\code{km}:}{the k-means groups if \code{row_km} is set.}
-  \item{other_columns:}{the mean expression (depending rows are scaled or not) in each subgroup.}
+  \item{other_columns:}{the mean value (depending rows are scaled or not) in each subgroup.}
 }
 }
 \author{

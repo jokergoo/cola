@@ -165,17 +165,17 @@ submit_to_david = function(genes, email,
 # == details
 # For each method, the signature genes are extracted based on the best k.
 #
-# It calls `GO_enrichment,ConsensusPartition-method` on the consensus partitioning results for each method.
+# It calls `functional_enrichment,ConsensusPartition-method` on the consensus partitioning results for each method.
 #
 # == values
 # A list where each element in the list corresponds to enrichment results from a single method.
 #
-setMethod(f = "GO_enrichment",
+setMethod(f = "functional_enrichment",
     signature = "ConsensusPartitionList",
     definition = function(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
     id_mapping = guess_id_mapping(rownames(object), org_db, FALSE), 
-    org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
-    min_set_size = 10, max_set_size = 1000) {
+    org_db = "org.Hs.eg.db", ontology = "BP",
+    min_set_size = 10, max_set_size = 1000, ...) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
 
@@ -189,18 +189,18 @@ setMethod(f = "GO_enrichment",
 
             best_k = suggest_best_k(object@list[[i]])
             cat("-----------------------------------------------------------\n")
-            qqcat("* enrich signature genes (k = @{best_k}) to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
-            lt[[nm]] = GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
-                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", ontology = ontology)
+            qqcat("* enrich signature genes (k = @{best_k}) to @{ontology} terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
+            lt[[nm]] = functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
+                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", ontology = ontology, ...)
         }
     } else {
         lt = mclapply(seq_along(object@list), function(i) {
             nm = names(object@list)[i]
 
             best_k = suggest_best_k(object@list[[i]])
-            qqcat("* enrich signature genes (k = @{best_k}) to GO terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
-            GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
-                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE, ontology = ontology)
+            qqcat("* enrich signature genes (k = @{best_k}) to @{ontology} terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
+            functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
+                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE, ontology = ontology, ...)
         }, mc.cores = mc.cores)
         names(lt) = names(object@list)
     }
@@ -233,11 +233,11 @@ setMethod(f = "GO_enrichment",
 # - ``MF``: molecular functions
 # - ``CC``: cellular components
 #
-setMethod(f = "GO_enrichment",
+setMethod(f = "functional_enrichment",
     signature = "ConsensusPartition",
     definition = function(object, gene_fdr_cutoff = cola_opt$fdr_cutoff, k = suggest_best_k(object),
     row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db, verbose), 
-    org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
+    org_db = "org.Hs.eg.db", ontology = "BP",
     min_set_size = 10, max_set_size = 1000, 
     verbose = TRUE, ...) {
 
@@ -279,14 +279,14 @@ setMethod(f = "GO_enrichment",
         for(km in sort(unique(sig_df$km))) {
             l = sig_df$km == km
             if(verbose) qqcat("@{prefix}- on k-means group @{km}/@{max(sig_df$km)}, @{sum(l)} genes\n")
-            lt2 = GO_enrichment(sig_gene[l], id_mapping = id_mapping, org_db = org_db, ontology = ontology,
-                min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = paste0(prefix, "  "))
+            lt2 = functional_enrichment(sig_gene[l], id_mapping = id_mapping, org_db = org_db, ontology = ontology,
+                min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = paste0(prefix, "  "), ...)
             names(lt2) = paste0(names(lt2), "_km", km)
             lt = c(lt, lt2)
         }
     } else {
-        lt = GO_enrichment(sig_gene, id_mapping = id_mapping, org_db = org_db, ontology = ontology,
-            min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = prefix)
+        lt = functional_enrichment(sig_gene, id_mapping = id_mapping, org_db = org_db, ontology = ontology,
+            min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = prefix, ...)
     }
     return(lt)
 })
@@ -313,11 +313,11 @@ setMethod(f = "GO_enrichment",
 # - ``MF``: molecular functions
 # - ``CC``: cellular components
 #
-setMethod(f = "GO_enrichment",
+setMethod(f = "functional_enrichment",
     signature = "ANY",
     definition = function(object, 
     id_mapping = guess_id_mapping(object, org_db, verbose), 
-    org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
+    org_db = "org.Hs.eg.db", ontology = "BP",
     min_set_size = 10, max_set_size = 1000, 
     verbose = TRUE, ...) {
 
@@ -330,12 +330,12 @@ setMethod(f = "GO_enrichment",
         prefix = ""
     }
 
-    if(length(setdiff(ontology, c("BP", "MF", "CC")))) {
-        stop_wrap("ontology can only be in 'BP', 'MF' and 'CC'")
-    }
+    # if(length(setdiff(ontology, c("BP", "MF", "CC", "KEGG")))) {
+    #     stop_wrap("ontology can only be in 'BP', 'MF' and 'CC'")
+    # }
 
-    lt = list(BP = NULL, MF = NULL, CC = NULL)[ontology]
-
+    # lt = list(BP = NULL, MF = NULL, CC = NULL, KEGG = NULL)[ontology]
+    lt = list()
     sig_gene = object
     if(length(sig_gene)) {
         if(!is.null(id_mapping)) {
@@ -361,7 +361,8 @@ setMethod(f = "GO_enrichment",
         if(length(sig_gene)) {
             if("BP" %in% ontology) {
                 if(verbose) qqcat("@{prefix}- gene set enrichment, GO:BP\n")
-                ego = clusterProfiler::enrichGO(gene = sig_gene,
+                res = clusterProfiler::enrichGO(
+                    gene = sig_gene,
                     OrgDb         = org_db,
                     ont           = "BP",
                     pAdjustMethod = "BH",
@@ -369,15 +370,17 @@ setMethod(f = "GO_enrichment",
                     maxGSSize = max_set_size,
                     pvalueCutoff  = 1,
                     qvalueCutoff  = 1,
-                    readable      = TRUE)
-                ego = as.data.frame(ego)
-                ego$geneID = NULL
-                lt$BP = ego
+                    readable      = TRUE,
+                    ...)
+                res = as.data.frame(res)
+                # res$geneID = NULL
+                lt$BP = res
             }
 
             if("MF" %in% ontology) {
                 if(verbose) qqcat("@{prefix}- gene set enrichment, GO:MF\n")
-                ego = clusterProfiler::enrichGO(gene = sig_gene,
+                res = clusterProfiler::enrichGO(
+                    gene = sig_gene,
                     OrgDb         = org_db,
                     ont           = "MF",
                     pAdjustMethod = "BH",
@@ -386,14 +389,15 @@ setMethod(f = "GO_enrichment",
                     pvalueCutoff  = 1,
                     qvalueCutoff  = 1,
                     readable      = TRUE)
-                ego = as.data.frame(ego)
-                ego$geneID = NULL
-                lt$MF = ego
+                res = as.data.frame(res)
+                # res$geneID = NULL
+                lt$MF = res
             }
 
             if("CC" %in% ontology) {
                 if(verbose) qqcat("@{prefix}- gene set enrichment, GO:CC\n")
-                ego = clusterProfiler::enrichGO(gene = sig_gene,
+                res = clusterProfiler::enrichGO(
+                    gene = sig_gene,
                     OrgDb         = org_db,
                     ont           = "CC",
                     pAdjustMethod = "BH",
@@ -401,13 +405,117 @@ setMethod(f = "GO_enrichment",
                     maxGSSize = max_set_size,
                     pvalueCutoff  = 1,
                     qvalueCutoff  = 1,
-                    readable      = TRUE)
-                ego = as.data.frame(ego)
-                ego$geneID = NULL
-                lt$CC = ego
+                    readable      = TRUE,
+                    ...)
+                res = as.data.frame(res)
+                # res$geneID = NULL
+                lt$CC = res
             }
 
-            lt = lt[ontology]
+            if("KEGG" %in% ontology) {
+                if(verbose) qqcat("@{prefix}- gene set enrichment, KEGG\n")
+                if(is.null(arg_lt$organism)) {
+                    stop_wrap("Please specify 'organism' argument for KEGG enrichment.")
+                }
+                res = clusterProfiler::enrichKEGG(
+                    gene = sig_gene,
+                    organism = "hsa",
+                    pAdjustMethod = "BH",
+                    minGSSize = min_set_size,
+                    maxGSSize = max_set_size,
+                    pvalueCutoff  = 1,
+                    qvalueCutoff  = 1,
+                    ...)
+                res = as.data.frame(res)
+                # res$geneID = NULL
+                lt$KEGG = res
+            }
+
+            if("DO" %in% ontology) {
+                if(verbose) qqcat("@{prefix}- gene set enrichment, DO\n")
+                res = DOSE::enrichDO(
+                    gene = sig_gene,
+                    ont = "DO",
+                    pAdjustMethod = "BH",
+                    minGSSize = min_set_size,
+                    maxGSSize = max_set_size,
+                    pvalueCutoff  = 1,
+                    qvalueCutoff  = 1,
+                    readable = TRUE,
+                    ...)
+                res = as.data.frame(res)
+                # res$geneID = NULL
+                lt$DO = res
+            }
+
+            if("MSigDb" %in% ontology) {
+                if(verbose) qqcat("@{prefix}- gene set enrichment, MSigDb\n")
+
+                if(is.null(arg_lt$gmt_file)) {
+                    stop_wrap("Please specify 'gmt_file' argument for MSigDb enrichment.")
+                }
+                if(!grepl(".entrez.gmt$", basename(arg_lt$gmt_file))) {
+                    stop_wrap("Please use the original file (*.entrez.gmt) from MsgDb.")
+                }
+                msigdb_ontology = gsub(".entrez.gmt$", "", basename(arg_lt$gmt_file))
+                gmt = clusterProfiler::read.gmt(arg_lt$gmt_file)
+
+                res = clusterProfiler::enricher(
+                    gene = sig_gene,
+                    pAdjustMethod = "BH",
+                    minGSSize = min_set_size,
+                    maxGSSize = max_set_size,
+                    pvalueCutoff  = 1,
+                    qvalueCutoff  = 1, 
+                    TERM2GENE = gmt,
+                    ...)
+                res = as.data.frame(res)
+                # res$geneID = NULL
+                lt[[msigdb_ontology]] = res
+            }
+
+            if("Reactome" %in% ontology) {
+                if(verbose) qqcat("@{prefix}- gene set enrichment, Reactome\n")
+                if(is.null(arg_lt$organism)) {
+                    stop_wrap("Please specify 'organism' argument for Reactome enrichment.")
+                }
+                res = ReactomePA::enrichPathway(
+                    gene = sig_gene,
+                    pAdjustMethod = "BH",
+                    minGSSize = min_set_size,
+                    maxGSSize = max_set_size,
+                    pvalueCutoff  = 1,
+                    qvalueCutoff  = 1,
+                    ...)
+                res = as.data.frame(res)
+                # res$geneID = NULL
+                lt$Reactome = res
+            }
+
+            if("gmt" %in% ontology) {
+                if(verbose) qqcat("@{prefix}- gene set enrichment, custom gmt file\n")
+
+                if(is.null(arg_lt$gmt_file)) {
+                    stop_wrap("Please specify 'gmt_file' argument for enrichment.")
+                }
+                gmt_name = gsub(".gmt$", "", basename(arg_lt$gmt_file))
+                gmt = clusterProfiler::read.gmt(arg_lt$gmt_file)
+
+                res = clusterProfiler::enricher(
+                    gene = sig_gene,
+                    pAdjustMethod = "BH",
+                    minGSSize = min_set_size,
+                    maxGSSize = max_set_size,
+                    pvalueCutoff  = 1,
+                    qvalueCutoff  = 1, 
+                    TERM2GENE = gmt,
+                    ...)
+                res = as.data.frame(res)
+                # res$geneID = NULL
+                lt[[gmt_name]] = res
+            }
+
+            # lt = lt[ontology]
         }
     }
     return(lt)
@@ -503,7 +611,7 @@ guess_id_mapping = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
 # == value
 # A named vectors where names are IDs with input ID type and values are the Entrez IDs.
 #
-# The returned object normally is used in `GO_enrichment`.
+# The returned object normally is used in `functional_enrichment`.
 #
 # == example
 # \dontrun{
@@ -545,12 +653,12 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
 # == details
 # On each node of the partition hierarchy, the signature genes are extracted based on the best k.
 #
-# It calls `GO_enrichment,ConsensusPartition-method` on the consensus partitioning results on each node.
+# It calls `functional_enrichment,ConsensusPartition-method` on the consensus partitioning results on each node.
 #
 # == values
 # A list where each element in the list corresponds to enrichment results on a node.
 #
-setMethod(f = "GO_enrichment",
+setMethod(f = "functional_enrichment",
     signature = "HierarchicalPartition",
     definition = function(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
     id_mapping = guess_id_mapping(rownames(object), org_db, FALSE), 
@@ -568,16 +676,16 @@ setMethod(f = "GO_enrichment",
             nm = names(object@list)[i]
 
             cat("-----------------------------------------------------------\n")
-            qqcat("* enrich signature genes to GO terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
-            lt[[nm]] = GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
+            qqcat("* enrich signature genes to @{ontology} terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
+            lt[[nm]] = functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
                 min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ")
         }
     } else {
         lt = mclapply(seq_along(object@list), function(i) {
             nm = names(object@list)[i]
 
-            qqcat("* enrich signature genes to GO terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
-            GO_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
+            qqcat("* enrich signature genes to @{ontology} terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
+            functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
                 min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE)
         }, mc.cores = mc.cores)
         names(lt) = names(object@list)

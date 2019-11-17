@@ -1069,7 +1069,7 @@ setMethod(f = "dimension_reduction",
 	definition = function(object, 
 	pch = 16, col = "black", cex = 1, main = "",
 	method = c("PCA", "MDS", "t-SNE", "UMAP"),
-	pc = 1:2, control = list(), 
+	pc = NULL, control = list(), 
 	scale_rows = TRUE,
 	internal = FALSE, verbose = TRUE) {
 
@@ -1105,6 +1105,20 @@ setMethod(f = "dimension_reduction",
 
 	method = match.arg(method)[1]
 
+	if(is.null(pc)) {
+		if(method == "PCA") {
+			pc = 1:2
+		} else if(method %in% c("UMAP", "t-SNE")) {
+			pc = seq_len(min(c(10, ncol(data))))
+		}
+	} else if(length(pc) == 1) {
+		pc = 1:pc
+	}
+
+	if(method %in% c("UMAP", "t-SNE")) {
+		main = paste0(main, qq(", with @{length(pc)} PCs"))
+	}
+
 	if(scale_rows) data = t(scale(t(data)))
 	l = apply(data, 1, function(x) any(is.na(x)))
 	data = data[!l, ]
@@ -1125,15 +1139,25 @@ setMethod(f = "dimension_reduction",
 		sm = summary(fit)
 		prop = sm$importance[2, pc]
 		loc = fit$x[, pc]
+
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = qq("PC@{pc[1]} (@{round(prop[1]*100)}%)"), ylab = qq("PC@{pc[2]} (@{round(prop[2]*100)}%)"))
 	} else if(method == "t-SNE") {
-		param = list(X = t(data))
+		fit = prcomp(t(data))
+		sm = summary(fit)
+		loc = fit$x[, pc]
+
+		param = list(X = loc)
 		param = c(param, control)
 		fit = do.call(Rtsne::Rtsne, param)
 		loc = fit$Y
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "t-SNE 1", ylab = "t-SNE 2")
 	} else if(method == "UMAP") {
-		param = list(d = t(data))
+
+		fit = prcomp(t(data))
+		sm = summary(fit)
+		loc = fit$x[, pc]
+
+		param = list(d = loc)
 		if(!"config" %in% names(control)) {
 			# reset n_neighbors for small dataset
 			control$config = umap::umap.defaults

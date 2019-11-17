@@ -1,5 +1,5 @@
-\name{GO_enrichment-ConsensusPartitionList-method}
-\alias{GO_enrichment,ConsensusPartitionList-method}
+\name{functional_enrichment-ConsensusPartitionList-method}
+\alias{functional_enrichment,ConsensusPartitionList-method}
 \title{
 Perform Gene Ontology Enrichment on Signature Genes
 }
@@ -7,10 +7,10 @@ Perform Gene Ontology Enrichment on Signature Genes
 Perform Gene Ontology Enrichment on Signature Genes
 }
 \usage{
-\S4method{GO_enrichment}{ConsensusPartitionList}(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
+\S4method{functional_enrichment}{ConsensusPartitionList}(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
     id_mapping = guess_id_mapping(rownames(object), org_db, FALSE),
-    org_db = "org.Hs.eg.db", ontology = c("BP", "MF", "CC"),
-    min_set_size = 10, max_set_size = 1000)
+    org_db = "org.Hs.eg.db", ontology = "BP",
+    min_set_size = 10, max_set_size = 1000, ...)
 }
 \arguments{
 
@@ -26,7 +26,7 @@ Perform Gene Ontology Enrichment on Signature Genes
 \details{
 For each method, the signature genes are extracted based on the best k.
 
-It calls \code{\link{GO_enrichment,ConsensusPartition-method}} on the consensus partitioning results for each method.
+It calls \code{\link{functional_enrichment,ConsensusPartition-method}} on the consensus partitioning results for each method.
 }
 \value{
 A list where each element in the list corresponds to enrichment results from a single method.

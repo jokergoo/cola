@@ -225,52 +225,6 @@ setMethod(f = "cola_report",
 })
 
 
-# == title
-# Make HTML report from the HierarchicalPartition object
-#
-# == param
-# -object A `HierarchicalPartition-class` object.
-# -output_dir The output directory where the report is put.
-# -mc.cores Multiple cores to use.
-# -env where The objects in the report are found, internally used.
-#
-# == details
-# This function generates a HTML report which contains all plots for all nodes
-# in the partition hierarchy.
-#
-# Examples of reports can be found at https://jokergoo.github.io/cola_examples/
-#
-# == value
-# No value is returned.
-#
-# == author
-# Zuguang Gu <z.gu@dkfz.de>
-#
-# == example
-# \dontrun{
-# data(cola_rh)
-# cola_report(cola_rh, output_dir = "~/test_cola_rh_report")
-# }
-setMethod(f = "cola_report",
-	signature = "HierarchicalPartition",
-	definition = function(object, output_dir, mc.cores = 1, env = parent.frame()) {
-
-	if(max_depth(object) <= 1) {
-		cat("No hierarchy detected, won't generate the report.\n")
-		return(invisible(NULL))
-	}
-
-	if(!requireNamespace("genefilter")) {
-		stop_wrap("You need to install genefilter package (from Bioconductor).")
-	}
-	if(!requireNamespace("data.tree")) {
-		stop_wrap("You need to install data.tree package (from CRAN).")
-	}
-	var_name = deparse(substitute(object, env = env))
-	make_report(var_name, object, output_dir, mc.cores = mc.cores, class = "HierarchicalPartition")
-
-})
-
 
 make_report = function(var_name, object, output_dir, mc.cores = 1, class = class(object)) {
 

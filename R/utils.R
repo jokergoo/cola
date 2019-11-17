@@ -283,18 +283,6 @@ setMethod(f = "nrow",
 })
 
 # == title
-# Number of rows in the matrix
-#
-# == param
-# -x A `HierarchicalPartition-class` object.
-#
-setMethod(f = "nrow",
-	signature = "HierarchicalPartition",
-	definition = function(x) {
-	nrow(x@.env$data)
-})
-
-# == title
 # Number of columns in the matrix
 #
 # == param
@@ -314,18 +302,6 @@ setMethod(f = "ncol",
 #
 setMethod(f = "ncol",
 	signature = "ConsensusPartitionList",
-	definition = function(x) {
-	ncol(x@.env$data)
-})
-
-# == title
-# Number of columns in the matrix
-#
-# == param
-# -x A `HierarchicalPartition-class` object.
-#
-setMethod(f = "ncol",
-	signature = "HierarchicalPartition",
 	definition = function(x) {
 	ncol(x@.env$data)
 })
@@ -351,18 +327,6 @@ setMethod(f = "rownames",
 #
 setMethod(f = "rownames",
 	signature = "ConsensusPartitionList",
-	definition = function(x) {
-	rownames(x@.env$data)
-})
-
-# == title
-# Row names of the matrix
-#
-# == param
-# -x A `HierarchicalPartition-class` object.
-#
-setMethod(f = "rownames",
-	signature = "HierarchicalPartition",
 	definition = function(x) {
 	rownames(x@.env$data)
 })
@@ -389,19 +353,6 @@ setMethod(f = "colnames",
 #
 setMethod(f = "colnames",
 	signature = "ConsensusPartitionList",
-	definition = function(x) {
-	colnames(x@.env$data)
-})
-
-
-# == title
-# Column names of the matrix
-#
-# == param
-# -x A `HierarchicalPartition-class` object.
-#
-setMethod(f = "colnames",
-	signature = "HierarchicalPartition",
 	definition = function(x) {
 	colnames(x@.env$data)
 })
@@ -423,15 +374,5 @@ dim.ConsensusPartition = function(x) {
 # -x A `ConsensusPartitionList-class` object.
 #
 dim.ConsensusPartitionList = function(x) {
-	dim(x@.env$data)
-}
-
-# == title
-# Dimension of the matrix
-#
-# == param
-# -x A `HierarchicalPartition-class` object.
-#
-dim.HierarchicalPartition = function(x) {
 	dim(x@.env$data)
 }

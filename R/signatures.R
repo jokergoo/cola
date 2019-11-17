@@ -55,7 +55,7 @@
 # -``which_row``: row index corresponding to the original matrix.
 # -``fdr``: the FDR.
 # -``km``: the k-means groups if ``row_km`` is set.
-# -other_columns: the mean expression (depending rows are scaled or not) in each subgroup.
+# -other_columns: the mean value (depending rows are scaled or not) in each subgroup.
 # 
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -357,8 +357,10 @@ setMethod(f = "get_signatures",
 			anno = data.frame(anno)
 			colnames(anno) = anno_nm
 			if(!is.null(anno_col)) {
-				anno_col = list(anno_col)
-				names(anno_col) = anno_nm
+				if(is.atomic(anno_col)) {
+					anno_col = list(anno_col)
+					names(anno_col) = anno_nm
+				}
 			}
 		} else if(ncol(anno) == 1) {
 			if(!is.null(anno_col)) {
@@ -403,7 +405,7 @@ setMethod(f = "get_signatures",
 		use_mat2 = mat2
 		mat_range = quantile(mat1, c(0.05, 0.95))
 		col_fun = colorRamp2(c(mat_range[1], mean(mat_range), mat_range[2]), col)
-		heatmap_name = "expr"
+		heatmap_name = "Value"
 	}
 
 	if(has_ambiguous) {

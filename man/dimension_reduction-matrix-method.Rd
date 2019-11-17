@@ -10,7 +10,7 @@ Visualize columns after dimension reduction
 \S4method{dimension_reduction}{matrix}(object,
     pch = 16, col = "black", cex = 1, main = "",
     method = c("PCA", "MDS", "t-SNE", "UMAP"),
-    pc = 1:2, control = list(),
+    pc = NULL, control = list(),
     scale_rows = TRUE,
     internal = FALSE, verbose = TRUE)
 }

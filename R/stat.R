@@ -13,6 +13,7 @@
 #           distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000
 #           rows can already give a very nice estimation.
 # -q_sd Percentile of the standard deviation for the rows. Rows with values less than it are ignored.
+# -group A categorical variable. If it is specified, the correlation is only calcualted for the features in the same group.
 # -... Pass to ``cor_fun``.
 # 
 # == details 
@@ -58,7 +59,28 @@
 # ATC_score = ATC(mat)
 # plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
 ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
-	mc.cores = 1, n_sampling = 1000, q_sd = 0, ...) {
+	mc.cores = 1, n_sampling = 1000, q_sd = 0, group = NULL, ...) {
+
+	if(!is.null(group)) {
+		if(length(group) != nrow(mat)) {
+			stop_wrap("Length of `group` should be equal to nrow of the matrix.")
+		}
+
+		ind_list = split(1:nrow(mat), group)
+		sl = lapply(ind_list, function(ind) {
+			if(length(ind) == 1) {
+				return(0)
+			} else {
+				ATC(mat[ind, , drop = FALSE], cor_fun = cor_fun, min_cor = min_cor, power = power,
+					mc.cores = mc.cores, n_sampling = n_sampling, q_sd = q_sd, group = NULL, ...)
+			}
+		})
+		v = numeric(nrow(mat))
+		for(i in seq_along(ind_list)) {
+			v[ ind_list[[i]] ] = sl[[i]]
+		}
+		return(v)
+	}
 
 	# internally we do it by columns to avoid too many t() callings
 	mat = t(mat)
