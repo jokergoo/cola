@@ -149,7 +149,7 @@ submit_to_david = function(genes, email,
 
 
 # == title
-# Perform Gene Ontology Enrichment on Signature Genes
+# Perform functional enrichment on signature genes
 #
 # == param
 # -object A `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
@@ -158,14 +158,17 @@ submit_to_david = function(genes, email,
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
 # -org_db Annotation database.
-# -ontology "BP": biological processes, "MF": molecular functions, "CC": cellular components. 
-# -min_set_size The minimal size of the GO gene sets.
-# -max_set_size The maximal size of the GO gene sets.
+# -ontology See corresponding argumnet in `functional_enrichment,ANY-method`.
+# -min_set_size The minimal size of the gene sets.
+# -max_set_size The maximal size of the gene sets.
+# -... Pass to `functional_enrichment,ANY-method`.
 #
 # == details
 # For each method, the signature genes are extracted based on the best k.
 #
 # It calls `functional_enrichment,ConsensusPartition-method` on the consensus partitioning results for each method.
+#
+# For how to control the parameters of functional enrichment, see help page of `functional_enrichment,ANY-method`.
 #
 # == values
 # A list where each element in the list corresponds to enrichment results from a single method.
@@ -209,7 +212,7 @@ setMethod(f = "functional_enrichment",
 })
 
 # == title
-# Perform Gene Ontology Enrichment on Signature Genes
+# Perform functional enrichment on signature genes
 #
 # == param
 # -object a `ConsensusPartition-class` object from `run_all_consensus_partition_methods`.
@@ -220,18 +223,17 @@ setMethod(f = "functional_enrichment",
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
 # -org_db Annotation database.
-# -ontology "BP": biological processes, "MF": molecular functions, "CC": cellular components. 
-# -min_set_size The minimal size of the GO gene sets.
-# -max_set_size The maximal size of the GO gene sets.
+# -ontology See corresponding argumnet in `functional_enrichment,ANY-method`.
+# -min_set_size The minimal size of the gene sets.
+# -max_set_size The maximal size of the gene sets.
 # -verbose Whether to print messages.
-# -... Other arguments.
+# -... Pass to `functional_enrichment,ANY-method`.
+#
+# == details
+# For how to control the parameters of functional enrichment, see help page of `functional_enrichment,ANY-method`.
 #
 # == value
-# A list of three data frames which correspond to results for three GO catalogues:
-#
-# - ``BP``: biological processes
-# - ``MF``: molecular functions
-# - ``CC``: cellular components
+# A list of data frames which correspond to results for the functional ontologies:
 #
 setMethod(f = "functional_enrichment",
     signature = "ConsensusPartition",
@@ -292,7 +294,7 @@ setMethod(f = "functional_enrichment",
 })
 
 # == title
-# Perform Gene Ontology Enrichment on Signature Genes
+# Perform functional enrichment on signature genes
 #
 # == param
 # -object A vector of gene IDs.
@@ -300,18 +302,18 @@ setMethod(f = "functional_enrichment",
 #       named vector should be provided where the names are the gene IDs in the matrix and values
 #       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
 # -org_db Annotation database.
-# -ontology "BP": biological processes, "MF": molecular functions, "CC": cellular components. 
-# -min_set_size The minimal size of the GO gene sets.
-# -max_set_size The maximal size of the GO gene sets.
+# -ontology Following ontologies are allowed: ``BP``, ``CC``, ``MF``, ``KEGG``, ``Reactome``.
+#           ``MSigDb`` with the gmt file set by ``gmt_file`` argument, or ``gmt`` for general gmt gene sets.
+# -min_set_size The minimal size of the gene sets.
+# -max_set_size The maximal size of the gene sets.
 # -verbose Whether to print messages.
-# -... Other arguments.
+# -... Pass to `functional_enrichment,ANY-method`.
+#
+# == details
+# The function enrichment is applied by clusterProfiler, DOSE or ReactomePA packages.
 #
 # == value
-# A list of three data frames which correspond to results for three GO catalogues:
-#
-# - ``BP``: biological processes
-# - ``MF``: molecular functions
-# - ``CC``: cellular components
+# A data frame.
 #
 setMethod(f = "functional_enrichment",
     signature = "ANY",
@@ -635,62 +637,4 @@ map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
     x = x[!is.na(x)]
     return(x)
 }
-
-			  
-# == title
-# Perform Gene Ontology Enrichment on Signature Genes
-#
-# == param
-# -object A `HierarchicalPartition-class` object.
-# -gene_fdr_cutoff Cutoff of FDR to define significant signature genes.
-# -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
-#       named vector should be provided where the names are the gene IDs in the matrix and values
-#       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
-# -org_db Annotation database.
-# -min_set_size The minimal size of the GO gene sets.
-# -max_set_size The maximal size of the GO gene sets.
-#
-# == details
-# On each node of the partition hierarchy, the signature genes are extracted based on the best k.
-#
-# It calls `functional_enrichment,ConsensusPartition-method` on the consensus partitioning results on each node.
-#
-# == values
-# A list where each element in the list corresponds to enrichment results on a node.
-#
-setMethod(f = "functional_enrichment",
-    signature = "HierarchicalPartition",
-    definition = function(object, gene_fdr_cutoff = cola_opt$fdr_cutoff,
-    id_mapping = guess_id_mapping(rownames(object), org_db, FALSE), 
-    org_db = "org.Hs.eg.db",
-    min_set_size = 10, max_set_size = 1000) {
-
-    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
-
-    id_mapping = id_mapping
-    mc.cores = 1
-
-    if(mc.cores == 1) {
-        lt = list()
-        for(i in seq_along(object@list)) {
-            nm = names(object@list)[i]
-
-            cat("-----------------------------------------------------------\n")
-            qqcat("* enrich signature genes to @{ontology} terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
-            lt[[nm]] = functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
-                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ")
-        }
-    } else {
-        lt = mclapply(seq_along(object@list), function(i) {
-            nm = names(object@list)[i]
-
-            qqcat("* enrich signature genes to @{ontology} terms on node '@{nm}' on @{org_db}, @{i}/@{length(object@list)}\n")
-            functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
-                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE)
-        }, mc.cores = mc.cores)
-        names(lt) = names(object@list)
-    }
-
-    return(lt)
-})
-			  
+		  

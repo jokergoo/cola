@@ -18,16 +18,17 @@ Suggest the best number of partitions
 \details{
 The best k is selected according to following rules:
 
-1. k with rand index larger than \code{jaccard_index_cutoff} are removed. If all k are removed, the best k is defined as \code{NA}.
-2. If there are some k having \code{1-PAC} larger than 0.9, the largest k is selected as the best k.
-3. If it does not fit rule 2, the k with highest vote of highest 1-PAC, mean_silhouette and concordance scores is
-   selected as the best k.
+\itemize{
+  \item All k with Jaccard index larger than 0.95 are removed because increasing k does not provide enough extra information. If all k are removed, it is marked as no subgroup is detected. 
+  \item For all k with 1-PAC score larger than 0.9, the maximal k is taken as the best k, and other k are marked as optional k. 
+  \item If it does not fit the second rule. The k with the maximal vote of the highest 1-PAC score, highest mean silhouette, and highest concordance is taken as the best k.
+}
 
-\code{\link{suggest_best_k}} function only gives suggestion of selecting
-a reasonable best k. Users still need to look at the plots (e.g. by \code{\link{select_partition_number}} or \code{\link{consensus_heatmap}} functions), or even
-by checking whether the subgrouping gives a reasonable signatures by \code{\link{get_signatures}}, to pick a reasonable k that best explains their study.
-
-The best k with 1-PAC larger than 0.9 is treated as a stable partition.
+Additionally, if 1-PAC for the best k is larger than 0.9 (10% ambiguity for
+the partition), cola marks it as a stable partition. It should be noted that
+it is difficult to find the best k deterministically, we encourage users to
+compare results for all k and determine a proper one which best explain
+their studies.
 }
 \value{
 The best k.

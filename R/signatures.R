@@ -455,7 +455,7 @@ setMethod(f = "get_signatures",
 	}
 
 	# group2 = factor(group2, levels = sort(unique(group2)))
-	# ht_list = Heatmap(group2, name = "Group", show_row_names = FALSE, width = unit(5, "mm"), col = brewer_pal_set2_col)
+	# ht_list = Heatmap(group2, name = "Group", show_row_names = FALSE, width = unit(5, "mm"), col = cola_opt$color_set_2)
 	ht_list = NULL
 
 	membership_mat = get_membership(object, k)
@@ -464,7 +464,7 @@ setMethod(f = "get_signatures",
 	if(internal) {
 		ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
 				Class = class_df$class[column_used_logical],
-				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
+				col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
 				show_annotation_name = !has_ambiguous & !internal,
 				annotation_name_side = "right",
 				show_legend = TRUE)
@@ -476,7 +476,7 @@ setMethod(f = "get_signatures",
 					      col = NA),
 				bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
 				height = unit(15, "mm")),
-			col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
+			col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
 			show_annotation_name = !has_ambiguous & !internal,
 			annotation_name_side = "right",
 			show_legend = TRUE)
@@ -502,7 +502,7 @@ setMethod(f = "get_signatures",
 		if(internal) {
 			ha2 = HeatmapAnnotation(Prob = membership_mat[!column_used_logical, ,drop = FALSE],
 				Class = class_df$class[!column_used_logical],
-				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
+				col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
 				show_annotation_name = !internal,
 				annotation_name_side = "right",
 				show_legend = FALSE)
@@ -514,7 +514,7 @@ setMethod(f = "get_signatures",
 					      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
 					bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
 					height = unit(15, "mm")), 
-				col = list(Class = brewer_pal_set2_col, Prob = prop_col_fun),
+				col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
 				show_annotation_name = c(TRUE, TRUE, FALSE) & !internal,
 				annotation_name_side = "right",
 				show_legend = FALSE)
@@ -805,7 +805,7 @@ Ftest = function(mat, class) {
 # 	par(mfrow = c(n_gp + 1, 1), mar = c(2, 4, 1, 3))
 # 	plot(NULL, type = "n", xlim = x_range, ylim = y_range, ylab = "density", xlab = NULL)
 # 	for(i in 1:ncol(data)) {
-# 		lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = 1)
+# 		lines(all_den_list[[i]], col = cola_opt$color_set_2[cl[i]], lwd = 1)
 # 	}
 # 	mtext("all rows", side = 4, line = 1)
 
@@ -818,7 +818,7 @@ Ftest = function(mat, class) {
 
 # 		plot(NULL, type = "n", xlim = x_range, ylim = y_range, ylab = "density", xlab = NULL)
 # 		for(i in 1:ncol(data)) {
-# 			lines(all_den_list[[i]], col = brewer_pal_set2_col[cl[i]], lwd = ifelse(cl[i] == j, 2, 0.5))
+# 			lines(all_den_list[[i]], col = cola_opt$color_set_2[cl[i]], lwd = ifelse(cl[i] == j, 2, 0.5))
 # 		}
 # 		mtext(qq("subgroup @{j}/@{k}"), side = 4, line = 1)
 # 	}

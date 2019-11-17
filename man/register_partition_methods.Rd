@@ -12,7 +12,7 @@ register_partition_methods(..., scale_method = c("z-score", "min-max", "none"))
 \arguments{
 
   \item{...}{A named list of functions.}
-  \item{scale_method}{Normally, data matrix is scaled by rows before sent to the partition function. The default scaling is applied by \code{\link[base]{scale}}. However, some partition functions may not accept negative values which  are produced by \code{\link[base]{scale}}. Here \code{scale_method} can be set to \code{min-max} which scales rows by \code{(x - min)/(max - min)}. Note here \code{scale_method} only means the method to scale rows. When \code{scale_rows} is set to \code{FALSE} in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}, there wil be no row scaling when doing partition. The value for \code{scale_method} can be a vector if user specifies more than one partition function.}
+  \item{scale_method}{Normally, data matrix is scaled by rows before sent to the partition function. The default scaling is applied by \code{\link[base]{scale}}. However, some partition functions may not accept negative values which  are produced by \code{\link[base]{scale}}. Here \code{scale_method} can be set to \code{min-max} which scales rows by \code{(x - min)/(max - min)}. Note here \code{scale_method} only means the method to scale rows. When \code{scale_rows} is set to \code{FALSE} in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}, there wil be no row scaling when doing partitioning. The value for \code{scale_method} can be a vector if user specifies more than one partition function.}
 
 }
 \details{
@@ -23,8 +23,8 @@ If users forget to add \code{...}, it is added internally.
 
 The function should return a vector of partitions (or class labels) or an object which can be recognized by \code{\link[clue]{cl_membership}}.
 
-The partition function should be applied on columns (Users should be careful with this because some of the R functions apply on rows and
-some of the R functions apply on columns). E.g. following is how we register \code{\link[stats]{kmeans}} partition method:
+The partition function should be applied on columns (Users should be careful with this because some R functions apply on rows and
+some R functions apply on columns). E.g. following is how we register \code{\link[stats]{kmeans}} partition method:
 
   \preformatted{
   register_partition_methods(
@@ -48,7 +48,7 @@ There are following default partition methods:
   \item{"mclust"}{by \code{\link[mclust]{Mclust}}. mclust is applied to the first three principle components from rows.}
 }
 
-Users can register other two pre-defined partition methods by \code{\link{register_NMF}} and \code{\link{register_SOM}}.
+Users can register two other pre-defined partition methods by \code{\link{register_NMF}} and \code{\link{register_SOM}}.
 }
 \value{
 No value is returned.

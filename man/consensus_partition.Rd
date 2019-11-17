@@ -60,7 +60,7 @@ to see which functions can be applied on it.
 }
 \seealso{
 \code{\link{run_all_consensus_partition_methods}} runs consensus partition with multiple top-value methods
-and multiple partition methods. \code{\link{hierarchical_partition}} runs consensus partition hierarchically.
+and multiple partition methods.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

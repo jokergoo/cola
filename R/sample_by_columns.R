@@ -1,7 +1,9 @@
 ######################################
-## only for testing column resampling
+## only for column sampling
 ######################################
 
+# for a single partition, all classes are assigned as 0 if the corresponding label is NA
+# clue:::.cl_membership_from_class_ids
 cl_membership2 = function(x, k) {
 	m = matrix(0, nrow = n_of_objects(x), ncol = k)
 	

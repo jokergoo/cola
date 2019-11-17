@@ -341,17 +341,21 @@ recalc_stats = function(rl) {
 # == details
 # The best k is selected according to following rules:
 #
-# 1. k with rand index larger than ``jaccard_index_cutoff`` are removed. If all k are removed, the best k is defined as ``NA``.
-# 2. If there are some k having ``1-PAC`` larger than 0.9, the largest k is selected as the best k.
-# 3. If it does not fit rule 2, the k with highest vote of highest 1-PAC, mean_silhouette and concordance scores is
-#    selected as the best k.
+# - All k with Jaccard index larger than 0.95 are removed because increasing k does not
+#   provide enough extra information. If all k are removed, it is marked as no
+#   subgroup is detected. 
+# - For all k with 1-PAC score larger than 0.9, the
+#   maximal k is taken as the best k, and other k are marked as optional k. 
+# - If it does not fit the second rule. The k with the maximal vote of the highest
+#   1-PAC score, highest mean silhouette, and highest concordance is taken as
+#   the best k.
 #
-# `suggest_best_k` function only gives suggestion of selecting
-# a reasonable best k. Users still need to look at the plots (e.g. by `select_partition_number` or `consensus_heatmap` functions), or even
-# by checking whether the subgrouping gives a reasonable signatures by `get_signatures`, to pick a reasonable k that best explains their study. 
+# Additionally, if 1-PAC for the best k is larger than 0.9 (10% ambiguity for
+# the partition), cola marks it as a stable partition. It should be noted that
+# it is difficult to find the best k deterministically, we encourage users to
+# compare results for all k and determine a proper one which best explain
+# their studies.
 #
-# The best k with 1-PAC larger than 0.9 is treated as a stable partition.
-# 
 # == value
 # The best k.
 #

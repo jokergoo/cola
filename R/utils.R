@@ -7,16 +7,16 @@ if(!exists("strrep")) {
 }
 
 # == title
-# Relabel class IDs according to the reference ID
+# Relabel class labels according to the reference labels
 #
 # == param
-# -class A vector of class IDs.
-# -ref A vector of reference IDs.
-# -full_set The full set of ID levels. 
+# -class A vector of class labels.
+# -ref A vector of reference labels.
+# -full_set The full set of labels. 	
 # -return_map Whether return the mapping or the adjusted labels.
 #
 # == details
-# In partition, the exact value of the class ID is not of importance. E.g. for two partitions
+# In partitions, the exact value of the class label is not of importance. E.g. for two partitions
 # ``a, a, a, b, b, b, b`` and ``b, b, b, a, a, a, a``, they are the same partitions although the labels
 # of ``a`` and ``b`` are switched in the two partitions. Here `relabel_class` function switches the labels
 # in ``class`` vector according to the labels in ``ref`` vector to maximize ``sum(class == ref)``.
@@ -24,17 +24,17 @@ if(!exists("strrep")) {
 # Mathematically, this is called linear sum assignment problem and it is solved by `clue::solve_LSAP`.
 #
 # == value
-# A named vector where names correspond to the IDs in ``class`` and values correspond to ``ref``,
-# which means ``map = relabel_class(class, ref); map[class]`` returns the relabelled IDs.
+# A named vector where names correspond to the labels in ``class`` and values correspond to ``ref``,
+# which means ``map = relabel_class(class, ref); map[class]`` returns the relabelled labels.
 #
 # The returned object attaches a data frame with three columns:
 #
-# - original IDs in ``class``
-# - adjusted IDs according to ``ref``
-# - reference IDs in ``ref``
+# - original labels. in ``class``
+# - adjusted labels. according to ``ref``
+# - reference labels. in ``ref``
 #
 # If ``return_map`` in the `relabel_class` is set to `FALSE`, the function simply returns
-# a vector of adjusted class IDs.
+# a vector of adjusted class labels.
 #
 # If the function returns the mapping vector (when ``return_map = TRUE``), the mapping variable
 # is always character, which means, if your ``class`` and ``ref`` are numeric, you need to convert
@@ -44,6 +44,15 @@ if(!exists("strrep")) {
 # == example
 # class = c(rep("a", 10), rep("b", 3))
 # ref = c(rep("b", 4), rep("a", 9))
+# relabel_class(class, ref)
+# relabel_class(class, ref, return_map = FALSE)
+# # if class and ref are from completely different sets
+# class = c(rep("A", 10), rep("B", 3))
+# relabel_class(class, ref)
+#
+# # class labels are numeric
+# class = c(rep(1, 10), rep(2, 3))
+# ref = c(rep(2, 4), rep(1, 9))
 # relabel_class(class, ref)
 # relabel_class(class, ref, return_map = FALSE)
 relabel_class = function(class, ref, full_set = union(class, ref), return_map = TRUE) {
@@ -65,7 +74,8 @@ relabel_class = function(class, ref, full_set = union(class, ref), return_map = 
 
 	imap = clue::solve_LSAP(m, maximum = TRUE)
 	map = structure(rownames(m)[imap], names = rownames(m))
-	unmapped = setdiff(full_set, map)
+	map = map[unique(class)]
+	unmapped = setdiff(setdiff(full_set, class), names(map))
 	if(length(unmapped)) {
 		map = c(map, structure(unmapped, names = unmapped))
 	}

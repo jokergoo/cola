@@ -12,8 +12,8 @@ Make HTML report from the ConsensusPartition object
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{output_dir}{The output directory where the report is put.}
-  \item{env}{Where The objects in the report are found, internally used.}
+  \item{output_dir}{The output directory where the report is saved.}
+  \item{env}{Where the objects in the report are found, internally used.}
 
 }
 \details{

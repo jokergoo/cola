@@ -14,7 +14,7 @@ knitr_add_tab_item(code, header, prefix, desc = "", opt = NULL,
 
   \item{code}{R code to execute.}
   \item{header}{Header or the title for the tab.}
-  \item{prefix}{Prefix of chunk label.}
+  \item{prefix}{Prefix of the chunk label.}
   \item{desc}{Decription in the tab.}
   \item{opt}{Options for the knitr chunk.}
   \item{message}{Message to print.}

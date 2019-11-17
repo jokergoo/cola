@@ -29,7 +29,7 @@ The \code{\link{ConsensusPartition-class}} has following methods:
   \item{\code{\link{suggest_best_k,ConsensusPartition-method}}:}{guess the best number of partitions.}
   \item{\code{\link{test_to_known_factors,ConsensusPartition-method}}:}{test correlation between predicted classes and known factors, if available.}
   \item{\code{\link{cola_report,ConsensusPartition-method}}:}{generate a HTML report for the whole analysis.}
-  \item{\code{\link{GO_enrichment,ConsensusPartition-method}}:}{perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.}
+  \item{\code{\link{functional_enrichment,ConsensusPartition-method}}:}{perform functional enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.}
 }}
 \author{
 Zuguang Gu <z.gu@dkfz.de>

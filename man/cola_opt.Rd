@@ -24,10 +24,13 @@ There are following global parameters:
 \describe{
   \item{\code{group_diff}}{Used in \code{\link{get_signatures,ConsensusPartition-method}}.}
   \item{\code{fdr_cutoff}}{Used in \code{\link{get_signatures,ConsensusPartition-method}}.}
+  \item{\code{color_set_2}}{Colors for the predicted classes.}
 }
 }
 \examples{
-# There is no example
-NULL
-
+cola_opt
+cola_opt$group_diff = 0.2  # e.g. for methylation datasets
+cola_opt$fdr_cutoff = 0.1  # e.g. for methylation datasets
+cola_opt
+cola_opt(RESET = TRUE)
 }

@@ -39,7 +39,7 @@
 #
 # == seealso
 # `run_all_consensus_partition_methods` runs consensus partition with multiple top-value methods
-# and multiple partition methods. `hierarchical_partition` runs consensus partition hierarchically.
+# and multiple partition methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -754,7 +754,7 @@ setMethod(f = "consensus_heatmap",
 	Heatmap(class_df$silhouette, name = "Silhouette", width = unit(5, "mm"),
 		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple")),
 		show_column_names = !internal) +
-	Heatmap(class_ids, name = "Class", col = brewer_pal_set2_col,
+	Heatmap(class_ids, name = "Class", col = cola_opt$color_set_2,
 		show_row_names = FALSE, width = unit(5, "mm"),
 		show_column_names = !internal)
 	
@@ -843,7 +843,7 @@ setMethod(f = "membership_heatmap",
 	membership_each = t(membership_each)
 	mat_col_od = column_order_by_group(factor(class_ids, levels = sort(unique(class_ids))), membership_each)
 
-	col = brewer_pal_set1_col[1:k]
+	col = cola_opt$color_set_1[1:k]
 
 	if(is.null(anno)) {
 		bottom_anno = NULL
@@ -882,13 +882,13 @@ setMethod(f = "membership_heatmap",
 	ht = Heatmap(as.character(param$top_n), name = "top_n", col = n_row_col,
 		width = unit(10, "mm"), show_row_names = FALSE, show_heatmap_legend = FALSE,
 		show_column_names = FALSE) +
-	Heatmap(membership_each, name = "Class", show_row_dend = FALSE, show_column_dend = FALSE, col = brewer_pal_set2_col,
+	Heatmap(membership_each, name = "Class", show_row_dend = FALSE, show_column_dend = FALSE, col = cola_opt$color_set_2,
 		column_title = ifelse(internal, "", qq("membership heatmap, k = @{k}")), 
 		column_order = mat_col_od, cluster_columns = FALSE,
 		row_split = factor(param$top_n, levels = sort(unique(param$top_n))),
 		cluster_row_slices = FALSE,
 		top_annotation = HeatmapAnnotation(Prob = membership_mat,
-			Class = class_ids, col = c(list(Class = brewer_pal_set2_col), Prob = col_fun),
+			Class = class_ids, col = c(list(Class = cola_opt$color_set_2), Prob = col_fun),
 			show_annotation_name = !internal),
 		bottom_annotation = bottom_anno,
 		show_column_names = show_column_names,
@@ -1008,30 +1008,30 @@ setMethod(f = "dimension_reduction",
 	n_class = length(class_level)
 		
 	if(remove) {
-		dimension_reduction(data[, l], pch = 16, col = brewer_pal_set2_col[as.character(class_df$class[l])],
+		dimension_reduction(data[, l], pch = 16, col = cola_opt$color_set_2[as.character(class_df$class[l])],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
 			method = method, control = control, scale_rows = scale_rows, internal = internal, verbose = verbose)
 		if(!internal) {
 			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
 				pch = c(rep(16, n_class), 0),
-				col = c(brewer_pal_set2_col[class_level], "white"), xjust = 0, yjust = 0.5,
+				col = c(cola_opt$color_set_2[class_level], "white"), xjust = 0, yjust = 0.5,
 				title = "Class", title.adj = 0.1, bty = "n",
 				text.col = c(rep("black", n_class), "white"))
 		}
 	} else {
-		dimension_reduction(data, pch = ifelse(l, 16, 4), col = brewer_pal_set2_col[as.character(class_df$class)],
+		dimension_reduction(data, pch = ifelse(l, 16, 4), col = cola_opt$color_set_2[as.character(class_df$class)],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
 			method = method, control = control, scale_rows = scale_rows, internal = internal, verbose = verbose)
 		if(!internal) {
 			if(any(!l)) {
 				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
 						pch = c(rep(16, n_class), 4),
-						col = c(brewer_pal_set2_col[class_level], "black"), xjust = 0, yjust = 0.5,
+						col = c(cola_opt$color_set_2[class_level], "black"), xjust = 0, yjust = 0.5,
 						title = "Class", title.adj = 0.1, bty = "n")
 			} else {
 				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
 					pch = c(rep(16, n_class), 0),
-					col = c(brewer_pal_set2_col[class_level], "white"), xjust = 0, yjust = 0.5,
+					col = c(cola_opt$color_set_2[class_level], "white"), xjust = 0, yjust = 0.5,
 					title = "Class", title.adj = 0.1, bty = "n",
 					text.col = c(rep("black", n_class), "white"))
 			}

@@ -13,7 +13,7 @@ KNITR_TAB_ENV$css_added = FALSE
 # == param
 # -code R code to execute.
 # -header Header or the title for the tab.
-# -prefix Prefix of chunk label.
+# -prefix Prefix of the chunk label.
 # -desc Decription in the tab.
 # -opt Options for the knitr chunk.
 # -message Message to print.
@@ -156,9 +156,9 @@ $( function() {
 #
 # == param
 # -object A `ConsensusPartitionList-class` object.
-# -output_dir The output directory where the report is put.
+# -output_dir The output directory where the report is saved.
 # -mc.cores Multiple cores to use.
-# -env Where The objects in the report are found, internally used.
+# -env Where the objects in the report are found, internally used.
 #
 # == details
 # The `ConsensusPartitionList-class` object contains results for all top-value methods and all partition methods.
@@ -198,8 +198,8 @@ setMethod(f = "cola_report",
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -output_dir The output directory where the report is put.
-# -env Where The objects in the report are found, internally used.
+# -output_dir The output directory where the report is saved.
+# -env Where the objects in the report are found, internally used.
 #
 # == details
 # It generates report for a specific combination of top-value method and partition method.

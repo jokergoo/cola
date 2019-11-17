@@ -25,7 +25,7 @@
 # -`collect_classes,ConsensusPartitionList-method`: make a plot which contains predicted classes from all combinations of top-value methods and partition methods.
 # -`test_to_known_factors,ConsensusPartitionList-method`: test correlation between predicted classes and known annotations, if provided.
 # -`cola_report,ConsensusPartitionList-method`: generate a HTML report for the whole analysis.
-# -`GO_enrichment,ConsensusPartitionList-method`: perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.
+# -`functional_enrichment,ConsensusPartitionList-method`: perform functional enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.
 #
 # == seealso
 # The `ConsensusPartition-class`.
@@ -71,7 +71,7 @@ ConsensusPartitionList = setClass("ConsensusPartitionList",
 # -`suggest_best_k,ConsensusPartition-method`: guess the best number of partitions.
 # -`test_to_known_factors,ConsensusPartition-method`: test correlation between predicted classes and known factors, if available.
 # -`cola_report,ConsensusPartition-method`: generate a HTML report for the whole analysis.
-# -`GO_enrichment,ConsensusPartition-method`: perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.
+# -`functional_enrichment,ConsensusPartition-method`: perform functional enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -99,38 +99,3 @@ ConsensusPartition = setClass("ConsensusPartition",
 )
 
 
-
-# == title
-# The HierarchicalPartition class
-#
-# == alias
-# HierarchicalPartition
-#
-# == methods
-# The `HierarchicalPartition-class` has following methods:
-#
-# -`hierarchical_partition`: constructor method.
-# -`collect_classes,HierarchicalPartition-method`: plot the hierarchy of subgroups predicted.
-# -`get_classes,HierarchicalPartition-method`: get the class IDs of subgroups.
-# -`suggest_best_k,HierarchicalPartition-method`: guess the best number of partitions for each node.
-# -`get_matrix,HierarchicalPartition-method`: get the original matrix.
-# -`get_signatures,HierarchicalPartition-method`: get the signatures for each subgroup.
-# -`dimension_reduction,HierarchicalPartition-method`: make dimension reduction plots.
-# -`test_to_known_factors,HierarchicalPartition-method`: test correlation between predicted subgrouping and known annotations, if available.
-# -`cola_report,HierarchicalPartition-method`: generate a HTML report for the whole analysis.
-# -`GO_enrichment,HierarchicalPartition-method`: perform GO enrichment analysis on significant genes if rows in the matrix can be corresponded to genes.
-#
-# == author
-# Zuguang Gu <z.gu@dkfz.de>
-#
-HierarchicalPartition = setClass("HierarchicalPartition",
-    slots = list(
-        list = "list",
-        best_k = "numeric",
-        hierarchy = "matrix",
-        subgroup = "character",
-        subgroup_col = "character",
-        call = "ANY",
-        .env = "environment"
-    )
-)

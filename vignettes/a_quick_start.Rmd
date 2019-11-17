@@ -48,16 +48,4 @@ row. This step is optional.
 extract top n rows are `sd`, `cv`, `MAD` and `ATC`.
 3. Generate a detailed HTML report for the complete analysis.
 
-
-To perform hierarchical partitioning, run following code:
-
-```{r, eval = FALSE}
-# code only for demonstration
-rh = hierarchical_partition(mat, mc.cores = ...)
-cola_report(rh, output_dir = ..., mc.cores = ...)
-```
-
-For the hierarchical partition, you can only select one partition method and one top-value method.
-The default partition method is `kmeans` and the default top-value method is `MAD`.
-
 There are examples on real datasets for cola analysis that can be found at https://jokergoo.github.io/cola_examples/.

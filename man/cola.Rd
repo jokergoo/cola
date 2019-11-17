@@ -10,7 +10,7 @@ A bottle of cola
 cola()
 }
 \details{
-Simply provide you a bottle of cola.
+Simply serve you a bottle of cola.
 
 The ASCII art is from \url{http://ascii.co.uk/art/coke} .
 }

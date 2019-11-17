@@ -160,7 +160,7 @@ get_partition_method = function(method, partition_param = list()) {
 #        are produced by `base::scale`. Here ``scale_method`` can be set to ``min-max``
 #        which scales rows by ``(x - min)/(max - min)``. Note here ``scale_method`` only means
 #        the method to scale rows. When ``scale_rows`` is set to ``FALSE`` in `consensus_partition`
-#        or `run_all_consensus_partition_methods`, there wil be no row scaling when doing partition.
+#        or `run_all_consensus_partition_methods`, there wil be no row scaling when doing partitioning.
 #        The value for ``scale_method`` can be a vector if user specifies more than one partition function.
 # 
 # == details 
@@ -171,8 +171,8 @@ get_partition_method = function(method, partition_param = list()) {
 #
 # The function should return a vector of partitions (or class labels) or an object which can be recognized by `clue::cl_membership`.
 # 
-# The partition function should be applied on columns (Users should be careful with this because some of the R functions apply on rows and
-# some of the R functions apply on columns). E.g. following is how we register `stats::kmeans` partition method:
+# The partition function should be applied on columns (Users should be careful with this because some R functions apply on rows and
+# some R functions apply on columns). E.g. following is how we register `stats::kmeans` partition method:
 #
 #   register_partition_methods(
 #       kmeans = function(mat, k, ...) {
@@ -195,7 +195,7 @@ get_partition_method = function(method, partition_param = list()) {
 # -"pam" by `cluster::pam`.
 # -"mclust" by `mclust::Mclust`. mclust is applied to the first three principle components from rows.
 #
-# Users can register other two pre-defined partition methods by `register_NMF` and `register_SOM`.
+# Users can register two other pre-defined partition methods by `register_NMF` and `register_SOM`.
 #
 # == value
 # No value is returned.

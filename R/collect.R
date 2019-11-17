@@ -538,7 +538,7 @@ setMethod(f = "collect_classes",
 	clen = cl_ensemble(list = pl)
 	m_diss = cl_dissimilarity(clen, method = "comembership")
 
-	ht = Heatmap(m, name = "Class", col = brewer_pal_set2_col, column_order = column_order,
+	ht = Heatmap(m, name = "Class", col = cola_opt$color_set_2, column_order = column_order,
 		show_column_names = show_column_names,
 		column_title = qq("classification from all @{nrow(m)} methods, k = @{k}"),
 		row_names_side = "left", cluster_rows = {if(nrow(m) == 1) FALSE else hclust(m_diss)}, 
@@ -549,14 +549,14 @@ setMethod(f = "collect_classes",
 			grid.rect(x, y, w, h, gp = gpar(fill = col, col = col))
 		},
 		top_annotation = HeatmapAnnotation(consensus_class = consensus_class, 
-			col = list(consensus_class = brewer_pal_set2_col),
+			col = list(consensus_class = cola_opt$color_set_2),
 			show_annotation_name = TRUE, annotation_name_side = "left", show_legend = FALSE),
 		bottom_annotation = bottom_anno,
 		left_annotation = rowAnnotation("Top-value method" = top_value_method_vec, 
 			"Partition method" = partition_method_vec,
 			annotation_name_side = "bottom",
-			col = list("Top-value method" = structure(names = top_value_method, brewer_pal_set1_col[seq_along(top_value_method)]),
-			           "Partition method" = structure(names = partition_method, brewer_pal_set2_col[seq_along(partition_method)])),
+			col = list("Top-value method" = structure(names = top_value_method, cola_opt$color_set_1[seq_along(top_value_method)]),
+			           "Partition method" = structure(names = partition_method, cola_opt$color_set_2[seq_along(partition_method)])),
 			width = unit(10, "mm"),
 			show_annotation_name = FALSE))
 
@@ -614,7 +614,7 @@ setMethod(f = "collect_classes",
 			heatmap_legend_param = list(title = "Prob"),
 			column_title = ifelse(internal, "", qq("k = @{all_k[i]}")),
 			name = paste0("membership_", all_k[i])) + 
-			Heatmap(class, col = brewer_pal_set2_col, 
+			Heatmap(class, col = cola_opt$color_set_2, 
 				show_row_names = FALSE, show_heatmap_legend = i == length(all_k), 
 				show_column_names = !internal,
 				heatmap_legend_param = list(title = "Class"),

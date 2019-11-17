@@ -1,4 +1,7 @@
- 
+
+############################
+# merge k partitions into 2 partitions
+#
 merge_into_two_groups = function(object, verbose = TRUE) {
 
 	object2 = new("ConsensusPartition")
@@ -69,7 +72,7 @@ merge_into_two_groups = function(object, verbose = TRUE) {
 }
 
 # merge k groups into 2 groups
-merge_single = function(obj, verbose = TRUE) {
+merge_single = function(obj, verbose = TRUE, sample_by = "row") {
 
 	k = obj$param$k[1]
 

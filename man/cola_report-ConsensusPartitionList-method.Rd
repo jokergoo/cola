@@ -12,9 +12,9 @@ Make HTML report from the ConsensusPartitionList object
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
-  \item{output_dir}{The output directory where the report is put.}
+  \item{output_dir}{The output directory where the report is saved.}
   \item{mc.cores}{Multiple cores to use.}
-  \item{env}{Where The objects in the report are found, internally used.}
+  \item{env}{Where the objects in the report are found, internally used.}
 
 }
 \details{

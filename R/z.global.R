@@ -21,7 +21,14 @@ names(brewer_pal_set2_col) = 1:16
 #
 # -``group_diff`` Used in `get_signatures,ConsensusPartition-method`.
 # -``fdr_cutoff`` Used in `get_signatures,ConsensusPartition-method`.
+# -``color_set_2`` Colors for the predicted classes.
 #
+# == example
+# cola_opt
+# cola_opt$group_diff = 0.2  # e.g. for methylation datasets
+# cola_opt$fdr_cutoff = 0.1  # e.g. for methylation datasets
+# cola_opt
+# cola_opt(RESET = TRUE)
 cola_opt = function(..., RESET = FALSE, READ.ONLY = NULL, LOCAL = FALSE, ADD = FALSE) {}
 cola_opt = setGlobalOptions(
 	raster_resize = list(
@@ -29,7 +36,9 @@ cola_opt = setGlobalOptions(
 		.visible = FALSE
 	),
 	group_diff = 0,
-	fdr_cutoff = 0.05
+	fdr_cutoff = 0.05,
+	color_set_1 = brewer_pal_set1_col,
+	color_set_2 = brewer_pal_set2_col
 )
 
 TEMPLATE_DIR = NULL

@@ -19,7 +19,7 @@ cola_logo =
 # A bottle of cola
 # 
 # == details
-# Simply provide you a bottle of cola.
+# Simply serve you a bottle of cola.
 #
 # The ASCII art is from http://ascii.co.uk/art/coke .
 #
