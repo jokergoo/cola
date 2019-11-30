@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Framework for Consensus and Hierarchical Partitioning • cola</title>
+<title>A Framework for Consensus Partitioning • cola</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="A Framework for Consensus and Hierarchical Partitioning">
+<script src="pkgdown.js"></script><meta property="og:title" content="A Framework for Consensus Partitioning">
 <meta property="og:description" content="Subgroup classification is a basic task in genomic data analysis,
   especially for gene expression data and methylation data. It can predict
   novel subgroups when there is nothing known about the data or it can test
@@ -22,9 +22,7 @@
   3. It allows running multiple methods at the same time and provides
   functionalities to compare results in a straightforward way. 4. It provides
   a new method to extract features which are more efficient to separate
-  subgroups. 5. It allows doing partitioning in a hierarchical way to detect
-  subgroups with relatively smaller difference. 6. It generates detailed
-  reports for the complete analysis.">
+  subgroups. 5. It generates detailed reports for the complete analysis.">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -44,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.1</span>
       </span>
     </div>
 
@@ -100,7 +98,7 @@
 <div id="cola" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#cola" class="anchor"></a>cola</h1></div>
-<p>A General Framework for Consensus and Hierarchical Partitioning</p>
+<p>A General Framework for Consensus Partitioning</p>
 <div id="features" class="section level2">
 <h2 class="hasAnchor">
 <a href="#features" class="anchor"></a>Features</h2>
@@ -109,7 +107,6 @@
 <li>It provides rich visualizations for intepreting the results.</li>
 <li>It allows running multiple methods at the same time and provides functionalities to compare results in a straightforward way.</li>
 <li>It provides a new method to extract features which are more efficient to separate subgroups.</li>
-<li>It allows doing partitioning in a hierarchical way to detect subgroups with relatively smaller difference.</li>
 <li>It generates detailed HTML reports for the complete analysis.</li>
 </ol>
 </div>
@@ -117,24 +114,24 @@
 <h2 class="hasAnchor">
 <a href="#install" class="anchor"></a>Install</h2>
 <p><code>cola</code> is available on <a href="http://bioconductor.org/packages/devel/bioc/html/cola.html">Bioconductor</a>, you can install it by:</p>
-<pre class="sourceCode r"><code class="sourceCode r">if (!<span class="kw"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))
     <span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
-BiocManager::<span class="kw">install</span>(<span class="st">"cola"</span>, <span class="dt">version =</span> <span class="st">"3.9"</span>)</code></pre>
+BiocManager<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"cola"</span>, <span class="dt">version =</span> <span class="st">"3.9"</span>)</code></pre></div>
 <p>If you want to try the latest version, install it directly from GitHub:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(devtools)
-<span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"jokergoo/cola"</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(devtools)
+<span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"jokergoo/cola"</span>)</code></pre></div>
 </div>
 <div id="examples" class="section level2">
 <h2 class="hasAnchor">
 <a href="#examples" class="anchor"></a>Examples</h2>
-<p>Several examples for cola analysis can be found at <a href="https://jokergoo.github.io/cola_examples/">https://jokergoo.github.io/cola_examples/</a>.</p>
+<p>Several examples for cola analysis can be found at <a href="https://jokergoo.github.io/cola_examples/" class="uri">https://jokergoo.github.io/cola_examples/</a>.</p>
 </div>
 <div id="vignettes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#vignettes" class="anchor"></a>Vignettes</h2>
 <ol>
 <li><a href="http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/a_quick_start.html">A Quick Start of Using cola Package</a></li>
-<li><a href="http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html">A Framework for Consensus and Hierarchical Partitioning</a></li>
+<li><a href="http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html">A Framework for Consensus Partitioning</a></li>
 </ol>
 </div>
 <div id="consensus-partition" class="section level2">
@@ -156,42 +153,19 @@ BiocManager::<span class="kw">install</span>(<span class="st">"cola"</span>, <sp
 <h3 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h3>
 <p>Three lines of code to perfrom cola analysis:</p>
-<pre class="sourceCode r"><code class="sourceCode r">mat =<span class="st"> </span><span class="kw"><a href="reference/adjust_matrix.html">adjust_matrix</a></span>(mat)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mat =<span class="st"> </span><span class="kw"><a href="reference/adjust_matrix.html">adjust_matrix</a></span>(mat)
 rl =<span class="st"> </span><span class="kw"><a href="reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods</a></span>(
     mat, 
     <span class="dt">top_value_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sd"</span>, <span class="st">"MAD"</span>, ...),
     <span class="dt">partition_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"hclust"</span>, <span class="st">"kmeans"</span>, ...),
     <span class="dt">mc.cores =</span> ...)
-<span class="kw"><a href="reference/cola_report-dispatch.html">cola_report</a></span>(rl, <span class="dt">output_dir =</span> ...)</code></pre>
+<span class="kw"><a href="reference/cola_report-dispatch.html">cola_report</a></span>(rl, <span class="dt">output_dir =</span> ...)</code></pre></div>
 </div>
 <div id="plots" class="section level3">
 <h3 class="hasAnchor">
 <a href="#plots" class="anchor"></a>Plots</h3>
 <p>Following plots compare consensus heatmaps with k = 4 under all combinations of methods.</p>
 <p><img src="https://user-images.githubusercontent.com/449218/52631118-3a66f280-2ebe-11e9-8dea-0172d9beab91.png"></p>
-</div>
-</div>
-<div id="hierarchical-partition" class="section level2">
-<h2 class="hasAnchor">
-<a href="#hierarchical-partition" class="anchor"></a>Hierarchical Partition</h2>
-<p><strong>cola</strong> supports to look for subgroups in a hierarchical way, which is efficient to found secondary subgroups with small difference.</p>
-<p><img width="500" src="https://user-images.githubusercontent.com/449218/52628768-9a5a9a80-2eb8-11e9-9de1-974afd10bfc2.png"></p>
-<div id="usage-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#usage-1" class="anchor"></a>Usage</h3>
-<pre class="sourceCode r"><code class="sourceCode r">rh =<span class="st"> </span><span class="kw"><a href="reference/hierarchical_partition.html">hierarchical_partition</a></span>(
-    mat,
-    <span class="dt">top_value_method =</span> <span class="st">"MAD"</span>, 
-    <span class="dt">partition_method =</span> <span class="st">"kmeans"</span>,
-    <span class="dt">mc.cores =</span> ...
-)
-<span class="kw"><a href="reference/cola_report-dispatch.html">cola_report</a></span>(rh, <span class="dt">output_dir =</span> ...)</code></pre>
-</div>
-<div id="plots-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#plots-1" class="anchor"></a>Plots</h3>
-<p>The hierarchy of the subgroups:</p>
-<p><img src="https://user-images.githubusercontent.com/449218/48982041-8be0bc00-f0dd-11e8-80ab-2732daedad94.png"></p>
 </div>
 </div>
 <div id="license" class="section level2">

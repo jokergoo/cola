@@ -1,0 +1,16 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{3. Automatic Functional Enrichment on Signature genes}
+-->
+
+Automatic Functional Enrichment on Signature genes
+=============================================================
+
+**Author**: Zuguang Gu ( z.gu@dkfz.de )
+
+**Date**: `r Sys.Date()`
+
+**Package version**: `r installed.packages()["cola", "Version"]`
+
+-------------------------------------------------------------
+

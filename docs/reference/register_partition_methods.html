@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.1</span>
       </span>
     </div>
 
@@ -140,7 +140,7 @@
     </tr>
     <tr>
       <th>scale_method</th>
-      <td><p>Normally, data matrix is scaled by rows before sent to the partition function. The default scaling is applied by <code><a href='https://rdrr.io/r/base/scale.html'>scale</a></code>. However, some partition functions may not accept negative values which  are produced by <code><a href='https://rdrr.io/r/base/scale.html'>scale</a></code>. Here <code>scale_method</code> can be set to <code>min-max</code> which scales rows by <code>(x - min)/(max - min)</code>. Note here <code>scale_method</code> only means the method to scale rows. When <code>scale_rows</code> is set to <code>FALSE</code> in <code><a href='consensus_partition.html'>consensus_partition</a></code> or <code><a href='run_all_consensus_partition_methods.html'>run_all_consensus_partition_methods</a></code>, there wil be no row scaling when doing partition. The value for <code>scale_method</code> can be a vector if user specifies more than one partition function.</p></td>
+      <td><p>Normally, data matrix is scaled by rows before sent to the partition function. The default scaling is applied by <code><a href='https://rdrr.io/r/base/scale.html'>scale</a></code>. However, some partition functions may not accept negative values which  are produced by <code><a href='https://rdrr.io/r/base/scale.html'>scale</a></code>. Here <code>scale_method</code> can be set to <code>min-max</code> which scales rows by <code>(x - min)/(max - min)</code>. Note here <code>scale_method</code> only means the method to scale rows. When <code>scale_rows</code> is set to <code>FALSE</code> in <code><a href='consensus_partition.html'>consensus_partition</a></code> or <code><a href='run_all_consensus_partition_methods.html'>run_all_consensus_partition_methods</a></code>, there wil be no row scaling when doing partitioning. The value for <code>scale_method</code> can be a vector if user specifies more than one partition function.</p></td>
     </tr>
     </table>
 
@@ -151,8 +151,8 @@ matrix and the number of partitions. The third optional argument should always b
 for the partition function can be passed by <code>partition_param</code> from <code><a href='consensus_partition.html'>consensus_partition</a></code>.
 If users forget to add <code>...</code>, it is added internally.</p>
 <p>The function should return a vector of partitions (or class labels) or an object which can be recognized by <code><a href='https://rdrr.io/pkg/clue/man/cl_membership.html'>cl_membership</a></code>.</p>
-<p>The partition function should be applied on columns (Users should be careful with this because some of the R functions apply on rows and
-some of the R functions apply on columns). E.g. following is how we register <code><a href='https://rdrr.io/r/stats/kmeans.html'>kmeans</a></code> partition method:</p>
+<p>The partition function should be applied on columns (Users should be careful with this because some R functions apply on rows and
+some R functions apply on columns). E.g. following is how we register <code><a href='https://rdrr.io/r/stats/kmeans.html'>kmeans</a></code> partition method:</p>
 <p></p><pre>
   register_partition_methods(
       kmeans = function(mat, k, ...) {
@@ -173,7 +173,7 @@ some of the R functions apply on columns). E.g. following is how we register <co
 
 </dl>
 
-<p>Users can register other two pre-defined partition methods by <code><a href='register_NMF.html'>register_NMF</a></code> and <code><a href='register_SOM.html'>register_SOM</a></code>.</p>
+<p>Users can register two other pre-defined partition methods by <code><a href='register_NMF.html'>register_NMF</a></code> and <code><a href='register_SOM.html'>register_SOM</a></code>.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>No value is returned.</p>

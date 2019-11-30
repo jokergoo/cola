@@ -414,7 +414,6 @@ setMethod(f = "get_signatures",
 		if(is.null(anno)) {
 			bottom_anno2 = NULL
 		} else {
-
 			anno_col = lapply(bottom_anno1@anno_list, function(anno) {
 				if(is.null(anno@color_mapping)) {
 					return(NULL)
@@ -430,7 +429,10 @@ setMethod(f = "get_signatures",
 			anno_col = anno_col[!sapply(anno_col, is.null)]
 
 			if(!is.null(object@anno_col)) {
-				anno_col[names(object@anno_col)] = object@anno_col
+				nmd = setdiff(names(object@anno_col), names(anno_col))
+				if(length(nmd)) {
+					anno_col[nmd] = object@anno_col[nmd]
+				}
 			}
 
 			bottom_anno2 = HeatmapAnnotation(df = anno[!column_used_logical, , drop = FALSE], col = anno_col,

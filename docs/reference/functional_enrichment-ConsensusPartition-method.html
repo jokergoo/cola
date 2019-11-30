@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Row names of the matrix — rownames-ConsensusPartition-method • cola</title>
+<title>Perform functional enrichment on signature genes — functional_enrichment-ConsensusPartition-method • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Row names of the matrix — rownames-ConsensusPartition-method" />
-<meta property="og:description" content="Row names of the matrix" />
+<meta property="og:title" content="Perform functional enrichment on signature genes — functional_enrichment-ConsensusPartition-method" />
+<meta property="og:description" content="Perform functional enrichment on signature genes" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,27 +120,77 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Row names of the matrix</h1>
+    <h1>Perform functional enrichment on signature genes</h1>
     
-    <div class="hidden name"><code>rownames-ConsensusPartition-method.Rd</code></div>
+    <div class="hidden name"><code>functional_enrichment-ConsensusPartition-method.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Row names of the matrix</p>
+    <p>Perform functional enrichment on signature genes</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='rownames-dispatch.html'>rownames</a></span>(<span class='no'>x</span>)</pre>
+<span class='fu'><a href='functional_enrichment-dispatch.html'>functional_enrichment</a></span>(<span class='no'>object</span>, <span class='kw'>gene_fdr_cutoff</span> <span class='kw'>=</span> <span class='no'>cola_opt</span>$<span class='no'>fdr_cutoff</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span>(<span class='no'>object</span>),
+    <span class='kw'>row_km</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>id_mapping</span> <span class='kw'>=</span> <span class='fu'>guess_id_mapping</span>(<span class='fu'><a href='rownames-dispatch.html'>rownames</a></span>(<span class='no'>object</span>), <span class='no'>org_db</span>, <span class='no'>verbose</span>),
+    <span class='kw'>org_db</span> <span class='kw'>=</span> <span class='st'>"org.Hs.eg.db"</span>, <span class='kw'>ontology</span> <span class='kw'>=</span> <span class='st'>"BP"</span>,
+    <span class='kw'>min_set_size</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>max_set_size</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+    <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p></td>
+      <th>object</th>
+      <td><p>a <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object from <code><a href='run_all_consensus_partition_methods.html'>run_all_consensus_partition_methods</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>gene_fdr_cutoff</th>
+      <td><p>Cutoff of FDR to define significant signature genes.</p></td>
+    </tr>
+    <tr>
+      <th>k</th>
+      <td><p>Number of subgroups.</p></td>
+    </tr>
+    <tr>
+      <th>row_km</th>
+      <td><p>Number of row clusterings by k-means to separate the matrix that only contains signatures.</p></td>
+    </tr>
+    <tr>
+      <th>id_mapping</th>
+      <td><p>If the gene IDs which are row names of the original matrix are not Entrez IDs, a named vector should be provided where the names are the gene IDs in the matrix and values are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.</p></td>
+    </tr>
+    <tr>
+      <th>org_db</th>
+      <td><p>Annotation database.</p></td>
+    </tr>
+    <tr>
+      <th>ontology</th>
+      <td><p>See corresponding argumnet in <code><a href='functional_enrichment-ANY-method.html'>functional_enrichment,ANY-method</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>min_set_size</th>
+      <td><p>The minimal size of the gene sets.</p></td>
+    </tr>
+    <tr>
+      <th>max_set_size</th>
+      <td><p>The maximal size of the gene sets.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Whether to print messages.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Pass to <code><a href='functional_enrichment-ANY-method.html'>functional_enrichment,ANY-method</a></code>.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>For how to control the parameters of functional enrichment, see help page of <code><a href='functional_enrichment-ANY-method.html'>functional_enrichment,ANY-method</a></code>.</p>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A list of data frames which correspond to results for the functional ontologies:</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># There is no example</span>
@@ -151,6 +201,8 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#details">Details</a></li>
+      <li><a href="#value">Value</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

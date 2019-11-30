@@ -307,7 +307,7 @@ setMethod(f = "functional_enrichment",
 # -min_set_size The minimal size of the gene sets.
 # -max_set_size The maximal size of the gene sets.
 # -verbose Whether to print messages.
-# -... Pass to `functional_enrichment,ANY-method`.
+# -... Pass to `clusterProfiler::enrichGO`, `clusterProfiler::enrichKEGG`, `clusterProfiler::enricher`, `DOSE::enrichDO` or `ReactomePA::enrichPathway`.
 #
 # == details
 # The function enrichment is applied by clusterProfiler, DOSE or ReactomePA packages.
@@ -390,7 +390,8 @@ setMethod(f = "functional_enrichment",
                     maxGSSize = max_set_size,
                     pvalueCutoff  = 1,
                     qvalueCutoff  = 1,
-                    readable      = TRUE)
+                    readable      = TRUE,
+                    ...)
                 res = as.data.frame(res)
                 # res$geneID = NULL
                 lt$MF = res

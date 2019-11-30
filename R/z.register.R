@@ -102,8 +102,8 @@ all_top_value_methods = function() {
 }
 
 register_top_value_methods(
-	sd = rowSds,
-	cv = function(mat) {
+	SD = rowSds,
+	CV = function(mat) {
 		s = rowMeans(mat)
 		rowSds(mat)/(s + quantile(s, 0.1))
 	},
