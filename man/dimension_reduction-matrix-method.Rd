@@ -11,7 +11,7 @@ Visualize columns after dimension reduction
     pch = 16, col = "black", cex = 1, main = "",
     method = c("PCA", "MDS", "t-SNE", "UMAP"),
     pc = NULL, control = list(),
-    scale_rows = TRUE,
+    scale_rows = TRUE, nr = 5000,
     internal = FALSE, verbose = TRUE)
 }
 \arguments{
@@ -25,6 +25,7 @@ Visualize columns after dimension reduction
   \item{cex}{Aize of points.}
   \item{main}{Title of the plot.}
   \item{scale_rows}{Whether perform scaling on matrix rows.}
+  \item{nr}{If number of matrix rows is larger than this value, random \code{nr} rows are used.}
   \item{internal}{Internally used.}
   \item{verbose}{Whether print messages.}
 

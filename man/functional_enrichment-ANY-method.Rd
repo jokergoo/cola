@@ -22,7 +22,7 @@ Perform functional enrichment on signature genes
   \item{min_set_size}{The minimal size of the gene sets.}
   \item{max_set_size}{The maximal size of the gene sets.}
   \item{verbose}{Whether to print messages.}
-  \item{...}{Pass to \code{\link{functional_enrichment,ANY-method}}.}
+  \item{...}{Pass to \code{\link[clusterProfiler]{enrichGO}}, \code{\link[clusterProfiler]{enrichKEGG}}, \code{\link[clusterProfiler]{enricher}}, \code{\link[DOSE]{enrichDO}} or \code{\link[ReactomePA]{enrichPathway}}.}
 
 }
 \details{

@@ -926,6 +926,7 @@ setMethod(f = "membership_heatmap",
 #         `umap::umap`.
 # -control A list of parameters for `Rtsne::Rtsne` or `umap::umap`.
 # -internal Internally used.
+# -nr If number of matrix rows is larger than this value, random ``nr`` rows are used.
 # -silhouette_cutoff Cutoff of silhouette score. Data points with values less
 #        than it will be mapped with cross symbols.
 # -remove Whether to remove columns which have less silhouette scores than
@@ -948,7 +949,7 @@ setMethod(f = "dimension_reduction",
 	definition = function(object, k, top_n = NULL,
 	method = c("PCA", "MDS", "t-SNE", "UMAP"), 
 	control = list(),
-	internal = FALSE,
+	internal = FALSE, nr = 5000,
 	silhouette_cutoff = 0.5, remove = FALSE,
 	scale_rows = TRUE, verbose = TRUE, ...) {
 
@@ -1010,7 +1011,7 @@ setMethod(f = "dimension_reduction",
 	if(remove) {
 		dimension_reduction(data[, l], pch = 16, col = cola_opt$color_set_2[as.character(class_df$class[l])],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
-			method = method, control = control, scale_rows = scale_rows, internal = internal, verbose = verbose)
+			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
 		if(!internal) {
 			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
 				pch = c(rep(16, n_class), 0),
@@ -1021,7 +1022,7 @@ setMethod(f = "dimension_reduction",
 	} else {
 		dimension_reduction(data, pch = ifelse(l, 16, 4), col = cola_opt$color_set_2[as.character(class_df$class)],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
-			method = method, control = control, scale_rows = scale_rows, internal = internal, verbose = verbose)
+			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
 		if(!internal) {
 			if(any(!l)) {
 				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
@@ -1055,6 +1056,7 @@ setMethod(f = "dimension_reduction",
 # -cex Aize of points.
 # -main Title of the plot.
 # -scale_rows Whether perform scaling on matrix rows.
+# -nr If number of matrix rows is larger than this value, random ``nr`` rows are used.
 # -internal Internally used.
 # -verbose Whether print messages.
 #
@@ -1070,10 +1072,13 @@ setMethod(f = "dimension_reduction",
 	pch = 16, col = "black", cex = 1, main = "",
 	method = c("PCA", "MDS", "t-SNE", "UMAP"),
 	pc = NULL, control = list(), 
-	scale_rows = TRUE,
+	scale_rows = TRUE, nr = 5000,
 	internal = FALSE, verbose = TRUE) {
 
 	data = object
+	if(nrow(data) > nr) {
+		data = data[sample(1:nrow(data), nr), , drop = FALSE]
+	}
 	cl = as.list(match.call())
 
 	# default value
