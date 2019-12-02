@@ -4,4 +4,5 @@ pkgdown_sha: ~
 articles:
   a_quick_start: a_quick_start.html
   cola: cola.html
+  functional_enrichment: functional_enrichment.html
 

@@ -16,8 +16,8 @@
   novel subgroups when there is nothing known about the data or it can test
   consistency between predicted subgroups with known annotations. The cola
   package provides a general framework for subgroup classification by
-  consensus clustering. It has following features: 1. It modularizes the
-  consensus clustering processes that various methods can be easily
+  consensus partitioning. It has following features: 1. It modularizes the
+  consensus partitioning processes that various methods can be easily
   integrated. 2. It provides rich visualizations for interpreting the results.
   3. It allows running multiple methods at the same time and provides
   functionalities to compare results in a straightforward way. 4. It provides
@@ -42,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.2</span>
       </span>
     </div>
 
@@ -70,6 +70,9 @@
 <li>
       <a href="articles/a_quick_start.html">UNKNOWN TITLE</a>
     </li>
+    <li>
+      <a href="articles/functional_enrichment.html">UNKNOWN TITLE</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -92,13 +95,11 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-
-<p><img src="https://user-images.githubusercontent.com/449218/54158555-03e3af80-444b-11e9-9773-070823101263.png" width="250" align="right" style="border:4px solid black;"></p>
-<p><a href="https://travis-ci.org/jokergoo/cola"><img src="https://travis-ci.org/jokergoo/cola.svg" alt="Build Status"></a> <a href="http://bioconductor.org/packages/stats/bioc/cola"><img src="https://bioconductor.org/shields/downloads/devel/cola.svg" alt="bioc"></a> <a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/cola/"><img src="http://bioconductor.org//shields/lastcommit/devel/bioc/cola.svg" alt="bioc"></a></p>
-<div id="cola" class="section level1">
+<div id="cola-a-general-framework-for-consensus-partitioning" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#cola" class="anchor"></a>cola</h1></div>
-<p>A General Framework for Consensus Partitioning</p>
+<a href="#cola-a-general-framework-for-consensus-partitioning" class="anchor"></a>cola: A General Framework for Consensus Partitioning <img src="https://user-images.githubusercontent.com/449218/54158555-03e3af80-444b-11e9-9773-070823101263.png" width="250" align="right" style="border:4px solid black;">
+</h1></div>
+
 <div id="features" class="section level2">
 <h2 class="hasAnchor">
 <a href="#features" class="anchor"></a>Features</h2>
@@ -116,7 +117,7 @@
 <p><code>cola</code> is available on <a href="http://bioconductor.org/packages/devel/bioc/html/cola.html">Bioconductor</a>, you can install it by:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))
     <span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
-BiocManager<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"cola"</span>, <span class="dt">version =</span> <span class="st">"3.9"</span>)</code></pre></div>
+BiocManager<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"cola"</span>)</code></pre></div>
 <p>If you want to try the latest version, install it directly from GitHub:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(devtools)
 <span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"jokergoo/cola"</span>)</code></pre></div>
@@ -179,7 +180,6 @@ rl =<span class="st"> </span><span class="kw"><a href="reference/run_all_consens
 </div>
 </div>
 </div>
-
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -207,7 +207,15 @@ rl =<span class="st"> </span><span class="kw"><a href="reference/run_all_consens
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://travis-ci.org/jokergoo/cola"><img src="https://travis-ci.org/jokergoo/cola.svg" alt="Build Status"></a></li>
+<li><a href="http://bioconductor.org/packages/stats/bioc/cola"><img src="https://bioconductor.org/shields/downloads/devel/cola.svg" alt="bioc"></a></li>
+<li><a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/cola/"><img src="http://bioconductor.org//shields/lastcommit/devel/bioc/cola.svg" alt="bioc"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 

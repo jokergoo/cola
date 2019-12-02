@@ -133,7 +133,7 @@ head(rownames(res))
 ```
 
 The Golub leukemia dataset is a microarray dataset where the gene ID is the probe ID. Thankfully, 
-there is already an annotation package from Bioconductor ([hu6800.db](https://bioconductor.org/packages/3.6/data/annotation/html/hu6800.db.html)) that provides mapping between the probe ID to Entrez ID.
+there is already an annotation package from Bioconductor ([hu6800.db](https://bioconductor.org/packages/hu6800.db/)) that provides mapping between the probe ID to Entrez ID.
 
 ```{r}
 library(hu6800.db)
