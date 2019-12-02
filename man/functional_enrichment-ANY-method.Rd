@@ -11,7 +11,7 @@ Perform functional enrichment on signature genes
     id_mapping = guess_id_mapping(object, org_db, verbose),
     org_db = "org.Hs.eg.db", ontology = "BP",
     min_set_size = 10, max_set_size = 1000,
-    verbose = TRUE, ...)
+    verbose = TRUE, prefix = "", ...)
 }
 \arguments{
 
@@ -22,6 +22,7 @@ Perform functional enrichment on signature genes
   \item{min_set_size}{The minimal size of the gene sets.}
   \item{max_set_size}{The maximal size of the gene sets.}
   \item{verbose}{Whether to print messages.}
+  \item{prefix}{Used internally.}
   \item{...}{Pass to \code{\link[clusterProfiler]{enrichGO}}, \code{\link[clusterProfiler]{enrichKEGG}}, \code{\link[clusterProfiler]{enricher}}, \code{\link[DOSE]{enrichDO}} or \code{\link[ReactomePA]{enrichPathway}}.}
 
 }

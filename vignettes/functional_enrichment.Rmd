@@ -14,12 +14,20 @@ Automatic Functional Enrichment on Signature genes
 
 -------------------------------------------------------------
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, message = FALSE}
+library(markdown)
+options(markdown.HTML.options = c("use_xhtml", "smartypants", "base64_images", "mathjax", "highlight_code"))
+options(markdown.HTML.stylesheet = system.file("resources", "markdown.css", package = "markdown"))
+
 library(knitr)
 knitr::opts_chunk$set(
     error = FALSE,
     tidy  = FALSE,
-    message = FALSE)
+    message = FALSE,
+    fig.align = "center")
+
+options(width = 100)
+library(cola)
 ```
 
 If the matrix rows can correspond to genes (e.g. the gene expression matrix,
