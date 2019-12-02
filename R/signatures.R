@@ -463,7 +463,7 @@ setMethod(f = "get_signatures",
 			row_km_fit = object@.env[[nm]]$row_km_fit_unscaled
 		}
 		if(!is.null(row_km_fit)) {
-			row_split = factor(row_km_fit$cluster[row_index], levels = sort(unique(row_km_fit$cluster[row_index])))
+			row_split = factor(returned_obj$km[row_index], levels = sort(unique(returned_obj$km[row_index])))
 		}
 	}
 

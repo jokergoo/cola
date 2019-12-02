@@ -307,6 +307,7 @@ setMethod(f = "functional_enrichment",
 # -min_set_size The minimal size of the gene sets.
 # -max_set_size The maximal size of the gene sets.
 # -verbose Whether to print messages.
+# -prefix Used internally.
 # -... Pass to `clusterProfiler::enrichGO`, `clusterProfiler::enrichKEGG`, `clusterProfiler::enricher`, `DOSE::enrichDO` or `ReactomePA::enrichPathway`.
 #
 # == details
@@ -321,16 +322,11 @@ setMethod(f = "functional_enrichment",
     id_mapping = guess_id_mapping(object, org_db, verbose), 
     org_db = "org.Hs.eg.db", ontology = "BP",
     min_set_size = 10, max_set_size = 1000, 
-    verbose = TRUE, ...) {
+    verbose = TRUE, prefix = "", ...) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
 
     arg_lt = list(...)
-    if("prefix" %in% names(arg_lt)) {
-        prefix = arg_lt$prefix
-    } else {
-        prefix = ""
-    }
 
     # if(length(setdiff(ontology, c("BP", "MF", "CC", "KEGG")))) {
     #     stop_wrap("ontology can only be in 'BP', 'MF' and 'CC'")
@@ -422,7 +418,7 @@ setMethod(f = "functional_enrichment",
                 }
                 res = clusterProfiler::enrichKEGG(
                     gene = sig_gene,
-                    organism = "hsa",
+                    organism = arg_lt$organism,
                     pAdjustMethod = "BH",
                     minGSSize = min_set_size,
                     maxGSSize = max_set_size,
@@ -484,6 +480,7 @@ setMethod(f = "functional_enrichment",
                 }
                 res = ReactomePA::enrichPathway(
                     gene = sig_gene,
+                    organism = arg_lt$organism,
                     pAdjustMethod = "BH",
                     minGSSize = min_set_size,
                     maxGSSize = max_set_size,

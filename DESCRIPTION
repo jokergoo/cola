@@ -52,7 +52,8 @@ Suggests: genefilter,
           ReactomePA,
           DOSE,
           AnnotationDbi,
-          gplots
+          gplots,
+          hu6800.db
 Description: Subgroup classification is a basic task in genomic data analysis,
   especially for gene expression data and methylation data. It can predict
   novel subgroups when there is nothing known about the data or it can test
