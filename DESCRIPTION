@@ -66,7 +66,7 @@ Description: Subgroup classification is a basic task in genomic data analysis,
   functionalities to compare results in a straightforward way. 4. It provides
   a new method to extract features which are more efficient to separate
   subgroups. 5. It generates detailed reports for the complete analysis.
-URL: https://github.com/jokergoo/cola
+URL: https://github.com/jokergoo/cola, https://jokergoo.github.io/cola_collection/
 VignetteBuilder: knitr
 biocViews: Clustering, GeneExpression, Classification, Software
 License: MIT + file LICENSE
