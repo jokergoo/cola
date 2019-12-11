@@ -36,7 +36,7 @@ install_github("jokergoo/cola")
 
 ## Examples
 
-Several examples for cola analysis can be found at https://jokergoo.github.io/cola_examples/.
+Examples for cola analysis can be found at https://jokergoo.github.io/cola_examples/ and https://jokergoo.github.io/cola_collection/.
 
 ## Vignettes
 
