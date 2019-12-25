@@ -158,6 +158,7 @@ $( function() {
 # -object A `ConsensusPartitionList-class` object.
 # -output_dir The output directory where the report is saved.
 # -mc.cores Multiple cores to use.
+# -title Title of the report.
 # -env Where the objects in the report are found, internally used.
 #
 # == details
@@ -182,13 +183,14 @@ $( function() {
 # }
 setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
-	definition = function(object, output_dir = getwd(), mc.cores = 1, env = parent.frame()) {
+	definition = function(object, output_dir = getwd(), mc.cores = 1, 
+	title = "cola Report for Consensus Partitioning", env = parent.frame()) {
 
 	if(!requireNamespace("genefilter")) {
 		stop_wrap("You need to install genefilter package (from Bioconductor).")
 	}
 	var_name = deparse(substitute(object, env = env))
-	make_report(var_name, object, output_dir, mc.cores = mc.cores, class = "ConsensusPartitionList")
+	make_report(var_name, object, output_dir, mc.cores = mc.cores, title = title, class = "ConsensusPartitionList")
 
 })
 
@@ -199,6 +201,7 @@ setMethod(f = "cola_report",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -output_dir The output directory where the report is saved.
+# -title Title of the report.
 # -env Where the objects in the report are found, internally used.
 #
 # == details
@@ -215,18 +218,21 @@ setMethod(f = "cola_report",
 #
 setMethod(f = "cola_report",
 	signature = "ConsensusPartition",
-	definition = function(object, output_dir = getwd(), env = parent.frame()) {
+	definition = function(object, output_dir = getwd(), 
+	title = qq("cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"), 
+	env = parent.frame()) {
 
 	if(!requireNamespace("genefilter")) {
 		stop_wrap("You need to install genefilter package (from Bioconductor).")
 	}
 	var_name = deparse(substitute(object, env = env))
-	make_report(var_name, object, output_dir, mc.cores = 1, class = "ConsensusPartition")
+	make_report(var_name, object, output_dir, mc.cores = 1, title = title, class = "ConsensusPartition")
 })
 
 
 
-make_report = function(var_name, object, output_dir, mc.cores = 1, class = class(object)) {
+make_report = function(var_name, object, output_dir, title = "cola Report for Consensus Partitioning", 
+	mc.cores = 1, class = class(object)) {
 
 	if(!multicore_supported()) {
 		if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")

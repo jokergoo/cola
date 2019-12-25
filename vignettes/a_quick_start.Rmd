@@ -1,9 +1,9 @@
 <!--
 %\VignetteEngine{knitr}
-%\VignetteIndexEntry{1. A Quick Start of Using cola Package}
+%\VignetteIndexEntry{1. A Quick Start of cola Package}
 -->
 
-A Quick Start of Using cola Package
+A Quick Start of cola Package
 =============================================================
 
 **Author**: Zuguang Gu ( z.gu@dkfz.de )
@@ -16,20 +16,18 @@ A Quick Start of Using cola Package
 
 ```{r, echo = FALSE, message = FALSE}
 library(markdown)
-
 library(knitr)
 knitr::opts_chunk$set(
     error = FALSE,
     tidy  = FALSE,
     message = FALSE,
     fig.align = "center")
-
 options(width = 100)
 library(cola)
 ```
 
-Assume your matrix is stored in an object called `mat`, to perform consensus partitioning,
-you only need to run following code:
+Assume your matrix is stored in an object called `mat`, to perform consensus
+partitioning, you only need to run following code:
 
 ```{r, eval = FALSE}
 # code only for demonstration
@@ -40,12 +38,18 @@ cola_report(rl, output_dir = ..., mc.cores = ...)
 
 In above code, there are three steps:
 
-1. Adjust the matrix. In this step, rows with too many `NA`s are removed. Rows with very low variance
-are removed. `NA` values are imputed if there are not too many in each row. Outliers are adjusted in each
-row. This step is optional.
-2. Run consensus partitioning with multiple methods. The default partition methods are `hclust`,
-`kmeans`, `skmeans::skmeans`, `cluster::pam` and `Mclust::mclust`. The default methods to
-extract top n rows are `sd`, `cv`, `MAD` and `ATC`.
+1. Adjust the matrix. In this step, rows with too many `NA`s are removed. Rows
+   with very low variance are removed. `NA` values are imputed if there are
+   not too many in each row. Outliers are adjusted in each row. This step is
+   optional. 
+2. Run consensus partitioning with multiple methods. The default
+   partition methods are `hclust` (hierarchical clustering with cutree),
+   `kmeans` (k-means clustering), `skmeans::skmeans` (spherical k-means
+   clustering), `cluster::pam` (partitioning around medoids clustering) and
+   `Mclust::mclust` (model-based clustering). The default methods to extract
+   top n rows are `SD` (standard deviation), `CV` (coefficient of variation),
+   `MAD` (median absolute deviation) and `ATC` (ability to correlate to other
+   rows). 
 3. Generate a detailed HTML report for the complete analysis.
 
-There are examples on real datasets for cola analysis that can be found at https://jokergoo.github.io/cola_examples/.
+There are examples on real datasets for _cola_ analysis that can be found at https://jokergoo.github.io/cola_collection/.
