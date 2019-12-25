@@ -27,7 +27,7 @@ library(cola)
 ```
 
 Assume your matrix is stored in an object called `mat`, to perform consensus
-partitioning, you only need to run following code:
+partitioning with *cola*, you only need to run following code:
 
 ```{r, eval = FALSE}
 # code only for demonstration
@@ -41,8 +41,6 @@ In above code, there are three steps:
 1. Adjust the matrix. In this step, rows with too many `NA`s are removed. Rows
    with very low variance are removed. `NA` values are imputed if there are
    not too many in each row. Outliers are adjusted in each row. This step is
-   optional. 
-2. Run consensus partitioning with multiple methods. The default
    partition methods are `hclust` (hierarchical clustering with cutree),
    `kmeans` (k-means clustering), `skmeans::skmeans` (spherical k-means
    clustering), `cluster::pam` (partitioning around medoids clustering) and
