@@ -7,12 +7,15 @@ Make HTML report from the ConsensusPartition object
 Make HTML report from the ConsensusPartition object
 }
 \usage{
-\S4method{cola_report}{ConsensusPartition}(object, output_dir = getwd(), env = parent.frame())
+\S4method{cola_report}{ConsensusPartition}(object, output_dir = getwd(),
+    title = qq("cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"),
+    env = parent.frame())
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
   \item{output_dir}{The output directory where the report is saved.}
+  \item{title}{Title of the report.}
   \item{env}{Where the objects in the report are found, internally used.}
 
 }
