@@ -3,7 +3,7 @@
   position: fixed;
   left: 0;
   top: 20px;
-  width: 200px;
+  width: 250px;
   height: 100%;
   overflow:auto;
   padding: 0px 10px 0px 10px;
@@ -30,7 +30,7 @@ body, td, th {
    font-size: 13px;
   max-width: 800px;
   margin: auto;
-  margin-left:210px;
+  margin-left:270px;
   padding: 0px 10px 0px 10px;
   border-left: 1px solid #EEEEEE;
   line-height: 150%;

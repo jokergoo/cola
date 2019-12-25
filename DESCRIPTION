@@ -53,20 +53,21 @@ Suggests: genefilter,
           DOSE,
           AnnotationDbi,
           gplots,
-          hu6800.db
-Description: Subgroup classification is a basic task in genomic data analysis,
-  especially for gene expression data and methylation data. It can predict
-  novel subgroups when there is nothing known about the data or it can test
-  consistency between predicted subgroups with known annotations. The cola
-  package provides a general framework for subgroup classification by
-  consensus partitioning. It has following features: 1. It modularizes the
+          hu6800.db 
+Description: Subgroup classification is a basic task in
+  genomic data analysis, especially for gene expression and DNA methylation data
+  analysis. It can also be used to test the agreement to known clinical
+  annotations, or to test whether there exist significant batch effects. The
+  cola package provides a general framework for subgroup classification by
+  consensus partitioning. It has the following features: 1. It modularizes the
   consensus partitioning processes that various methods can be easily
   integrated. 2. It provides rich visualizations for interpreting the results.
   3. It allows running multiple methods at the same time and provides
-  functionalities to compare results in a straightforward way. 4. It provides
-  a new method to extract features which are more efficient to separate
-  subgroups. 5. It generates detailed reports for the complete analysis.
-URL: https://github.com/jokergoo/cola, https://jokergoo.github.io/cola_collection/
+  functionalities to compare results straightforwardly. 4. It provides a new
+  method to extract features which are more efficient to separate subgroups. 5.
+  It generates detailed reports for the complete analysis.
+URL: https://github.com/jokergoo/cola, 
+     https://jokergoo.github.io/cola_collection/
 VignetteBuilder: knitr
 biocViews: Clustering, GeneExpression, Classification, Software
 License: MIT + file LICENSE

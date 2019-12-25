@@ -27,7 +27,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("cola")
 ```
 
-If you want to try the latest version, install it directly from GitHub:
+The latest version can be installed directly from GitHub:
 
 ```r
 library(devtools)
@@ -42,8 +42,9 @@ Examples for cola analysis can be found at https://jokergoo.github.io/cola_examp
 
 1. [A Quick Start of Using cola Package](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/a_quick_start.html)
 2. [A Framework for Consensus Partitioning](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html)
+3. [Automatic Functional Enrichment on Signature genes](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html)
 
-## Consensus Partition
+## Consensus Partitioning
 
 <img width="700" src="https://user-images.githubusercontent.com/449218/52628723-86af3400-2eb8-11e9-968d-b7f47a408818.png" />
 
@@ -76,7 +77,7 @@ The steps of consensus partition is:
 Three lines of code to perfrom cola analysis:
 
 ```r
-mat = adjust_matrix(mat)
+mat = adjust_matrix(mat) # optional
 rl = run_all_consensus_partition_methods(
     mat, 
     top_value_method = c("sd", "MAD", ...),

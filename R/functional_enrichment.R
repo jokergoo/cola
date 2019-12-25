@@ -416,9 +416,9 @@ setMethod(f = "functional_enrichment",
                 if(is.null(arg_lt$organism)) {
                     stop_wrap("Please specify 'organism' argument for KEGG enrichment.")
                 }
+
                 res = clusterProfiler::enrichKEGG(
                     gene = sig_gene,
-                    organism = arg_lt$organism,
                     pAdjustMethod = "BH",
                     minGSSize = min_set_size,
                     maxGSSize = max_set_size,
@@ -480,7 +480,6 @@ setMethod(f = "functional_enrichment",
                 }
                 res = ReactomePA::enrichPathway(
                     gene = sig_gene,
-                    organism = arg_lt$organism,
                     pAdjustMethod = "BH",
                     minGSSize = min_set_size,
                     maxGSSize = max_set_size,
