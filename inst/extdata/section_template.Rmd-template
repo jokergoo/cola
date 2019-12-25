@@ -88,7 +88,7 @@ collect_plots(res)
 
 The plots are:
 
-- The first row: a plot of the ECDF (Empirical cumulative distribution
+- The first row: a plot of the ECDF (empirical cumulative distribution
   function) curves of the consensus matrix for each `k` and the heatmap of
   predicted classes for each `k`.
 - The second row: heatmaps of the consensus matrix for each `k`.
@@ -116,7 +116,7 @@ statistics for choosing "optimized" `k`. There are following statistics:
   the partition of k and k-1 and the pairs of samples are both in a same
   cluster in the partition k or k-1.
 
-The detailed explanations of these statistics can be found in [the cola
+The detailed explanations of these statistics can be found in [the _cola_
 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13).
 
 Generally speaking, lower PAC score, higher mean silhouette score or higher
@@ -143,12 +143,14 @@ get_stats(res)
 
 `suggest_best_k()` suggests the best $k$ based on these statistics. The rules are as follows:
 
-- All $k$ with Jaccard index larger than 0.95 are removed because the increase of
-  the partition number does not provides enough extra information. If all $k$ are removed,
-  the best $k$ is assigned by `NA`.
-- For $k$ with 1-PAC larger than 0.9, the maximal $k$ is taken as the "best k". Other $k$ is called "optional k".
-- If it does not fit the second rule. The $k$ with the highest vote of highest
-  1-PAC, mean silhouette and concordance is taken as the "best k".
+- All $k$ with Jaccard index larger than 0.95 are removed because increasing
+  $k$ does not provide enough extra information. If all $k$ are removed, it is
+  marked as no subgroup is detected.
+- For all $k$ with 1-PAC score larger than 0.9, the maximal $k$ is taken as
+  the best $k$, and other $k$ are marked as optional $k$.
+- If it does not fit the second rule. The $k$ with the maximal vote of the
+  highest 1-PAC score, highest mean silhouette, and highest concordance is
+  taken as the best $k$.
 
 ```{r <%=chunk_prefix%>-suggest-best-k}
 suggest_best_k(res)
@@ -364,8 +366,8 @@ message("")
 ```
 <%} }-%>
 
-If matrix rows can be associated to genes, consider to use `GO_Enrichment(res,
-...)` to perform function enrichment for the signature genes.
+If matrix rows can be associated to genes, consider to use `functional_enrichment(res,
+...)` to perform function enrichment for the signature genes. See [this vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html) for more detailed explanations.
 
 
 <% 
