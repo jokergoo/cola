@@ -19,7 +19,7 @@
 
 ## Install
 
-`cola` is available on [Bioconductor](http://bioconductor.org/packages/devel/bioc/html/cola.html), you can install it by:
+*cola* is available on [Bioconductor](http://bioconductor.org/packages/devel/bioc/html/cola.html), you can install it by:
 
 ```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -34,9 +34,13 @@ library(devtools)
 install_github("jokergoo/cola")
 ```
 
-## Examples
+## Links
 
-Examples for cola analysis can be found at https://jokergoo.github.io/cola_examples/ and https://jokergoo.github.io/cola_collection/.
+Examples for *cola* analysis can be found at https://jokergoo.github.io/cola_examples/ and https://jokergoo.github.io/cola_collection/.
+
+Online documentation is at https://jokergoo.github.io/cola.
+
+Supplementary for the *cola* manuscript is at https://jokergoo.github.io/cola_supplementary and the scripts are at https://jokergoo.github.io/cola_manuscript.
 
 ## Vignettes
 
@@ -74,7 +78,7 @@ The steps of consensus partition is:
 
 ### Usage
 
-Three lines of code to perfrom cola analysis:
+Three lines of code to perfrom *cola* analysis:
 
 ```r
 mat = adjust_matrix(mat) # optional
