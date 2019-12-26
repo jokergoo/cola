@@ -34,9 +34,13 @@ library(devtools)
 install_github("jokergoo/cola")
 ```
 
-## Examples
+## Links
 
 Examples for cola analysis can be found at https://jokergoo.github.io/cola_examples/ and https://jokergoo.github.io/cola_collection/.
+
+Online documentation is at https://jokergoo.github.io/cola.
+
+Supplementary for the cola manuscript is at https://jokergoo.github.io/cola_supplementary and the scripts are at https://jokergoo.github.io/cola_manuscript.
 
 ## Vignettes
 
