@@ -97,21 +97,21 @@
     
 <!--
 %\VignetteEngine{knitr}
-%\VignetteIndexEntry{2. A Framework for Consensus Partitioning}
+%\VignetteIndexEntry{2. cola: A Framework for Consensus Partitioning}
 -->
-<div id="cola-a-general-framework-for-consensus-partitioning" class="section level1">
+<div id="cola-a-framework-for-consensus-partitioning" class="section level1">
 <h1 class="hasAnchor">
-<a href="#cola-a-general-framework-for-consensus-partitioning" class="anchor"></a>cola: A General Framework for Consensus Partitioning</h1>
+<a href="#cola-a-framework-for-consensus-partitioning" class="anchor"></a>cola: A Framework for Consensus Partitioning</h1>
 <p><strong>Author</strong>: Zuguang Gu ( <a href="mailto:z.gu@dkfz.de">z.gu@dkfz.de</a> )</p>
-<p><strong>Date</strong>: 2019-12-02</p>
+<p><strong>Date</strong>: 2019-12-26</p>
 <p><strong>Package version</strong>: 1.3.2</p>
 <hr>
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
-<p>Subgroup classification is a basic task in high-throughput genomic data analysis, especially for gene expression and DNA methylation data analysis. Mostly, unsupervised clustering methods are applied to predict new subgroups or test the consistency with known annotations.</p>
+<p>Subgroup classification is a basic task in high-throughput genomic data analysis, especially for gene expression and DNA methylation data analysis. Mostly, unsupervised clustering methods are applied to predict new subgroups or to test the agreement with known annotations.</p>
 <p>To test the stability of subgroup classifications, <a href="https://en.wikipedia.org/wiki/Consensus_clustering">consensus clustering</a> or consensus partitioning is always performed. It clusters repeatedly with a randomly sampled subset of data and summarizes the robustness of the clustering, finally it gives a consensus classification of all samples.</p>
-<p>Here we present the <strong>cola</strong> package which provides a general framework for consensus partitioning. It has following advantages:</p>
+<p>Here we present the <em>cola</em> package which provides a general framework for consensus partitioning. It has following advantages:</p>
 <ol style="list-style-type: decimal">
 <li>It modularizes the consensus partitioning processes that various methods can be easily integrated in different steps of the analysis.</li>
 <li>It provides rich visualizations for interpreting the results.</li>
@@ -120,7 +120,7 @@
 <li>It allows doing partitioning in a hierarchical way to detect subgroups with relatively smaller difference.</li>
 <li>It generates detailed HTML reports for the complete analysis.</li>
 </ol>
-<p>Following flowchart lists the general steps of consensus partitioning implemented by <strong>cola</strong>:</p>
+<p>Following flowchart lists the general steps of consensus partitioning implemented by <em>cola</em>:</p>
 <p><img src="consensus_partition_workflow.png" width="600"></p>
 <p>The steps are:</p>
 <ol style="list-style-type: decimal">
@@ -134,7 +134,7 @@
 <li>If rows in the matrix can be associated to genes, downstream analysis such as function enrichment analysis can be performed.</li>
 </ol>
 <p>All the steps will be explained in detail in following sections.</p>
-<p>First of all, we load the <strong>cola</strong> package.</p>
+<p>First of all, we load the <em>cola</em> package.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(cola)</code></pre></div>
 </div>
 <div id="the-input-matrix" class="section level2">
@@ -149,7 +149,7 @@ mat =<span class="st"> </span><span class="kw"><a href="../reference/adjust_matr
 <ol style="list-style-type: decimal">
 <li>Rows where more than 25% of the samples having <code>NA</code> values are removed;</li>
 <li>Use <code><a href="https://rdrr.io/pkg/impute/man/impute.knn.html">impute::impute.knn()</a></code> to impute missing data if there is any;</li>
-<li>For each row in the matrix, it uses <code><a href="../reference/adjust_outlier.html">adjust_outlier()</a></code> (also provided by <strong>cola</strong> package) to adjust outliers. Values larger than the 95^th percentile or less than the 5^th percentile are replaced by corresponding percentiles.</li>
+<li>For each row in the matrix, it uses <code><a href="../reference/adjust_outlier.html">adjust_outlier()</a></code> (also provided by <em>cola</em> package) to adjust outliers. Values larger than the 95^th percentile or less than the 5^th percentile are replaced by corresponding percentiles.</li>
 <li>Rows with zero variance are removed.</li>
 <li>Rows with variance less than 5^th percentile of all row variance (after removing rows with zero variance) are removed.</li>
 </ol>
@@ -186,18 +186,18 @@ res =<span class="st"> </span><span class="kw"><a href="../reference/consensus_p
 <li>
 <code>anno</code>: a vector or a data frame which contains known annotations of samples. If it is provided, it will drawn along side with the predicted subgroups in the plot generated by downstream functions and it can also be tested for the correspondance to predicted subgroups.</li>
 </ul>
-<p>Other arguments can be found in the on-line documentation of <code><a href="../reference/consensus_partition.html">consensus_partition()</a></code>.</p>
+<p>Other arguments can be found in the documentation of <code><a href="../reference/consensus_partition.html">consensus_partition()</a></code>.</p>
 <p>To get a robust result from consensus partitioning, for a specific top-value method and a specific partition method, <code><a href="../reference/consensus_partition.html">consensus_partition()</a></code> tries different <code>top_n</code> and different number of subgroups. We found that different <code>top_n</code> might give different subgroups for some data sets, thus <code><a href="../reference/consensus_partition.html">consensus_partition()</a></code> pools results from different <code>top_n</code> and aims to give a general consensus subgrouping across different <code>top_n</code>. Later, we will introduce that the bias for <code>top_n</code> on subgrouping can be visualized by <code><a href="../reference/membership_heatmap-ConsensusPartition-method.html">membership_heatmap()</a></code> function.</p>
 <p>In most cases, users might not be very sure which top-value method and which partition method are best for their dataset. The helper function <code><a href="../reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods()</a></code> is a convenient way to try multiple top-value methods and multiple partition methods simultaneously to see which combination of methods gives the best prediction of subgroups.</p>
 <p>In <code><a href="../reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods()</a></code>, most of the arguments are the same as in <code><a href="../reference/consensus_partition.html">consensus_partition()</a></code>, except <code>top_value_method</code> and <code>partition_method</code> now accept a vector of method names and multiple cores can be set by <code>mc.cores</code> argument.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># code is only for demonstration</span>
 rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods</a></span>(mat, 
-    <span class="dt">top_value_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sd"</span>, <span class="st">"MAD"</span>, ...),
+    <span class="dt">top_value_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SD"</span>, <span class="st">"MAD"</span>, ...),
     <span class="dt">partition_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"hclust"</span>, <span class="st">"kmeans"</span>, ...),
     <span class="dt">mc.cores =</span> ...)
 <span class="kw"><a href="../reference/cola_report-dispatch.html">cola_report</a></span>(rl, <span class="dt">output_dir =</span> ...)</code></pre></div>
-<p>There are many functions in <strong>cola</strong> package that can be applied to <code>rl</code> to visualize and compare the results for all combinations of methods simultaneously.</p>
-<p><code><a href="../reference/cola_report-dispatch.html">cola_report()</a></code> function can be applied on <code>rl</code> to generate a HTML report for the complete analysis, with all the plots and tables generated.</p>
+<p>There are many functions in <em>cola</em> package that can be applied to <code>rl</code> to visualize and compare the results for all combinations of methods simultaneously.</p>
+<p><code><a href="../reference/cola_report-dispatch.html">cola_report()</a></code> function can be applied on <code>rl</code> to generate a HTML report for the complete analysis, with all the plots and tables.</p>
 </div>
 <div id="top-value-methods" class="section level2">
 <h2 class="hasAnchor">
@@ -208,13 +208,13 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 <p>These top methods are:</p>
 <ul>
 <li>
-<code>sd</code>: Standard deviation.</li>
+<code>SD</code>: Standard deviation.</li>
 <li>
-<code>cv</code>: <a href="https://en.wikipedia.org/wiki/Coefficient_of_variation">Coefficient of variance</a>, defined as <code>sd/(mean + s0)</code> where <code>s0</code> is a penalty term which is the 10^th percentile of all row means to avoid small values dividing small values giving large values.</li>
+<code>CV</code>: <a href="https://en.wikipedia.org/wiki/Coefficient_of_variation">Coefficient of variance</a>, defined as <code>sd/(mean + s0)</code> where <code>s0</code> is a penalty term which is the 10^th percentile of all row means to avoid small values dividing small values giving large values.</li>
 <li>
 <code>MAD</code>: <a href="https://en.wikipedia.org/wiki/Median_absolute_deviation">Median absolute deviation</a>.</li>
 <li>
-<code>ATC</code>: A new method proposed in <strong>cola</strong> package and it will be explained later in this section.</li>
+<code>ATC</code>: A new method proposed in <em>cola</em> package and it will be explained later in this section.</li>
 </ul>
 <p>These methods can be used in consensus partitioning by providing the name to the <code>top_value_method</code> argument in <code><a href="../reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods()</a></code> or <code><a href="../reference/consensus_partition.html">consensus_partition()</a></code>.</p>
 <p>You can register a new top-value method by <code><a href="../reference/register_top_value_methods.html">register_top_value_methods()</a></code>. The value should be functions. For each function, it should only have one argument which is the matrix for analysis and it must return a vector with scores for rows. In following example, the “max” method uses the row maximum as the row score and we also add the “QCD” (<a href="https://en.wikipedia.org/wiki/Quartile_coefficient_of_dispersion">quartile coefficient of dispersion</a>) method as a second method here.</p>
@@ -234,10 +234,10 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 <h3 class="hasAnchor">
 <a href="#the-atc-method" class="anchor"></a>The ATC method</h3>
 <p>Choosing the top rows in the matrix is important for the subgroup classification. In most cases, we extract the most variable rows which is defined by row variance. However, sometimes it won’t give you meaningful rows which are efficient for subgroup classification. When random noise in the data increases, e.g. for single cell RNASeq data, the most variable genes are too weak to detect any stable subgroups.</p>
-<p>If we think reversely, assuming there exist stable subgroups in the data, there must be groups of rows showing similar pattern to support the subgrouping, in other words, rows in the same groups should have high correlations to each other. Thus, if we can get rows that more correlated to others, they are more strong to form a stable subgroup for the samples. According to this thought, we designed the ATC method.</p>
+<p>If we think reversely, assuming there exist stable subgroups in the data, there must be groups of rows showing similar pattern to support the subgrouping, in other words, rows in the same groups should have high correlations to each other. Thus, if we can get rows that more correlated to others, they are more strong to form a stable subgroup for the samples. According to this thought, we designed the ATC method (ability to correlate to other rows).</p>
 <p>For row <span class="math inline">\(i\)</span> in a matrix, <span class="math inline">\(X\)</span> is a vector of <strong>the absolute correlation</strong> to all other rows, the ATC (ability to correlate to others) for row <span class="math inline">\(i\)</span> is defined as:</p>
 <p><span class="math display">\[ATC_i = 1 - \int_0^1F(x)\]</span></p>
-<p>where <span class="math inline">\(F(x)\)</span> is the empirical CDF (cumulative distribution function) of <span class="math inline">\(X\)</span>.</p>
+<p>where <span class="math inline">\(F(x)\)</span> is the CDF (cumulative distribution function) of <span class="math inline">\(X\)</span>.</p>
 <p>In following plot, the line is the CDF curve. ATC is the area above the CDF curve. It can be imagined that when row <span class="math inline">\(i\)</span> correlates with more other rows, the CDF curve shifts more to the right, thus with higher ATC scores.</p>
 <p><img src="cola_files/figure-html/unnamed-chunk-9-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>There can be scenarios when large number of rows are correlated to each other only with very small correlation values. They will gain high ATC value due to the large number of rows (which corresponds to the left part of the read area in above plot that close to <span class="math inline">\(x = 0\)</span>). To decrease such effect, the ATC definition can be slightly modified to:</p>
@@ -322,7 +322,7 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
         <span class="kw"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(fit<span class="op">@</span>fit<span class="op">@</span>H, <span class="dv">2</span>, which.max)
     }, <span class="dt">scale_method =</span> <span class="st">"max-min"</span>
 )</code></pre></div>
-<p>For these two methods, users can simply use <code><a href="../reference/register_SOM.html">register_SOM()</a></code> and <code><a href="../reference/register_NMF.html">register_NMF()</a></code> functions in <strong>cola</strong> package.</p>
+<p>For these two methods, users can simply use <code><a href="../reference/register_SOM.html">register_SOM()</a></code> and <code><a href="../reference/register_NMF.html">register_NMF()</a></code> functions in <em>cola</em> package.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># code is only for demonstration</span>
 <span class="kw"><a href="../reference/register_SOM.html">register_SOM</a></span>()
 <span class="kw"><a href="../reference/register_NMF.html">register_NMF</a></span>()</code></pre></div>
@@ -345,7 +345,7 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 <div id="consensus-partitioning" class="section level2">
 <h2 class="hasAnchor">
 <a href="#consensus-partitioning" class="anchor"></a>Consensus partitioning</h2>
-<p>For a given number of top rows <span class="math inline">\(n_i\)</span>, the corresponding matrix with top rows denoted as <span class="math inline">\(M_i\)</span>, a subset of rows with probability of <span class="math inline">\(p\)</span> are randomly sampled from <span class="math inline">\(M_i\)</span> and a certain partition method is applied on it, generating a partition <span class="math inline">\(P_a\)</span>. In most of cases, we have no prior knowledge of which <span class="math inline">\(n_i\)</span> gives better results, thus, <strong>cola</strong> allows to try multiple <span class="math inline">\(n_i\)</span> and pool partitions from all <span class="math inline">\(n_i\)</span> together to find a consensus subgrouping, which also lets rows more on the top of the ranked list give higher weight for determining the final subgroups. Let’s assume top rows are tried for <span class="math inline">\(n_1\)</span>, <span class="math inline">\(n_2\)</span>, …, <span class="math inline">\(n_m\)</span> and the randomly sampling is performed for <span class="math inline">\(N_s\)</span> times, then, for a given number of subgroups <span class="math inline">\(k\)</span> for trying, the total number of partitions is <span class="math inline">\(N_P = m*N_s\)</span>.</p>
+<p>For a given number of top rows <span class="math inline">\(n_i\)</span>, the corresponding matrix with top rows denoted as <span class="math inline">\(M_i\)</span>, a subset of rows with probability of <span class="math inline">\(p\)</span> are randomly sampled from <span class="math inline">\(M_i\)</span> and a certain partition method is applied on it, generating a partition <span class="math inline">\(P_a\)</span>. In most of cases, we have no prior knowledge of which <span class="math inline">\(n_i\)</span> gives better results, thus, <em>cola</em> allows to try multiple <span class="math inline">\(n_i\)</span> and pool partitions from all <span class="math inline">\(n_i\)</span> together to find a consensus subgrouping, which also lets rows more on the top of the ranked list give higher weight for determining the final subgroups. Let’s assume top rows are tried for <span class="math inline">\(n_1\)</span>, <span class="math inline">\(n_2\)</span>, …, <span class="math inline">\(n_m\)</span> and the randomly sampling is performed for <span class="math inline">\(N_s\)</span> times, then, for a given number of subgroups <span class="math inline">\(k\)</span> for trying, the total number of partitions is <span class="math inline">\(N_P = m*N_s\)</span>.</p>
 <div id="consensus-matrix" class="section level3">
 <h3 class="hasAnchor">
 <a href="#consensus-matrix" class="anchor"></a>Consensus matrix</h3>
@@ -360,7 +360,7 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 <div id="consensus-subgroup-labels" class="section level3">
 <h3 class="hasAnchor">
 <a href="#consensus-subgroup-labels" class="anchor"></a>Consensus subgroup labels</h3>
-<p>As long as we have a list of <span class="math inline">\(N_P\)</span> partitions for a given subgroup number <span class="math inline">\(k\)</span>, we need to find a consensus partition based on all <span class="math inline">\(N_P\)</span> partitions.Internally, <strong>cola</strong> package uses the <strong>clue</strong> package to construct the “partition ensemble” and predict the consensus subgroups. The “SE” method from <code><a href="https://rdrr.io/pkg/clue/man/cl_consensus.html">clue::cl_consensus()</a></code> function (please check the on-line documentation of this function) are used to calculate the consensus subgroup labels. The consensus subgroups are labels by integers (i.e. 1, 2, 3, …).</p>
+<p>As long as we have a list of <span class="math inline">\(N_P\)</span> partitions for a given subgroup number <span class="math inline">\(k\)</span>, we need to find a consensus partition based on all <span class="math inline">\(N_P\)</span> partitions.Internally, <em>cola</em> package uses the <strong>clue</strong> package to construct the “partition ensemble” and predict the consensus subgroups. The “SE” method from <code><a href="https://rdrr.io/pkg/clue/man/cl_consensus.html">clue::cl_consensus()</a></code> function (please check the on-line documentation of this function) are used to calculate the consensus subgroup labels. The consensus subgroups are labels by integers (i.e. 1, 2, 3, …).</p>
 </div>
 <div id="adjust-subgroup-labels" class="section level3">
 <h3 class="hasAnchor">
@@ -390,7 +390,7 @@ a a a a a a a b b b b b b</code></pre>
 <div id="determine-the-best-number-of-subgroups" class="section level2">
 <h2 class="hasAnchor">
 <a href="#determine-the-best-number-of-subgroups" class="anchor"></a>Determine the best number of subgroups</h2>
-<p>Consensus partitioning is applied with a specific number of subgroups (we term it as <span class="math inline">\(k\)</span>). Normally, a list of <span class="math inline">\(k\)</span> are tried to find the best <span class="math inline">\(k\)</span>. <strong>cola</strong> provides metrics to help to determine the best number of subgroups.</p>
+<p>Consensus partitioning is applied with a specific number of subgroups (we term it as <span class="math inline">\(k\)</span>). Normally, a list of <span class="math inline">\(k\)</span> are tried to find the best <span class="math inline">\(k\)</span>. <em>cola</em> provides metrics to help to determine the best number of subgroups.</p>
 <p>The <code><a href="../reference/get_stats-dispatch.html">get_stats()</a></code> function returns statistics for all metrics mentioned below and <code><a href="../reference/select_partition_number-ConsensusPartition-method.html">select_partition_number()</a></code> plots the statistics with the number of subgroups (an example is <a href="#toc_25">here</a>).</p>
 <div id="silhouette-score" class="section level3">
 <h3 class="hasAnchor">
@@ -436,7 +436,7 @@ a a a a a a a b b b b b b</code></pre>
 <div id="rand-index" class="section level3">
 <h3 class="hasAnchor">
 <a href="#rand-index" class="anchor"></a>Rand index</h3>
-<p>In some cases, when number of subgroups changes from <span class="math inline">\(k-1\)</span> to <span class="math inline">\(k\)</span>, all the statistics imply <span class="math inline">\(k\)</span> is a better choice than <span class="math inline">\(k-1\)</span>. However, when observing the consensus heatmap, basically it is because a very small set of samples are separated to form a new subgroup. In this case, it is better to still keep <span class="math inline">\(k-1\)</span> subgroups. In other words, the subgrouping with <span class="math inline">\(k\)</span> is similar as <span class="math inline">\(k-1\)</span> and it is not worth to increase <span class="math inline">\(k\)</span> from <span class="math inline">\(k-1\)</span>. In <strong>cola</strong> package, there are two metrics: Rand index and Jaccard index to measure the similarity of two partitions for <span class="math inline">\(k-1\)</span> and <span class="math inline">\(k\)</span>. The two metrics are calculated by <code><a href="https://rdrr.io/pkg/clue/man/cl_agreement.html">clue::cl_agreement(..., method = "Rand")</a></code> and <code><a href="https://rdrr.io/pkg/clue/man/cl_agreement.html">clue::cl_agreement(..., method = "Jaccard")</a></code>.</p>
+<p>In some cases, when number of subgroups changes from <span class="math inline">\(k-1\)</span> to <span class="math inline">\(k\)</span>, all the statistics imply <span class="math inline">\(k\)</span> is a better choice than <span class="math inline">\(k-1\)</span>. However, when observing the consensus heatmap, basically it is because a very small set of samples are separated to form a new subgroup. In this case, it is better to still keep <span class="math inline">\(k-1\)</span> subgroups. In other words, the subgrouping with <span class="math inline">\(k\)</span> is similar as <span class="math inline">\(k-1\)</span> and it is not worth to increase <span class="math inline">\(k\)</span> from <span class="math inline">\(k-1\)</span>. In <em>cola</em> package, there are two metrics: Rand index and Jaccard index to measure the similarity of two partitions for <span class="math inline">\(k-1\)</span> and <span class="math inline">\(k\)</span>. The two metrics are calculated by <code><a href="https://rdrr.io/pkg/clue/man/cl_agreement.html">clue::cl_agreement(..., method = "Rand")</a></code> and <code><a href="https://rdrr.io/pkg/clue/man/cl_agreement.html">clue::cl_agreement(..., method = "Jaccard")</a></code>.</p>
 <p>For all pairs of samples, denote following symbols (<a href="https://en.wikipedia.org/wiki/Rand_index#Definition" class="uri">https://en.wikipedia.org/wiki/Rand_index#Definition</a>):</p>
 <ul>
 <li>
@@ -463,20 +463,20 @@ a a a a a a a b b b b b b</code></pre>
 <div id="rule" class="section level3">
 <h3 class="hasAnchor">
 <a href="#rule" class="anchor"></a>Rule</h3>
-<p><strong>cola</strong> provides a <code><a href="../reference/suggest_best_k-dispatch.html">suggest_best_k()</a></code> function which suggests the best <span class="math inline">\(k\)</span>. It is based on following rules:</p>
+<p><em>cola</em> provides a <code><a href="../reference/suggest_best_k-dispatch.html">suggest_best_k()</a></code> function which suggests the best <span class="math inline">\(k\)</span>. It is based on following rules:</p>
 <ul>
-<li>All <span class="math inline">\(k\)</span> with Rand index larger than 0.95 are removed because the increase of the partition number does not provides enough extra information. If all <span class="math inline">\(k\)</span> are removed, the best <span class="math inline">\(k\)</span> is assigned by <code>NA</code>.</li>
-<li>For <span class="math inline">\(k\)</span> with 1-PAC larger than 0.9, the maximal <span class="math inline">\(k\)</span> is taken as the “best k”.</li>
-<li>If it does not fit the second rule. The <span class="math inline">\(k\)</span> with the highest vote of highest 1-PAC, mean silhouette and concordance is taken as the “best k”.</li>
+<li>All <span class="math inline">\(k\)</span> with Jaccard index larger than 0.95 are removed because increasing <span class="math inline">\(k\)</span> does not provide enough extra information. If all <span class="math inline">\(k\)</span> are removed, it is marked as no subgroup is detected.</li>
+<li>For all <span class="math inline">\(k\)</span> with 1-PAC score larger than 0.9, the maximal <span class="math inline">\(k\)</span> is taken as the best <span class="math inline">\(k\)</span>, and other <span class="math inline">\(k\)</span> are marked as optional <span class="math inline">\(k\)</span>.</li>
+<li>If it does not fit the second rule. The <span class="math inline">\(k\)</span> with the maximal vote of the highest 1-PAC score, highest mean silhouette, and highest concordance is taken as the best <span class="math inline">\(k\)</span>.</li>
 </ul>
-<p><code><a href="../reference/suggest_best_k-dispatch.html">suggest_best_k()</a></code> only gives suggestion on selecting a reasonable <span class="math inline">\(k\)</span>. Users still need to look at the plots (e.g. by <code><a href="../reference/select_partition_number-ConsensusPartition-method.html">select_partition_number()</a></code> or <code><a href="../reference/consensus_heatmap-ConsensusPartition-method.html">consensus_heatmap()</a></code> functions), or even by checking whether the subgrouping gives a reasonable signatures by <code><a href="../reference/get_signatures-ConsensusPartition-method.html">get_signatures()</a></code>, to pick a reasonable <span class="math inline">\(k\)</span> that best explains their study.</p>
+<p><code><a href="../reference/suggest_best_k-dispatch.html">suggest_best_k()</a></code> only gives suggestion on selecting a reasonable <span class="math inline">\(k\)</span>. Users still need to look at the plots (e.g. by <code><a href="../reference/select_partition_number-ConsensusPartition-method.html">select_partition_number()</a></code> or <code><a href="../reference/consensus_heatmap-ConsensusPartition-method.html">consensus_heatmap()</a></code> functions), or even by checking whether the subgrouping gives a reasonable signatures by <code><a href="../reference/get_signatures-ConsensusPartition-method.html">get_signatures()</a></code>, to pick a reasonable <span class="math inline">\(k\)</span> that best explains their studies.</p>
 </div>
 </div>
 <div id="find-signatures" class="section level2">
 <h2 class="hasAnchor">
 <a href="#find-signatures" class="anchor"></a>Find signatures</h2>
 <p>As long as there are stable subgroups, we can look for rows which show distinct difference in one subgroup compared to others. They can be called signature genes or signature CpG sites if the corresponding dataset is gene expression data or methylation data.</p>
-<p>By default, samples with silhouette scores less than 0.5 are removed. <strong>cola</strong> provides following methods:</p>
+<p>By default, samples with silhouette scores less than 0.5 are removed. <em>cola</em> provides following methods:</p>
 <ul>
 <li>
 <code>Ftest</code> use F-test to find significantly different rows between subgroups.</li>
@@ -489,10 +489,10 @@ a a a a a a a b b b b b b</code></pre>
 </ul>
 <p>Users can also provide their own method by providing a function with the matrix and subgroup labels as inputs and a vector of FDR as output.</p>
 </div>
-<div id="gene-ontology-enrichment" class="section level2">
+<div id="functional-enrichment" class="section level2">
 <h2 class="hasAnchor">
-<a href="#gene-ontology-enrichment" class="anchor"></a>Gene ontology Enrichment</h2>
-<p>If rows in the matrix can be associated to genes, <code>GO_enrichment()</code> can be applied to perform GO enrichment analysis to the signature genes.</p>
+<a href="#functional-enrichment" class="anchor"></a>Functional Enrichment</h2>
+<p>If the matrix rows can correspond to genes (e.g. the gene expression matrix, or the methylation array data where CpG sites can be annotated to the transcription start site of genes), <em>cola</em> performs functional enrichment by <code><a href="../reference/functional_enrichment-dispatch.html">functional_enrichment()</a></code> function with hypergeometric test to the signatures by <em>ClusterProfiler</em>, <em>DOSE</em> or <em>ReactomePA</em> packages. k-means clustering with automatically selecting the number of groups of the signature is performed and functional enrichment is applied to each row signature group, to the fact that there may exist different expression patterns and genes involved may play different functional roles.</p>
 </div>
 <div id="compare-multiple-methods" class="section level2">
 <h2 class="hasAnchor">
@@ -504,7 +504,7 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
     <span class="dt">partition_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"hclust"</span>, <span class="st">"kmeans"</span>, ...),
     <span class="dt">mc.cores =</span> ...)</code></pre></div>
 <p>By default it runs analysis for all combinations of top-value methods in <code><a href="../reference/all_top_value_methods.html">all_top_value_methods()</a></code> and partition methods in <code><a href="../reference/all_partition_methods.html">all_partition_methods()</a></code>.</p>
-<p><strong>cola</strong> package provides functions to collect plots from all combinations of methods for straightforward comparisons.</p>
+<p><em>cola</em> package provides functions to collect plots from all combinations of methods for straightforward comparisons.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># code is only for demonstration</span>
 <span class="kw"><a href="../reference/collect_plots-dispatch.html">collect_plots</a></span>(rl, <span class="dt">fun =</span> consensus_heatmap, <span class="dt">k =</span> ...)
 <span class="kw"><a href="../reference/collect_plots-dispatch.html">collect_plots</a></span>(rl, <span class="dt">fun =</span> membership_heatmap, <span class="dt">k =</span> ...)
@@ -517,8 +517,8 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 <div id="implementation-of-the-package" class="section level2">
 <h2 class="hasAnchor">
 <a href="#implementation-of-the-package" class="anchor"></a>Implementation of the package</h2>
-<p><strong>cola</strong> is implemented in an object-oriented way. There are two main classes where <code>ConsensusPartition</code> class contains results for a single top-value method and a single partition method, while <code>ConsensusPartitionList</code> class contains results for multiple top-value methods and multiple partition methods.</p>
-<p>In following example code, <code>TCGA_GBM_subgroup.rds</code> is generated by the code demonstrated <a href="https://jokergoo.github.io/cola_examples/">here</a> (Running cola analysis is always time-consuming, so we use the object that has already be generated.).</p>
+<p><em>cola</em> is implemented in an object-oriented way. There are two main classes where <code>ConsensusPartition</code> class contains results for a single top-value method and a single partition method, while <code>ConsensusPartitionList</code> class contains results for multiple top-value methods and multiple partition methods.</p>
+<p>In following example code, <code>TCGA_GBM_subgroup.rds</code> is generated by the code demonstrated <a href="https://jokergoo.github.io/cola_examples/TCGA_GBM/">here</a> (Running cola analysis is always time-consuming, so we use the object that has already be generated.).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span>(<span class="st">"https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup.rds"</span>, 
     <span class="dt">destfile =</span> <span class="st">"TCGA_GBM_subgroup.rds"</span>, <span class="dt">quiet =</span> <span class="ot">TRUE</span>)
 rl =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"TCGA_GBM_subgroup.rds"</span>)
@@ -527,7 +527,7 @@ rl =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/re
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rl</code></pre></div>
 <pre><code>## A 'ConsensusPartitionList' object with 24 methods.
 ##   On a matrix with 11268 rows and 173 columns.
-##   Top rows are extracted by 'sd, cv, MAD, ATC' methods.
+##   Top rows are extracted by 'SD, CV, MAD, ATC' methods.
 ##   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust, NMF' method.
 ##   Number of partitions are tried for k = 2, 3, 4, 5, 6.
 ##   Performed in total 30000 partitions by row resampling.
@@ -540,28 +540,11 @@ rl =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/re
 ## [17] "rownames"              "show"                  "suggest_best_k"        "test_to_known_factors"
 ## [21] "top_rows_heatmap"      "top_rows_overlap"     
 ## 
-## You can get result for a single method by, e.g. object["sd", "hclust"] or object["sd:hclust"]
-## or a subset of methods by object[c("sd", "cv")], c("hclust", "kmeans")]</code></pre>
+## You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
+## or a subset of methods by object[c("SD", "CV")], c("hclust", "kmeans")]</code></pre>
 <p>To get results for a single top-value method and partition method, you can subset <code>rl</code> by the name of the combination of the methods.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rl[<span class="st">"sd:hclust"</span>]</code></pre></div>
-<pre><code>## A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
-##   On a matrix with 11268 rows and 173 columns.
-##   Top rows (1000, 2000, 3000, 4000, 5000) are extracted by 'sd' method.
-##   Subgroups are detected by 'hclust' method.
-##   Performed in total 1250 partitions by row resampling.
-##   Best k for subgroups seems to be 2.
-## 
-## Following methods can be applied to this 'ConsensusPartition' object:
-##  [1] "cola_report"             "collect_classes"         "collect_plots"          
-##  [4] "collect_stats"           "colnames"                "compare_signatures"     
-##  [7] "consensus_heatmap"       "dimension_reduction"     "functional_enrichment"  
-## [10] "get_anno_col"            "get_anno"                "get_classes"            
-## [13] "get_consensus"           "get_matrix"              "get_membership"         
-## [16] "get_param"               "get_signatures"          "get_stats"              
-## [19] "is_best_k"               "is_stable_k"             "membership_heatmap"     
-## [22] "ncol"                    "nrow"                    "plot_ecdf"              
-## [25] "rownames"                "select_partition_number" "show"                   
-## [28] "suggest_best_k"          "test_to_known_factors"</code></pre>
+<pre><code>## NULL</code></pre>
 <p>Functions on <code>ConsensusPartitionList</code> class that are important to use are:</p>
 <ul>
 <li>
@@ -583,7 +566,7 @@ rl =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/re
 <li>
 <code><a href="../reference/top_rows_overlap-dispatch.html">top_rows_overlap()</a></code>: Make Venn-Euler diagram for the <code>top_n</code> rows under different top-value methods.</li>
 <li>
-<code>GO_enrichment()</code>: If rows can be associated to genes, it applies Gene ontology enrichment analysis.</li>
+<code><a href="../reference/functional_enrichment-dispatch.html">functional_enrichment()</a></code>: If rows can be associated to genes, it applies functional enrichment analysis.</li>
 </ul>
 <p>Functions on <code>ConsensusPartition</code> class:</p>
 <ul>
@@ -594,7 +577,7 @@ rl =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/re
 <li>
 <code><a href="../reference/consensus_heatmap-ConsensusPartition-method.html">consensus_heatmap()</a></code>: Make consensus heatmap.</li>
 <li>
-<code><a href="../reference/dimension_reduction-dispatch.html">dimension_reduction()</a></code>: Make PCA plot.</li>
+<code><a href="../reference/dimension_reduction-dispatch.html">dimension_reduction()</a></code>: Make PCA/MDS/UMAP/t-SNE plot.</li>
 <li>
 <code><a href="../reference/get_classes-dispatch.html">get_classes()</a></code>: Get class labels for a specific <span class="math inline">\(k\)</span>.</li>
 <li>
@@ -608,19 +591,19 @@ rl =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/re
 <li>
 <code><a href="../reference/membership_heatmap-ConsensusPartition-method.html">membership_heatmap()</a></code>: Make the membership heatmap.</li>
 <li>
-<code><a href="../reference/plot_ecdf-ConsensusPartition-method.html">plot_ecdf()</a></code>: Plot the ECDF of the consensus matrix for all <span class="math inline">\(k\)</span>.</li>
+<code><a href="../reference/plot_ecdf-ConsensusPartition-method.html">plot_ecdf()</a></code>: Plot the emperical CDF of the consensus matrix for all <span class="math inline">\(k\)</span>.</li>
 <li>
 <code><a href="../reference/select_partition_number-ConsensusPartition-method.html">select_partition_number()</a></code>: Make plots for all statistics for determining the best <span class="math inline">\(k\)</span>.</li>
 <li>
 <code><a href="../reference/test_to_known_factors-dispatch.html">test_to_known_factors()</a></code>: Apply tests to the annotations if provides. The test will be Fisher’s exact test or ANOVA depending on the data type of the annotation.</li>
 <li>
-<code>GO_enrichment()</code>: If rows can be associated to genes, it applies Gene ontology enrichment analysis.</li>
+<code><a href="../reference/functional_enrichment-dispatch.html">functional_enrichment()</a></code>: If rows can be associated to genes, it applies functional enrichment analysis.</li>
 </ul>
 </div>
 <div id="visualizations" class="section level2">
 <h2 class="hasAnchor">
 <a href="#visualizations" class="anchor"></a>Visualizations</h2>
-<p><strong>cola</strong> package provides rich visualizations for the results generated by a single method or multiple methods.</p>
+<p><em>cola</em> package provides rich visualizations for the results generated by a single method or multiple methods.</p>
 <div id="on-the-consensuspartition-object" class="section level3">
 <h3 class="hasAnchor">
 <a href="#on-the-consensuspartition-object" class="anchor"></a>On the ConsensusPartition object</h3>
@@ -634,7 +617,7 @@ rl =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/re
 <p>The heatmap for the membership matrix with a certain <span class="math inline">\(k\)</span>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/membership_heatmap-ConsensusPartition-method.html">membership_heatmap</a></span>(res, <span class="dt">k =</span><span class="dv">4</span>)</code></pre></div>
 <p><img src="cola_files/figure-html/unnamed-chunk-31-1.png" width="700" style="display: block; margin: auto;"></p>
-<p>The PCA plot with a certain <span class="math inline">\(k\)</span>:</p>
+<p>The dimension reduction plot with a certain <span class="math inline">\(k\)</span>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/dimension_reduction-dispatch.html">dimension_reduction</a></span>(res, <span class="dt">k =</span> <span class="dv">4</span>)</code></pre></div>
 <pre><code>## use UMAP</code></pre>
 <p><img src="cola_files/figure-html/unnamed-chunk-32-1.png" width="700" style="display: block; margin: auto;"></p>
@@ -666,7 +649,7 @@ rl =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/re
 <div id="the-html-report" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-html-report" class="anchor"></a>The HTML report</h2>
-<p>All the content introduced above is mainly for the deep understanding of the package. In real data analysis, users do not need to type that amount of code. <code><a href="../reference/cola_report-dispatch.html">cola_report()</a></code> function wraps all the code and performs the complete analysis automatically. Normally, applying <strong>cola</strong> analysis, following three lines of code are enough for you.</p>
+<p>All the content introduced above is mainly for the deep understanding of the package. In real data analysis, users do not need to type that amount of code. <code><a href="../reference/cola_report-dispatch.html">cola_report()</a></code> function wraps all the code and performs the complete analysis automatically. Normally, applying <em>cola</em> analysis, following three lines of code are enough for you.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># code is only for demonstration</span>
 mat =<span class="st"> </span><span class="kw"><a href="../reference/adjust_matrix.html">adjust_matrix</a></span>(mat) <span class="co"># for some datasets, you don't need this line.</span>
 rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods</a></span>(mat, <span class="dt">mc.cores =</span> ...)
@@ -675,14 +658,14 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 <div id="a-real-world-example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#a-real-world-example" class="anchor"></a>A Real-world example</h2>
-<p>In this example, we use <a href="https://www.ncbi.nlm.nih.gov/pubmed/20129251">the TCGA GBM microarray data set</a> where four subtypes is predicted. The two files (<code>unifiedScaled.txt</code> and <code>TCGA_unified_CORE_ClaNC840.txt</code>) for use is from <a href="https://tcga-data.nci.nih.gov/docs/publications/gbm_exp/">here</a>. The web page for the analysis is <a href="https://jokergoo.github.io/cola_examples/" class="uri">https://jokergoo.github.io/cola_examples/</a>.</p>
+<p>In this example, we use <a href="https://www.ncbi.nlm.nih.gov/pubmed/20129251">the TCGA GBM microarray data set</a> where four subtypes is predicted. The two files (<code>unifiedScaled.txt</code> and <code>TCGA_unified_CORE_ClaNC840.txt</code>) for use is from <a href="https://gdc.cancer.gov/about-data/publications/gbm_exp">here</a>. The web page for the analysis is <a href="https://jokergoo.github.io/cola_examples/TCGA_GBM/" class="uri">https://jokergoo.github.io/cola_examples/TCGA_GBM/</a>.</p>
 <p>Following code is used to perform analysis of consensus partition.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># code is only for demonstration</span>
-mat =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span>(<span class="st">"https://jokergoo.github.io/cola_examples/unifiedScaled.txt"</span>, 
+mat =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span>(<span class="st">"https://jokergoo.github.io/cola_examples/TCGA_GBM/unifiedScaled.txt"</span>, 
     <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">row.names =</span> <span class="dv">1</span>, <span class="dt">check.names =</span> <span class="ot">FALSE</span>)
 mat =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(mat)
 
-subtype =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span>(<span class="st">"https://jokergoo.github.io/cola_examples/TCGA_unified_CORE_ClaNC840.txt"</span>, 
+subtype =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span>(<span class="st">"https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_unified_CORE_ClaNC840.txt"</span>, 
     <span class="dt">sep =</span> <span class="st">"</span><span class="ch">\t</span><span class="st">"</span>, <span class="dt">header =</span> <span class="ot">TRUE</span>, <span class="dt">check.names =</span> <span class="ot">FALSE</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
 subtype =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/structure.html">structure</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(subtype[<span class="dv">1</span>, <span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>)]), <span class="dt">names =</span> <span class="kw"><a href="../reference/colnames-dispatch.html">colnames</a></span>(subtype)[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>)])
 
@@ -696,7 +679,7 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rl</code></pre></div>
 <pre><code>## A 'ConsensusPartitionList' object with 24 methods.
 ##   On a matrix with 11268 rows and 173 columns.
-##   Top rows are extracted by 'sd, cv, MAD, ATC' methods.
+##   Top rows are extracted by 'SD, CV, MAD, ATC' methods.
 ##   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust, NMF' method.
 ##   Number of partitions are tried for k = 2, 3, 4, 5, 6.
 ##   Performed in total 30000 partitions by row resampling.
@@ -709,9 +692,10 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 ## [17] "rownames"              "show"                  "suggest_best_k"        "test_to_known_factors"
 ## [21] "top_rows_heatmap"      "top_rows_overlap"     
 ## 
-## You can get result for a single method by, e.g. object["sd", "hclust"] or object["sd:hclust"]
-## or a subset of methods by object[c("sd", "cv")], c("hclust", "kmeans")]</code></pre>
+## You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
+## or a subset of methods by object[c("SD", "CV")], c("hclust", "kmeans")]</code></pre>
 <p>The HTML report for the analysis is available at <a href="https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_cola_report/cola_report.html" class="uri">https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_cola_report/cola_report.html</a>.</p>
+<p>More examples for <em>cola</em> analysis can be found at <a href="https://jokergoo.github.io/cola_collection/" class="uri">https://jokergoo.github.io/cola_collection/</a>.</p>
 </div>
 <div id="session-info" class="section level2">
 <h2 class="hasAnchor">
@@ -739,18 +723,18 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 ##  [1] Biobase_2.44.0       httr_1.4.1           splines_3.6.1        bit64_0.9-7         
 ##  [5] jsonlite_1.6         microbenchmark_1.4-7 assertthat_0.2.1     askpass_1.1         
 ##  [9] stats4_3.6.1         blob_1.2.0           impute_1.58.0        slam_0.1-46         
-## [13] pillar_1.4.2         RSQLite_2.1.2        backports_1.1.5      lattice_0.20-38     
+## [13] pillar_1.4.2         RSQLite_2.1.4        backports_1.1.5      lattice_0.20-38     
 ## [17] reticulate_1.13      digest_0.6.23        RColorBrewer_1.1-2   skmeans_0.2-11      
 ## [21] colorspace_1.4-1     eulerr_6.0.0         htmltools_0.4.0      Matrix_1.2-18       
 ## [25] XML_3.98-1.20        pkgconfig_2.0.3      genefilter_1.66.0    xtable_1.8-4        
 ## [29] brew_1.0-6           RSpectra_0.16-0      tibble_2.1.3         openssl_1.4.1       
-## [33] annotate_1.62.0      IRanges_2.18.3       umap_0.2.3.1         BiocGenerics_0.30.0 
-## [37] survival_3.1-7       magrittr_1.5         crayon_1.3.4         mclust_5.4.5        
+## [33] annotate_1.62.0      IRanges_2.18.3       umap_0.2.4.0         BiocGenerics_0.30.0 
+## [37] survival_3.1-8       magrittr_1.5         crayon_1.3.4         mclust_5.4.5        
 ## [41] memoise_1.1.0        evaluate_0.14        fs_1.3.1             MASS_7.3-51.4       
 ## [45] xml2_1.2.2           tools_3.6.1          GlobalOptions_0.1.2  stringr_1.4.0       
 ## [49] S4Vectors_0.22.1     cluster_2.1.0        AnnotationDbi_1.46.1 compiler_3.6.1      
 ## [53] pkgdown_1.4.1        rlang_0.4.2          RCurl_1.95-4.12      rjson_0.2.20        
-## [57] bitops_1.0-6         rmarkdown_1.18       DBI_1.0.0            R6_2.4.1            
+## [57] bitops_1.0-6         rmarkdown_2.0        DBI_1.1.0            R6_2.4.1            
 ## [61] bit_1.1-14           zeallot_0.1.0        clue_0.3-57          rprojroot_1.3-2     
 ## [65] shape_1.4.4          desc_1.2.0           stringi_1.4.3        parallel_3.6.1      
 ## [69] Rcpp_1.0.3           vctrs_0.2.0          png_0.1-7            xfun_0.11</code></pre>
@@ -765,7 +749,7 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li>
-<a href="#cola-a-general-framework-for-consensus-partitioning">cola: A General Framework for Consensus Partitioning</a><ul class="nav nav-pills nav-stacked">
+<a href="#cola-a-framework-for-consensus-partitioning">cola: A Framework for Consensus Partitioning</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#introduction">Introduction</a></li>
       <li><a href="#the-input-matrix">The input matrix</a></li>
       <li><a href="#basic-usage">Basic usage</a></li>
@@ -774,7 +758,7 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
       <li><a href="#consensus-partitioning">Consensus partitioning</a></li>
       <li><a href="#determine-the-best-number-of-subgroups">Determine the best number of subgroups</a></li>
       <li><a href="#find-signatures">Find signatures</a></li>
-      <li><a href="#gene-ontology-enrichment">Gene ontology Enrichment</a></li>
+      <li><a href="#functional-enrichment">Functional Enrichment</a></li>
       <li><a href="#compare-multiple-methods">Compare multiple methods</a></li>
       <li><a href="#implementation-of-the-package">Implementation of the package</a></li>
       <li><a href="#visualizations">Visualizations</a></li>

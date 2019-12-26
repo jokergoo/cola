@@ -133,7 +133,9 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='cola_report-dispatch.html'>cola_report</a></span>(<span class='no'>object</span>, <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(), <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+<span class='fu'><a href='cola_report-dispatch.html'>cola_report</a></span>(<span class='no'>object</span>, <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(),
+    <span class='kw'>title</span> <span class='kw'>=</span> <span class='fu'>qq</span>(<span class='st'>"cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"</span>),
+    <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,6 +147,10 @@
     <tr>
       <th>output_dir</th>
       <td><p>The output directory where the report is saved.</p></td>
+    </tr>
+    <tr>
+      <th>title</th>
+      <td><p>Title of the report.</p></td>
     </tr>
     <tr>
       <th>env</th>
