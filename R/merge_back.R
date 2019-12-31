@@ -26,7 +26,7 @@ merge_into_two_groups = function(object, verbose = TRUE) {
 	object2@.env$data = object@.env$data
 
 	sample_by = object@sample_by
-	object_list = lapply(object@object_list, merge_single, verbose = verbose)
+	object_list = lapply(object@object_list, merge_single, verbose = verbose, sample_by = sample_by)
 
 	stat_df = data.frame(
 		k = sapply(object_list, function(x) x$param$k[1]),

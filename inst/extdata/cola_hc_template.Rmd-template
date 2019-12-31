@@ -1,4 +1,4 @@
-cola Report for Hierarchical Partitioning
+<%=title%>
 ==================
 
 **Date**: `r format(as.POSIXlt(Sys.time()), usetz = TRUE)`, **cola version**: `r installed.packages()["cola", "Version"]`
