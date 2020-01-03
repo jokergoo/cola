@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method • cola</title>
+<title>Collect plots from ConsensusPartitionList object — collect_plots-ConsensusPartitionList-method • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method" />
-<meta property="og:description" content="Make HTML report from the ConsensusPartition object" />
+<meta property="og:title" content="Collect plots from ConsensusPartitionList object — collect_plots-ConsensusPartitionList-method" />
+<meta property="og:description" content="Collect plots from ConsensusPartitionList object" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,55 +123,75 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make HTML report from the ConsensusPartition object</h1>
+    <h1>Collect plots from ConsensusPartitionList object</h1>
     
-    <div class="hidden name"><code>cola_report-ConsensusPartition-method.Rd</code></div>
+    <div class="hidden name"><code>collect_plots-ConsensusPartitionList-method.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make HTML report from the ConsensusPartition object</p>
+    <p>Collect plots from ConsensusPartitionList object</p>
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='cola_report-dispatch.html'>cola_report</a></span>(<span class='no'>object</span>, <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(),
-    <span class='kw'>title</span> <span class='kw'>=</span> <span class='fu'>qq</span>(<span class='st'>"cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"</span>),
-    <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='co'># S4 method for ConsensusPartitionList</span>
+<span class='fu'><a href='collect_plots-dispatch.html'>collect_plots</a></span>(<span class='no'>object</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>consensus_heatmap</span>,
+    <span class='kw'>top_value_method</span> <span class='kw'>=</span> <span class='no'>object</span>@<span class='kw'>top_value_method</span>,
+    <span class='kw'>partition_method</span> <span class='kw'>=</span> <span class='no'>object</span>@<span class='kw'>partition_method</span>,
+    <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>A <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p></td>
+      <td><p>A <code><a href='ConsensusPartitionList-class.html'>ConsensusPartitionList-class</a></code> object from <code><a href='run_all_consensus_partition_methods.html'>run_all_consensus_partition_methods</a></code>.</p></td>
     </tr>
     <tr>
-      <th>output_dir</th>
-      <td><p>The output directory where the report is saved.</p></td>
+      <th>k</th>
+      <td><p>Number of partitions.</p></td>
     </tr>
     <tr>
-      <th>title</th>
-      <td><p>Title of the report.</p></td>
+      <th>fun</th>
+      <td><p>Function used to generate plots. Valid functions are <code><a href='consensus_heatmap-ConsensusPartition-method.html'>consensus_heatmap</a></code>, <code><a href='plot_ecdf-ConsensusPartition-method.html'>plot_ecdf</a></code>, <code><a href='membership_heatmap-ConsensusPartition-method.html'>membership_heatmap</a></code>, <code><a href='get_signatures-ConsensusPartition-method.html'>get_signatures</a></code> and <code><a href='dimension_reduction-dispatch.html'>dimension_reduction</a></code>.</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>Where the objects in the report are found, internally used.</p></td>
+      <th>top_value_method</th>
+      <td><p>A vector of top-value methods.</p></td>
+    </tr>
+    <tr>
+      <th>partition_method</th>
+      <td><p>A vector of partition methods.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Whether to print message.</p></td>
+    </tr>
+    <tr>
+      <th>mc.cores</th>
+      <td><p>Number of cores. On OSX it is enforced to be 1.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other Arguments passed to corresponding <code>fun</code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>It generates report for a specific combination of top-value method and partition method.</p>
+    <p>Plots for all combinations of top-value methods and parittion methods are arranged in one single page.</p>
+<p>This function makes it easy to directly compare results from multiple methods.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>No value is returned.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='cola_report-ConsensusPartitionList-method.html'>cola_report,ConsensusPartitionList-method</a></code></p></div>
+    <div class='dont-index'><p><code><a href='collect_plots-ConsensusPartition-method.html'>collect_plots,ConsensusPartition-method</a></code> collects plots for a single <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># There is no example</span>
-<span class='kw'>NULL</span></div><div class='output co'>#&gt; NULL</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
+<span class='fu'><a href='collect_plots-dispatch.html'>collect_plots</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:mclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:mclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:mclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:mclust.</div><div class='img'><img src='collect_plots-ConsensusPartitionList-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='collect_plots-dispatch.html'>collect_plots</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>membership_heatmap</span>)
+<span class='fu'><a href='collect_plots-dispatch.html'>collect_plots</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>get_signatures</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

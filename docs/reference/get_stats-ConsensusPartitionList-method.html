@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method • cola</title>
+<title>Get statistics for consensus partitions from all methods — get_stats-ConsensusPartitionList-method • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method" />
-<meta property="og:description" content="Make HTML report from the ConsensusPartition object" />
+<meta property="og:title" content="Get statistics for consensus partitions from all methods — get_stats-ConsensusPartitionList-method" />
+<meta property="og:description" content="Get statistics for consensus partitions from all methods" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,63 +123,90 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make HTML report from the ConsensusPartition object</h1>
+    <h1>Get statistics for consensus partitions from all methods</h1>
     
-    <div class="hidden name"><code>cola_report-ConsensusPartition-method.Rd</code></div>
+    <div class="hidden name"><code>get_stats-ConsensusPartitionList-method.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make HTML report from the ConsensusPartition object</p>
+    <p>Get statistics for consensus partitions from all methods</p>
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='cola_report-dispatch.html'>cola_report</a></span>(<span class='no'>object</span>, <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(),
-    <span class='kw'>title</span> <span class='kw'>=</span> <span class='fu'>qq</span>(<span class='st'>"cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"</span>),
-    <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='co'># S4 method for ConsensusPartitionList</span>
+<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>object</span>, <span class='no'>k</span>, <span class='kw'>all_stats</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>A <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p></td>
+      <td><p>A <code><a href='ConsensusPartitionList-class.html'>ConsensusPartitionList-class</a></code> object.</p></td>
     </tr>
     <tr>
-      <th>output_dir</th>
-      <td><p>The output directory where the report is saved.</p></td>
+      <th>k</th>
+      <td><p>Number of partitions. The value can only be a single value.</p></td>
     </tr>
     <tr>
-      <th>title</th>
-      <td><p>Title of the report.</p></td>
-    </tr>
-    <tr>
-      <th>env</th>
-      <td><p>Where the objects in the report are found, internally used.</p></td>
+      <th>all_stats</th>
+      <td><p>Whether to show all statistics that were calculated. Used internally.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>It generates report for a specific combination of top-value method and partition method.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>No value is returned.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='cola_report-ConsensusPartitionList-method.html'>cola_report,ConsensusPartitionList-method</a></code></p></div>
+    <p>A matrix of partition statistics for a selected k. Rows in the 
+matrix correspond to combinations of top-value methods and partition methods.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># There is no example</span>
-<span class='kw'>NULL</span></div><div class='output co'>#&gt; NULL</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
+<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;             k     1-PAC mean_silhouette concordance area_increased      Rand
+#&gt; sd:skmeans  2 0.7650376       0.9030390   0.9412222      0.4780984 0.5276836
+#&gt; cv:skmeans  2 0.7023810       0.8544511   0.9241111      0.4831108 0.5276836
+#&gt; MAD:skmeans 2 0.2838346       0.6715767   0.8234444      0.4942507 0.5118644
+#&gt; ATC:skmeans 2 0.7650376       0.8553168   0.9441111      0.5068798 0.4920904
+#&gt; sd:mclust   2 0.3226817       0.8647042   0.8795556      0.4480413 0.5480226
+#&gt; cv:mclust   2 0.3220551       0.8916820   0.8586667      0.4506065 0.5480226
+#&gt; MAD:mclust  2 0.2744361       0.7026800   0.7245556      0.4311487 0.5480226
+#&gt; ATC:mclust  2 0.5231830       0.7088701   0.8832222      0.4733519 0.4937853
+#&gt; sd:pam      2 0.1478697       0.6217047   0.8130000      0.4866957 0.5005650
+#&gt; cv:pam      2 0.6165414       0.8826227   0.9270000      0.4790712 0.5372881
+#&gt; MAD:pam     2 0.1672932       0.7325305   0.8271111      0.4745005 0.5480226
+#&gt; ATC:pam     2 0.4899749       0.8106902   0.9093333      0.4856665 0.5056497
+#&gt; sd:hclust   2 0.5601936       0.8549697   0.8864444      0.4541219 0.5480226
+#&gt; cv:hclust   2 0.2994987       0.6324964   0.7096667      0.4518377 0.5372881
+#&gt; MAD:hclust  2 0.3660012       0.7457578   0.8095556      0.4555810 0.5480226
+#&gt; ATC:hclust  2 0.4028822       0.7172447   0.8663333      0.4659066 0.5118644
+#&gt; sd:kmeans   2 0.3540100       0.8275595   0.8686667      0.4618415 0.5480226
+#&gt; cv:kmeans   2 0.3333333       0.8335529   0.8685556      0.4583408 0.5480226
+#&gt; MAD:kmeans  2 0.2575188       0.5287151   0.7286667      0.4680454 0.5192090
+#&gt; ATC:kmeans  2 0.7105263       0.8228562   0.9275556      0.4965084 0.4937853
+#&gt;               Jaccard
+#&gt; sd:skmeans  0.5276836
+#&gt; cv:skmeans  0.5276836
+#&gt; MAD:skmeans 0.5118644
+#&gt; ATC:skmeans 0.4920904
+#&gt; sd:mclust   0.5480226
+#&gt; cv:mclust   0.5480226
+#&gt; MAD:mclust  0.5480226
+#&gt; ATC:mclust  0.4937853
+#&gt; sd:pam      0.5005650
+#&gt; cv:pam      0.5372881
+#&gt; MAD:pam     0.5480226
+#&gt; ATC:pam     0.5056497
+#&gt; sd:hclust   0.5480226
+#&gt; cv:hclust   0.5372881
+#&gt; MAD:hclust  0.5480226
+#&gt; ATC:hclust  0.5118644
+#&gt; sd:kmeans   0.5480226
+#&gt; cv:kmeans   0.5480226
+#&gt; MAD:kmeans  0.5192090
+#&gt; ATC:kmeans  0.4937853</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

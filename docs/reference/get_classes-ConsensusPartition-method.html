@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method • cola</title>
+<title>Get class IDs from the ConsensusPartition object — get_classes-ConsensusPartition-method • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method" />
-<meta property="og:description" content="Make HTML report from the ConsensusPartition object" />
+<meta property="og:title" content="Get class IDs from the ConsensusPartition object — get_classes-ConsensusPartition-method" />
+<meta property="og:description" content="Get class IDs from the ConsensusPartition object" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,19 +123,17 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make HTML report from the ConsensusPartition object</h1>
+    <h1>Get class IDs from the ConsensusPartition object</h1>
     
-    <div class="hidden name"><code>cola_report-ConsensusPartition-method.Rd</code></div>
+    <div class="hidden name"><code>get_classes-ConsensusPartition-method.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make HTML report from the ConsensusPartition object</p>
+    <p>Get class IDs from the ConsensusPartition object</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='cola_report-dispatch.html'>cola_report</a></span>(<span class='no'>object</span>, <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(),
-    <span class='kw'>title</span> <span class='kw'>=</span> <span class='fu'>qq</span>(<span class='st'>"cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"</span>),
-    <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>object</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>object</span>@<span class='kw'>k</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,41 +143,147 @@
       <td><p>A <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p></td>
     </tr>
     <tr>
-      <th>output_dir</th>
-      <td><p>The output directory where the report is saved.</p></td>
-    </tr>
-    <tr>
-      <th>title</th>
-      <td><p>Title of the report.</p></td>
-    </tr>
-    <tr>
-      <th>env</th>
-      <td><p>Where the objects in the report are found, internally used.</p></td>
+      <th>k</th>
+      <td><p>Number of partitions.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>It generates report for a specific combination of top-value method and partition method.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>No value is returned.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='cola_report-ConsensusPartitionList-method.html'>cola_report,ConsensusPartitionList-method</a></code></p></div>
+    <p>A data frame with class IDs and other columns which are entropy of the percent membership matrix
+and the silhouette scores which measure the stability of a sample to stay in its group.</p>
+<p>If <code>k</code> is not specified, it returns a data frame with class IDs from every k.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># There is no example</span>
-<span class='kw'>NULL</span></div><div class='output co'>#&gt; NULL</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
+<span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>cola_rl</span>[<span class='st'>"sd"</span>, <span class='st'>"kmeans"</span>]
+<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;    class    entropy silhouette
+#&gt; 1      1 0.63430955  0.7715207
+#&gt; 2      1 0.63430955  0.7715207
+#&gt; 3      1 0.63430955  0.7715207
+#&gt; 4      1 0.44749926  0.7756645
+#&gt; 5      1 0.65002242  0.7664377
+#&gt; 6      1 0.58423881  0.7756748
+#&gt; 7      1 0.44749926  0.7753550
+#&gt; 8      1 0.63430955  0.7715207
+#&gt; 9      1 0.63430955  0.7715207
+#&gt; 10     1 0.63430955  0.7715207
+#&gt; 11     1 0.44749926  0.7756645
+#&gt; 12     1 0.56650951  0.7763642
+#&gt; 13     1 0.63430955  0.7715207
+#&gt; 14     1 0.63430955  0.7715207
+#&gt; 15     1 0.63430955  0.7715207
+#&gt; 16     1 0.63430955  0.7715207
+#&gt; 17     1 0.61811949  0.7734234
+#&gt; 18     1 0.60143539  0.7745092
+#&gt; 19     1 0.63430955  0.7715207
+#&gt; 20     1 0.63430955  0.7715207
+#&gt; 21     2 0.05777796  0.9867899
+#&gt; 22     2 0.05777796  0.9867899
+#&gt; 23     2 0.05777796  0.9836094
+#&gt; 24     2 0.05777796  0.9867899
+#&gt; 25     2 0.00000000  0.9880458
+#&gt; 26     2 0.00000000  0.9880458
+#&gt; 27     2 0.10215804  0.9790155
+#&gt; 28     2 0.00000000  0.9880458
+#&gt; 29     2 0.05777796  0.9867899
+#&gt; 30     2 0.05777796  0.9867899
+#&gt; 31     2 0.30039142  0.9235074
+#&gt; 32     2 0.05777796  0.9847722
+#&gt; 33     2 0.05777796  0.9867899
+#&gt; 34     2 0.00000000  0.9880458
+#&gt; 35     2 0.00000000  0.9880458
+#&gt; 36     2 0.05777796  0.9847722
+#&gt; 37     2 0.10215804  0.9776535
+#&gt; 38     2 0.05777796  0.9867899
+#&gt; 39     2 0.05777796  0.9847722
+#&gt; 40     2 0.05777796  0.9847722
+#&gt; 41     1 0.77215514  0.7543333
+#&gt; 42     1 0.78377695  0.7498975
+#&gt; 43     1 0.78377695  0.7498975
+#&gt; 44     1 0.74780616  0.7603918
+#&gt; 45     1 0.76016750  0.7583337
+#&gt; 46     1 0.74780616  0.7603918
+#&gt; 47     1 0.78377695  0.7498975
+#&gt; 48     1 0.83664074  0.7136809
+#&gt; 49     1 0.78377695  0.7498975
+#&gt; 50     1 0.77215514  0.7543333
+#&gt; 51     1 0.78377695  0.7498975
+#&gt; 52     1 0.58423881  0.7682275
+#&gt; 53     1 0.73506269  0.7618119
+#&gt; 54     1 0.98442690  0.4117493
+#&gt; 55     1 0.93700983  0.5805883
+#&gt; 56     1 0.76016750  0.7583337
+#&gt; 57     1 0.76016750  0.7578507
+#&gt; 58     1 0.76016750  0.7578507
+#&gt; 59     1 0.77215514  0.7543333
+#&gt; 60     1 0.78377695  0.7498975</div><div class='input'><span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>)</div><div class='output co'>#&gt;    k=2 k=3 k=4 k=5 k=6
+#&gt; 1    1   1   1   1   1
+#&gt; 2    1   1   1   1   1
+#&gt; 3    1   1   1   1   1
+#&gt; 4    1   1   1   1   4
+#&gt; 5    1   1   1   1   1
+#&gt; 6    1   1   1   1   1
+#&gt; 7    1   1   1   1   1
+#&gt; 8    1   1   1   1   1
+#&gt; 9    1   1   1   1   1
+#&gt; 10   1   1   1   1   1
+#&gt; 11   1   1   1   1   1
+#&gt; 12   1   1   1   1   4
+#&gt; 13   1   1   1   1   1
+#&gt; 14   1   1   1   1   1
+#&gt; 15   1   1   1   1   1
+#&gt; 16   1   1   1   1   1
+#&gt; 17   1   1   1   1   1
+#&gt; 18   1   1   1   1   1
+#&gt; 19   1   1   1   1   1
+#&gt; 20   1   1   1   1   1
+#&gt; 21   2   2   2   2   2
+#&gt; 22   2   2   2   2   2
+#&gt; 23   2   2   2   2   2
+#&gt; 24   2   2   2   2   2
+#&gt; 25   2   2   2   2   2
+#&gt; 26   2   2   2   2   2
+#&gt; 27   2   2   2   2   5
+#&gt; 28   2   2   2   2   2
+#&gt; 29   2   2   2   2   5
+#&gt; 30   2   2   2   2   2
+#&gt; 31   2   2   2   2   2
+#&gt; 32   2   2   2   2   2
+#&gt; 33   2   2   2   2   2
+#&gt; 34   2   2   2   2   5
+#&gt; 35   2   2   2   2   5
+#&gt; 36   2   2   2   2   2
+#&gt; 37   2   2   2   2   2
+#&gt; 38   2   2   2   2   2
+#&gt; 39   2   2   2   2   2
+#&gt; 40   2   2   2   2   2
+#&gt; 41   1   3   3   3   6
+#&gt; 42   1   3   3   3   6
+#&gt; 43   1   3   3   4   3
+#&gt; 44   1   3   3   3   6
+#&gt; 45   1   3   3   3   6
+#&gt; 46   1   3   3   3   6
+#&gt; 47   1   3   3   4   3
+#&gt; 48   1   3   3   3   6
+#&gt; 49   1   3   3   3   6
+#&gt; 50   1   3   3   3   6
+#&gt; 51   1   3   3   3   3
+#&gt; 52   1   3   3   3   6
+#&gt; 53   1   3   3   3   6
+#&gt; 54   1   3   3   3   6
+#&gt; 55   1   3   3   3   6
+#&gt; 56   1   3   3   4   3
+#&gt; 57   1   3   3   4   3
+#&gt; 58   1   3   3   3   6
+#&gt; 59   1   3   3   3   3
+#&gt; 60   1   3   3   3   3</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

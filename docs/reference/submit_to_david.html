@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method • cola</title>
+<title>Perform DAVID analysis — submit_to_david • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method" />
-<meta property="og:description" content="Make HTML report from the ConsensusPartition object" />
+<meta property="og:title" content="Perform DAVID analysis — submit_to_david" />
+<meta property="og:description" content="Perform DAVID analysis" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,50 +123,60 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make HTML report from the ConsensusPartition object</h1>
+    <h1>Perform DAVID analysis</h1>
     
-    <div class="hidden name"><code>cola_report-ConsensusPartition-method.Rd</code></div>
+    <div class="hidden name"><code>submit_to_david.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make HTML report from the ConsensusPartition object</p>
+    <p>Perform DAVID analysis</p>
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='cola_report-dispatch.html'>cola_report</a></span>(<span class='no'>object</span>, <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(),
-    <span class='kw'>title</span> <span class='kw'>=</span> <span class='fu'>qq</span>(<span class='st'>"cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"</span>),
-    <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='fu'>submit_to_david</span>(<span class='no'>genes</span>, <span class='no'>email</span>,
+    <span class='kw'>catalog</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"GOTERM_CC_FAT"</span>, <span class='st'>"GOTERM_BP_FAT"</span>, <span class='st'>"GOTERM_MF_FAT"</span>, <span class='st'>"KEGG_PATHWAY"</span>),
+    <span class='kw'>idtype</span> <span class='kw'>=</span> <span class='st'>"ENSEMBL_GENE_ID"</span>, <span class='kw'>species</span> <span class='kw'>=</span> <span class='st'>"Homo sapiens"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>A <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p></td>
+      <th>genes</th>
+      <td><p>A vector of gene identifiers.</p></td>
     </tr>
     <tr>
-      <th>output_dir</th>
-      <td><p>The output directory where the report is saved.</p></td>
+      <th>email</th>
+      <td><p>The email that user registered on DAVID web service (<a href='https://david.ncifcrf.gov/content.jsp?file=WS.html'>https://david.ncifcrf.gov/content.jsp?file=WS.html</a> ).</p></td>
     </tr>
     <tr>
-      <th>title</th>
-      <td><p>Title of the report.</p></td>
+      <th>catalog</th>
+      <td><p>A vector of function catalogs. Valid values should be in <code>cola:::DAVID_ALL_CATALOGS</code>.</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>Where the objects in the report are found, internally used.</p></td>
+      <th>idtype</th>
+      <td><p>ID types for the input gene list. Valid values should be in <code>cola:::DAVID_ALL_ID_TYPES</code>.</p></td>
+    </tr>
+    <tr>
+      <th>species</th>
+      <td><p>Full species name if the ID type is not uniquely mapped to one single species.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>It generates report for a specific combination of top-value method and partition method.</p>
+    <p>This function directly sends the HTTP request to DAVID web service (<a href='https://david.ncifcrf.gov/content.jsp?file=WS.html'>https://david.ncifcrf.gov/content.jsp?file=WS.html</a> )
+and parses the returned XML. The reason of writing this function is I have problems with other
+R packages doing DAVID analysis (e.g. RDAVIDWebService, <a href='https://bioconductor.org/packages/devel/bioc/html/RDAVIDWebService.html'>https://bioconductor.org/packages/devel/bioc/html/RDAVIDWebService.html</a> )
+because the rJava package RDAVIDWebService depends on can not be installed on my machine.</p>
+<p>Users are encouraged to use more advanced
+gene set enrichment tools such as clusterProfiler (<a href='http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html'>http://www.bioconductor.org/packages/release/bioc/html/clusterProfiler.html</a> ), 
+or fgsea (<a href='http://www.bioconductor.org/packages/release/bioc/html/fgsea.html'>http://www.bioconductor.org/packages/release/bioc/html/fgsea.html</a> ).</p>
+<p>If you want to run this function multiple times, please set time intervals between runs.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>No value is returned.</p>
+    <p>A data frame with functional enrichment results.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='cola_report-ConsensusPartitionList-method.html'>cola_report,ConsensusPartitionList-method</a></code></p></div>
+    <div class='dont-index'><p><a href='https://david.ncifcrf.gov'>https://david.ncifcrf.gov</a></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># There is no example</span>

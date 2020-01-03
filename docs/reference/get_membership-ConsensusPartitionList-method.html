@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method • cola</title>
+<title>Get membership matrix — get_membership-ConsensusPartitionList-method • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method" />
-<meta property="og:description" content="Make HTML report from the ConsensusPartition object" />
+<meta property="og:title" content="Get membership matrix — get_membership-ConsensusPartitionList-method" />
+<meta property="og:description" content="Get membership matrix" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,55 +123,107 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make HTML report from the ConsensusPartition object</h1>
+    <h1>Get membership matrix</h1>
     
-    <div class="hidden name"><code>cola_report-ConsensusPartition-method.Rd</code></div>
+    <div class="hidden name"><code>get_membership-ConsensusPartitionList-method.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make HTML report from the ConsensusPartition object</p>
+    <p>Get membership matrix</p>
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='cola_report-dispatch.html'>cola_report</a></span>(<span class='no'>object</span>, <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(),
-    <span class='kw'>title</span> <span class='kw'>=</span> <span class='fu'>qq</span>(<span class='st'>"cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"</span>),
-    <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='co'># S4 method for ConsensusPartitionList</span>
+<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>object</span>, <span class='no'>k</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>A <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p></td>
+      <td><p>A <code><a href='ConsensusPartitionList-class.html'>ConsensusPartitionList-class</a></code> object.</p></td>
     </tr>
     <tr>
-      <th>output_dir</th>
-      <td><p>The output directory where the report is saved.</p></td>
-    </tr>
-    <tr>
-      <th>title</th>
-      <td><p>Title of the report.</p></td>
-    </tr>
-    <tr>
-      <th>env</th>
-      <td><p>Where the objects in the report are found, internally used.</p></td>
+      <th>k</th>
+      <td><p>Number of partitions.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>It generates report for a specific combination of top-value method and partition method.</p>
+    <p>The membership matrix (the probability of each sample to be in one group, if assuming columns represent samples) is inferred
+from the consensus partition of every combination of methods, weighted by the mean silhouette score of the partition
+for each method. So methods which give instable partitions have lower weights 
+when summarizing membership matrix from all methods.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>No value is returned.</p>
+    <p>A membership matrix where rows correspond to the columns in the original matrix.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='cola_report-ConsensusPartitionList-method.html'>cola_report,ConsensusPartitionList-method</a></code></p></div>
+    <div class='dont-index'><p><code><a href='get_membership-ConsensusPartition-method.html'>get_membership,ConsensusPartition-method</a></code> returns membership matrix for a single top-value method and partition method.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># There is no example</span>
-<span class='kw'>NULL</span></div><div class='output co'>#&gt; NULL</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
+<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;               p1        p2
+#&gt;  [1,] 0.74415208 0.2558479
+#&gt;  [2,] 0.74592820 0.2540718
+#&gt;  [3,] 0.76294007 0.2370599
+#&gt;  [4,] 0.79742091 0.2025791
+#&gt;  [5,] 0.73662659 0.2633734
+#&gt;  [6,] 0.84303544 0.1569646
+#&gt;  [7,] 0.80433803 0.1956620
+#&gt;  [8,] 0.73057918 0.2694208
+#&gt;  [9,] 0.75214306 0.2478569
+#&gt; [10,] 0.75540155 0.2445984
+#&gt; [11,] 0.81809734 0.1819027
+#&gt; [12,] 0.75551505 0.2444850
+#&gt; [13,] 0.73581791 0.2641821
+#&gt; [14,] 0.76684885 0.2331511
+#&gt; [15,] 0.74613219 0.2538678
+#&gt; [16,] 0.73601526 0.2639847
+#&gt; [17,] 0.74965338 0.2503466
+#&gt; [18,] 0.74850178 0.2514982
+#&gt; [19,] 0.75934485 0.2406551
+#&gt; [20,] 0.72817674 0.2718233
+#&gt; [21,] 0.04315879 0.9568412
+#&gt; [22,] 0.05015033 0.9498497
+#&gt; [23,] 0.09464973 0.9053503
+#&gt; [24,] 0.04550283 0.9544972
+#&gt; [25,] 0.04999170 0.9500083
+#&gt; [26,] 0.04823444 0.9517656
+#&gt; [27,] 0.06986727 0.9301327
+#&gt; [28,] 0.04682383 0.9531762
+#&gt; [29,] 0.04375333 0.9562467
+#&gt; [30,] 0.07745671 0.9225433
+#&gt; [31,] 0.11626401 0.8837360
+#&gt; [32,] 0.06056634 0.9394337
+#&gt; [33,] 0.04460949 0.9553905
+#&gt; [34,] 0.04999963 0.9500004
+#&gt; [35,] 0.04428233 0.9557177
+#&gt; [36,] 0.08382322 0.9161768
+#&gt; [37,] 0.12180476 0.8781952
+#&gt; [38,] 0.05288527 0.9471147
+#&gt; [39,] 0.09231451 0.9076855
+#&gt; [40,] 0.06748861 0.9325114
+#&gt; [41,] 0.60838684 0.3916132
+#&gt; [42,] 0.60578767 0.3942123
+#&gt; [43,] 0.57035365 0.4296464
+#&gt; [44,] 0.79215081 0.2078492
+#&gt; [45,] 0.71684303 0.2831570
+#&gt; [46,] 0.70669598 0.2933040
+#&gt; [47,] 0.75842682 0.2415732
+#&gt; [48,] 0.53754164 0.4624584
+#&gt; [49,] 0.57024059 0.4297594
+#&gt; [50,] 0.79158144 0.2084186
+#&gt; [51,] 0.64562264 0.3543774
+#&gt; [52,] 0.86557260 0.1344274
+#&gt; [53,] 0.74202445 0.2579756
+#&gt; [54,] 0.48731946 0.5126805
+#&gt; [55,] 0.47026793 0.5297321
+#&gt; [56,] 0.80487983 0.1951202
+#&gt; [57,] 0.85132795 0.1486720
+#&gt; [58,] 0.71255977 0.2874402
+#&gt; [59,] 0.71180830 0.2881917
+#&gt; [60,] 0.77344226 0.2265577</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

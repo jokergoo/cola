@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method • cola</title>
+<title>Correspond between a list of rankings — correspond_between_rankings • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method" />
-<meta property="og:description" content="Make HTML report from the ConsensusPartition object" />
+<meta property="og:title" content="Correspond between a list of rankings — correspond_between_rankings" />
+<meta property="og:description" content="Correspond between a list of rankings" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,55 +123,53 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make HTML report from the ConsensusPartition object</h1>
+    <h1>Correspond between a list of rankings</h1>
     
-    <div class="hidden name"><code>cola_report-ConsensusPartition-method.Rd</code></div>
+    <div class="hidden name"><code>correspond_between_rankings.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make HTML report from the ConsensusPartition object</p>
+    <p>Correspond between a list of rankings</p>
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='cola_report-dispatch.html'>cola_report</a></span>(<span class='no'>object</span>, <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(),
-    <span class='kw'>title</span> <span class='kw'>=</span> <span class='fu'>qq</span>(<span class='st'>"cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"</span>),
-    <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='fu'>correspond_between_rankings</span>(<span class='no'>lt</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>lt</span><span class='kw'>[[</span><span class='fl'>1</span>]]),
+    <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>cola_opt</span>$<span class='no'>color_set_1</span>[<span class='fl'>1</span>:<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>lt</span>)], <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>A <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p></td>
+      <th>lt</th>
+      <td><p>A list of scores under different metrics.</p></td>
     </tr>
     <tr>
-      <th>output_dir</th>
-      <td><p>The output directory where the report is saved.</p></td>
+      <th>top_n</th>
+      <td><p>Top n elements to show correspondance.</p></td>
     </tr>
     <tr>
-      <th>title</th>
-      <td><p>Title of the report.</p></td>
+      <th>col</th>
+      <td><p>A vector of colors for <code>lt</code>.</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>Where the objects in the report are found, internally used.</p></td>
+      <th>...</th>
+      <td><p>Pass to <code><a href='correspond_between_two_rankings.html'>correspond_between_two_rankings</a></code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>It generates report for a specific combination of top-value method and partition method.</p>
+    <p>It makes plots for every pairwise comparisons in <code>lt</code>.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>No value is returned.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='cola_report-ConsensusPartitionList-method.html'>cola_report,ConsensusPartitionList-method</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># There is no example</span>
-<span class='kw'>NULL</span></div><div class='output co'>#&gt; NULL</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>matrixStats</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: matrixStats</span></div><div class='input'><span class='no'>mat</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>1000</span>), <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>10</span>)
+<span class='no'>x1</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowSds.html'>rowSds</a></span>(<span class='no'>mat</span>)
+<span class='no'>x2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowSds.html'>rowMads</a></span>(<span class='no'>mat</span>)
+<span class='no'>x3</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowSds.html'>rowSds</a></span>(<span class='no'>mat</span>)/<span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowMeans</a></span>(<span class='no'>mat</span>)
+<span class='fu'>correspond_between_rankings</span>(<span class='kw'>lt</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>sd</span> <span class='kw'>=</span> <span class='no'>x1</span>, <span class='kw'>mad</span> <span class='kw'>=</span> <span class='no'>x2</span>, <span class='kw'>vc</span> <span class='kw'>=</span> <span class='no'>x3</span>),
+    <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"red"</span>, <span class='st'>"blue"</span>, <span class='st'>"green"</span>))</div><div class='img'><img src='correspond_between_rankings-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -179,7 +177,6 @@
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#details">Details</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 

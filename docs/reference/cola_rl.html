@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method • cola</title>
+<title>Example ConsensusPartitionList object — cola_rl • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Make HTML report from the ConsensusPartition object — cola_report-ConsensusPartition-method" />
-<meta property="og:description" content="Make HTML report from the ConsensusPartition object" />
+<meta property="og:title" content="Example ConsensusPartitionList object — cola_rl" />
+<meta property="og:description" content="Example ConsensusPartitionList object" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,63 +123,62 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make HTML report from the ConsensusPartition object</h1>
+    <h1>Example ConsensusPartitionList object</h1>
     
-    <div class="hidden name"><code>cola_report-ConsensusPartition-method.Rd</code></div>
+    <div class="hidden name"><code>cola_rl.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make HTML report from the ConsensusPartition object</p>
+    <p>Example ConsensusPartitionList object</p>
     </div>
 
-    <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='cola_report-dispatch.html'>cola_report</a></span>(<span class='no'>object</span>, <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(),
-    <span class='kw'>title</span> <span class='kw'>=</span> <span class='fu'>qq</span>(<span class='st'>"cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"</span>),
-    <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)</pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>object</th>
-      <td><p>A <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p></td>
-    </tr>
-    <tr>
-      <th>output_dir</th>
-      <td><p>The output directory where the report is saved.</p></td>
-    </tr>
-    <tr>
-      <th>title</th>
-      <td><p>Title of the report.</p></td>
-    </tr>
-    <tr>
-      <th>env</th>
-      <td><p>Where the objects in the report are found, internally used.</p></td>
-    </tr>
-    </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>It generates report for a specific combination of top-value method and partition method.</p>
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <p>Following code was used to generate <code>cola_rl</code>:</p>
+<p></p><pre>
+  set.seed(123)
+  m = cbind(rbind(matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
+                  matrix(rnorm(20*20, mean = 0,   sd = 0.5), nr = 20),
+                  matrix(rnorm(20*20, mean = 0,   sd = 0.5), nr = 20)),
+            rbind(matrix(rnorm(20*20, mean = 0,   sd = 0.5), nr = 20),
+                  matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
+                  matrix(rnorm(20*20, mean = 0,   sd = 0.5), nr = 20)),
+            rbind(matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
+                  matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
+                  matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
+           ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
+  cola_rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40))  </pre>
 
-    <p>No value is returned.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='cola_report-ConsensusPartitionList-method.html'>cola_report,ConsensusPartitionList-method</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># There is no example</span>
-<span class='kw'>NULL</span></div><div class='output co'>#&gt; NULL</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
+<span class='no'>cola_rl</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 20 methods.
+#&gt;   On a matrix with 60 rows and 60 columns.
+#&gt;   Top rows are extracted by 'sd, cv, MAD, ATC' methods.
+#&gt;   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust' method.
+#&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
+#&gt;   Performed in total 15000 partitions by row resampling.
+#&gt; 
+#&gt; Following methods can be applied to this 'ConsensusPartitionList' object:
+#&gt;  [1] "cola_report"           "collect_classes"       "collect_plots"        
+#&gt;  [4] "collect_stats"         "colnames"              "functional_enrichment"
+#&gt;  [7] "get_anno_col"          "get_anno"              "get_classes"          
+#&gt; [10] "get_matrix"            "get_membership"        "get_stats"            
+#&gt; [13] "is_best_k"             "is_stable_k"           "ncol"                 
+#&gt; [16] "nrow"                  "rownames"              "show"                 
+#&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
+#&gt; [22] "top_rows_overlap"     
+#&gt; 
+#&gt; You can get result for a single method by, e.g. object["sd", "hclust"] or object["sd:hclust"]
+#&gt; or a subset of methods by object[c("sd", "cv")], c("hclust", "kmeans")]</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
       <li><a href="#details">Details</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>
 
