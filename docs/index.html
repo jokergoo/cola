@@ -115,12 +115,12 @@
 <h2 class="hasAnchor">
 <a href="#install" class="anchor"></a>Install</h2>
 <p><em>cola</em> is available on <a href="http://bioconductor.org/packages/devel/bioc/html/cola.html">Bioconductor</a>, you can install it by:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">    <span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">BiocManager<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"cola"</span>)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (<span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))
+    <span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
+BiocManager<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"cola"</span>)</code></pre></div>
 <p>The latest version can be installed directly from GitHub:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(devtools)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"jokergoo/cola"</span>)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(devtools)
+<span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"jokergoo/cola"</span>)</code></pre></div>
 </div>
 <div id="links" class="section level2">
 <h2 class="hasAnchor">
@@ -157,13 +157,13 @@
 <h3 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h3>
 <p>Three lines of code to perfrom <em>cola</em> analysis:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">mat =<span class="st"> </span><span class="kw"><a href="reference/adjust_matrix.html">adjust_matrix</a></span>(mat) <span class="co"># optional</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">rl =<span class="st"> </span><span class="kw"><a href="reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods</a></span>(</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">    mat, </a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">    <span class="dt">top_value_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sd"</span>, <span class="st">"MAD"</span>, ...),</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">    <span class="dt">partition_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"hclust"</span>, <span class="st">"kmeans"</span>, ...),</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">    <span class="dt">mc.cores =</span> ...)</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="kw"><a href="reference/cola_report-dispatch.html">cola_report</a></span>(rl, <span class="dt">output_dir =</span> ...)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mat =<span class="st"> </span><span class="kw"><a href="reference/adjust_matrix.html">adjust_matrix</a></span>(mat) <span class="co"># optional</span>
+rl =<span class="st"> </span><span class="kw"><a href="reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods</a></span>(
+    mat, 
+    <span class="dt">top_value_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"sd"</span>, <span class="st">"MAD"</span>, ...),
+    <span class="dt">partition_method =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"hclust"</span>, <span class="st">"kmeans"</span>, ...),
+    <span class="dt">mc.cores =</span> ...)
+<span class="kw"><a href="reference/cola_report-dispatch.html">cola_report</a></span>(rl, <span class="dt">output_dir =</span> ...)</code></pre></div>
 </div>
 <div id="plots" class="section level3">
 <h3 class="hasAnchor">
