@@ -147,7 +147,7 @@
     </tr>
     <tr>
       <th>k</th>
-      <td><p>Number of partitions.</p></td>
+      <td><p>Number of subgroups.</p></td>
     </tr>
     <tr>
       <th>fun</th>
@@ -159,7 +159,7 @@
     </tr>
     <tr>
       <th>partition_method</th>
-      <td><p>A vector of partition methods.</p></td>
+      <td><p>A vector of partitioning methods.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -177,7 +177,7 @@
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Plots for all combinations of top-value methods and parittion methods are arranged in one single page.</p>
+    <p>Plots for all combinations of top-value methods and parittioning methods are arranged in one single page.</p>
 <p>This function makes it easy to directly compare results from multiple methods.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
@@ -188,7 +188,7 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='fu'><a href='collect_plots-dispatch.html'>collect_plots</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for sd:mclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for cv:mclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:mclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:mclust.</div><div class='img'><img src='collect_plots-ConsensusPartitionList-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='collect_plots-dispatch.html'>collect_plots</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; * applying consensus_heatmap() for SD:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for SD:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for SD:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for SD:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for SD:mclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for CV:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for CV:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for CV:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for CV:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for CV:mclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for MAD:mclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:hclust.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:kmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:skmeans.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:pam.</div><div class='output co'>#&gt; * applying consensus_heatmap() for ATC:mclust.</div><div class='img'><img src='collect_plots-ConsensusPartitionList-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='fu'><a href='collect_plots-dispatch.html'>collect_plots</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>membership_heatmap</span>)
 <span class='fu'><a href='collect_plots-dispatch.html'>collect_plots</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>get_signatures</span>)
 }</div></pre>

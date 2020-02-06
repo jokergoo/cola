@@ -148,7 +148,7 @@
     </tr>
     <tr>
       <th>j</th>
-      <td><p>Index for partition methods, character or nummeric.</p></td>
+      <td><p>Index for partitioning methods, character or nummeric.</p></td>
     </tr>
     <tr>
       <th>drop</th>
@@ -158,17 +158,17 @@
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>For a specific combination of top-value method and partition method, you can also
-subset by e.g. <code>x['sd:hclust']</code>.</p>
+    <p>For a specific combination of top-value method and partitioning method, you can also
+subset by e.g. <code>x['SD:hclust']</code>.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A <code><a href='ConsensusPartitionList-class.html'>ConsensusPartitionList-class</a></code> object or a <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='no'>cola_rl</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"sd"</span>, <span class='st'>"MAD"</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hclust"</span>, <span class='st'>"kmeans"</span>)]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
+<span class='no'>cola_rl</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SD"</span>, <span class='st'>"MAD"</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hclust"</span>, <span class='st'>"kmeans"</span>)]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows are extracted by 'sd, MAD' methods.
+#&gt;   Top rows are extracted by 'SD, MAD' methods.
 #&gt;   Subgroups are detected by 'hclust, kmeans' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
 #&gt;   Performed in total 3000 partitions by row resampling.
@@ -183,10 +183,10 @@ subset by e.g. <code>x['sd:hclust']</code>.</p>
 #&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
-#&gt; You can get result for a single method by, e.g. object["sd", "hclust"] or object["sd:hclust"]
-#&gt; or a subset of methods by object[c("sd", "MAD")], c("hclust", "kmeans")]</div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"sd"</span>, <span class='st'>"kmeans"</span>] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
+#&gt; You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
+#&gt; or a subset of methods by object[c("SD", "MAD")], c("hclust", "kmeans")]</div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows (20, 30, 40) are extracted by 'sd' method.
+#&gt;   Top rows (20, 30, 40) are extracted by 'SD' method.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Performed in total 750 partitions by row resampling.
 #&gt;   Best k for subgroups seems to be 3.
@@ -206,9 +206,9 @@ subset by e.g. <code>x['sd:hclust']</code>.</p>
 #&gt; [23] "nrow"                    "plot_ecdf"              
 #&gt; [25] "rownames"                "select_partition_number"
 #&gt; [27] "show"                    "suggest_best_k"         
-#&gt; [29] "test_to_known_factors"  </div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"sd:kmeans"</span>] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
+#&gt; [29] "test_to_known_factors"  </div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD:kmeans"</span>] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows (20, 30, 40) are extracted by 'sd' method.
+#&gt;   Top rows (20, 30, 40) are extracted by 'SD' method.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Performed in total 750 partitions by row resampling.
 #&gt;   Best k for subgroups seems to be 3.
@@ -228,9 +228,9 @@ subset by e.g. <code>x['sd:hclust']</code>.</p>
 #&gt; [23] "nrow"                    "plot_ecdf"              
 #&gt; [25] "rownames"                "select_partition_number"
 #&gt; [27] "show"                    "suggest_best_k"         
-#&gt; [29] "test_to_known_factors"  </div><div class='input'><span class='no'>cola_rl</span><span class='kw'>[[</span><span class='st'>"sd:kmeans"</span>]] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
+#&gt; [29] "test_to_known_factors"  </div><div class='input'><span class='no'>cola_rl</span><span class='kw'>[[</span><span class='st'>"SD:kmeans"</span>]] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows (20, 30, 40) are extracted by 'sd' method.
+#&gt;   Top rows (20, 30, 40) are extracted by 'SD' method.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Performed in total 750 partitions by row resampling.
 #&gt;   Best k for subgroups seems to be 3.
@@ -250,9 +250,9 @@ subset by e.g. <code>x['sd:hclust']</code>.</p>
 #&gt; [23] "nrow"                    "plot_ecdf"              
 #&gt; [25] "rownames"                "select_partition_number"
 #&gt; [27] "show"                    "suggest_best_k"         
-#&gt; [29] "test_to_known_factors"  </div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"sd"</span>, <span class='st'>"kmeans"</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>] <span class='co'># still a ConsensusPartitionList object</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 1 methods.
+#&gt; [29] "test_to_known_factors"  </div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>] <span class='co'># still a ConsensusPartitionList object</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 1 methods.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows are extracted by 'sd' methods.
+#&gt;   Top rows are extracted by 'SD' methods.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
 #&gt;   Performed in total 750 partitions by row resampling.
@@ -267,9 +267,9 @@ subset by e.g. <code>x['sd:hclust']</code>.</p>
 #&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
-#&gt; You can get result for a single method by, e.g. object["sd", "kmeans"] or object["sd:kmeans"]</div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"sd:kmeans"</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>] <span class='co'># still a ConsensusPartitionList object</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 1 methods.
+#&gt; You can get result for a single method by, e.g. object["SD", "kmeans"] or object["SD:kmeans"]</div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD:kmeans"</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>] <span class='co'># still a ConsensusPartitionList object</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 1 methods.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows are extracted by 'sd' methods.
+#&gt;   Top rows are extracted by 'SD' methods.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
 #&gt;   Performed in total 750 partitions by row resampling.
@@ -284,9 +284,9 @@ subset by e.g. <code>x['sd:hclust']</code>.</p>
 #&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
-#&gt; You can get result for a single method by, e.g. object["sd", "kmeans"] or object["sd:kmeans"]</div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"sd"</span>, ]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 5 methods.
+#&gt; You can get result for a single method by, e.g. object["SD", "kmeans"] or object["SD:kmeans"]</div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, ]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 5 methods.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows are extracted by 'sd' methods.
+#&gt;   Top rows are extracted by 'SD' methods.
 #&gt;   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
 #&gt;   Performed in total 3750 partitions by row resampling.
@@ -301,10 +301,10 @@ subset by e.g. <code>x['sd:hclust']</code>.</p>
 #&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
-#&gt; You can get result for a single method by, e.g. object["sd", "hclust"] or object["sd:hclust"]
-#&gt; or a subset of methods by object["sd"], c("hclust", "kmeans")]</div><div class='input'><span class='no'>cola_rl</span>[, <span class='st'>"hclust"</span>]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
+#&gt; You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
+#&gt; or a subset of methods by object["SD"], c("hclust", "kmeans")]</div><div class='input'><span class='no'>cola_rl</span>[, <span class='st'>"hclust"</span>]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows are extracted by 'sd, cv, MAD, ATC' methods.
+#&gt;   Top rows are extracted by 'SD, CV, MAD, ATC' methods.
 #&gt;   Subgroups are detected by 'hclust' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
 #&gt;   Performed in total 3000 partitions by row resampling.
@@ -319,10 +319,10 @@ subset by e.g. <code>x['sd:hclust']</code>.</p>
 #&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
-#&gt; You can get result for a single method by, e.g. object["sd", "hclust"] or object["sd:hclust"]
-#&gt; or a subset of methods by object[c("sd", "cv")], "hclust"]</div><div class='input'><span class='no'>cola_rl</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>:<span class='fl'>2</span>]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
+#&gt; You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
+#&gt; or a subset of methods by object[c("SD", "CV")], "hclust"]</div><div class='input'><span class='no'>cola_rl</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>:<span class='fl'>2</span>]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows are extracted by 'sd, cv' methods.
+#&gt;   Top rows are extracted by 'SD, CV' methods.
 #&gt;   Subgroups are detected by 'hclust, kmeans' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
 #&gt;   Performed in total 3000 partitions by row resampling.
@@ -337,8 +337,8 @@ subset by e.g. <code>x['sd:hclust']</code>.</p>
 #&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
-#&gt; You can get result for a single method by, e.g. object["sd", "hclust"] or object["sd:hclust"]
-#&gt; or a subset of methods by object[c("sd", "cv")], c("hclust", "kmeans")]</div></pre>
+#&gt; You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
+#&gt; or a subset of methods by object[c("SD", "CV")], c("hclust", "kmeans")]</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

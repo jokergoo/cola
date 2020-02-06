@@ -144,7 +144,7 @@
     </tr>
     <tr>
       <th>top_n</th>
-      <td><p>Top n elements to show correspondance.</p></td>
+      <td><p>Top n elements to show the correspondance.</p></td>
     </tr>
     <tr>
       <th>col</th>
@@ -158,7 +158,7 @@
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>It makes plots for every pairwise comparisons in <code>lt</code>.</p>
+    <p>It makes plots for every pairwise comparison in <code>lt</code>.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>No value is returned.</p>
@@ -168,7 +168,7 @@
 <span class='no'>x1</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowSds.html'>rowSds</a></span>(<span class='no'>mat</span>)
 <span class='no'>x2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowSds.html'>rowMads</a></span>(<span class='no'>mat</span>)
 <span class='no'>x3</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowSds.html'>rowSds</a></span>(<span class='no'>mat</span>)/<span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowMeans</a></span>(<span class='no'>mat</span>)
-<span class='fu'>correspond_between_rankings</span>(<span class='kw'>lt</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>sd</span> <span class='kw'>=</span> <span class='no'>x1</span>, <span class='kw'>mad</span> <span class='kw'>=</span> <span class='no'>x2</span>, <span class='kw'>vc</span> <span class='kw'>=</span> <span class='no'>x3</span>),
+<span class='fu'>correspond_between_rankings</span>(<span class='kw'>lt</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>SD</span> <span class='kw'>=</span> <span class='no'>x1</span>, <span class='kw'>MAD</span> <span class='kw'>=</span> <span class='no'>x2</span>, <span class='kw'>CV</span> <span class='kw'>=</span> <span class='no'>x3</span>),
     <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"red"</span>, <span class='st'>"blue"</span>, <span class='st'>"green"</span>))</div><div class='img'><img src='correspond_between_rankings-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

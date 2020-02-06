@@ -144,7 +144,7 @@
     </tr>
     <tr>
       <th>k</th>
-      <td><p>Number of partitions.</p></td>
+      <td><p>Number of subgroups.</p></td>
     </tr>
     <tr>
       <th>each</th>
@@ -155,21 +155,20 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>If <code>each == FALSE</code>, the value in the membership matrix is the probability
-to be in one class, while if <code>each == TRUE</code>, the membership matrix contains the 
-class labels for every single partitions which are from randomly sampling subset
-of rows in the matrix.</p>
+to be in one subgroup, while if <code>each == TRUE</code>, the membership matrix contains the 
+subgroup labels for every single partitions which are from randomly sampling from the original matrix.</p>
 <p>The percent membership matrix is calculated by <code><a href='https://rdrr.io/pkg/clue/man/cl_consensus.html'>cl_consensus</a></code>.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If <code>each == TRUE</code>, it returns a membership matrix where rows correspond to the columns in the original matrix.</p>
+    <p>If <code>each == TRUE</code>, it returns a membership matrix where rows correspond to the columns from the original matrix.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='get_membership-ConsensusPartitionList-method.html'>get_membership,ConsensusPartitionList-method</a></code> summarizes membership from partitions from all combinations
-of top-value methods and partition methods.</p></div>
+of top-value methods and partitioning methods.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>cola_rl</span>[<span class='st'>"sd"</span>, <span class='st'>"kmeans"</span>]
+<span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>]
 <span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>obj</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;                p1         p2
 #&gt;  [1,] 0.840000000 0.16000000
 #&gt;  [2,] 0.840000000 0.16000000

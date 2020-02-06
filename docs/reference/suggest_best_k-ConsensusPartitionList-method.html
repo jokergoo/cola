@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Suggest the best number of partitions — suggest_best_k-ConsensusPartitionList-method • cola</title>
+<title>Suggest the best number of subgroups — suggest_best_k-ConsensusPartitionList-method • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Suggest the best number of partitions — suggest_best_k-ConsensusPartitionList-method" />
-<meta property="og:description" content="Suggest the best number of partitions" />
+<meta property="og:title" content="Suggest the best number of subgroups — suggest_best_k-ConsensusPartitionList-method" />
+<meta property="og:description" content="Suggest the best number of subgroups" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,13 +123,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Suggest the best number of partitions</h1>
+    <h1>Suggest the best number of subgroups</h1>
     
     <div class="hidden name"><code>suggest_best_k-ConsensusPartitionList-method.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Suggest the best number of partitions</p>
+    <p>Suggest the best number of subgroups</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartitionList</span>
@@ -144,13 +144,13 @@
     </tr>
     <tr>
       <th>jaccard_index_cutoff</th>
-      <td><p>The cutoff for Jaccard index compared to previous k.</p></td>
+      <td><p>The cutoff for Jaccard index for comparing to previous k.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>It basically gives the best k for each combination of top-value method and partition method by calling <code><a href='suggest_best_k-ConsensusPartition-method.html'>suggest_best_k,ConsensusPartition-method</a></code>.</p>
+    <p>It basically gives the best k for each combination of top-value method and partitioning method by calling <code><a href='suggest_best_k-ConsensusPartition-method.html'>suggest_best_k,ConsensusPartition-method</a></code>.</p>
 <p>1-PAC score higher than 0.95 is treated as very stable partition and higher than 0.9 is treated as stable partition.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
@@ -159,24 +159,24 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
 <span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span>(<span class='no'>cola_rl</span>)</div><div class='output co'>#&gt;             best_k     1-PAC mean_silhouette concordance   
-#&gt; sd:kmeans        3 1.0000000       0.9842509   0.9786667 **
-#&gt; sd:skmeans       3 1.0000000       0.9884698   0.9941111 **
-#&gt; sd:mclust        3 1.0000000       0.9853272   0.9926667 **
+#&gt; SD:kmeans        3 1.0000000       0.9842509   0.9786667 **
+#&gt; SD:skmeans       3 1.0000000       0.9884698   0.9941111 **
+#&gt; SD:mclust        3 1.0000000       0.9853272   0.9926667 **
 #&gt; MAD:skmeans      3 1.0000000       0.9884390   0.9938889 **
 #&gt; MAD:mclust       3 1.0000000       0.9764124   0.9864444 **
 #&gt; MAD:kmeans       3 0.9993734       0.9822821   0.9842222 **
-#&gt; cv:kmeans        3 0.9586466       0.9633184   0.9530000 **
-#&gt; cv:skmeans       3 0.9548872       0.9650830   0.9810000 **
-#&gt; cv:mclust        3 0.9411028       0.9593721   0.9720000  *
-#&gt; sd:hclust        3 0.9229323       0.9421395   0.9608889  *
+#&gt; CV:kmeans        3 0.9586466       0.9633184   0.9530000 **
+#&gt; CV:skmeans       3 0.9548872       0.9650830   0.9810000 **
+#&gt; CV:mclust        3 0.9411028       0.9593721   0.9720000  *
+#&gt; SD:hclust        3 0.9229323       0.9421395   0.9608889  *
 #&gt; MAD:hclust       3 0.8208020       0.9303737   0.9433333   
 #&gt; ATC:skmeans      2 0.7650376       0.8553168   0.9441111   
-#&gt; cv:hclust        3 0.7305764       0.9212745   0.9271111   
+#&gt; CV:hclust        3 0.7305764       0.9212745   0.9271111   
 #&gt; ATC:kmeans       2 0.7105263       0.8228562   0.9275556   
-#&gt; sd:pam           3 0.6748120       0.8736248   0.9153333   
+#&gt; SD:pam           3 0.6748120       0.8736248   0.9153333   
 #&gt; MAD:pam          3 0.6591479       0.8278094   0.9061111   
 #&gt; ATC:mclust       3 0.6541353       0.8519580   0.9005556   
-#&gt; cv:pam           2 0.6165414       0.8826227   0.9270000   
+#&gt; CV:pam           2 0.6165414       0.8826227   0.9270000   
 #&gt; ATC:pam          2 0.4899749       0.8106902   0.9093333   
 #&gt; ATC:hclust       2 0.4028822       0.7172447   0.8663333   </div></pre>
   </div>
