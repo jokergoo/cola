@@ -4,7 +4,7 @@
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 # -silhouette_cutoff Cutoff for silhouette scores. Samples with values 
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
@@ -844,7 +844,7 @@ Ftest = function(mat, class) {
 #
 # == param
 # -object A `ConsensusPartition-class` object. 
-# -k Number of partitions. Value should be a vector.
+# -k Number of subgroups. Value should be a vector.
 # -... Other arguments passed to `get_signatures,ConsensusPartition-method`.
 #
 # == details
@@ -880,7 +880,7 @@ setMethod(f = "compare_signatures",
 # == details
 # The best k is determined by looking for the knee/elbow of the WSS curve (within-cluster sum of square).
 #
-# Note this function is only for a rough and quick determination of the best k.
+# Note this function is only for a rough and quick estimation of the best k.
 #
 find_best_km = function(mat, max_km = 15) {
 	wss = (nrow(mat)-1)*sum(apply(mat,2,var))

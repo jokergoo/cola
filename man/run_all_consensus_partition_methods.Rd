@@ -1,10 +1,10 @@
 \name{run_all_consensus_partition_methods}
 \alias{run_all_consensus_partition_methods}
 \title{
-Consensus partition for all combinations of methods
+Consensus partitioning for all combinations of methods
 }
 \description{
-Consensus partition for all combinations of methods
+Consensus partitioning for all combinations of methods
 }
 \usage{
 run_all_consensus_partition_methods(data,
@@ -22,8 +22,8 @@ run_all_consensus_partition_methods(data,
 
   \item{data}{A numeric matrix where subgroups are found by columns.}
   \item{top_value_method}{Method which are used to extract top n rows. Allowed methods are in \code{\link{all_top_value_methods}} and can be self-added by \code{\link{register_top_value_methods}}.}
-  \item{partition_method}{Method which are used to do partition on samples.  Allowed methods are in \code{\link{all_partition_methods}} and can be self-added  by \code{\link{register_partition_methods}}.}
-  \item{max_k}{Maximal number of partitions to try. The function will try \code{2:max_k} partitions.}
+  \item{partition_method}{Method which are used to partition samples.  Allowed methods are in \code{\link{all_partition_methods}} and can be self-added  by \code{\link{register_partition_methods}}.}
+  \item{max_k}{Maximal number of subgroups to try. The function will try \code{2:max_k} subgroups.}
   \item{top_n}{Number of rows with top values. The value can be a vector with length > 1. When n > 5000,  the function only randomly sample 5000 rows from top n rows. If \code{top_n} is a vector, paritition will be applied to every values in \code{top_n} and consensus partition is summarized from all partitions.}
   \item{mc.cores}{Number of cores to use.}
   \item{anno}{A data frame with known annotation of columns.}
@@ -36,9 +36,9 @@ run_all_consensus_partition_methods(data,
 
 }
 \details{
-The function runs consensus partitioning by \code{\link{consensus_partition}} for all combinations of top-value methods and partition methods.
+The function performs consensus partitioning by \code{\link{consensus_partition}} for all combinations of top-value methods and partitioning methods.
 
-It also adjsuts the class IDs for all methods and for all k to make them as consistent as possible.
+It also adjsuts the subgroup labels for all methods and for all k to make them as consistent as possible.
 }
 \value{
 A \code{\link{ConsensusPartitionList-class}} object. Simply type object in the interactive R session

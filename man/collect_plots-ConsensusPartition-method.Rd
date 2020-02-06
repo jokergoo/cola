@@ -31,6 +31,6 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 \dontrun{
 data(cola_rl)
-collect_plots(cola_rl["sd", "kmeans"])
+collect_plots(cola_rl["SD", "kmeans"])
 }
 }

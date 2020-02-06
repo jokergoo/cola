@@ -18,7 +18,7 @@ find_best_km(mat, max_km = 15)
 \details{
 The best k is determined by looking for the knee/elbow of the WSS curve (within-cluster sum of square).
 
-Note this function is only for a rough and quick determination of the best k.
+Note this function is only for a rough and quick estimation of the best k.
 }
 \examples{
 # There is no example

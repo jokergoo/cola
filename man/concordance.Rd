@@ -11,18 +11,15 @@ concordance(membership_each, class)
 }
 \arguments{
 
-  \item{membership_each}{A matrix which contains partitions in every single runs where columns correspond to runs.}
-  \item{class}{Consensus class IDs.}
+  \item{membership_each}{A matrix which contains partitions in every single runs where columns correspond to runs. The object can be get from \code{get_membership(..., each = TRUE)}.}
+  \item{class}{Consensus subgroup labels.}
 
 }
 \details{
-Note class IDs in \code{membership_each} should already be adjusted to the consensus class IDs
-to let \code{sum(x_single == x_consensus)} reach maximum.
+Note subgroup labels in \code{membership_each} should already be adjusted to the consensus labels, e.g. by \code{\link{relabel_class}}.
 
-The concordance score is the mean proportion of samples having the same class ID as the consensus class ID
-among runs.
-
-This function is used internally.
+The concordance score is the mean proportion of samples having the same subgroup labels as the consensus labels
+among individual partition runs.
 }
 \value{
 A numeric value.
@@ -32,7 +29,7 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rl)
-membership_each = get_membership(cola_rl["sd", "kmeans"], each = TRUE, k = 3)
-consensus_classes = get_classes(cola_rl["sd", "kmeans"], k = 3)$class
+membership_each = get_membership(cola_rl["SD", "kmeans"], each = TRUE, k = 3)
+consensus_classes = get_classes(cola_rl["SD", "kmeans"], k = 3)$class
 concordance(membership_each, consensus_classes)
 }

@@ -20,13 +20,13 @@ Make HTML report from the ConsensusPartitionList object
 
 }
 \details{
-The \code{\link{ConsensusPartitionList-class}} object contains results for all top-value methods and all partition methods.
+The \code{\link{ConsensusPartitionList-class}} object contains results for all top-value methods and all partitioning methods.
 This function generates a HTML report which contains all plots and tables for every combination
-of top-value method and partition method.
+of top-value method and partitioning method.
 
 The report generation may take a while because it generates A LOT of heatmaps.
 
-Examples of reports can be found at \url{https://jokergoo.github.io/cola_examples/}
+Examples of reports can be found at \url{https://jokergoo.github.io/cola_collection/} .
 }
 \value{
 No value is returned.
@@ -37,6 +37,6 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 \dontrun{
 data(cola_rl)
-cola_report(cola_rl[c("sd", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
+cola_report(cola_rl[c("SD", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
 }
 }

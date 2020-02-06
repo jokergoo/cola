@@ -23,13 +23,13 @@ get_top_value_method = function(method) {
 # == details 
 # The user-defined function should accept one argument which is the data
 # matrix where the scores are calculated by rows. Rows with top scores are treated
-# as "top rows" in cola analysis. Following is how we register "sd" (standard deviation) top-value method:
+# as "top rows" in cola analysis. Following is how we register "SD" (standard deviation) top-value method:
 #
-#   register_top_value_methods(sd = function(mat) apply(mat, 1, sd))
+#   register_top_value_methods(SD = function(mat) apply(mat, 1, sd))
 #
-# Of course, you can use `matrixStats::rowSds` to give a faster calculation of row sd:
+# Of course, you can use `matrixStats::rowSds` to give a faster calculation of row SD:
 #
-#   register_top_value_methods(sd = rowSds)
+#   register_top_value_methods(SD = rowSds)
 #
 # The registered top-value method will be used as defaults in `run_all_consensus_partition_methods`.
 # 
@@ -37,8 +37,8 @@ get_top_value_method = function(method) {
 #
 # There are four default top-value methods:
 #
-# -"sd" standard deviation, by `matrixStats::rowSds`.
-# -"cv" coefficient variance, calculated as ``sd/(mean+s)`` where ``s`` is the 10^th percentile of all row means.
+# -"SD" standard deviation, by `matrixStats::rowSds`.
+# -"CV" coefficient variance, calculated as ``sd/(mean+s)`` where ``s`` is the 10^th percentile of all row means.
 # -"MAD" median absolute deviation, by `matrixStats::rowMads`.
 # -"ATC" the `ATC` method.
 #
@@ -150,7 +150,7 @@ get_partition_method = function(method, partition_param = list()) {
 }
 
 # == title
-# Register user-defined partition functions
+# Register user-defined partitioning methods
 #
 # == param
 # -... A named list of functions.
@@ -160,12 +160,12 @@ get_partition_method = function(method, partition_param = list()) {
 #        are produced by `base::scale`. Here ``scale_method`` can be set to ``min-max``
 #        which scales rows by ``(x - min)/(max - min)``. Note here ``scale_method`` only means
 #        the method to scale rows. When ``scale_rows`` is set to ``FALSE`` in `consensus_partition`
-#        or `run_all_consensus_partition_methods`, there wil be no row scaling when doing partitioning.
+#        or `run_all_consensus_partition_methods`, there will be no row scaling when doing partitioning.
 #        The value for ``scale_method`` can be a vector if user specifies more than one partition function.
 # 
 # == details 
 # The user-defined function should accept at least two arguments. The first two arguments are the data
-# matrix and the number of partitions. The third optional argument should always be ``...`` so that parameters
+# matrix and the number of subgroups. The third optional argument should always be ``...`` so that parameters
 # for the partition function can be passed by ``partition_param`` from `consensus_partition`.
 # If users forget to add ``...``, it is added internally.
 #
@@ -181,27 +181,27 @@ get_partition_method = function(method, partition_param = list()) {
 #       }
 #   )
 #
-# The registered partition methods will be used as defaults in `run_all_consensus_partition_methods`.
+# The registered partitioning methods will be used as defaults in `run_all_consensus_partition_methods`.
 # 
-# To remove a partition method, use `remove_partition_methods`.
+# To remove a partitioning method, use `remove_partition_methods`.
 #
-# There are following default partition methods:
+# There are following default partitioning methods:
 #
 # -"hclust" hierarchcial clustering with Euclidean distance, later columns are partitioned by `stats::cutree`.
-#           If users want to use another distance metric or clustering method, consider to register a new partition method. E.g.
+#           If users want to use another distance metric or clustering method, consider to register a new partitioning method. E.g.
 #           ``register_partition_methods(hclust_cor = function(mat, k) cutree(hclust(as.dist(cor(mat)))))``.
 # -"kmeans" by `stats::kmeans`.
 # -"skmeans" by `skmeans::skmeans`.
 # -"pam" by `cluster::pam`.
 # -"mclust" by `mclust::Mclust`. mclust is applied to the first three principle components from rows.
 #
-# Users can register two other pre-defined partition methods by `register_NMF` and `register_SOM`.
+# Users can register two other pre-defined partitioning methods by `register_NMF` and `register_SOM`.
 #
 # == value
 # No value is returned.
 #
 # == seealso
-# `all_partition_methods` lists all registered partition methods.
+# `all_partition_methods` lists all registered partitioning methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -254,13 +254,13 @@ register_partition_methods = function(..., scale_method = c("z-score", "min-max"
 }
 
 # == title
-# All supported partition methods
+# All supported partitioning methods
 #
 # == details
-# New partition methods can be registered by `register_partition_methods`.
+# New partitioning methods can be registered by `register_partition_methods`.
 #
 # == return 
-# A vector of supported partition methods.
+# A vector of supported partitioning methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -323,7 +323,7 @@ register_partition_methods(
 )
 
 # == title
-# Register NMF partition method
+# Register NMF partitioning method
 #
 # == details
 # NMF analysis is performed by `NMF::nmf`.
@@ -361,7 +361,7 @@ register_NMF = function() {
 }
 
 # == title
-# Register SOM partition method
+# Register SOM partitioning method
 #
 # == details
 # The SOM analysis is performed by `kohonen::som`.
@@ -405,10 +405,10 @@ remove_top_value_methods = function(method) {
 
 
 # == title
-# Remove partition methods
+# Remove partitioning methods
 #
 # == param
-# -method Name of the partition methods to be removed.
+# -method Name of the partitioning methods to be removed.
 #
 # == value
 # No value is returned.

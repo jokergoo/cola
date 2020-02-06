@@ -12,7 +12,7 @@ Draw and compare statistics for multiple methods
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
-  \item{k}{Number of partitions}
+  \item{k}{Number of subgroups.}
   \item{layout_nrow}{Number of rows in the layout}
   \item{all_stats}{Whether to show all statistics that were calculated. Used internally.}
   \item{...}{Other arguments}
@@ -20,7 +20,7 @@ Draw and compare statistics for multiple methods
 }
 \details{
 It draws heatmaps for statistics for multiple methods in parallel, so that users can compare which combination
-of methods gives the best results with given the number of partitions.
+of methods gives the best results with given the number of subgroups.
 }
 \examples{
 data(cola_rl)

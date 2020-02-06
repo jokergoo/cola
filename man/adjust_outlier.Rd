@@ -12,12 +12,12 @@ adjust_outlier(x, q = 0.05)
 \arguments{
 
   \item{x}{A numeric vector.}
-  \item{q}{Quantile to adjust.}
+  \item{q}{Percentile to adjust.}
 
 }
 \details{
-Vaules larger than quantile \code{1 - q} are adjusted to the \code{1 - q} quantile and 
-values smaller than quantile \code{q} are adjusted to the \code{q} quantile.
+Vaules larger than percentile \code{1 - q} are adjusted to the \code{1 - q} percentile and 
+values smaller than percentile \code{q} are adjusted to the \code{q} percentile
 }
 \value{
 A numeric vector with same length as the original one.

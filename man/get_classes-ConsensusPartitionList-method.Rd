@@ -1,10 +1,10 @@
 \name{get_classes-ConsensusPartitionList-method}
 \alias{get_classes,ConsensusPartitionList-method}
 \title{
-Get class IDs from the ConsensusPartitionList object
+Get subgroup labels
 }
 \description{
-Get class IDs from the ConsensusPartitionList object
+Get subgroup labels
 }
 \usage{
 \S4method{get_classes}{ConsensusPartitionList}(object, k)
@@ -12,15 +12,15 @@ Get class IDs from the ConsensusPartitionList object
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
-  \item{k}{Number of partitions.}
+  \item{k}{Number of subgroups.}
 
 }
 \details{
-The class IDs are inferred by merging partitions from all methods
+The subgroup labels are inferred by merging partitions from all methods
 by weighting the mean silhouette scores in each method.
 }
 \value{
-A data frame with class IDs and other columns which are entropy of the percent membership matrix
+A data frame with subgroup labels and other columns which are entropy of the percent membership matrix
 and the silhouette scores which measure the stability of a sample to stay in its group.
 }
 \author{

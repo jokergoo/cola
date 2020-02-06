@@ -15,7 +15,7 @@ Heatmap for the consensus matrix
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{Number of partitions.}
+  \item{k}{Number of subgroups.}
   \item{internal}{Used internally.}
   \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
@@ -32,12 +32,12 @@ There are following heatmaps from left to right:
 \itemize{
   \item probability of the sample to stay in the corresponding group
   \item silhouette scores which measure the distance of an item to the second closest subgroups.
-  \item predicted classes.
+  \item predicted subgroups
   \item consensus matrix.
   \item more annotations if provided as \code{anno}
 }
 
-One thing that is very important to note is that since we already know the consensus classes from consensus
+One thing that is very important to note is that since we already know the consensus subgroups from consensus
 partition, in the heatmap, only rows or columns within the group is clustered.
 }
 \value{
@@ -51,5 +51,5 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rl)
-consensus_heatmap(cola_rl["sd", "hclust"], k = 3)
+consensus_heatmap(cola_rl["SD", "hclust"], k = 3)
 }

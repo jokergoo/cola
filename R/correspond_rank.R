@@ -9,19 +9,19 @@
 # -name2 Name of the second metric.
 # -col1 Color for the first metric.
 # -col2 Color for the second metric.
-# -top_n Top n elements to show correspondance.
-# -transparency Transparency of the connection lines.
-# -pt_size Size of the points, must be a `grid::unit` object
+# -top_n Top n elements to show the correspondance.
+# -transparency Transparency of the connecting lines.
+# -pt_size Size of the points, must be a `grid::unit` object.
 # -newpage Whether to plot in a new graphic page.
 # -ratio Ratio of width of the left barplot, connection lines and right barplot. The three values will be scaled to a sum of 1.
 # 
 # == details
-# In ``x1`` and ``x2``, the i^{th} element is the same object (e.g. same row if they are calculated from a matrix) but with different 
+# In ``x1`` and ``x2``, the i^th element in both vectors corresponds to the same object (e.g. same row if they are calculated from a matrix) but with different 
 # scores under different metrics.
 # 
-# ``x1`` and ``x2`` are sorted in the left panel and right panel. The top n elements
-# under corresponding metric are highlighted by vertical color lines in both panels.
-# The left and right panels also show as barplots of the scores in the two metrics.
+# ``x1`` and ``x2`` are sorted in the left panel and right panel respectively. The top n elements
+# under corresponding metric are highlighted by vertical colored lines in both panels.
+# The left and right panels also shown as barplots of the scores in the two metrics.
 # Between the left and right panels, there are lines connecting the same element (e.g. i^th element in ``x1`` and ``x2``)
 # in the two ordered vectors so that you can see how a same element has two different ranks in the two metrics.
 #
@@ -39,7 +39,7 @@
 # mat = matrix(runif(1000), ncol = 10)
 # x1 = rowSds(mat)
 # x2 = rowMads(mat)
-# correspond_between_two_rankings(x1, x2, name1 = "sd", name2 = "mad", top_n = 20)
+# correspond_between_two_rankings(x1, x2, name1 = "SD", name2 = "MAD", top_n = 20)
 correspond_between_two_rankings = function(x1, x2, name1, name2, 
 	col1 = 2, col2 = 3, top_n = round(0.25*length(x1)), transparency = 0.9, 
 	pt_size = unit(1, "mm"), newpage = TRUE, ratio = c(1, 1, 1)) {
@@ -112,12 +112,12 @@ correspond_between_two_rankings = function(x1, x2, name1, name2,
 #
 # == param
 # -lt A list of scores under different metrics.
-# -top_n Top n elements to show correspondance.
+# -top_n Top n elements to show the correspondance.
 # -col A vector of colors for ``lt``.
 # -... Pass to `correspond_between_two_rankings`.
 # 
 # == details
-# It makes plots for every pairwise comparisons in ``lt``.
+# It makes plots for every pairwise comparison in ``lt``.
 #
 # == value
 # No value is returned.
@@ -131,7 +131,7 @@ correspond_between_two_rankings = function(x1, x2, name1, name2,
 # x1 = rowSds(mat)
 # x2 = rowMads(mat)
 # x3 = rowSds(mat)/rowMeans(mat)
-# correspond_between_rankings(lt = list(sd = x1, mad = x2, vc = x3), 
+# correspond_between_rankings(lt = list(SD = x1, MAD = x2, CV = x3), 
 #     top_n = 20, col = c("red", "blue", "green"))
 correspond_between_rankings = function(lt, top_n = length(lt[[1]]), 
 	col = cola_opt$color_set_1[1:length(lt)], ...) {

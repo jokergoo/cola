@@ -1,19 +1,19 @@
 
 
 # == title
-# Ability to correlate other rows in the matrix
+# Ability to correlate to other rows
 #
 # == param
 # -mat A numeric matrix. ATC score is calculated by rows.
 # -cor_fun A function which calculates correlations.
 # -min_cor Cutoff for the minimal absolute correlation.
 # -power Power on the correlation values.
-# -mc.cores Mumber of cores.
+# -mc.cores Number of cores.
 # -n_sampling When there are too many rows in the matrix, to get the curmulative
 #           distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000
 #           rows can already give a very nice estimation.
 # -q_sd Percentile of the standard deviation for the rows. Rows with values less than it are ignored.
-# -group A categorical variable. If it is specified, the correlation is only calcualted for the features in the same group.
+# -group A categorical variable. If it is specified, the correlation is only calculated for the rows in the same group as current row.
 # -... Pass to ``cor_fun``.
 # 
 # == details 
@@ -34,6 +34,9 @@
 #     register_top_value_methods(
 #         "ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor)
 #     )
+#
+# == seealso
+# https://jokergoo.github.io/cola_supplementary/suppl_1_ATC/suppl_1_ATC.html
 #
 # == return 
 # A vector of numeric values with the same order as rows in the input matrix.
@@ -193,7 +196,7 @@ PAC2 = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 # -consensus_mat A consensus matrix.
 # -x1 Lower bound to define "ambiguous clustering".
 # -x2 Upper bound to define "ambihuous clustering".
-# -class class IDs. If it is provided, samples with silhouette score less than 5th percential are removed.
+# -class Subgroup labels. If it is provided, samples with silhouette score less than the 5^th percential are removed from PAC calculation.
 # 
 # == details 
 # The PAC score is defined as F(x2) - F(x1) where F(x) is the CDF of the consensus matrix.
@@ -215,6 +218,8 @@ PAC2 = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 # PAC(get_consensus(cola_rl[1, 1], k = 5))
 # PAC(get_consensus(cola_rl[1, 1], k = 6))
 #
+# # with specifying `class`
+# PAC(get_consensus(cola_rl[1, 1], k = 2), class = get_classes(cola_rl[1, 1])[, 1])
 PAC = function(consensus_mat, x1 = 0.1, x2 = 0.9, class = NULL) {
 	if(is.null(class)) {
 		F = ecdf(consensus_mat[lower.tri(consensus_mat)])
@@ -335,16 +340,14 @@ cophcor = function(consensus_mat) {
 #
 # == param
 # -membership_each A matrix which contains partitions in every single runs where columns correspond to runs.
-# -class Consensus class IDs.
+#          The object can be get from ``get_membership(..., each = TRUE)``.
+# -class Consensus subgroup labels.
 #
 # == details
-# Note class IDs in ``membership_each`` should already be adjusted to the consensus class IDs
-# to let ``sum(x_single == x_consensus)`` reach maximum.
+# Note subgroup labels in ``membership_each`` should already be adjusted to the consensus labels, e.g. by `relabel_class`.
 #
-# The concordance score is the mean proportion of samples having the same class ID as the consensus class ID
-# among runs.
-#
-# This function is used internally.
+# The concordance score is the mean proportion of samples having the same subgroup labels as the consensus labels
+# among individual partition runs.
 #
 # == value
 # A numeric value.
@@ -354,8 +357,8 @@ cophcor = function(consensus_mat) {
 #
 # == example
 # data(cola_rl)
-# membership_each = get_membership(cola_rl["sd", "kmeans"], each = TRUE, k = 3)
-# consensus_classes = get_classes(cola_rl["sd", "kmeans"], k = 3)$class
+# membership_each = get_membership(cola_rl["SD", "kmeans"], each = TRUE, k = 3)
+# consensus_classes = get_classes(cola_rl["SD", "kmeans"], k = 3)$class
 # concordance(membership_each, consensus_classes)
 concordance = function(membership_each, class) {
 	mean(apply(membership_each, 2, function(x) sum(x == class, na.rm = TRUE)/length(x)))

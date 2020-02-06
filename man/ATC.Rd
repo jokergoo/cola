@@ -1,10 +1,10 @@
 \name{ATC}
 \alias{ATC}
 \title{
-Ability to correlate other rows in the matrix
+Ability to correlate to other rows
 }
 \description{
-Ability to correlate other rows in the matrix
+Ability to correlate to other rows
 }
 \usage{
 ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
@@ -16,10 +16,10 @@ ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
   \item{cor_fun}{A function which calculates correlations.}
   \item{min_cor}{Cutoff for the minimal absolute correlation.}
   \item{power}{Power on the correlation values.}
-  \item{mc.cores}{Mumber of cores.}
+  \item{mc.cores}{Number of cores.}
   \item{n_sampling}{When there are too many rows in the matrix, to get the curmulative distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000 rows can already give a very nice estimation.}
   \item{q_sd}{Percentile of the standard deviation for the rows. Rows with values less than it are ignored.}
-  \item{group}{A categorical variable. If it is specified, the correlation is only calcualted for the features in the same group.}
+  \item{group}{A categorical variable. If it is specified, the correlation is only calculated for the rows in the same group as current row.}
   \item{...}{Pass to \code{cor_fun}.}
 
 }
@@ -43,6 +43,9 @@ Similarly, to use a robust correlation method, e.g. \code{\link[WGCNA]{bicor}} f
     register_top_value_methods(
         "ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor)
     )  }
+}
+\seealso{
+\url{https://jokergoo.github.io/cola_supplementary/suppl_1_ATC/suppl_1_ATC.html}
 }
 \value{
 A vector of numeric values with the same order as rows in the input matrix.

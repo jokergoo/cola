@@ -20,7 +20,7 @@ Make HTML report from the ConsensusPartition object
 
 }
 \details{
-It generates report for a specific combination of top-value method and partition method.
+It generates report for a specific combination of top-value method and partitioning method.
 }
 \value{
 No value is returned.

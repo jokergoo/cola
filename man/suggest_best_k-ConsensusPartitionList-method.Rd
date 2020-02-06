@@ -1,10 +1,10 @@
 \name{suggest_best_k-ConsensusPartitionList-method}
 \alias{suggest_best_k,ConsensusPartitionList-method}
 \title{
-Suggest the best number of partitions
+Suggest the best number of subgroups
 }
 \description{
-Suggest the best number of partitions
+Suggest the best number of subgroups
 }
 \usage{
 \S4method{suggest_best_k}{ConsensusPartitionList}(object, jaccard_index_cutoff = 0.95)
@@ -12,11 +12,11 @@ Suggest the best number of partitions
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
-  \item{jaccard_index_cutoff}{The cutoff for Jaccard index compared to previous k.}
+  \item{jaccard_index_cutoff}{The cutoff for Jaccard index for comparing to previous k.}
 
 }
 \details{
-It basically gives the best k for each combination of top-value method and partition method by calling \code{\link{suggest_best_k,ConsensusPartition-method}}.
+It basically gives the best k for each combination of top-value method and partitioning method by calling \code{\link{suggest_best_k,ConsensusPartition-method}}.
 
 1-PAC score higher than 0.95 is treated as very stable partition and higher than 0.9 is treated as stable partition.
 }

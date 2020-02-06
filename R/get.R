@@ -4,7 +4,7 @@
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 # -unique Whether apply `base::unique` to rows of the returned data frame.
 #
 # == details
@@ -19,7 +19,7 @@
 #
 # == example
 # data(cola_rl)
-# obj = cola_rl["sd", "kmeans"]
+# obj = cola_rl["SD", "kmeans"]
 # get_param(obj)
 # get_param(obj, k = 2)
 # get_param(obj, unique = FALSE)
@@ -41,7 +41,7 @@ setMethod(f = "get_param",
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 #
 # == details
 # For row i and column j in the consensus matrix, the value of corresponding x_ij
@@ -55,7 +55,7 @@ setMethod(f = "get_param",
 #
 # == example
 # data(cola_rl)
-# obj = cola_rl["sd", "kmeans"]
+# obj = cola_rl["SD", "kmeans"]
 # get_consensus(obj, k = 2)
 setMethod(f = "get_consensus",
 	signature = "ConsensusPartition",
@@ -70,31 +70,30 @@ setMethod(f = "get_consensus",
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 # -each Whether return the percentage membership matrix which is summarized from all partitions
 #       or the individual membership in every random partition.
 #
 # == details
 # If ``each == FALSE``, the value in the membership matrix is the probability
-# to be in one class, while if ``each == TRUE``, the membership matrix contains the 
-# class labels for every single partitions which are from randomly sampling subset
-# of rows in the matrix.
+# to be in one subgroup, while if ``each == TRUE``, the membership matrix contains the 
+# subgroup labels for every single partitions which are from randomly sampling from the original matrix.
 #
 # The percent membership matrix is calculated by `clue::cl_consensus`.
 #
 # == value
-# If ``each == TRUE``, it returns a membership matrix where rows correspond to the columns in the original matrix.
+# If ``each == TRUE``, it returns a membership matrix where rows correspond to the columns from the original matrix.
 #
 # == seealso
 # `get_membership,ConsensusPartitionList-method` summarizes membership from partitions from all combinations
-# of top-value methods and partition methods.
+# of top-value methods and partitioning methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
 # data(cola_rl)
-# obj = cola_rl["sd", "kmeans"]
+# obj = cola_rl["SD", "kmeans"]
 # get_membership(obj, k = 2)
 # get_membership(obj, k = 2, each = TRUE)
 setMethod(f = "get_membership",
@@ -114,19 +113,19 @@ setMethod(f = "get_membership",
 #
 # == param
 # -object A `ConsensusPartitionList-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 #
 # == detail
-# The membership matrix (the probability of each sample to be in one group, if assuming columns represent samples) is inferred
+# The membership matrix (the probability of each sample to be in one subgroup, if assuming columns represent samples) is inferred
 # from the consensus partition of every combination of methods, weighted by the mean silhouette score of the partition
-# for each method. So methods which give instable partitions have lower weights 
+# for each method. So methods which give unstable partitions have lower weights 
 # when summarizing membership matrix from all methods.
 # 
 # == value
 # A membership matrix where rows correspond to the columns in the original matrix.
 #
 # == seealso
-# `get_membership,ConsensusPartition-method` returns membership matrix for a single top-value method and partition method.
+# `get_membership,ConsensusPartition-method` returns membership matrix for a single top-value method and partitioning method.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -145,23 +144,23 @@ setMethod(f = "get_membership",
 
 
 # == title
-# Get statistics for the consensus partition
+# Get statistics
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions. The value can be a vector.
+# -k Number of subgroups. The value can be a vector.
 # -all_stats Whether to show all statistics that were calculated. Used internally.
 #
 # == details
 # The statistics are:
 #
-# -PAC proportion of ambiguous clustering, calculated by `PAC`.
-# -mean_silhouette the mean silhouette score. See https://en.wikipedia.org/wiki/Silhouette_(clustering) .
-# -concordance the mean probability that each partition fits the consensus partition, calculated by `concordance`.
-# -area_increased the increased area under ECDF (the empirical cumulative distribution function curve) to the previous k.
+# -1-PAC 1 - proportion of ambiguous clustering, calculated by `PAC`.
+# -mean_silhouette The mean silhouette score. See https://en.wikipedia.org/wiki/Silhouette_(clustering) .
+# -concordance The mean probability that each partition fits the consensus partition, calculated by `concordance`.
+# -area_increased The increased area under eCDF (the empirical cumulative distribution function curve) to the previous k.
 # -Rand the Rand index which is the percent of pairs of samples that are both in a same cluster or both are not 
 #       in a same cluster in the partition of ``k`` and ``k-1``. See https://en.wikipedia.org/wiki/Rand_index .
-# -Jaccard the ratio of pairs of samples are both in a same cluster in the partition of ``k`` and ``k-1`` and the pairs
+# -Jaccard The ratio of pairs of samples are both in a same cluster in the partition of ``k`` and ``k-1`` and the pairs
 #          of samples are both in a same cluster in the partition ``k`` or ``k-1``.
 #
 # == value
@@ -172,7 +171,7 @@ setMethod(f = "get_membership",
 #
 # == example
 # data(cola_rl)
-# obj = cola_rl["sd", "kmeans"]
+# obj = cola_rl["SD", "kmeans"]
 # get_stats(obj)
 # get_stats(obj, k = 2)
 setMethod(f = "get_stats",
@@ -195,16 +194,16 @@ setMethod(f = "get_stats",
 
 
 # == title
-# Get statistics for consensus partitions from all methods
+# Get statistics
 #
 # == param
 # -object A `ConsensusPartitionList-class` object.
-# -k Number of partitions. The value can only be a single value.
+# -k Number of subgroups. The value can only be a single value.
 # -all_stats Whether to show all statistics that were calculated. Used internally.
 #
 # == value
 # A matrix of partition statistics for a selected k. Rows in the 
-# matrix correspond to combinations of top-value methods and partition methods.
+# matrix correspond to combinations of top-value methods and partitioning methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -232,24 +231,24 @@ setMethod(f = "get_stats",
 
 
 # == title
-# Get class IDs from the ConsensusPartition object
+# Get subgroup labels
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 #
 # == return
-# A data frame with class IDs and other columns which are entropy of the percent membership matrix
+# A data frame with subgroup labels and other columns which are entropy of the percent membership matrix
 # and the silhouette scores which measure the stability of a sample to stay in its group.
 #
-# If ``k`` is not specified, it returns a data frame with class IDs from every k.
+# If ``k`` is not specified, it returns a data frame with subgroup labels from all k.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
 # data(cola_rl)
-# obj = cola_rl["sd", "kmeans"]
+# obj = cola_rl["SD", "kmeans"]
 # get_classes(obj, k = 2)
 # get_classes(obj)
 setMethod(f = "get_classes",
@@ -267,18 +266,18 @@ setMethod(f = "get_classes",
 })
 
 # == title
-# Get class IDs from the ConsensusPartitionList object
+# Get subgroup labels
 #
 # == param
 # -object A `ConsensusPartitionList-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 # 
 # == details 
-# The class IDs are inferred by merging partitions from all methods
+# The subgroup labels are inferred by merging partitions from all methods
 # by weighting the mean silhouette scores in each method. 
 #
 # == return
-# A data frame with class IDs and other columns which are entropy of the percent membership matrix
+# A data frame with subgroup labels and other columns which are entropy of the percent membership matrix
 # and the silhouette scores which measure the stability of a sample to stay in its group.
 #
 # == author
@@ -332,11 +331,11 @@ recalc_stats = function(rl) {
 }
 
 # == title
-# Suggest the best number of partitions
+# Suggest the best number of subgroups
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -jaccard_index_cutoff The cutoff for Jaccard index compared to previous k.
+# -jaccard_index_cutoff The cutoff for Jaccard index for comparing to previous k.
 #
 # == details
 # The best k is selected according to following rules:
@@ -364,7 +363,7 @@ recalc_stats = function(rl) {
 #
 # == example
 # data(cola_rl)
-# obj = cola_rl["sd", "kmeans"]
+# obj = cola_rl["SD", "kmeans"]
 # suggest_best_k(obj)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
@@ -417,7 +416,7 @@ setMethod(f = "suggest_best_k",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -k Number of subgroups.
-# -...  Pass to `suggest_best_k,ConsensusPartition-method`
+# -...  Pass to `suggest_best_k,ConsensusPartition-method`.
 #
 # == value
 # Logical scalar.
@@ -448,7 +447,7 @@ setMethod(f = "is_best_k",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -k Number of subgroups.
-# -...  Pass to `suggest_best_k,ConsensusPartition-method`
+# -...  Pass to `suggest_best_k,ConsensusPartition-method`.
 #
 # == value
 # Logical scalar
@@ -461,14 +460,14 @@ setMethod(f = "is_stable_k",
 })
 
 # == title
-# Suggest the best number of partitions
+# Suggest the best number of subgroups
 #
 # == param
 # -object A `ConsensusPartitionList-class` object.
-# -jaccard_index_cutoff The cutoff for Jaccard index compared to previous k.
+# -jaccard_index_cutoff The cutoff for Jaccard index for comparing to previous k.
 #
 # == details
-# It basically gives the best k for each combination of top-value method and partition method by calling `suggest_best_k,ConsensusPartition-method`.
+# It basically gives the best k for each combination of top-value method and partitioning method by calling `suggest_best_k,ConsensusPartition-method`.
 #
 # 1-PAC score higher than 0.95 is treated as very stable partition and higher than 0.9 is treated as stable partition.
 #
@@ -538,7 +537,7 @@ setMethod(f = "suggest_best_k",
 # == param
 # -object A `ConsensusPartitionList-class` object.
 # -k Number of subgroups.
-# -...  Pass to `suggest_best_k,ConsensusPartitionList-method`
+# -...  Pass to `suggest_best_k,ConsensusPartitionList-method`.
 #
 # == value
 # Logical vector
@@ -558,7 +557,7 @@ setMethod(f = "is_best_k",
 # == param
 # -object A `ConsensusPartitionList-class` object.
 # -k Number of subgroups.
-# -...  Pass to `suggest_best_k,ConsensusPartitionList-method`
+# -...  Pass to `suggest_best_k,ConsensusPartitionList-method`.
 #
 # == value
 # Logical vector
@@ -576,7 +575,7 @@ setMethod(f = "is_stable_k",
 # Get the original matrix
 #
 # == param
-# -object A `ConsensusPartitionList-class` object
+# -object A `ConsensusPartitionList-class` object.
 #
 # == value
 # A numeric matrix.
@@ -597,7 +596,7 @@ setMethod(f = "get_matrix",
 # Get the original matrix
 #
 # == param
-# -object A `ConsensusPartition-class` object
+# -object A `ConsensusPartition-class` object.
 #
 # == value
 # A numeric matrix.
@@ -607,7 +606,7 @@ setMethod(f = "get_matrix",
 #
 # == example
 # data(cola_rl)
-# obj = cola_rl["sd", "kmeans"]
+# obj = cola_rl["SD", "kmeans"]
 # get_matrix(obj)
 setMethod(f = "get_matrix",
 	signature = "ConsensusPartition",
@@ -619,7 +618,7 @@ setMethod(f = "get_matrix",
 # Get annotations
 #
 # == param
-# -object A `ConsensusPartitionList-class` object
+# -object A `ConsensusPartitionList-class` object.
 #
 # == value
 # A data frame if ``anno`` was specified in `run_all_consensus_partition_methods`, or else ``NULL``.
@@ -637,7 +636,7 @@ setMethod(f = "get_anno",
 # Get annotations
 #
 # == param
-# -object A `ConsensusPartition-class` object
+# -object A `ConsensusPartition-class` object.
 #
 # == value
 # A data frame if ``anno`` was specified in `run_all_consensus_partition_methods` or `consensus_partition`, or else ``NULL``.
@@ -655,7 +654,7 @@ setMethod(f = "get_anno",
 # Get annotation colors
 #
 # == param
-# -object A `ConsensusPartitionList-class` object
+# -object A `ConsensusPartitionList-class` object.
 #
 # == value
 # A list of color vectors or else ``NULL``.
@@ -673,7 +672,7 @@ setMethod(f = "get_anno_col",
 # Get annotation colors
 #
 # == param
-# -object A `ConsensusPartition-class` object
+# -object A `ConsensusPartition-class` object.
 #
 # == value
 # A list of color vectors or else ``NULL``.

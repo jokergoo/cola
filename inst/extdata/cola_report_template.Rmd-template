@@ -109,8 +109,8 @@ message("* Suggesting the best k for each method", appendLF = FALSE)
 ```
 
 Folowing table shows the best `k` (number of partitions) for each combination
-of top-value methods and partition methods. Clicking on the method name in
-the table goes to the section for a single combination of methods.
+of top-value methods and partitioning methods. Clicking on the method name in
+the table goes to the corresponding section for a single combination of methods.
 
 [The cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13)
 explains the definition of the metrics used for determining the best
@@ -199,7 +199,7 @@ message(qq("* making signature heatmaps for all methods"), appendLF = FALSE)
 
 ### Signature heatmap
 
-Signature heatmaps for all methods. ([What is a signature heatmap?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_22))
+Signature heatmaps for all methods. ([What is a signature heatmap?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_21))
 
 <% if(res_list@list[[1]]@scale_rows) { %>
 Note in following heatmaps, rows are scaled.
@@ -327,7 +327,7 @@ has_known_anno = TRUE -%>
 message(qq("* testing correlation of subgroups to known annotations"))
 ```
 
-Test correlation between subgroups and known annotations. If the known
+Following tests correlation between subgroups and known annotations. If the known
 annotation is numeric, one-way ANOVA test is applied, and if the known
 annotation is discrete, chi-squared contingency table test is applied.
 

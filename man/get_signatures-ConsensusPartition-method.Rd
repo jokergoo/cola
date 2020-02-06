@@ -29,7 +29,7 @@ Get signature rows
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{Number of partitions.}
+  \item{k}{Number of subgroups.}
   \item{silhouette_cutoff}{Cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
   \item{fdr_cutoff}{Cutoff for FDR of the difference test between subgroups.}
   \item{group_diff}{Cutoff for the maximal difference between group means.}

@@ -98,7 +98,7 @@ $('#@{tab}-a').click(function(){
 # TEMPLATE_DIR = "/desktop-home/guz/project/development/cola/inst/extdata"
 
 # == title
-# Generate the HTML fragment for the JavaScript tabs.
+# Generate the HTML fragment for the JavaScript tabs
 #
 # == param
 # -uid A unique identifier for the div.
@@ -106,7 +106,7 @@ $('#@{tab}-a').click(function(){
 # == details
 # The jQuery UI is used to generate html tabs (https://jqueryui.com/tabs/ ).
 #
-# ``knitr_insert_tabs`` should be used after several callings of `knitr_add_tab_item`
+# `knitr_insert_tabs` should be used after several callings of `knitr_add_tab_item`
 # to generate a complete HTML fragment for all tabs with all necessary Javascript and css code.
 #
 # This function is only for internal use.
@@ -162,13 +162,13 @@ $( function() {
 # -env Where the objects in the report are found, internally used.
 #
 # == details
-# The `ConsensusPartitionList-class` object contains results for all top-value methods and all partition methods.
+# The `ConsensusPartitionList-class` object contains results for all top-value methods and all partitioning methods.
 # This function generates a HTML report which contains all plots and tables for every combination
-# of top-value method and partition method. 
+# of top-value method and partitioning method. 
 #
 # The report generation may take a while because it generates A LOT of heatmaps.
 #
-# Examples of reports can be found at https://jokergoo.github.io/cola_examples/
+# Examples of reports can be found at https://jokergoo.github.io/cola_collection/ .
 #
 # == value
 # No value is returned.
@@ -179,7 +179,7 @@ $( function() {
 # == example
 # \dontrun{
 # data(cola_rl)
-# cola_report(cola_rl[c("sd", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
+# cola_report(cola_rl[c("SD", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
 # }
 setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
@@ -205,7 +205,7 @@ setMethod(f = "cola_report",
 # -env Where the objects in the report are found, internally used.
 #
 # == details
-# It generates report for a specific combination of top-value method and partition method.
+# It generates report for a specific combination of top-value method and partitioning method.
 #
 # == value
 # No value is returned.

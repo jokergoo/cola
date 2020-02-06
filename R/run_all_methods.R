@@ -1,15 +1,15 @@
 
 # == title
-# Consensus partition for all combinations of methods
+# Consensus partitioning for all combinations of methods
 #
 # == param
 # -data A numeric matrix where subgroups are found by columns.
 # -top_value_method Method which are used to extract top n rows. Allowed methods
 #        are in `all_top_value_methods` and can be self-added by `register_top_value_methods`.
-# -partition_method Method which are used to do partition on samples. 
+# -partition_method Method which are used to partition samples. 
 #        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_methods`.
-# -max_k Maximal number of partitions to try. The function will try ``2:max_k`` partitions.
+# -max_k Maximal number of subgroups to try. The function will try ``2:max_k`` subgroups.
 # -top_n Number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
 #        the function only randomly sample 5000 rows from top n rows. If ``top_n`` is a vector, paritition
 #        will be applied to every values in ``top_n`` and consensus partition is summarized from all partitions.
@@ -24,9 +24,9 @@
 # -verbose Ahether to print messages.
 #
 # == details
-# The function runs consensus partitioning by `consensus_partition` for all combinations of top-value methods and partition methods.
+# The function performs consensus partitioning by `consensus_partition` for all combinations of top-value methods and partitioning methods.
 #
-# It also adjsuts the class IDs for all methods and for all k to make them as consistent as possible.
+# It also adjsuts the subgroup labels for all methods and for all k to make them as consistent as possible.
 #
 # == return 
 # A `ConsensusPartitionList-class` object. Simply type object in the interactive R session
@@ -352,12 +352,12 @@ setMethod(f = "show",
 # == param
 # -x A `ConsensusPartitionList-class` object.
 # -i Index for top-value methods, character or nummeric.
-# -j Index for partition methods, character or nummeric.
+# -j Index for partitioning methods, character or nummeric.
 # -drop Whether drop class
 #
 # == details
-# For a specific combination of top-value method and partition method, you can also
-# subset by e.g. ``x['sd:hclust']``.
+# For a specific combination of top-value method and partitioning method, you can also
+# subset by e.g. ``x['SD:hclust']``.
 #
 # == value
 # A `ConsensusPartitionList-class` object or a `ConsensusPartition-class` object.
@@ -367,13 +367,13 @@ setMethod(f = "show",
 #
 # == example
 # data(cola_rl)
-# cola_rl[c("sd", "MAD"), c("hclust", "kmeans")]
-# cola_rl["sd", "kmeans"] # a ConsensusPartition object
-# cola_rl["sd:kmeans"] # a ConsensusPartition object
-# cola_rl[["sd:kmeans"]] # a ConsensusPartition object
-# cola_rl["sd", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
-# cola_rl["sd:kmeans", drop = FALSE] # still a ConsensusPartitionList object
-# cola_rl["sd", ]
+# cola_rl[c("SD", "MAD"), c("hclust", "kmeans")]
+# cola_rl["SD", "kmeans"] # a ConsensusPartition object
+# cola_rl["SD:kmeans"] # a ConsensusPartition object
+# cola_rl[["SD:kmeans"]] # a ConsensusPartition object
+# cola_rl["SD", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
+# cola_rl["SD:kmeans", drop = FALSE] # still a ConsensusPartitionList object
+# cola_rl["SD", ]
 # cola_rl[, "hclust"]
 # cola_rl[1:2, 1:2]
 "[.ConsensusPartitionList" = function (x, i, j, drop = TRUE) {
@@ -398,6 +398,9 @@ setMethod(f = "show",
         }
         i = intersect(i, all_top_value_methods)
         j = intersect(j, all_partition_methods)
+        if(length(i) == 0) stop_wrap(qq("Some top-value methods were not applied."))
+        if(length(j) == 0) stop_wrap(qq("Some partitioning methods were not applied."))
+
         l = x@comb[, 1] %in% i & x@comb[, 2] %in% j
         l[is.na(l)] = FALSE
         x@comb = x@comb[l, , drop = FALSE]
@@ -417,6 +420,8 @@ setMethod(f = "show",
         	j = all_partition_methods[j]
         }
         j = intersect(j, all_partition_methods)
+        if(length(j) == 0) stop_wrap(qq("Some partitioning methods were not applied."))
+
         l = x@comb[, 2] %in% j
         l[is.na(l)] = FALSE
         x@comb = x@comb[l, , drop = FALSE]
@@ -457,6 +462,8 @@ setMethod(f = "show",
         	i = all_top_value_methods[j]
         }
         i = intersect(i, all_top_value_methods)
+        if(length(i) == 0) stop_wrap(qq("Some top-value methods were not applied."))
+        
         l = x@comb[, 1] %in% i
         l[is.na(l)] = FALSE
         x@comb = x@comb[l, , drop = FALSE]
@@ -481,7 +488,7 @@ setMethod(f = "show",
 #
 # == param
 # -x A `ConsensusPartitionList-class` object.
-# -i Character index for combination of top-value methods and partition method in a form of e.g. ``sd:MAD``.
+# -i Character index for combination of top-value methods and partitioning method in a form of e.g. ``SD:kmeans``.
 #
 # == value
 # A `ConsensusPartition-class` object.
@@ -491,7 +498,7 @@ setMethod(f = "show",
 #
 # == example
 # data(cola_rl)
-# cola_rl[["sd:MAD"]]
+# cola_rl[["SD:kmeans"]]
 "[[.ConsensusPartitionList" = function(x, i) {
 	if(length(i) != 1) {
 		stop_wrap("Length of index can only be one.")

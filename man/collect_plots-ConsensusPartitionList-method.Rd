@@ -15,17 +15,17 @@ Collect plots from ConsensusPartitionList object
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object from \code{\link{run_all_consensus_partition_methods}}.}
-  \item{k}{Number of partitions.}
+  \item{k}{Number of subgroups.}
   \item{fun}{Function used to generate plots. Valid functions are \code{\link{consensus_heatmap}}, \code{\link{plot_ecdf}}, \code{\link{membership_heatmap}}, \code{\link{get_signatures}} and \code{\link{dimension_reduction}}.}
   \item{top_value_method}{A vector of top-value methods.}
-  \item{partition_method}{A vector of partition methods.}
+  \item{partition_method}{A vector of partitioning methods.}
   \item{verbose}{Whether to print message.}
   \item{mc.cores}{Number of cores. On OSX it is enforced to be 1.}
   \item{...}{other Arguments passed to corresponding \code{fun}.}
 
 }
 \details{
-Plots for all combinations of top-value methods and parittion methods are arranged in one single page.
+Plots for all combinations of top-value methods and parittioning methods are arranged in one single page.
 
 This function makes it easy to directly compare results from multiple methods.
 }

@@ -134,21 +134,21 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 }
 
 # == title
-# Test correspondance between predicted classes and known factors
+# Test correspondance between predicted subgroups and known factors
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions. It uses all ``k`` if it is not set.
+# -k Number of subgroups. It uses all ``k`` if it is not specified.
 # -known A vector or a data frame with known factors. By default it is the annotation table set in `consensus_partition` or `run_all_consensus_partition_methods`.
 # -silhouette_cutoff Cutoff for sihouette scores. Samples with value less than it are omit.
 # -verbose Whether to print messages.
 #
 # == value
-# A data frame with columns:
+# A data frame with the following columns:
 #
-# - number of samples used to test after filtered by ``silhouette_cutoff``
-# - p-values from the tests
-# - number of partitions
+# - number of samples used to test after filtered by ``silhouette_cutoff``,
+# - p-values from the tests,
+# - number of subgroups.
 #
 # == seealso
 # `test_between_factors`
@@ -199,7 +199,7 @@ setMethod(f = "test_to_known_factors",
 #
 # == param
 # -object A `ConsensusPartitionList-class` object.
-# -k Number of partitions. It uses all ``k`` if it is not set.
+# -k Number of subgroups. It uses all ``k`` if it is not set.
 # -known A vector or a data frame with known factors. By default it is the annotation table set in `consensus_partition` or `run_all_consensus_partition_methods`.
 # -silhouette_cutoff Cutoff for sihouette scores. Samples with value less than this are omit.
 # -verbose Whether to print messages.
@@ -209,11 +209,11 @@ setMethod(f = "test_to_known_factors",
 # `test_to_known_factors,ConsensusPartition-method` and merges results afterwards.
 #
 # == value
-# A data frame with columns:
+# A data frame with the following columns:
 #
-# - number of samples used to test after filtered by ``silhouette_cutoff``
-# - p-values from the tests
-# - number of partitions
+# - number of samples used to test after filtered by ``silhouette_cutoff``,
+# - p-values from the tests,
+# - number of subgroups.
 #
 # == seealso
 # `test_between_factors`, `test_to_known_factors,ConsensusPartition-method`
