@@ -13,7 +13,7 @@ Collect classes from ConsensusPartitionList object
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object returned by \code{\link{run_all_consensus_partition_methods}}.}
-  \item{k}{Number of partitions.}
+  \item{k}{Number of subgroups.}
   \item{show_column_names}{Whether show column names in the heatmap (which is the column name in the original matrix).}
   \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{run_all_consensus_partition_methods}}.}
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}

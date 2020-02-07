@@ -42,21 +42,19 @@ To test the stability of subgroup classifications, [consensus
 clustering](https://en.wikipedia.org/wiki/Consensus_clustering) or consensus
 partitioning is always performed. It clusters repeatedly with a randomly
 sampled subset of data and summarizes the robustness of the clustering,
-finally it gives a consensus classification of all samples.
+finally, it gives a consensus classification of all samples.
 
 Here we present the *cola* package which provides a general framework for
-consensus partitioning. It has following advantages:
+consensus partitioning. It has the following advantages:
 
 1. It modularizes the consensus partitioning processes that various methods can
-   be easily integrated in different steps of the analysis.
+   be easily integrated into different steps of the analysis.
 2. It provides rich visualizations for interpreting the results.
 3. It allows running multiple methods at the same time and provides
    functionalities to compare results in a straightforward way.
 4. It provides a new method to extract features which are more efficient to
    separate subgroups.
-5. It allows doing partitioning in a hierarchical way to detect subgroups with
-   relatively smaller difference.
-6. It generates detailed HTML reports for the complete analysis.
+5. It generates detailed HTML reports for the complete analysis.
 
 Following flowchart lists the general steps of consensus partitioning
 implemented by *cola*:
@@ -66,31 +64,29 @@ implemented by *cola*:
 The steps are:
 
 1. Clean the input matrix. The processings are: adjusting outliers, imputing
-   missing values and removing rows with very small variance. This step is
-   optional.
-2. Extract subset of rows with highest scores. Here "scores" are calculated by
+   missing values and removing rows with very small variance. This step is optional.
+2. Extract a subset of rows with the highest scores. Here "scores" are calculated by
    a certain method. For gene expression analysis or methylation data
-   analysis, $n$ rows with highest variance are used in most studies, where the
+   analysis, $n$ rows with the highest variance are used in most studies, where the
    "method", or let's call it **"the top-value method"** is the variance (by
-   `var()` or `sd()`). Note the choice of "the top-value method" can be
-   general. It can be e.g. MAD (median absolute deviation) or any user-defined
+   `var()` or `sd()`). Note the choice of "the top-value method" can be general. It can be e.g. MAD (median absolute deviation) or any user-defined
    method.
 3. Scale the rows in the sub-matrix (e.g. gene expression) or not (e.g.
    methylation data). This step is optional.
-4. Randomly sample a subset of rows from the sub-matrix with probability $p$
-   and perform partitioning on the columns of the matrix by a certain partition
+4. Randomly sample a subset of rows or columns from the sub-matrix with probability $p$
+   and perform partitioning on the columns of the matrix by a certain partitioning
    method, with trying different numbers of subgroups.
 5. Repeat step 4 several times and collect all the partitions.
 6. Perform consensus partitioning analysis and determine the best number of
-   subgroups which gives the most stable subgrouping.
-7. Apply statistical tests to find rows that show significant difference
-   between the predicted subgroups. E.g. to extract subgroup specific genes.
-8. If rows in the matrix can be associated to genes, downstream analysis such
+   subgroups which give the most stable subgrouping.
+7. Apply statistical tests to find rows that show a significant difference
+   between the predicted subgroups. E.g. to extract subgroup-specific genes.
+8. If rows in the matrix can be associated with genes, downstream analysis such
    as function enrichment analysis can be performed.
 
-All the steps will be explained in detail in following sections.
+All the steps will be explained in detail in the following sections.
 
-First of all, we load the *cola* package.
+First, we load the *cola* package.
 
 ```{r}
 library(cola)
@@ -99,19 +95,19 @@ library(cola)
 ## The input matrix
 
 In most of the analysis tasks, the input matrix contains values of gene
-expression or DNA methylation (from methylation array or whole genome
+expression or DNA methylation (from methylation array or whole-genome
 bisulfite sequencing). If it is an expression matrix, rows correspond to
 genes, and if it is a methylation matrix, rows correspond to CpG sites. For
 both types of matrices, columns should always correspond to samples where
 subgroups are detected. More general, the input matrix can be any
-type of measurements as long as they represent in a form of matrix, e.g. a
+type of measurements as long as they represent in a form of a matrix, e.g. a
 matrix where rows are genomic regions and values are the histone modification
 intensities in the regions, measured from a ChIP-Seq experiment.
 
 In following part of this vignette, we always call the matrix columns as
 "samples".
 
-Before doing consensus partition, a simple but important step is to clean the
+Before performing consensus partitioning, a simple but important step is to clean the
 input matrix:
 
 ```{r, eval = FALSE}
@@ -119,7 +115,7 @@ input matrix:
 mat = adjust_matrix(mat)
 ```
 
-`adjust_matrix()` does following preprocessings:
+`adjust_matrix()` does the following preprocessing:
 
 1. Rows where more than 25% of the samples having `NA` values are removed;
 2. Use `impute::impute.knn()` to impute missing data if there is any;
@@ -138,7 +134,7 @@ already in a fixed data scale (0 ~ 1).
 ## Basic usage
 
 `consensus_partition()` performs consensus partitioning for a single top-value
-method and a single partition method. The major arguments for
+method and a single partitioning method. The major arguments for
 `consensus_partition()` are:
 
 ```{r, eval = FALSE}
@@ -161,19 +157,19 @@ res = consensus_partition(mat,
   `top_n` as a vector of different numbers.
 - `partition_method`: name of the method for partitioning.
 - `max_k`: maximal number of subgroups to try. It will try from 2 to `max_k`.
-- `p_sampling`: fraction of the `top_n` rows to sample. The sub-matrix with
+- `p_sampling`: the fraction of the `top_n` rows to sample. The sub-matrix with
   `p_sample * top_n` rows is used for partitioning.
 - `partition_repeats`: times of partitioning with randomly sampled subset of data to perform.
 - `anno`: a vector or a data frame which contains known annotations of
-  samples. If it is provided, it will drawn along side with the predicted
+  samples. If it is provided, it will be drawn alongside with the predicted
   subgroups in the plot generated by downstream functions and it can also be
-  tested for the correspondance to predicted subgroups.
+  tested for the correspondence to predicted subgroups.
 
 Other arguments can be found in the documentation of
 `consensus_partition()`.
 
 To get a robust result from consensus partitioning, for a specific top-value
-method and a specific partition method, `consensus_partition()` tries
+method and a specific partitioning method, `consensus_partition()` tries
 different `top_n` and different number of subgroups. We found that different
 `top_n` might give different subgroups for some data sets, thus
 `consensus_partition()` pools results from different `top_n` and aims to give
@@ -182,9 +178,9 @@ introduce that the bias for `top_n` on subgrouping can be visualized by
 `membership_heatmap()` function.
 
 In most cases, users might not be very sure which top-value method and which
-partition method are best for their dataset. The helper function
+partitioning method is best for their dataset. The helper function
 `run_all_consensus_partition_methods()` is a convenient way to try multiple
-top-value methods and multiple partition methods simultaneously to see which
+top-value methods and multiple partitioning methods simultaneously to see which
 combination of methods gives the best prediction of subgroups.
 
 In `run_all_consensus_partition_methods()`, most of the arguments are the same
@@ -195,9 +191,9 @@ be set by `mc.cores` argument.
 ```{r, eval = FALSE}
 # code is only for demonstration
 rl = run_all_consensus_partition_methods(mat, 
-	top_value_method = c("SD", "MAD", ...),
-	partition_method = c("hclust", "kmeans", ...),
-	mc.cores = ...)
+    top_value_method = c("SD", "MAD", ...),
+    partition_method = c("hclust", "kmeans", ...),
+    mc.cores = ...)
 cola_report(rl, output_dir = ...)
 ```
 
@@ -239,24 +235,24 @@ These methods can be used in consensus partitioning by providing the name to the
 You can register a new top-value method by `register_top_value_methods()`. The
 value should be functions. For each function, it should only have one argument
 which is the matrix for analysis and it must return a vector with scores for
-rows. In following example, the "max" method uses the row maximum as the row
-score and we also add the "QCD" ([quartile coefficient of
+rows. In the following example, the "max" method uses the row maximum as the row
+score and we also add the "QCD" method ([quartile coefficient of
 dispersion](https://en.wikipedia.org/wiki/Quartile_coefficient_of_dispersion))
-method as a second method here.
+as a second method here.
 
 ```{r}
 register_top_value_methods(
-	max = function(mat) matrixStats::rowMaxs(mat),
-	QCD = function(mat) {
-		qa = matrixStats::rowQuantiles(mat, probs = c(0.25, 0.75))
-		(qa[, 2] - qa[, 1])/(qa[, 2] + qa[, 1])
-	})
+    max = function(mat) matrixStats::rowMaxs(mat),
+    QCD = function(mat) {
+        qa = matrixStats::rowQuantiles(mat, probs = c(0.25, 0.75))
+        (qa[, 2] - qa[, 1])/(qa[, 2] + qa[, 1])
+    })
 all_top_value_methods()
 ```
 
-By default, the consensus partition functions
+By default, the consensus partitioning functions
 `run_all_consensus_partition_methods()` uses all registered top-value methods,
-but still you can explicitly specify a subset of top-value methods. To remove
+but still, you can explicitly specify a subset of top-value methods. To remove
 registered top-value methods, simply use `remove_top_value_methods()` by
 providing a vector of names.
 
@@ -271,25 +267,25 @@ Choosing the top rows in the matrix is important for the subgroup
 classification. In most cases, we extract the most variable rows which
 is defined by row variance. However, sometimes it won't give you meaningful
 rows which are efficient for subgroup classification. When random noise in the
-data increases, e.g. for single cell RNASeq data, the most variable genes are
+data increases, e.g. for single-cell RNASeq data, the most variable genes are
 too weak to detect any stable subgroups.
 
 If we think reversely, assuming there exist stable subgroups in the data,
-there must be groups of rows showing similar pattern to support the
+there must be groups of rows showing a similar pattern to support the
 subgrouping, in other words, rows in the same groups should have high
 correlations to each other. Thus, if we can get rows that more correlated to
 others, they are more strong to form a stable subgroup for the samples.
 According to this thought, we designed the ATC method (ability to correlate to other rows).
 
 For row $i$ in a matrix, $X$ is a vector of **the absolute correlation** to all
-other rows, the ATC (ability to correlate to others) for row $i$ is defined
+other rows, the ATC (ability to correlate to other rows) for row $i$ is defined
 as:
 
 $$ATC_i = 1 - \int_0^1F(x)$$
 
 where $F(x)$ is the CDF (cumulative distribution function) of $X$.
 
-In following plot, the line is the CDF curve. ATC is the area above the CDF
+In the following plot, the line is the CDF curve. ATC is the area above the CDF
 curve. It can be imagined that when row $i$ correlates with more other rows,
 the CDF curve shifts more to the right, thus with higher ATC scores.
 
@@ -299,10 +295,10 @@ par(mar = c(4, 4, 1, 1))
 ATC_definition()
 ```
 
-There can be scenarios when large number of rows are correlated to each other
+There can be scenarios when a large number of rows are correlated to each other
 only with very small correlation values. They will gain high ATC value due to
-the large number of rows (which corresponds to the left part of the read area
-in above plot that close to $x = 0$). To decrease such effect, the ATC definition
+a large number of rows (which corresponds to the left part of the red area
+in the above plot that is close to $x = 0$). To decrease such effect, the ATC definition
 can be slightly modified to:
 
 $$ATC_i = (1 - \alpha) - \int_{\alpha}^1F(x^{\beta})$$
@@ -312,15 +308,15 @@ coefficient $\beta$ is the power added to the absolute correlations that it
 decreases more for the smaller correlations. By Default $\alpha$ is set to 0
 and $\beta$ is set to 1.
 
-Next we perform a simulation test to show the attributes of ATC method. A
+Next, we perform a simulation test to show the attributes of the ATC method. A
 matrix with 160 rows, 100 columns with random values are generated as follows:
 
-1. 100 rows with mean of 0. The covariance matrix is set to 0 and 1 on the
-   diagnal;
-2. 10 rows with mean of 0. The covariance matrix is set to 0.8 and 1 on the
-   diagnal. This simulates high correlations but in a small group of rows;
-3. 50 rows wiht mean of 0. The covariance matrix is set to 0.5 and 1 on the
-   diagnal. This simulates intemediate correlations but in a large group of
+1. 100 rows with a mean of 0. The covariance matrix is set to 0 and 1 on the
+   diagonal;
+2. 10 rows with a mean of 0. The covariance matrix is set to 0.8 and 1 on the
+   diagonal. This simulates high correlations but in a small group of rows;
+3. 50 rows with a mean of 0. The covariance matrix is set to 0.5 and 1 on the
+   diagonal. This simulates intermediate correlations but in a large group of
    rows.
 
 The top left figure in following is the heatmap for the random matrix, split by the three groups
@@ -332,16 +328,16 @@ bottom right figure is the standard deviation for the 160 rows.
 ATC_simulation()
 ```
 
-All the 160 rows have similar variance of 1 that they cannot be distinguished
+All the 160 rows have a similar variance of 1 that they cannot be distinguished
 very well by using variance (bottom right figure). As a contrast, the rows
 with non-zero covariance have higher ATC values (the red and green points),
 even higher when the number of correlated rows increases (the green points,
 although the correlation value itself is intermediate, bottom left figure). This
-shows ATC method can assign higher values for rows which correlate to more
+shows the ATC method can assign higher values for rows which correlate to more
 other rows.
 
 ATC scores are calculated by `ATC()` function. By default it uses Pearson
-correlation. Users can register ATC method with other correlation methods by,
+correlation. Users can register the ATC method with other correlation methods by,
 e.g.:
 
 ```{r, eval = FALSE}
@@ -352,16 +348,16 @@ register_top_value_methods(
 )
 ```
 
-## Partition methods
+## Partitioning methods
 
-Partition methods are used to separate samples into $k$ subgroups where $k$ is
-a known parameter for the partition. The default partition methods are:
+Partitioning methods are used to separate samples into $k$ subgroups where $k$ is
+a known parameter for the partitioning. The default partitioning methods are:
 
 ```{r}
 all_partition_methods()
 ```
 
-These partition methods are:
+These partitioning methods are:
 
 - `hclust`: hierarchical clustering + cutree. The parameters for calling
   `hclust()` and `dist()` are all defaults for the two functions, thus it is
@@ -372,17 +368,17 @@ These partition methods are:
 - `mclust`: model-based clustering, from **mclust** package. The clustering is
   based on the first three principle dimensions from the original matrix.
 
-Similarly, you can register a new partition method by
+Similarly, you can register a new partitioning method by
 `register_partition_methods()`. The value should be functions with two
-arguments which are the input matrix and number of partitions. There can be a
+arguments which are the input matrix and number of subgroups. There can be a
 third argument for the function which is  `...` used for passing more
 arguments from `consensus_partition()`. The function should only return a
 vector of subgroup/class labels or an object that can be imported by
 `clue::cl_membership()`. **Please note the partition is applied on columns of
 the matrix and the number of unique levels of subgroup levels which are
-predicted by the partition method should not exceed $k$.**
+predicted by the partitioning method should not exceed $k$.**
 
-Following example registers a partition method which randomly assign subgroup
+Following example registers a partitioning method which randomly assigns subgroup
 labels to samples:
 
 ```{r}
@@ -397,7 +393,7 @@ Here the subgroup labels can be in any types (numbers, characters). They only
 need to be different for different classes. These labels will be re-coded with
 numeric indices internally (i.e. 1, 2, 3, ...).
 
-To remove a partition method, use `remove_partition_methods()`:
+To remove a partitioning method, use `remove_partition_methods()`:
 
 ```{r}
 remove_partition_methods("random")
@@ -413,7 +409,7 @@ register_partition_methods(
 )
 ```
 
-Following code registers SOM and NMF partition methods:
+Following code registers SOM and NMF partitioning methods:
 
 ```{r, eval = FALSE}
 # code is only for demonstration
@@ -466,7 +462,7 @@ rows before partitioning if scaling is turned on `consensus_partition()` or
 
 The skmeans method ([the spherical k-means
 clustering](https://www.jstatsoft.org/article/view/v050i10)) is powerful to
-detect subgroups where samples in a same subgroup show strong correlations.
+detect subgroups where samples in the same subgroup show strong correlations.
 skmeans clustering uses cosine similarity and projects data points onto a unit
 hyper-sphere. As we have tested for many datasets, skmeans is very efficient
 to detect stable subgroups.
@@ -476,9 +472,9 @@ to detect stable subgroups.
 ## Consensus partitioning
 
 For a given number of top rows $n_i$, the corresponding matrix with top rows
-denoted as $M_i$, a subset of rows with probability of $p$ are randomly
-sampled from $M_i$ and a certain partition method is applied on it, generating
-a partition $P_a$. In most of cases, we have no prior knowledge of which $n_i$
+denoted as $M_i$, a subset of rows with a probability of $p$ are randomly
+sampled from $M_i$ and a certain partitioning method is applied to it, generating
+a partition $P_a$. In most cases, we have no prior knowledge of which $n_i$
 gives better results, thus, *cola* allows to try multiple $n_i$ and pool
 partitions from all $n_i$ together to find a consensus subgrouping, which also
 lets rows more on the top of the ranked list give higher weight for
@@ -489,10 +485,10 @@ partitions is $N_P = m*N_s$.
 
 ### Consensus matrix
 
-The consensus matrix measures how consistently two samples are in a same
+The consensus matrix measures how consistent two samples are in the same
 subgroup and it can be used to visualize or analysis the stability of the
 subgrouping. The value $c_{ij}$ in the consensus matrix is the probability of
-sample $i$ and sample $j$ in a same subgroup in all $N_P$ partitions. It is
+sample $i$ and sample $j$ in the same subgroup in all $N_P$ partitions. It is
 calculated as:
 
 $$c_{ij} = \sum_a^{N_p}I(s_{ia}, s_{ja})/N_P$$
@@ -508,16 +504,16 @@ represented as a block in the diagonal of the heatmap.
 
 Following two heatmaps visualize two consensus matrices. The left one shows
 less stability of subgrouping than the right one, while for the right one,
-there are three very obvious blocks in the diagnal that in each block, the
-corresponding samples are very likely to be in a same subgroup.
+there are three very obvious blocks in the diagonal that in each block, the
+corresponding samples are very likely to be in the same subgroup.
 
-In following two heatmaps, the right one corresponds to a more stable
+In the following two heatmaps, the right one corresponds to a more stable
 subgrouping.
 
 ```{r, echo = FALSE, fig.width = 9, fig.height = 4}
 data(cola_rl)
-m1 = get_consensus(cola_rl["sd:kmeans"], k = 2)
-m2 = get_consensus(cola_rl["sd:kmeans"], k = 3)
+m1 = get_consensus(cola_rl["SD:kmeans"], k = 2)
+m2 = get_consensus(cola_rl["SD:kmeans"], k = 3)
 grid.newpage()
 pushViewport(viewport(layout = grid.layout(nr = 1, nc = 2)))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
@@ -581,9 +577,9 @@ smallest mean intra-group distance.
 
 **This subgroup label adjustment is frequently used in cola to help the
 visualization as well as downstream analysis. E.g. for a specific combination
-of top-value method and partition method, the subgroup labels for different
+of top-value method and partitioning method, the subgroup labels for different
 `k` are adjusted, and for the subgroups from different top-value methods and
-partition methods, the subgroup labels are also adjusted to make the label
+partitioning methods, the subgroup labels are also adjusted to make the label
 difference from different methods minimal.**
 
 ### Membership matrix 
@@ -595,11 +591,11 @@ visualization of all partitions and correspondence to the consensus partition
 for $k = 2$. The `p*` annotation on top of the heatmap is the probability of
 being in subgroup $i$ across all partitions.
 
-In following plot, actually we can see the samples in the middle tend to
-belong to the green subgroup (group with label 1) for small `top_n` (e.g.
+In the following plot, actually we can see the samples in the middle tend to
+belong to the green subgroup (the group with label 1) for small `top_n` (e.g.
 `top_n = 1000`), while, when `top_n` increases, they go to the red subgroup
 (group label 2). Since the final subgroups are summarized from all `top_n`,
-the probabilities of the middle samples to be in the either subgroup are
+the probabilities of the middle samples to be in either subgroup are
 close, which can also be observed from the probability annotation (`p*`
 annotations). This might indicate these are the subset of samples which are in
 the intermediate state between group 1 and group 2.
@@ -646,7 +642,7 @@ higher the mean silhouette score, better the $k$.
 
 [The PAC score](https://en.wikipedia.org/wiki/Consensus_clustering#Over-interpretation_potential_of_consensus_clustering) measures the proportion of
 the ambiguous subgrouping. If the subgrouping is stable, in $N_P$ partitions,
-sample $i$ and sample $j$, in most of the cases, are either always in a same
+sample $i$ and sample $j$, in most of the cases, are either always in the same
 subgroup, or always in different subgroups, which results in that, in the
 consensus matrix, the values are, in most cases, close to 1 or 0. Then
 in the CDF of the consensus matrix, the curve will be very flattened between
@@ -655,14 +651,14 @@ because there are very few values between $x_1$ and $x_2$. Thus, the proportion 
 sample pairs with consensus values in $(x_1, x_2)$ is called **the proportion of
 the ambiguous clustering**, which can be calculated by $F(x_2) - F(x_1)$.
 
-In following plots, the red line in the left plot corresponds to the first
+In the following plots, the red line in the left plot corresponds to the first
 consensus heatmap and the blue line corresponds to the second consensus
-heatmap that is more stable than the first one.It is quite obvious to see the
+heatmap that is more stable than the first one. It is quite obvious to see the
 second consensus heatmap has far less PAC value than the first one.
 
 ```{r, echo = FALSE, fig.width = 14, fig.height = 14/3}
-m1 = get_consensus(cola_rl["sd:kmeans"], k = 2)
-m2 = get_consensus(cola_rl["sd:kmeans"], k = 3)
+m1 = get_consensus(cola_rl["SD:kmeans"], k = 2)
+m2 = get_consensus(cola_rl["SD:kmeans"], k = 3)
 
 grid.newpage()
 pushViewport(viewport(layout = grid.layout(nr = 1, nc = 3)))
@@ -733,7 +729,7 @@ smaller than $k$.
 grid.newpage()
 pushViewport(viewport(layout = grid.layout(nr = 1, nc = 5)))
 for(k in 2:6) {
-    m = get_consensus(cola_rl["sd:kmeans"], k = k)
+    m = get_consensus(cola_rl["SD:kmeans"], k = k)
     pushViewport(viewport(layout.pos.row = 1, layout.pos.col = k-1))
     draw(Heatmap(m, show_row_dend = FALSE, show_column_dend = FALSE, 
         col = colorRamp2(c(0, 1), c("white", "blue"))), show_heatmap_legend = FALSE, 
@@ -747,25 +743,25 @@ The corresponding CDF curves and the area increased are:
 
 ```{r, echo = FALSE, fig.width = 10, fig.height = 5}
 par(mfrow = c(1, 2))
-plot_ecdf(cola_rl["sd:kmeans"], lwd = 1)
-area_increased = get_stats(cola_rl["sd:kmeans"])[, "area_increased"]
+plot_ecdf(cola_rl["SD:kmeans"], lwd = 1)
+area_increased = get_stats(cola_rl["SD:kmeans"])[, "area_increased"]
 plot(2:6, area_increased, type = "b", xlab = "k", ylab = "area increased")
 ```
 
-The $k$ before the elbow is taken as the best $k$ (in above example it is 3).
+The $k$ before the elbow is taken as the best $k$ (in the above example it is 3).
 Basically when $k$ reaches a stable subgrouping, increasing $k$ won't change
 the consensus matrix too much, which results in less change of the difference of
-area under the CDF curve.
+The area under the CDF curve.
 
 ### Rand index 
 
-In some cases, when number of subgroups changes from $k-1$ to $k$, all the
+In some cases, when the number of subgroups changes from $k-1$ to $k$, all the
 statistics imply $k$ is a better choice than $k-1$. However, when observing
 the consensus heatmap, basically it is because a very small set of samples are
 separated to form a new subgroup. In this case, it is better to still keep
-$k-1$ subgroups. In other words, the subgrouping with $k$ is similar as
+$k-1$ subgroups. In other words, the subgrouping with $k$ is similar to
 $k-1$ and it is not worth to increase $k$ from $k-1$. In *cola* package,
-there are two metrics: Rand index and Jaccard index to measure the similarity
+there are two metrics: the Rand index and Jaccard index to measure the similarity
 of two partitions for $k-1$ and $k$. The two metrics are calculated by
 `clue::cl_agreement(..., method = "Rand")` and `clue::cl_agreement(..., method
 = "Jaccard")`.
@@ -783,7 +779,7 @@ For all pairs of samples, denote following symbols
   $k$ and in the same subgroup in $k-1$.
 
 the Rand index which is the percent of pairs of samples that are both in a
-same cluster or both are not in a same cluster in the partition of $k$ and $k-1$.
+same cluster or both are not in the same cluster in the partition of $k$ and $k-1$.
 
 $$Rand = \frac{a+b}{a+b+c+d}$$
 
@@ -793,12 +789,12 @@ it is not sufficient to increase from $k-1$ to $k$.
 ### Jaccard index
 
 The Jaccard index is the ratio of pairs of samples that are both in a same subgroup
-in the partition of $k$ and $k-1$ and the pairs of samples are both in a same
+in the partition of $k$ and $k-1$ and the pairs of samples are both in the same
 subgroup in the partition of $k$ or $k-1$.
 
 $$Jaccard = \frac{a}{a+c+d}$$
 
-In following plots, when the number of subgroups increases from 3 to 4, there is only
+In the following plots, when the number of subgroups increases from 3 to 4, there is only
 one single sample separated from other subgroups to form a new subgroup. The Rand index or
 the Jaccard index for $k=4$ is close to 1, which means, the subgroups at $k=4$ are
 highly similar as $k=3$, thus we ignore $k=4$ and take $k=3$ as the better subgrouping.
@@ -808,7 +804,7 @@ highly similar as $k=3$, thus we ignore $k=4$ and take $k=3$ as the better subgr
 ### Rule
 
 *cola* provides a `suggest_best_k()` function which suggests the best $k$.
-It is based on following rules:
+It is based on the following rules:
 
 - All $k$ with Jaccard index larger than 0.95 are removed because increasing
   $k$ does not provide enough extra information. If all $k$ are removed, it is
@@ -822,25 +818,25 @@ It is based on following rules:
 `suggest_best_k()` only gives suggestion on selecting a reasonable $k$.
 Users still need to look at the plots (e.g. by `select_partition_number()` or
 `consensus_heatmap()` functions), or even by checking whether the subgrouping
-gives a reasonable signatures by `get_signatures()`, to pick a reasonable $k$ that
+gives reasonable signatures by `get_signatures()`, to pick a reasonable $k$ that
 best explains their studies.
 
 ## Find signatures
 
 As long as there are stable subgroups, we can look for rows which show
-distinct difference in one subgroup compared to others. They can be called
+A distinct difference in one subgroup compared to others. They can be called
 signature genes or signature CpG sites if the corresponding dataset is gene
 expression data or methylation data.
 
 By default, samples with silhouette scores less than 0.5 are removed. *cola*
-provides following methods:
+provides the following methods:
 
 - `Ftest` use F-test to find significantly different rows between subgroups.
-- `ttest`: First it looks for the subgroup with highest mean value, compare to
+- `ttest`: First it looks for the subgroup with the highest mean value, compare to
   each of the other subgroups with t-test and take the maximum p-value. Second
   it looks for the subgroup with lowest mean value, compare to each of the
   other subgroups again with t-test and take the maximum p-values. Later for
-  these two list of p-values take the minimal p-value as the final p-value.
+  these two lists of p-values take the minimal p-value as the final p-value.
 - `samr` and `pamr`: use
   [SAM](https://CRAN.R-project.org/package=samr)/[PAM](https://CRAN.R-project.org/package=pamr)
   method to find significantly different rows between subgroups.
@@ -866,21 +862,21 @@ different functional roles.
 
 `consensus_partition()` is the core function for consensus partitioning. But
 it can only perform analysis with a single top-value method and a single
-partition method. In most cases, we have no idea of which combination of
-top-value method and partition method gives better results. Here
+partitioning method. In most cases, we have no idea of which combination of
+top-value method and partitioning method gives better results. Here
 `run_all_consensus_partition_methods()` can perform analysis with multiple
 methods simultaneously:
 
 ```{r, eval = FALSE}
 # code is only for demonstration
 rl = run_all_consensus_partition_methods(mat, 
-    top_value_method = c("sd", "MAD", ...),
+    top_value_method = c("SD", "MAD", ...),
     partition_method = c("hclust", "kmeans", ...),
     mc.cores = ...)
 ```
 
 By default it runs analysis for all combinations of top-value methods in
-`all_top_value_methods()` and partition methods in `all_partition_methods()`.
+`all_top_value_methods()` and partitioning methods in `all_partition_methods()`.
 
 *cola* package provides functions to collect plots from all combinations of
 methods for straightforward comparisons.
@@ -905,10 +901,10 @@ The plots from `collect_plots()` and `collect_classes()` can be found [here](#to
 
 *cola* is implemented in an object-oriented way. There are two main classes
 where `ConsensusPartition` class contains results for a single top-value method
-and a single partition method, while `ConsensusPartitionList` class contains results for
-multiple top-value methods and multiple partition methods.
+and a single partitioning method, while `ConsensusPartitionList` class contains results for
+multiple top-value methods and multiple partitioning methods.
 
-In following example code, `TCGA_GBM_subgroup.rds` is generated by the code
+In the following example code, `TCGA_GBM_subgroup.rds` is generated by the code
 demonstrated [here](https://jokergoo.github.io/cola_examples/TCGA_GBM/) (Running cola analysis
 is always time-consuming, so we use the object that has already be generated.).
 
@@ -926,11 +922,11 @@ list of functions that can be applied to this object:
 rl
 ```
 
-To get results for a single top-value method and partition method, you can subset `rl`
+To get results for a single top-value method and partitioning method, you can subset `rl`
 by the name of the combination of the methods.
 
 ```{r}
-rl["sd:hclust"]
+rl["SD:hclust"]
 ```
 
 Functions on `ConsensusPartitionList` class that are important to use are:
@@ -941,7 +937,7 @@ Functions on `ConsensusPartitionList` class that are important to use are:
     silhoutte scores.
 - `collect_plots()`: Collect plots for all methods.
 - `get_classes()`: The global consensus subgroup by taking subgroups from all methods together.
-- `get_stats()`: Extract the statistics for determining best number of subgroups.
+- `get_stats()`: Extract the statistics for determining the best number of subgroups.
 - `suggest_best_k()`: Guess the best $k$ for each method.
 - `test_to_known_factors()`: Apply tests to the annotations if provides. The test will be Chi-squared test or ANOVA depending on the data type of the annotation.
 - `top_rows_heatmap()`: Make heatmaps for `top_n` rows under different top-value methods.
@@ -974,7 +970,7 @@ single method or multiple methods.
 ### On the ConsensusPartition object
 
 The object which is generated with a single top-value method and a single
-partition method belongs to the class `ConsensusPartition`. There are several
+partitioning method belongs to the class `ConsensusPartition`. There are several
 visualization functions that can be applied to it.
  `select_partition_number()` makes several plots to show
 different statistics along with different $k$, which helps to determine the
@@ -1014,7 +1010,7 @@ get_signatures(res, k = 4)
 ```
 
 `collect_classes()` which is applied on the `ConsensusPartition` object
-visualizes how subgroups are corresponded with increasing $k$. Same row in 
+visualizes how subgroups are corresponded with increasing $k$. The same row in 
 all heatmaps corresponds to a same sample.
 
 ```{r}
@@ -1076,7 +1072,7 @@ cola_report(rl, output_dir = ...) # Alles ist da!
 ## A Real-world example
 
 In this example, we use [the TCGA GBM microarray data set](https://www.ncbi.nlm.nih.gov/pubmed/20129251)
-where four subtypes is predicted.
+where four subtypes are predicted.
 The two files (`unifiedScaled.txt` and `TCGA_unified_CORE_ClaNC840.txt`) for use is from 
 [here](https://gdc.cancer.gov/about-data/publications/gbm_exp). The web page for the analysis is 
 https://jokergoo.github.io/cola_examples/TCGA_GBM/.
@@ -1116,3 +1112,5 @@ More examples for *cola* analysis can be found at https://jokergoo.github.io/col
 ```{r}
 sessionInfo()
 ```
+
+

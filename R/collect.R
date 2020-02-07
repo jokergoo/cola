@@ -4,17 +4,17 @@
 #
 # == param
 # -object A `ConsensusPartitionList-class` object from `run_all_consensus_partition_methods`.
-# -k Number of partitions.
+# -k Number of subgroups.
 # -fun Function used to generate plots. Valid functions are `consensus_heatmap`,
 #        `plot_ecdf`, `membership_heatmap`, `get_signatures` and `dimension_reduction`.
 # -top_value_method A vector of top-value methods.
-# -partition_method A vector of partition methods.
+# -partition_method A vector of partitioning methods.
 # -verbose Whether to print message.
 # -mc.cores Number of cores. On OSX it is enforced to be 1.
 # -... other Arguments passed to corresponding ``fun``.
 #
 # == details
-# Plots for all combinations of top-value methods and parittion methods are arranged in one single page.
+# Plots for all combinations of top-value methods and parittioning methods are arranged in one single page.
 #
 # This function makes it easy to directly compare results from multiple methods. 
 #
@@ -190,7 +190,7 @@ setMethod(f = "collect_plots",
 # == example
 # \dontrun{
 # data(cola_rl)
-# collect_plots(cola_rl["sd", "kmeans"])
+# collect_plots(cola_rl["SD", "kmeans"])
 # }
 setMethod(f = "collect_plots",
 	signature = "ConsensusPartition",
@@ -434,7 +434,7 @@ All individual plots can be made by following functions:
 #
 # == param
 # -object A `ConsensusPartitionList-class` object returned by `run_all_consensus_partition_methods`.
-# -k Number of partitions.
+# -k Number of subgroups.
 # -show_column_names Whether show column names in the heatmap (which is the column name in the original matrix).
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
@@ -569,7 +569,7 @@ setMethod(f = "collect_classes",
 
 
 # == title
-# Collect classes from ConsensusPartition object
+# Collect subgroups from ConsensusPartition object
 #
 # == param
 # -object A `ConsensusPartition-class` object.
@@ -581,7 +581,7 @@ setMethod(f = "collect_classes",
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 #
 # == details
-# The percent membership matrix and the class IDs for each k are plotted in the heatmaps.
+# The percent membership matrix and the subgroup labels for each k are plotted in the heatmaps.
 #
 # Same row in all heatmaps corresponds to the same column in the original matrix.
 #
@@ -593,7 +593,7 @@ setMethod(f = "collect_classes",
 #
 # == example
 # data(cola_rl)
-# collect_classes(cola_rl["sd", "kmeans"])
+# collect_classes(cola_rl["SD", "kmeans"])
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",
 	definition = function(object, internal = FALSE, show_row_names = FALSE,
@@ -691,14 +691,14 @@ setMethod(f = "collect_stats",
 #
 # == param
 # -object A `ConsensusPartitionList-class` object.
-# -k Number of partitions
+# -k Number of subgroups.
 # -layout_nrow Number of rows in the layout
 # -all_stats Whether to show all statistics that were calculated. Used internally.
 # -... Other arguments
 #
 # == details
 # It draws heatmaps for statistics for multiple methods in parallel, so that users can compare which combination
-# of methods gives the best results with given the number of partitions.
+# of methods gives the best results with given the number of subgroups.
 #
 # == examples
 # data(cola_rl)

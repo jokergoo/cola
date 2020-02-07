@@ -103,7 +103,7 @@
 <h1 class="hasAnchor">
 <a href="#a-quick-start-of-cola-package" class="anchor"></a>A Quick Start of cola Package</h1>
 <p><strong>Author</strong>: Zuguang Gu ( <a href="mailto:z.gu@dkfz.de">z.gu@dkfz.de</a> )</p>
-<p><strong>Date</strong>: 2020-01-03</p>
+<p><strong>Date</strong>: 2020-02-06</p>
 <p><strong>Package version</strong>: 1.3.3</p>
 <hr>
 <p>Assume your matrix is stored in an object called <code>mat</code>, to perform consensus partitioning with <em>cola</em>, you only need to run following code:</p>
@@ -113,7 +113,8 @@ rl =<span class="st"> </span><span class="kw"><a href="../reference/run_all_cons
 <span class="kw"><a href="../reference/cola_report-dispatch.html">cola_report</a></span>(rl, <span class="dt">output_dir =</span> ..., <span class="dt">mc.cores =</span> ...)</code></pre></div>
 <p>In above code, there are three steps:</p>
 <ol style="list-style-type: decimal">
-<li>Adjust the matrix. In this step, rows with too many <code>NA</code>s are removed. Rows with very low variance are removed. <code>NA</code> values are imputed if there are not too many in each row. Outliers are adjusted in each row. This step is partition methods are <code>hclust</code> (hierarchical clustering with cutree), <code>kmeans</code> (k-means clustering), <code><a href="https://rdrr.io/pkg/skmeans/man/skmeans.html">skmeans::skmeans</a></code> (spherical k-means clustering), <code><a href="https://rdrr.io/pkg/cluster/man/pam.html">cluster::pam</a></code> (partitioning around medoids clustering) and <code>Mclust::mclust</code> (model-based clustering). The default methods to extract top n rows are <code>SD</code> (standard deviation), <code>CV</code> (coefficient of variation), <code>MAD</code> (median absolute deviation) and <code>ATC</code> (ability to correlate to other rows).</li>
+<li>Adjust the matrix. In this step, rows with too many <code>NA</code>s are removed. Rows with very low variance are removed. <code>NA</code> values are imputed if there are less than 50% in each row. Outliers are adjusted in each row.</li>
+<li>Run consensus partitioning with several methods. Partitioning methods are <code>hclust</code> (hierarchical clustering with cutree), <code>kmeans</code> (k-means clustering), <code><a href="https://rdrr.io/pkg/skmeans/man/skmeans.html">skmeans::skmeans</a></code> (spherical k-means clustering), <code><a href="https://rdrr.io/pkg/cluster/man/pam.html">cluster::pam</a></code> (partitioning around medoids) and <code>Mclust::mclust</code> (model-based clustering). The default methods to extract top n rows are <code>SD</code> (standard deviation), <code>CV</code> (coefficient of variation), <code>MAD</code> (median absolute deviation) and <code>ATC</code> (ability to correlate to other rows).</li>
 <li>Generate a detailed HTML report for the complete analysis.</li>
 </ol>
 <p>There are examples on real datasets for <em>cola</em> analysis that can be found at <a href="https://jokergoo.github.io/cola_collection/" class="uri">https://jokergoo.github.io/cola_collection/</a>.</p>

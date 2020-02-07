@@ -139,29 +139,27 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>membership_each</th>
-      <td><p>A matrix which contains partitions in every single runs where columns correspond to runs.</p></td>
+      <td><p>A matrix which contains partitions in every single runs where columns correspond to runs. The object can be get from <code><a href='get_membership-dispatch.html'>get_membership(..., each = TRUE)</a></code>.</p></td>
     </tr>
     <tr>
       <th>class</th>
-      <td><p>Consensus class IDs.</p></td>
+      <td><p>Consensus subgroup labels.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Note class IDs in <code>membership_each</code> should already be adjusted to the consensus class IDs
-to let <code><a href='https://rdrr.io/r/base/sum.html'>sum(x_single == x_consensus)</a></code> reach maximum.</p>
-<p>The concordance score is the mean proportion of samples having the same class ID as the consensus class ID
-among runs.</p>
-<p>This function is used internally.</p>
+    <p>Note subgroup labels in <code>membership_each</code> should already be adjusted to the consensus labels, e.g. by <code><a href='relabel_class.html'>relabel_class</a></code>.</p>
+<p>The concordance score is the mean proportion of samples having the same subgroup labels as the consensus labels
+among individual partition runs.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A numeric value.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='no'>membership_each</span> <span class='kw'>=</span> <span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>cola_rl</span>[<span class='st'>"sd"</span>, <span class='st'>"kmeans"</span>], <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)
-<span class='no'>consensus_classes</span> <span class='kw'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>cola_rl</span>[<span class='st'>"sd"</span>, <span class='st'>"kmeans"</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)$<span class='no'>class</span>
+<span class='no'>membership_each</span> <span class='kw'>=</span> <span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>], <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+<span class='no'>consensus_classes</span> <span class='kw'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)$<span class='no'>class</span>
 <span class='fu'>concordance</span>(<span class='no'>membership_each</span>, <span class='no'>consensus_classes</span>)</div><div class='output co'>#&gt; [1] 0.9786667</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

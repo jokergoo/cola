@@ -11,7 +11,7 @@ Get annotations
 }
 \arguments{
 
-  \item{object}{A \code{\link{ConsensusPartition-class}} object}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
 
 }
 \value{

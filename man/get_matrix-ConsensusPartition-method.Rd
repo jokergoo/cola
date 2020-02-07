@@ -11,7 +11,7 @@ Get the original matrix
 }
 \arguments{
 
-  \item{object}{A \code{\link{ConsensusPartition-class}} object}
+  \item{object}{A \code{\link{ConsensusPartition-class}} object.}
 
 }
 \value{
@@ -22,6 +22,6 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rl)
-obj = cola_rl["sd", "kmeans"]
+obj = cola_rl["SD", "kmeans"]
 get_matrix(obj)
 }

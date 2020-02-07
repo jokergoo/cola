@@ -2,10 +2,10 @@
 \alias{plot_ecdf,ConsensusPartition-method}
 \alias{plot_ecdf}
 \title{
-Plot the empirical cumulative distribution curve (ECDF) of the consensus matrix
+Plot the empirical cumulative distribution curve (eCDF) of the consensus matrix
 }
 \description{
-Plot the empirical cumulative distribution curve (ECDF) of the consensus matrix
+Plot the empirical cumulative distribution curve (eCDF) of the consensus matrix
 }
 \usage{
 \S4method{plot_ecdf}{ConsensusPartition}(object, ...)
@@ -17,7 +17,7 @@ Plot the empirical cumulative distribution curve (ECDF) of the consensus matrix
 
 }
 \details{
-It plots ECDF curve for each k.
+It plots eCDF curve for each k.
 
 This function is mainly used in \code{\link{collect_plots}} and \code{\link{select_partition_number}} functions.
 }
@@ -32,5 +32,5 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rl)
-plot_ecdf(cola_rl["sd", "hclust"])
+plot_ecdf(cola_rl["SD", "hclust"])
 }

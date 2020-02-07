@@ -1,10 +1,10 @@
 \name{suggest_best_k-ConsensusPartition-method}
 \alias{suggest_best_k,ConsensusPartition-method}
 \title{
-Suggest the best number of partitions
+Suggest the best number of subgroups
 }
 \description{
-Suggest the best number of partitions
+Suggest the best number of subgroups
 }
 \usage{
 \S4method{suggest_best_k}{ConsensusPartition}(object, jaccard_index_cutoff = 0.95)
@@ -12,7 +12,7 @@ Suggest the best number of partitions
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{jaccard_index_cutoff}{The cutoff for Jaccard index compared to previous k.}
+  \item{jaccard_index_cutoff}{The cutoff for Jaccard index for comparing to previous k.}
 
 }
 \details{
@@ -38,6 +38,6 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rl)
-obj = cola_rl["sd", "kmeans"]
+obj = cola_rl["SD", "kmeans"]
 suggest_best_k(obj)
 }

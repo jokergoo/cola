@@ -1,10 +1,10 @@
 \name{register_SOM}
 \alias{register_SOM}
 \title{
-Register SOM partition method
+Register SOM partitioning method
 }
 \description{
-Register SOM partition method
+Register SOM partitioning method
 }
 \usage{
 register_SOM()

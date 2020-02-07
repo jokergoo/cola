@@ -144,22 +144,22 @@
     </tr>
     <tr>
       <th>k</th>
-      <td><p>Number of partitions.</p></td>
+      <td><p>Number of subgroups.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The membership matrix (the probability of each sample to be in one group, if assuming columns represent samples) is inferred
+    <p>The membership matrix (the probability of each sample to be in one subgroup, if assuming columns represent samples) is inferred
 from the consensus partition of every combination of methods, weighted by the mean silhouette score of the partition
-for each method. So methods which give instable partitions have lower weights 
+for each method. So methods which give unstable partitions have lower weights 
 when summarizing membership matrix from all methods.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A membership matrix where rows correspond to the columns in the original matrix.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='get_membership-ConsensusPartition-method.html'>get_membership,ConsensusPartition-method</a></code> returns membership matrix for a single top-value method and partition method.</p></div>
+    <div class='dont-index'><p><code><a href='get_membership-ConsensusPartition-method.html'>get_membership,ConsensusPartition-method</a></code> returns membership matrix for a single top-value method and partitioning method.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)

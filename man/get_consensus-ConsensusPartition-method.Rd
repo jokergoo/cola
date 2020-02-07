@@ -13,7 +13,7 @@ Get consensus matrix
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{Number of partitions.}
+  \item{k}{Number of subgroups.}
 
 }
 \details{
@@ -28,6 +28,6 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rl)
-obj = cola_rl["sd", "kmeans"]
+obj = cola_rl["SD", "kmeans"]
 get_consensus(obj, k = 2)
 }

@@ -52,7 +52,7 @@ Supplementary for the *cola* manuscript is at https://jokergoo.github.io/cola_su
 
 <img width="700" src="https://user-images.githubusercontent.com/449218/52628723-86af3400-2eb8-11e9-968d-b7f47a408818.png" />
 
-The steps of consensus partition is:
+The steps of consensus partitioning is:
 
 1. Clean the input matrix. The processing are: adjusting outliers, imputing missing
    values and removing rows with very small variance. This step is optional.
@@ -84,7 +84,7 @@ Three lines of code to perfrom *cola* analysis:
 mat = adjust_matrix(mat) # optional
 rl = run_all_consensus_partition_methods(
     mat, 
-    top_value_method = c("sd", "MAD", ...),
+    top_value_method = c("SD", "MAD", ...),
     partition_method = c("hclust", "kmeans", ...),
     mc.cores = ...)
 cola_report(rl, output_dir = ...)

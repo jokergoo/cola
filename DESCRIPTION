@@ -1,8 +1,8 @@
 Package: cola
 Type: Package
 Title: A Framework for Consensus Partitioning
-Version: 1.3.3
-Date: 2019-12-31
+Version: 1.3.4
+Date: 2020-02-06
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.6.0)
@@ -63,9 +63,9 @@ Description: Subgroup classification is a basic task in
   consensus partitioning processes that various methods can be easily
   integrated. 2. It provides rich visualizations for interpreting the results.
   3. It allows running multiple methods at the same time and provides
-  functionalities to compare results straightforwardly. 4. It provides a new
+  functionalities to straightforward compare results. 4. It provides a new
   method to extract features which are more efficient to separate subgroups. 5.
-  It generates detailed reports for the complete analysis.
+  It automatically generates detailed reports for the complete analysis.
 URL: https://github.com/jokergoo/cola, 
      https://jokergoo.github.io/cola_collection/
 VignetteBuilder: knitr

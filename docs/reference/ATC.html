@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ability to correlate other rows in the matrix — ATC • cola</title>
+<title>Ability to correlate to other rows — ATC • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Ability to correlate other rows in the matrix — ATC" />
-<meta property="og:description" content="Ability to correlate other rows in the matrix" />
+<meta property="og:title" content="Ability to correlate to other rows — ATC" />
+<meta property="og:description" content="Ability to correlate to other rows" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,13 +123,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Ability to correlate other rows in the matrix</h1>
+    <h1>Ability to correlate to other rows</h1>
     
     <div class="hidden name"><code>ATC.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Ability to correlate other rows in the matrix</p>
+    <p>Ability to correlate to other rows</p>
     </div>
 
     <pre class="usage"><span class='fu'>ATC</span>(<span class='no'>mat</span>, <span class='kw'>cor_fun</span> <span class='kw'>=</span> <span class='kw pkg'>stat</span><span class='kw ns'>::</span><span class='no'>cor</span>, <span class='kw'>min_cor</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>power</span> <span class='kw'>=</span> <span class='fl'>1</span>,
@@ -156,7 +156,7 @@
     </tr>
     <tr>
       <th>mc.cores</th>
-      <td><p>Mumber of cores.</p></td>
+      <td><p>Number of cores.</p></td>
     </tr>
     <tr>
       <th>n_sampling</th>
@@ -168,7 +168,7 @@
     </tr>
     <tr>
       <th>group</th>
-      <td><p>A categorical variable. If it is specified, the correlation is only calcualted for the features in the same group.</p></td>
+      <td><p>A categorical variable. If it is specified, the correlation is only calculated for the rows in the same group as current row.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -195,6 +195,9 @@ the top-value method by:</p>
         "ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor)
     )  </pre>
 
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><a href='https://jokergoo.github.io/cola_supplementary/suppl_1_ATC/suppl_1_ATC.html'>https://jokergoo.github.io/cola_supplementary/suppl_1_ATC/suppl_1_ATC.html</a></p></div>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A vector of numeric values with the same order as rows in the input matrix.</p>
@@ -221,6 +224,7 @@ the top-value method by:</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#details">Details</a></li>
+      <li><a href="#see-also">See also</a></li>
       <li><a href="#value">Value</a></li>
       <li><a href="#examples">Examples</a></li>
     </ul>

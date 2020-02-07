@@ -1,10 +1,10 @@
 \name{register_NMF}
 \alias{register_NMF}
 \title{
-Register NMF partition method
+Register NMF partitioning method
 }
 \description{
-Register NMF partition method
+Register NMF partitioning method
 }
 \usage{
 register_NMF()

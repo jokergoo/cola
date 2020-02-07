@@ -9,13 +9,13 @@
 # -top_n Number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
 #        the function only randomly sample 5000 rows from top n rows. If ``top_n`` is a vector, paritition
 #        will be applied to every values in ``top_n`` and consensus partition is summarized from all partitions.
-# -partition_method A single partition method. Available methods are in `all_partition_methods`.
+# -partition_method A single partitioning method. Available methods are in `all_partition_methods`.
 #                   Use `register_partition_methods` to add a new partition method.
-# -max_k Maximal number of partitions to try. The function will try ``2:max_k`` partitions.
+# -max_k Maximal number of subgroups to try. The function will try for ``2:max_k`` subgroups
 # -sample_by Should randomly sample the matrix by rows or by columns?
 # -p_sampling Proportion of the submatrix which contains the top n rows to sample.
 # -partition_repeat Number of repeats for the random sampling.
-# -partition_param Parameters for the partition method which are passed to ``...`` in a registered partition method. See `register_partition_methods` for detail.
+# -partition_param Parameters for the partition method which are passed to ``...`` in a registered partitioning method. See `register_partition_methods` for detail.
 # -anno A data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation
 #       to predicted subgroups will be tested.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
@@ -31,15 +31,15 @@
 # - calculate scores for rows by top-value method,
 # - for each top_n value, take top n rows,
 # - randomly sample ``p_sampling`` rows from the top_n-row matrix and perform partitioning for ``partition_repeats`` times,
-# - collect partitions from all partitions and calculate consensus partitions.
+# - collect partitions from all individual partitions and summarize a consensus partition.
 #
 # == return
 # A `ConsensusPartition-class` object. Simply type object in the interactive R session
 # to see which functions can be applied on it.
 #
 # == seealso
-# `run_all_consensus_partition_methods` runs consensus partition with multiple top-value methods
-# and multiple partition methods.
+# `run_all_consensus_partition_methods` runs consensus partitioning with multiple top-value methods
+# and multiple partitioning methods.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -572,14 +572,14 @@ setMethod(f = "show",
 })
 
 # == title
-# Plot the empirical cumulative distribution curve (ECDF) of the consensus matrix
+# Plot the empirical cumulative distribution curve (eCDF) of the consensus matrix
 #
 # == param
 # -object A `ConsensusPartition-class` object.
 # -... Other arguments.
 #
 # == details
-# It plots ECDF curve for each k.
+# It plots eCDF curve for each k.
 #
 # This function is mainly used in `collect_plots` and `select_partition_number` functions.
 #
@@ -594,7 +594,7 @@ setMethod(f = "show",
 #
 # == example
 # data(cola_rl)
-# plot_ecdf(cola_rl["sd", "hclust"])
+# plot_ecdf(cola_rl["SD", "hclust"])
 setMethod(f = "plot_ecdf",
 	signature = "ConsensusPartition",
 	definition = function(object, ...) {
@@ -616,7 +616,7 @@ setMethod(f = "plot_ecdf",
 })
 
 # == title
-# Several plots for determining the optimized number of partitions
+# Several plots for determining the optimized number of subgroups
 #
 # == param
 # -object A `ConsensusPartition-class` object.
@@ -625,7 +625,7 @@ setMethod(f = "plot_ecdf",
 # == details
 # There are following plots made:
 #
-# - ECDF of the consensus matrix under each k, made by `plot_ecdf,ConsensusPartition-method`,
+# - eCDF of the consensus matrix under each k, made by `plot_ecdf,ConsensusPartition-method`,
 # - `PAC` score,
 # - mean sihouette score,
 # - the `concordance` for each partition to the consensus partition,
@@ -641,7 +641,7 @@ setMethod(f = "plot_ecdf",
 #
 # == example
 # data(cola_rl)
-# select_partition_number(cola_rl["sd", "hclust"])
+# select_partition_number(cola_rl["SD", "hclust"])
 setMethod(f = "select_partition_number",
 	signature = "ConsensusPartition",
 	definition = function(object, all_stats = FALSE) {
@@ -680,7 +680,7 @@ If 1-PAC >= 0.90,
   take the maximum k;
 else take the k with higest votes of
   1. max 1-PAC,
-  2. max mean_silhouette,
+  2. max mean silhouette,
   3. max concordance.
 ", cex = 1.2, adj = c(0, 1))
 
@@ -695,7 +695,7 @@ else take the k with higest votes of
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 # -internal Used internally.
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
@@ -712,11 +712,11 @@ else take the k with higest votes of
 #
 # - probability of the sample to stay in the corresponding group
 # - silhouette scores which measure the distance of an item to the second closest subgroups.
-# - predicted classes.
+# - predicted subgroups
 # - consensus matrix.
 # - more annotations if provided as ``anno``
 #
-# One thing that is very important to note is that since we already know the consensus classes from consensus
+# One thing that is very important to note is that since we already know the consensus subgroups from consensus
 # partition, in the heatmap, only rows or columns within the group is clustered.
 #
 # == value
@@ -730,7 +730,7 @@ else take the k with higest votes of
 #
 # == example
 # data(cola_rl)
-# consensus_heatmap(cola_rl["sd", "hclust"], k = 3)
+# consensus_heatmap(cola_rl["SD", "hclust"], k = 3)
 setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
@@ -802,7 +802,7 @@ setMethod(f = "consensus_heatmap",
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 # -internal Used internally.
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
@@ -824,7 +824,7 @@ setMethod(f = "consensus_heatmap",
 #
 # == example
 # data(cola_rl)
-# membership_heatmap(cola_rl["sd", "hclust"], k = 3)
+# membership_heatmap(cola_rl["SD", "hclust"], k = 3)
 setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE, 
@@ -919,7 +919,7 @@ setMethod(f = "membership_heatmap",
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -k Number of partitions.
+# -k Number of subgroups.
 # -top_n Top n rows to use. By default it uses all rows in the original matrix.
 # -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
@@ -943,7 +943,7 @@ setMethod(f = "membership_heatmap",
 #
 # == example
 # data(cola_rl)
-# dimension_reduction(cola_rl["sd", "kmeans"], k = 3)
+# dimension_reduction(cola_rl["SD", "kmeans"], k = 3)
 setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,

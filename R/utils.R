@@ -18,8 +18,9 @@ if(!exists("strrep")) {
 # == details
 # In partitions, the exact value of the class label is not of importance. E.g. for two partitions
 # ``a, a, a, b, b, b, b`` and ``b, b, b, a, a, a, a``, they are the same partitions although the labels
-# of ``a`` and ``b`` are switched in the two partitions. Here `relabel_class` function switches the labels
-# in ``class`` vector according to the labels in ``ref`` vector to maximize ``sum(class == ref)``.
+# of ``a`` and ``b`` are switched in the two partitions. Even the partition ``c, c, c, d, d, d, d``
+# is the same as the previous two although it uses a different set of labels. Here `relabel_class` function relabels
+# ``class`` vector according to the labels in ``ref`` vector by looking for a mapping ``m()`` to maximize ``sum(m(class) == ref)``.
 #
 # Mathematically, this is called linear sum assignment problem and it is solved by `clue::solve_LSAP`.
 #
@@ -120,11 +121,11 @@ column_order_by_group = function(factor, mat) {
 #
 # == param
 # -x A numeric vector.
-# -q Quantile to adjust.
+# -q Percentile to adjust.
 # 
 # == details
-# Vaules larger than quantile ``1 - q`` are adjusted to the ``1 - q`` quantile and 
-# values smaller than quantile ``q`` are adjusted to the ``q`` quantile.
+# Vaules larger than percentile ``1 - q`` are adjusted to the ``1 - q`` percentile and 
+# values smaller than percentile ``q`` are adjusted to the ``q`` percentile
 #
 # == value
 # A numeric vector with same length as the original one.

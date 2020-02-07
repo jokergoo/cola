@@ -53,13 +53,13 @@ mat = get_matrix(res)
 dim(mat)
 ```
 
-Top value method used:
+Top-value method used:
 
 ```{r}
 res@top_value_method
 ```
 
-Partition method used:
+Partitioning method used:
 
 ```{r}
 res@partition_method
