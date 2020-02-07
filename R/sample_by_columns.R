@@ -26,6 +26,7 @@ cl_membership2 = function(x, k) {
 .stochastify = getFromNamespace(".stochastify", ns = "clue")
 .cl_membership_from_memberships = getFromNamespace(".cl_membership_from_memberships", ns = "clue")
 
+# modified from clue:::.cl_consensus_partition_AOS
 cl_consensus2 = function(clusterings, k_max) {
     n <- n_of_objects(clusterings)
 
