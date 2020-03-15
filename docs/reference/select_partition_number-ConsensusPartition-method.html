@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Several plots for determining the optimized number of partitions — select_partition_number-ConsensusPartition-method • cola</title>
+<title>Several plots for determining the optimized number of subgroups — select_partition_number-ConsensusPartition-method • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Several plots for determining the optimized number of partitions — select_partition_number-ConsensusPartition-method" />
-<meta property="og:description" content="Several plots for determining the optimized number of partitions" />
+<meta property="og:title" content="Several plots for determining the optimized number of subgroups — select_partition_number-ConsensusPartition-method" />
+<meta property="og:description" content="Several plots for determining the optimized number of subgroups" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
       </span>
     </div>
 
@@ -123,13 +123,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Several plots for determining the optimized number of partitions</h1>
+    <h1>Several plots for determining the optimized number of subgroups</h1>
     
     <div class="hidden name"><code>select_partition_number-ConsensusPartition-method.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Several plots for determining the optimized number of partitions</p>
+    <p>Several plots for determining the optimized number of subgroups</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
@@ -152,7 +152,7 @@
 
     <p>There are following plots made:</p>
 <ul>
-<li><p>ECDF of the consensus matrix under each k, made by <code><a href='plot_ecdf-ConsensusPartition-method.html'>plot_ecdf,ConsensusPartition-method</a></code>,</p></li>
+<li><p>eCDF of the consensus matrix under each k, made by <code><a href='plot_ecdf-ConsensusPartition-method.html'>plot_ecdf,ConsensusPartition-method</a></code>,</p></li>
 <li><p><code><a href='PAC.html'>PAC</a></code> score,</p></li>
 <li><p>mean sihouette score,</p></li>
 <li><p>the <code><a href='concordance.html'>concordance</a></code> for each partition to the consensus partition,</p></li>
@@ -167,7 +167,7 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='fu'>select_partition_number</span>(<span class='no'>cola_rl</span>[<span class='st'>"sd"</span>, <span class='st'>"hclust"</span>])</div><div class='img'><img src='select_partition_number-ConsensusPartition-method-1.png' alt='' width='700' height='433' /></div></pre>
+<span class='fu'>select_partition_number</span>(<span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"hclust"</span>])</div><div class='img'><img src='select_partition_number-ConsensusPartition-method-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

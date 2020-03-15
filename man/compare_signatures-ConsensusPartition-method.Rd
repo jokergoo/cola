@@ -13,7 +13,7 @@ Compare Signatures from Different k
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object. }
-  \item{k}{Number of partitions. Value should be a vector.}
+  \item{k}{Number of subgroups. Value should be a vector.}
   \item{...}{Other arguments passed to \code{\link{get_signatures,ConsensusPartition-method}}.}
 
 }

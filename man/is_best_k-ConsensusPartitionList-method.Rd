@@ -13,7 +13,7 @@ Test whether the current k is the best/optional k
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
   \item{k}{Number of subgroups.}
-  \item{...}{Pass to \code{\link{suggest_best_k,ConsensusPartitionList-method}}}
+  \item{...}{Pass to \code{\link{suggest_best_k,ConsensusPartitionList-method}}.}
 
 }
 \value{

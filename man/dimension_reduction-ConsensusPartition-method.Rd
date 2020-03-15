@@ -17,7 +17,7 @@ Visualize samples (the matrix columns) after dimension reduction
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{Number of partitions.}
+  \item{k}{Number of subgroups.}
   \item{top_n}{Top n rows to use. By default it uses all rows in the original matrix.}
   \item{method}{Which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}. \code{t-SNE} uses \code{\link[Rtsne]{Rtsne}}. \code{UMAP} uses \code{\link[umap]{umap}}.}
   \item{control}{A list of parameters for \code{\link[Rtsne]{Rtsne}} or \code{\link[umap]{umap}}.}
@@ -38,5 +38,5 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rl)
-dimension_reduction(cola_rl["sd", "kmeans"], k = 3)
+dimension_reduction(cola_rl["SD", "kmeans"], k = 3)
 }

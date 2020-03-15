@@ -47,7 +47,7 @@ message("* generating plots for <%=top_value_method%>:<%=partition_method%> (<%=
 <% } -%>
 
 <% if(!single_report) { %>
-The object with results only for a single top-value method and a single partition method 
+The object with results only for a single top-value method and a single partitioning method 
 can be extracted as:
 
 ```{r <%=chunk_prefix%>-rename}
@@ -67,7 +67,7 @@ A summary of `res` and all the functions that can be applied to it:
 res
 ```
 
-`collect_plots()` function collects all the plots made from `res` for all `k` (number of partitions)
+`collect_plots()` function collects all the plots made from `res` for all `k` (number of subgroups)
 into one single page to provide an easy and fast comparison between different `k`.
 
 <% if(mc.cores == 1) { -%>
@@ -88,7 +88,7 @@ collect_plots(res)
 
 The plots are:
 
-- The first row: a plot of the ECDF (empirical cumulative distribution
+- The first row: a plot of the eCDF (empirical cumulative distribution
   function) curves of the consensus matrix for each `k` and the heatmap of
   predicted classes for each `k`.
 - The second row: heatmaps of the consensus matrix for each `k`.
@@ -101,14 +101,13 @@ plotted later in this section.
 `select_partition_number()` produces several plots showing different
 statistics for choosing "optimized" `k`. There are following statistics:
 
-- ECDF curves of the consensus matrix for each `k`;
-- 1-PAC. [The PAC
-  score](https://en.wikipedia.org/wiki/Consensus_clustering#Over-interpretation_potential_of_consensus_clustering)
+- eCDF curves of the consensus matrix for each `k`;
+- 1-PAC. [The PAC score](https://en.wikipedia.org/wiki/Consensus_clustering#Over-interpretation_potential_of_consensus_clustering)
   measures the proportion of the ambiguous subgrouping.
 - Mean silhouette score.
-- Concordance. The mean probability of fiting the consensus class ids in all
+- Concordance. The mean probability of fiting the consensus subgroup labels in all
   partitions.
-- Area increased. Denote $A_k$ as the area under the ECDF curve for current
+- Area increased. Denote $A_k$ as the area under the eCDF curve for current
   `k`, the area increased is defined as $A_k - A_{k-1}$.
 - Rand index. The percent of pairs of samples that are both in a same cluster
   or both are not in a same cluster in the partition of k and k-1.
@@ -119,7 +118,7 @@ statistics for choosing "optimized" `k`. There are following statistics:
 The detailed explanations of these statistics can be found in [the _cola_
 vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13).
 
-Generally speaking, lower PAC score, higher mean silhouette score or higher
+Generally speaking, higher 1-PAC score, higher mean silhouette score or higher
 concordance corresponds to better partition. Rand index and Jaccard index
 measure how similar the current partition is compared to partition with `k-1`.
 If they are too similar, we won't accept `k` is better than `k-1`.
@@ -163,12 +162,12 @@ opt_k = gsub(",", ", ", opt_k) -%>
 There is also optional best $k$ = <%=opt_k%> that is worth to check.
 <% } -%>
 
-Following shows the table of the partitions (You need to click the **show/hide
+Following is the table of the partitions (You need to click the **show/hide
 code output** link to see it). The membership matrix (columns with name `p*`)
 is inferred by
 [`clue::cl_consensus()`](https://www.rdocumentation.org/link/cl_consensus?package=clue)
 function with the `SE` method. Basically the value in the membership matrix
-represents the probability to belong to a certain group. The finall class
+represents the probability to belong to a certain group. The finall subgroup
 label for an item is determined with the group with highest probability it
 belongs to.
 
@@ -217,9 +216,9 @@ knitr_add_tab_item('membership_heatmap(res, k = <%=k%>)', 'k = <%=k%>', prefix =
 knitr_insert_tabs('<%=chunk_prefix%>-membership-heatmap')
 ```
 
-As soon as we have had the classes for columns, we can look for signatures
-which are significantly different between classes which can be candidate marks
-for certain classes. Following are the heatmaps for signatures.
+As soon as the classes for columns are determined, the signatures
+that are significantly different between subgroups can be looked for. 
+Following are the heatmaps for signatures.
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message5, echo = FALSE, message = FALSE}
@@ -258,7 +257,7 @@ Compare the overlap of signatures from different k:
 compare_signatures(res)
 ```
 
-`get_signature()` returns a data frame invisibly. TO get the list of signatures, the function
+`get_signature()` returns a data frame invisibly. To get the list of signatures, the function
 call should be assigned to a variable explicitly. In following code, if `plot` argument is set
 to `FALSE`, no heatmap is plotted while only the differential analysis is performed.
 
@@ -286,7 +285,7 @@ The columns in `tb` are:
 2. `fdr`: FDR for the differential test. 
 3. `mean_x`: The mean value in group x.
 4. `scaled_mean_x`: The mean value in group x after rows are scaled.
-5. `km`: Row groups if k-means clustering is applied to rows.
+5. `km`: Row groups if k-means clustering is applied to rows (which is done by automatically selecting number of clusters).
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}

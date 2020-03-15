@@ -1,10 +1,10 @@
 \name{get_stats-ConsensusPartition-method}
 \alias{get_stats,ConsensusPartition-method}
 \title{
-Get statistics for the consensus partition
+Get statistics
 }
 \description{
-Get statistics for the consensus partition
+Get statistics
 }
 \usage{
 \S4method{get_stats}{ConsensusPartition}(object, k = object@k, all_stats = FALSE)
@@ -12,7 +12,7 @@ Get statistics for the consensus partition
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{Number of partitions. The value can be a vector.}
+  \item{k}{Number of subgroups. The value can be a vector.}
   \item{all_stats}{Whether to show all statistics that were calculated. Used internally.}
 
 }
@@ -20,12 +20,12 @@ Get statistics for the consensus partition
 The statistics are:
 
 \describe{
-  \item{PAC}{proportion of ambiguous clustering, calculated by \code{\link{PAC}}.}
-  \item{mean_silhouette}{the mean silhouette score. See \url{https://en.wikipedia.org/wiki/Silhouette_(clustering)} .}
-  \item{concordance}{the mean probability that each partition fits the consensus partition, calculated by \code{\link{concordance}}.}
-  \item{area_increased}{the increased area under ECDF (the empirical cumulative distribution function curve) to the previous k.}
+  \item{1-PAC}{1 - proportion of ambiguous clustering, calculated by \code{\link{PAC}}.}
+  \item{mean_silhouette}{The mean silhouette score. See \url{https://en.wikipedia.org/wiki/Silhouette_(clustering)} .}
+  \item{concordance}{The mean probability that each partition fits the consensus partition, calculated by \code{\link{concordance}}.}
+  \item{area_increased}{The increased area under eCDF (the empirical cumulative distribution function curve) to the previous k.}
   \item{Rand}{the Rand index which is the percent of pairs of samples that are both in a same cluster or both are not  in a same cluster in the partition of \code{k} and \code{k-1}. See \url{https://en.wikipedia.org/wiki/Rand_index} .}
-  \item{Jaccard}{the ratio of pairs of samples are both in a same cluster in the partition of \code{k} and \code{k-1} and the pairs of samples are both in a same cluster in the partition \code{k} or \code{k-1}.}
+  \item{Jaccard}{The ratio of pairs of samples are both in a same cluster in the partition of \code{k} and \code{k-1} and the pairs of samples are both in a same cluster in the partition \code{k} or \code{k-1}.}
 }
 }
 \value{
@@ -36,7 +36,7 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rl)
-obj = cola_rl["sd", "kmeans"]
+obj = cola_rl["SD", "kmeans"]
 get_stats(obj)
 get_stats(obj, k = 2)
 }

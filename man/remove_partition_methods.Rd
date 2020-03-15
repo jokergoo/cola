@@ -1,17 +1,17 @@
 \name{remove_partition_methods}
 \alias{remove_partition_methods}
 \title{
-Remove partition methods
+Remove partitioning methods
 }
 \description{
-Remove partition methods
+Remove partitioning methods
 }
 \usage{
 remove_partition_methods(method)
 }
 \arguments{
 
-  \item{method}{Name of the partition methods to be removed.}
+  \item{method}{Name of the partitioning methods to be removed.}
 
 }
 \value{

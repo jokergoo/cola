@@ -13,7 +13,7 @@ Test correspondance between predicted classes and known factors
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
-  \item{k}{Number of partitions. It uses all \code{k} if it is not set.}
+  \item{k}{Number of subgroups. It uses all \code{k} if it is not set.}
   \item{known}{A vector or a data frame with known factors. By default it is the annotation table set in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
   \item{silhouette_cutoff}{Cutoff for sihouette scores. Samples with value less than this are omit.}
   \item{verbose}{Whether to print messages.}
@@ -24,12 +24,12 @@ The function basically sends each \code{\link{ConsensusPartition-class}} object 
 \code{\link{test_to_known_factors,ConsensusPartition-method}} and merges results afterwards.
 }
 \value{
-A data frame with columns:
+A data frame with the following columns:
 
 \itemize{
-  \item number of samples used to test after filtered by \code{silhouette_cutoff}
-  \item p-values from the tests
-  \item number of partitions
+  \item number of samples used to test after filtered by \code{silhouette_cutoff},
+  \item p-values from the tests,
+  \item number of subgroups.
 }
 }
 \seealso{

@@ -19,20 +19,20 @@ correspond_between_two_rankings(x1, x2, name1, name2,
   \item{name2}{Name of the second metric.}
   \item{col1}{Color for the first metric.}
   \item{col2}{Color for the second metric.}
-  \item{top_n}{Top n elements to show correspondance.}
-  \item{transparency}{Transparency of the connection lines.}
-  \item{pt_size}{Size of the points, must be a \code{\link[grid]{unit}} object}
+  \item{top_n}{Top n elements to show the correspondance.}
+  \item{transparency}{Transparency of the connecting lines.}
+  \item{pt_size}{Size of the points, must be a \code{\link[grid]{unit}} object.}
   \item{newpage}{Whether to plot in a new graphic page.}
   \item{ratio}{Ratio of width of the left barplot, connection lines and right barplot. The three values will be scaled to a sum of 1.}
 
 }
 \details{
-In \code{x1} and \code{x2}, the i^{th} element is the same object (e.g. same row if they are calculated from a matrix) but with different 
+In \code{x1} and \code{x2}, the i^th element in both vectors corresponds to the same object (e.g. same row if they are calculated from a matrix) but with different 
 scores under different metrics.
 
-\code{x1} and \code{x2} are sorted in the left panel and right panel. The top n elements
-under corresponding metric are highlighted by vertical color lines in both panels.
-The left and right panels also show as barplots of the scores in the two metrics.
+\code{x1} and \code{x2} are sorted in the left panel and right panel respectively. The top n elements
+under corresponding metric are highlighted by vertical colored lines in both panels.
+The left and right panels also shown as barplots of the scores in the two metrics.
 Between the left and right panels, there are lines connecting the same element (e.g. i^th element in \code{x1} and \code{x2})
 in the two ordered vectors so that you can see how a same element has two different ranks in the two metrics.
 
@@ -50,5 +50,5 @@ require(matrixStats)
 mat = matrix(runif(1000), ncol = 10)
 x1 = rowSds(mat)
 x2 = rowMads(mat)
-correspond_between_two_rankings(x1, x2, name1 = "sd", name2 = "mad", top_n = 20)
+correspond_between_two_rankings(x1, x2, name1 = "SD", name2 = "MAD", top_n = 20)
 }

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Consensus partition for all combinations of methods — run_all_consensus_partition_methods • cola</title>
+<title>Consensus partitioning for all combinations of methods — run_all_consensus_partition_methods • cola</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Consensus partition for all combinations of methods — run_all_consensus_partition_methods" />
-<meta property="og:description" content="Consensus partition for all combinations of methods" />
+<meta property="og:title" content="Consensus partitioning for all combinations of methods — run_all_consensus_partition_methods" />
+<meta property="og:description" content="Consensus partitioning for all combinations of methods" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
       </span>
     </div>
 
@@ -123,13 +123,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Consensus partition for all combinations of methods</h1>
+    <h1>Consensus partitioning for all combinations of methods</h1>
     
     <div class="hidden name"><code>run_all_consensus_partition_methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Consensus partition for all combinations of methods</p>
+    <p>Consensus partitioning for all combinations of methods</p>
     </div>
 
     <pre class="usage"><span class='fu'>run_all_consensus_partition_methods</span>(<span class='no'>data</span>,
@@ -156,11 +156,11 @@
     </tr>
     <tr>
       <th>partition_method</th>
-      <td><p>Method which are used to do partition on samples.  Allowed methods are in <code><a href='all_partition_methods.html'>all_partition_methods</a></code> and can be self-added  by <code><a href='register_partition_methods.html'>register_partition_methods</a></code>.</p></td>
+      <td><p>Method which are used to partition samples.  Allowed methods are in <code><a href='all_partition_methods.html'>all_partition_methods</a></code> and can be self-added  by <code><a href='register_partition_methods.html'>register_partition_methods</a></code>.</p></td>
     </tr>
     <tr>
       <th>max_k</th>
-      <td><p>Maximal number of partitions to try. The function will try <code>2:max_k</code> partitions.</p></td>
+      <td><p>Maximal number of subgroups to try. The function will try <code>2:max_k</code> subgroups.</p></td>
     </tr>
     <tr>
       <th>top_n</th>
@@ -202,8 +202,8 @@
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The function runs consensus partitioning by <code><a href='consensus_partition.html'>consensus_partition</a></code> for all combinations of top-value methods and partition methods.</p>
-<p>It also adjsuts the class IDs for all methods and for all k to make them as consistent as possible.</p>
+    <p>The function performs consensus partitioning by <code><a href='consensus_partition.html'>consensus_partition</a></code> for all combinations of top-value methods and partitioning methods.</p>
+<p>It also adjsuts the subgroup labels for all methods and for all k to make them as consistent as possible.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A <code><a href='ConsensusPartitionList-class.html'>ConsensusPartitionList-class</a></code> object. Simply type object in the interactive R session
@@ -222,7 +222,7 @@ to see which functions can be applied on it.</p>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
 <span class='no'>cola_rl</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 20 methods.
 #&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows are extracted by 'sd, cv, MAD, ATC' methods.
+#&gt;   Top rows are extracted by 'SD, CV, MAD, ATC' methods.
 #&gt;   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
 #&gt;   Performed in total 15000 partitions by row resampling.
@@ -237,8 +237,8 @@ to see which functions can be applied on it.</p>
 #&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
-#&gt; You can get result for a single method by, e.g. object["sd", "hclust"] or object["sd:hclust"]
-#&gt; or a subset of methods by object[c("sd", "cv")], c("hclust", "kmeans")]</div></pre>
+#&gt; You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
+#&gt; or a subset of methods by object[c("SD", "CV")], c("hclust", "kmeans")]</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

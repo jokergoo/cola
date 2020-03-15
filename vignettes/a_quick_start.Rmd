@@ -40,10 +40,11 @@ In above code, there are three steps:
 
 1. Adjust the matrix. In this step, rows with too many `NA`s are removed. Rows
    with very low variance are removed. `NA` values are imputed if there are
-   not too many in each row. Outliers are adjusted in each row. This step is
-   partition methods are `hclust` (hierarchical clustering with cutree),
+   less than 50% in each row. Outliers are adjusted in each row.
+2. Run consensus partitioning with several methods.
+   Partitioning methods are `hclust` (hierarchical clustering with cutree),
    `kmeans` (k-means clustering), `skmeans::skmeans` (spherical k-means
-   clustering), `cluster::pam` (partitioning around medoids clustering) and
+   clustering), `cluster::pam` (partitioning around medoids) and
    `Mclust::mclust` (model-based clustering). The default methods to extract
    top n rows are `SD` (standard deviation), `CV` (coefficient of variation),
    `MAD` (median absolute deviation) and `ATC` (ability to correlate to other

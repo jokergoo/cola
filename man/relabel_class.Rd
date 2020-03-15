@@ -20,8 +20,9 @@ relabel_class(class, ref, full_set = union(class, ref), return_map = TRUE)
 \details{
 In partitions, the exact value of the class label is not of importance. E.g. for two partitions
 \code{a, a, a, b, b, b, b} and \code{b, b, b, a, a, a, a}, they are the same partitions although the labels
-of \code{a} and \code{b} are switched in the two partitions. Here \code{\link{relabel_class}} function switches the labels
-in \code{class} vector according to the labels in \code{ref} vector to maximize \code{sum(class == ref)}.
+of \code{a} and \code{b} are switched in the two partitions. Even the partition \code{c, c, c, d, d, d, d}
+is the same as the previous two although it uses a different set of labels. Here \code{\link{relabel_class}} function relabels
+\code{class} vector according to the labels in \code{ref} vector by looking for a mapping \code{m()} to maximize \code{sum(m(class) == ref)}.
 
 Mathematically, this is called linear sum assignment problem and it is solved by \code{\link[clue]{solve_LSAP}}.
 }

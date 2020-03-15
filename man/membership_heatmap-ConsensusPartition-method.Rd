@@ -15,7 +15,7 @@ Heatmap of membership in each partition
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{k}{Number of partitions.}
+  \item{k}{Number of subgroups.}
   \item{internal}{Used internally.}
   \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
@@ -36,5 +36,5 @@ Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
 data(cola_rl)
-membership_heatmap(cola_rl["sd", "hclust"], k = 3)
+membership_heatmap(cola_rl["SD", "hclust"], k = 3)
 }
