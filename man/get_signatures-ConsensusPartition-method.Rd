@@ -1,6 +1,5 @@
 \name{get_signatures-ConsensusPartition-method}
 \alias{get_signatures,ConsensusPartition-method}
-\alias{get_signatures}
 \title{
 Get signature rows
 }

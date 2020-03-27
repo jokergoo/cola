@@ -1,3 +1,6 @@
+Changes in version 1.3.5
++ support hierarchical consensus partitioning
+
 Changes in version 1.3.2
 + add a new vignette introducing functional enrichment
 

@@ -1,8 +1,8 @@
 Package: cola
 Type: Package
-Title: A Framework for Consensus Partitioning
-Version: 1.3.4
-Date: 2020-02-06
+Title: A Framework for Consensus Partitioning and Hierarchical Partitioning
+Version: 1.3.5
+Date: 2020-03-27
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.6.0)
@@ -11,7 +11,7 @@ Imports: grDevices,
          grid, 
          stats, 
          utils,
-         ComplexHeatmap (>= 2.0.0), 
+         ComplexHeatmap (>= 2.3.3), 
          matrixStats, 
          GetoptLong, 
          circlize (>= 0.4.7), 
@@ -65,7 +65,9 @@ Description: Subgroup classification is a basic task in
   3. It allows running multiple methods at the same time and provides
   functionalities to straightforward compare results. 4. It provides a new
   method to extract features which are more efficient to separate subgroups. 5.
-  It automatically generates detailed reports for the complete analysis.
+  It automatically generates detailed reports for the complete analysis. From
+  version 1.3.2, cola also supports applying consensus partitioning in a
+  hierarchical way.
 URL: https://github.com/jokergoo/cola, 
      https://jokergoo.github.io/cola_collection/
 VignetteBuilder: knitr

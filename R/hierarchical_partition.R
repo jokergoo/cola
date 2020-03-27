@@ -11,7 +11,7 @@
 # -`hierarchical_partition`: constructor method.
 # -`collect_classes,HierarchicalPartition-method`: plot the hierarchy of subgroups predicted.
 # -`get_classes,HierarchicalPartition-method`: get the class IDs of subgroups.
-# -`guess_best_k,HierarchicalPartition-method`: guess the best number of partitions for each node.
+# -`suggest_best_k,HierarchicalPartition-method`: guess the best number of partitions for each node.
 # -`get_matrix,HierarchicalPartition-method`: get the original matrix.
 # -`get_signatures,HierarchicalPartition-method`: get the signatures for each subgroup.
 # -`dimension_reduction,HierarchicalPartition-method`: make dimension reduction plots.
@@ -77,8 +77,13 @@ hierarchical_partition = function(data,
 	.hierarchical_partition = function(.env, column_index, node_id = '0', 
 		min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
-		if(verbose) cat("=========================================================\n")
-		if(verbose) qqcat("* submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
+		prefix = ""
+		if(node_id != "0") {
+			prefix = paste(rep("  ", nchar(node_id) - 1), collapse = "")
+		}
+
+		if(verbose) qqcat("@{prefix}=========================================================\n")
+		if(verbose) qqcat("@{prefix}* submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
 		## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
 	   	.env$all_top_value_list = NULL
 	   	.env$column_index = column_index  #note .env$column_index is only for passing to `consensus_partition()` function
@@ -90,7 +95,7 @@ hierarchical_partition = function(data,
 
 	    best_k = suggest_best_k(part)
 	    if(is.na(best_k)) {
-	    	if(verbose) qqcat("* Rand index is too high, no meaningful subgroups, stop.\n")
+	    	if(verbose) qqcat("@{prefix}* Rand index is too high, no meaningful subgroups, stop.\n")
 	    	return(lt)
 	    }
 	    cl = get_classes(part, k = best_k)
@@ -100,24 +105,24 @@ hierarchical_partition = function(data,
 	    	mat = t(scale(t(mat)))
 	    }
 	    mat = mat[order(.env$all_top_value_list[[1]], decreasing = TRUE), , drop = FALSE]
-	    s = farthest_subgroup(mat, cl$class, part@top_n)
+	    s = tightest_subgroup(mat, cl$class, part@top_n)
 	    set1 = which(cl$class == s)
 	    set2 = which(cl$class != s)
 	    .env$all_top_value_list = NULL
 
-	    if(verbose) qqcat("* best k = @{best_k}, the farthest subgroup: @{s}\n")
-		PAC_score = get_stats(part, k = best_k)[, "PAC"]
+	    if(verbose) qqcat("@{prefix}* best k = @{best_k}, the tightest subgroup: @{s}\n")
+		PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
 	    if(PAC_score > PAC_cutoff) {
-	    	if(verbose) qqcat("* PAC score is too big @{sprintf('%.2f', PAC_score)}, stop.\n")
+	    	if(verbose) qqcat("@{prefix}* PAC score is too big (@{sprintf('%.2f', PAC_score)}), stop.\n")
 	    	return(lt)
 	    }
 
     	if(length(set1) <= min_samples || length(set2) <= min_samples) {
-    		if(verbose) cat("* subgroups have too few columns, stop.\n")
+    		if(verbose) qqcat("@{prefix}* subgroups have too few columns, stop.\n")
     		return(lt)
     	}
 
-    	if(verbose) qqcat("* partitioned into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
+    	if(verbose) qqcat("@{prefix}* partition into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
     	# insert the two subgroups into the hierarchy
     	sub_node_1 = paste0(node_id, s)
     	sub_node_2 = paste0(node_id, "0")
@@ -171,7 +176,7 @@ hierarchical_partition = function(data,
 	hp = new("HierarchicalPartition")
 	hp@hierarchy = .e$hierarchy
 	hp@list = .e$lt
-	hp@best_k = sapply(.e$lt, guess_best_k)
+	hp@best_k = sapply(.e$lt, suggest_best_k)
 	leaves = all_leaves(hp)
 	subgroup = rep(NA, ncol(data))
 	for(le in leaves) {
@@ -321,7 +326,7 @@ tightest_subgroup = function(mat, subgroup, top_n) {
 		x = c(x, as.numeric(names(mean_dist[which.min(mean_dist)])))
 	}
 	tb = table(x)
-	as.numeric(names(which.max(tb)))
+	as.numeric(names(which.min(tb)))
 }
 
 
@@ -504,7 +509,7 @@ setMethod(f = "get_signatures",
 
 	sig_lt = list()
 	for(p in ap) {
-		best_k = guess_best_k(object[[p]])
+		best_k = suggest_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
 		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff, ...)
 		
@@ -662,12 +667,11 @@ setMethod(f = "collect_classes",
 	anno = get_anno(object[1]), anno_col = get_anno_col(object[1])) {
 
 	cl = get_classes(object, depth = depth)[, 1]
-
 	dend = calc_dend(object, depth = depth)
 
 	ht_list = Heatmap(cl, name = "Class", col = object@subgroup_col, width = unit(5, "mm"),
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
-		show_row_names = FALSE)
+		row_split = length(unique(cl)), show_row_names = FALSE, row_title = NULL)
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
 			anno_nm = deparse(substitute(anno))
@@ -861,7 +865,7 @@ setMethod(f = "dimension_reduction",
 			stop_wrap(qq("@{parent_node} has no children nodes."))
 		}
 		obj = object[parent_node]
-		dimension_reduction(obj, k = guess_best_k(obj), top_n = top_n, method = method,
+		dimension_reduction(obj, k = suggest_best_k(obj), top_n = top_n, method = method,
 			silhouette_cutoff = silhouette_cutoff, scale_rows = scale_rows)
 		legend(x = par("usr")[2], y = par("usr")[4], legend = qq("node @{parent_node}"))
 	}
@@ -1027,8 +1031,8 @@ setMethod(f = "get_anno_col",
 #
 # == example
 # data(cola_rh)
-# guess_best_k(cola_rh)
-setMethod(f = "guess_best_k",
+# suggest_best_k(cola_rh)
+setMethod(f = "suggest_best_k",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 
@@ -1039,7 +1043,7 @@ setMethod(f = "guess_best_k",
 	concordance = NULL
 	for(nm in names(object@list)) {
 		obj = object@list[[nm]]
-		best_k[nm] = guess_best_k(obj)
+		best_k[nm] = suggest_best_k(obj)
 		if(is.na(best_k[nm])) {
 			cophcor[nm] = NA
 			PAC[nm] = NA
