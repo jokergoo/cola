@@ -1,4 +1,3 @@
-setGeneric('guess_best_k', function(object, ...) standardGeneric('guess_best_k'))
 setGeneric('get_anno', function(object, ...) standardGeneric('get_anno'))
 setGeneric('collect_plots', function(object, ...) standardGeneric('collect_plots'))
 setGeneric('collect_classes', function(object, ...) standardGeneric('collect_classes'))
