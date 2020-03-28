@@ -1019,6 +1019,7 @@ setMethod(f = "get_anno_col",
 #
 # == param
 # -object a `HierarchicalPartition-class` object.
+# -jaccard_index_cutoff The cutoff for Jaccard index for comparing to previous k.
 #
 # == details
 # It basically gives the best k at each node.
@@ -1034,38 +1035,46 @@ setMethod(f = "get_anno_col",
 # suggest_best_k(cola_rh)
 setMethod(f = "suggest_best_k",
 	signature = "HierarchicalPartition",
-	definition = function(object) {
+	definition = function(object, jaccard_index_cutoff = 0.95) {
 
 	best_k = NULL
-	cophcor = NULL
-	PAC = NULL
+	stability = NULL
 	mean_silhouette = NULL
 	concordance = NULL
-	for(nm in names(object@list)) {
-		obj = object@list[[nm]]
-		best_k[nm] = suggest_best_k(obj)
-		if(is.na(best_k[nm])) {
-			cophcor[nm] = NA
-			PAC[nm] = NA
-			mean_silhouette[nm] = NA
-			concordance[nm] = NA
+	for(i in seq_along(object@list)) {
+		obj = object@list[[i]]
+		k = suggest_best_k(obj, jaccard_index_cutoff)
+		best_k[i] = k
+
+		if(is.na(best_k[i])) {
+			stability[i] = NA
+			mean_silhouette[i] = NA
+			concordance[i] = NA
 		} else {
-			stat = get_stats(obj, k = best_k[nm])
-			cophcor[nm] = stat[1, "cophcor"]
-			PAC[nm] = stat[1, "PAC"]
-			mean_silhouette[nm] = stat[1, "mean_silhouette"]
-			concordance[nm] = stat[1, "concordance"]
+			stat = get_stats(obj, k = best_k[i])
+			stability[i] = stat[1, "1-PAC"]
+			mean_silhouette[i] = stat[1, "mean_silhouette"]
+			concordance[i] = stat[1, "concordance"]
 		}
 	}
-	tb = data.frame(best_k = best_k,
-		cophcor = cophcor,
-		PAC = PAC,
-		mean_silhouette = mean_silhouette,
-		concordance = concordance)
 
-	l = rownames(tb) %in% all_leaves(object)
-	tb = cbind(tb, ifelse(l, "leaf", "node"), stringsAsFactors = FALSE)
+	tb = data.frame(
+		node = names(object@list),
+		best_k = best_k,
+		"1-PAC" = stability,
+		mean_silhouette = mean_silhouette,
+		concordance = concordance,
+		check.names = FALSE)
+
+	rntb = rownames(tb)
+	l = tb$`1-PAC` >= 0.9 & !is.na(tb$best_k)
+
+	tb = cbind(tb, ifelse(l, ifelse(tb$`1-PAC` <= 0.95, "*", "**"), ""), stringsAsFactors = FALSE)
 	colnames(tb)[ncol(tb)] = ""
+	
+	# l = tb[, 1] %in% all_leaves(object)
+	# tb = cbind(tb, ifelse(l, "leaf", "node"), stringsAsFactors = FALSE)
+	# colnames(tb)[ncol(tb)] = ""
 
 	return(tb)
 })
@@ -1093,7 +1102,7 @@ setMethod(f = "suggest_best_k",
 #
 setMethod(f = "cola_report",
 	signature = "HierarchicalPartition",
-	definition = function(object, output_dir = getwd(), 
+	definition = function(object, output_dir = getwd(), mc.cores = 1,
 	title = qq("cola Report for Hierarchical Partitioning (@{object[1]@top_value_method}:@{object[1]@partition_method})"), 
 	env = parent.frame()) {
 
@@ -1109,7 +1118,7 @@ setMethod(f = "cola_report",
 		stop_wrap("You need to install data.tree package (from CRAN).")
 	}
 	var_name = deparse(substitute(object, env = env))
-	make_report(var_name, object, output_dir, mc.cores = 1, title = title, class = "HierarchicalPartition")
+	make_report(var_name, object, output_dir, mc.cores = mc.cores, title = title, class = "HierarchicalPartition")
 })
 
 
