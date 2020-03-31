@@ -124,6 +124,7 @@ hierarchical_partition = function(data,
 
     	if(verbose) qqcat("@{prefix}* partition into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
     	# insert the two subgroups into the hierarchy
+    	s = 1
     	sub_node_1 = paste0(node_id, s)
     	sub_node_2 = paste0(node_id, "0")
 
@@ -207,7 +208,7 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 		stop_wrap("You need to install data.tree package.")
 	}
 	lt = list()
-	lt[["0"]] = data.tree::Node$new("all samples")
+	lt[["0"]] = data.tree::Node$new("0")
 	cn = colnames(object@list[["0"]]@.env$data)
 	max_depth = max(nchar(hierarchy))
 	lt[["0"]]$node_height = max_depth - 1
@@ -219,7 +220,16 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 		})
 		l = hierarchy[, 1] == hierarchy[i, 2]
 	}
-	dend = as.dendrogram(lt[["0"]], heightAttribute = "node_height")
+	dend = as.dendrogram(lt[["0"]], heightAttribute = "node_height", edgetext = TRUE)
+
+	dend = edit_node(dend, function(d, index) {
+		if(is.leaf(d)) {
+			attr(d, "node_id") = attr(d, "label")
+		} else {
+			attr(d, "node_id") = attr(d, "edgetext")
+		}
+		d
+	})
 
 	od = structure(1:length(order.dendrogram(dend)), names = labels(dend))
 	dend_env = new.env()
@@ -308,7 +318,6 @@ calc_dend = function(object, depth = max_depth(object)) {
 		d
 	})
 	cd_list = cd_list[labels(pd)]
-
 
 	dend = merge_dendrogram(pd, cd_list)
 	dend = adjust_dend_by_x(dend)
@@ -708,6 +717,21 @@ setMethod(f = "collect_classes",
 		}
 	}
 	draw(ht_list)
+# browser()
+# 	decorate_row_dend("Class", {
+# 		dend_node_apply(dend, function(d) {
+# 			if(!is.null(attr(d, "node_id"))) {
+# 				x = attr(d, "x")
+# 				y = attr(d, "height")
+# 				node_id = attr(d, "node_id")
+# 				print(x)
+# 				print(y)
+# 				print(node_id)
+# 				grid.text(node_id, x, y, default.units = "native")
+# 			}
+# 			d
+# 		})
+# 	})
 })
 
 # == title
