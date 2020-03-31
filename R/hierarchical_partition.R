@@ -178,7 +178,7 @@ hierarchical_partition = function(data,
 	hp@list = .e$lt
 	hp@best_k = sapply(.e$lt, suggest_best_k)
 	leaves = all_leaves(hp)
-	subgroup = rep(NA, ncol(data))
+	subgroup = rep("0", ncol(data))
 	for(le in leaves) {
 		subgroup[ .e$lt[[le]]@column_index ] = le
 	}
@@ -195,6 +195,10 @@ hierarchical_partition = function(data,
 	hp@.env = hp@list[[1]]@.env
 
 	return(hp)
+}
+
+has_hierarchy = function(object) {
+	nrow(object@hierarchy) > 0
 }
 
 subgroup_dend = function(object, hierarchy = object@hierarchy) {
@@ -415,32 +419,38 @@ setMethod(f = "show",
 	qqcat("A 'HierarchicalPartition' object with '@{object@list[[1]]@top_value_method}:@{object@list[[1]]@partition_method}' method.\n")
 	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
 	qqcat("  Performed in total @{object@list[[1]]@n_partition*length(object@list)} partitions.\n")
-	qqcat("  There are @{length(all_leaves(object))} groups.\n")
+	if(has_hierarchy(object)) {
+		qqcat("  There are @{length(all_leaves(object))} groups.\n")
+	}
 	cat("\n")
 
-	cat("Hierarchy of the partition:\n")
-	hierarchy = object@hierarchy
-	nodes = hierarchy[, 2]
-	nc = nchar(nodes)
-	names(nc) = nodes
-	n = length(nc)
+	if(has_hierarchy(object)) {
+		cat("Hierarchy of the partition:\n")
+		hierarchy = object@hierarchy
+		nodes = hierarchy[, 2]
+		nc = nchar(nodes)
+		names(nc) = nodes
+		n = length(nc)
 
-	parent = structure(hierarchy[, 1], names = hierarchy[, 2])
+		parent = structure(hierarchy[, 1], names = hierarchy[, 2])
 
-	lines = character(n)
-	for(i in seq_len(n)) {
-		lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{length(object@list[[nodes[i]]]@column_index)} cols"))
-		p = nodes[i]
-		while(p != "0") {
-			p = parent[p]
-			if(!grepl("0$", p)) {
-				substr(lines[i], (nc[p] - 2)*4+3, (nc[p] - 2)*4+3) = "|"
+		lines = character(n)
+		for(i in seq_len(n)) {
+			lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{length(object@list[[nodes[i]]]@column_index)} cols"))
+			p = nodes[i]
+			while(p != "0") {
+				p = parent[p]
+				if(!grepl("0$", p)) {
+					substr(lines[i], (nc[p] - 2)*4+3, (nc[p] - 2)*4+3) = "|"
+				}
 			}
 		}
+		# substr(lines[1], 1, 1) = "+"
+		lines = c(qq("  0, @{length(object@list[['0']]@column_index)} cols"), lines)
+		cat(lines, sep = "\n")
+	} else {
+		cat("No hierarchy found.\n")
 	}
-	# substr(lines[1], 1, 1) = "+"
-	lines = c(qq("  0, @{length(object@list[['0']]@column_index)} cols"), lines)
-	cat(lines, sep = "\n")
 	
 	# ne = nodes[which.max(nc)[1]]
 	# qqcat("e.g. a node '@{ne}' which a parent node '@{gsub(\'.$\', \'\', ne)}'\n")
@@ -892,7 +902,11 @@ setMethod(f = "max_depth",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 
-	max(nchar(object@hierarchy[, 2]))
+	if(has_hierarchy(object)) {
+		max(nchar(object@hierarchy[, 2]))
+	} else {
+		1
+	}
 })
 
 # == title
@@ -915,11 +929,15 @@ setMethod(f = "all_nodes",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object)) {
 
-	all_nodes = unique(as.vector(object@hierarchy))
-	if(!is.null(depth)) {
-		all_nodes = all_nodes[nchar(all_nodes) <= depth]
+	if(has_hierarchy(object)) {
+		all_nodes = unique(as.vector(object@hierarchy))
+		if(!is.null(depth)) {
+			all_nodes = all_nodes[nchar(all_nodes) <= depth]
+		}
+		return(all_nodes)
+	} else {
+		return(character(0))
 	}
-	return(all_nodes)
 })
 
 # == title
@@ -942,14 +960,18 @@ setMethod(f = "all_leaves",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object)) {
 
-	hierarchy = unique(object@hierarchy)
-	if(!is.null(depth)) {
-		hierarchy = hierarchy[nchar(hierarchy[, 2]) <= depth, , drop = FALSE]
+	if(has_hierarchy(object)) {
+		hierarchy = unique(object@hierarchy)
+		if(!is.null(depth)) {
+			hierarchy = hierarchy[nchar(hierarchy[, 2]) <= depth, , drop = FALSE]
+		}
+		
+		tb = table(hierarchy)
+		tb = tb[tb <= 1]
+		names(tb)	
+	} else {
+		"0"
 	}
-	
-	tb = table(hierarchy)
-	tb = tb[tb <= 1]
-	names(tb)	
 })
 
 get_children = function(object, node = "0") {
