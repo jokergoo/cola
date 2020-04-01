@@ -83,7 +83,7 @@ hierarchical_partition = function(data,
 		}
 
 		if(verbose) qqcat("@{prefix}=========================================================\n")
-		if(verbose) qqcat("@{prefix}* submatrix with @{length(column_index)} columns and @{nrow(data)} rows, node_id: @{node_id}.\n")
+		if(verbose) qqcat("@{prefix}* submatrix with @{length(column_index)} columns, node_id: @{node_id}.\n")
 		## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
 	   	.env$all_top_value_list = NULL
 	   	.env$column_index = column_index  #note .env$column_index is only for passing to `consensus_partition()` function
