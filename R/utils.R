@@ -302,7 +302,12 @@ setMethod(f = "nrow",
 setMethod(f = "ncol",
 	signature = "ConsensusPartition",
 	definition = function(x) {
-	ncol(x@.env$data)
+
+	if(!is.null(x@column_index)) {
+		return(length(x@column_index))
+	} else {
+		ncol(x@.env$data)
+	}
 })
 
 # == title

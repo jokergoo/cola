@@ -854,7 +854,7 @@ setMethod(f = "compare_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k, ...) {
 
-	sig_list = sapply(k, function(x) {
+	sig_list = lapply(k, function(x) {
 		tb = get_signatures(object, k = x, ..., plot = FALSE)
 		if(is.null(tb)) {
 			return(integer(0))

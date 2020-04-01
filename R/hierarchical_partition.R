@@ -656,6 +656,41 @@ setMethod(f = "get_signatures",
 	return(invisible(sig))
 })
 
+
+# == title
+# Compare Signatures from Different Nodes
+#
+# == param
+# -object A `HierarchicalPartition-class` object. 
+# -depth depth of the hierarchy.
+# -... Other arguments passed to `get_signatures,HierarchicalPartition-method`.
+#
+# == details
+# It plots an Euler diagram showing the overlap of signatures from different nodes.
+# On each node, the number of subgroups is inferred by `suggest_best_k,ConsensusPartition-method`.
+#
+setMethod(f = "compare_signatures",
+	signature = "HierarchicalPartition",
+	definition = function(object, depth = max_depth(object), ...) {
+
+	lt = object@list
+	al = all_leaves(object)
+	lt = lt[! names(lt) %in% al]
+	lt = lt[nchar(names(lt)) <= depth]
+
+	sig_list = lapply(lt, function(x) {
+		tb = get_signatures(x, k = suggest_best_k(x), ..., plot = FALSE)
+		if(is.null(tb)) {
+			return(integer(0))
+		} else {
+			return(tb$which_row)
+		}
+	})
+
+	plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different nodes")
+
+})
+
 # == title
 # Collect classes from HierarchicalPartition object
 #
@@ -865,7 +900,7 @@ setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
 	definition = function(object,
 	depth = max_depth(object), parent_node,
-	top_n = NULL, method = c("PCA", "MDS"),
+	top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
 	silhouette_cutoff = 0.5, scale_rows = TRUE) {
 
 	method = match.arg(method)
@@ -1111,6 +1146,9 @@ setMethod(f = "suggest_best_k",
 		mean_silhouette = mean_silhouette,
 		concordance = concordance,
 		check.names = FALSE)
+	tb$n_sample = sapply(tb$node, function(id) {
+		ncol(object[[id]])
+	})
 
 	rntb = rownames(tb)
 	l = tb$`1-PAC` >= 0.9 & !is.na(tb$best_k)

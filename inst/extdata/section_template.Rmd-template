@@ -3,7 +3,7 @@
 
 <% 
 if(is_hc) {
-    mark = ifelse(tb[node, ncol(tb)] == "parent", "(p)", "")
+    mark = ifelse(tb[, "Node ID"] %in% all_leaves(res_hc), "", "(p)")
     chunk_prefix = paste("node", node, sep = "-")
     res = res_hc[node]
 } else {
