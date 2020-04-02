@@ -129,12 +129,10 @@ suggest_best_k(res_hc)
 
 ```{r, echo = FALSE}
 tb = suggest_best_k(res_hc)
-tb = cbind(node_id = paste0("Node", rownames(tb)), tb, stringsAsFactors = FALSE)
-# ind = which(tb[, ncol(tb)] == "parent")
-# tb$node_id[ind] = qq("[@{tb$node_id[ind]}](#@{tb$node_id[ind]})", collapse = FALSE)
+tb = cbind(node_id = paste0("Node_", tb[, 1]), tb, stringsAsFactors = FALSE)
 tb$node_id = qq("[@{tb$node_id}](#@{tb$node_id})", collapse = FALSE)
-colnames(tb) = c("", "Node ID", "The best k", "1-PAC", "Mean silhouette", "Concordance", "Number of samples", "")
-kable(tb, row.names = FALSE)
+colnames(tb) = c("", "code", "The best k", "1-PAC", "Mean silhouette", "Concordance", "Number of samples", "")
+kable(tb[, -2], row.names = FALSE)
 ```
 
 ### Partition hierarchy

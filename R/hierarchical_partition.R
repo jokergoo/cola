@@ -120,12 +120,26 @@ hierarchical_partition = function(data,
 	    	mat = t(scale(t(mat)))
 	    }
 	    mat = mat[order(.env$all_top_value_list[[1]], decreasing = TRUE), , drop = FALSE]
-	    s = tightest_subgroup(mat, cl$class, part@top_n)
-	    set1 = which(cl$class == s)
-	    set2 = which(cl$class != s)
+
+	    ## split k classes into two groups
+	    if(best_k == 2) {
+	    	kg1 = 1
+	    	kg2 = 2
+	    	set1 = which(cl$class == kg1)
+	    	set2 = which(cl$class == kg2)
+	    } else {
+	    	group_mean = do.call(rbind, tapply(1:ncol(mat), cl$class, function(ind) rowMeans(mat[, ind, drop = FALSE])))
+	    	kg = kmeans(group_mean, centers = 2)$cluster
+	    	kg1 = as.numeric(rownames(group_mean)[kg == 1])
+	    	kg2 = as.numeric(rownames(group_mean)[kg == 2])
+
+	    	set1 = which(cl$class %in% kg1)
+	    	set2 = which(cl$class %in% kg2)
+	    }
+
 	    .env$all_top_value_list = NULL
 
-	    if(verbose) qqcat("@{prefix}* best k = @{best_k}, the tightest subgroup: @{s}\n")
+	    if(verbose) qqcat("@{prefix}* best k = @{best_k}, split into two groups with class IDs (@{paste(kg1, collapse=',')}) and (@{paste(kg2, collapse=',')})\n")
 		PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
 	    if(PAC_score > PAC_cutoff) {
 	    	if(verbose) qqcat("@{prefix}* PAC score is too big (@{sprintf('%.2f', PAC_score)}), stop.\n")
@@ -144,9 +158,8 @@ hierarchical_partition = function(data,
 
     	if(verbose) qqcat("@{prefix}* partition into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
     	# insert the two subgroups into the hierarchy
-    	s = 1
-    	sub_node_1 = paste0(node_id, s)
-    	sub_node_2 = paste0(node_id, "0")
+    	sub_node_1 = paste0(node_id, 0)
+    	sub_node_2 = paste0(node_id, 1)
 
     	lt2 = lapply(1:2, function(ind) {
 	    	if(length(set1) >= min_samples && ind == 1) {
@@ -683,15 +696,17 @@ setMethod(f = "get_signatures",
 # == param
 # -object A `HierarchicalPartition-class` object. 
 # -depth depth of the hierarchy.
+# -method Method to visualize.
 # -... Other arguments passed to `get_signatures,HierarchicalPartition-method`.
 #
 # == details
-# It plots an Euler diagram showing the overlap of signatures from different nodes.
+# It plots an Euler diagram or a UpSet plot showing the overlap of signatures from different nodes.
 # On each node, the number of subgroups is inferred by `suggest_best_k,ConsensusPartition-method`.
 #
 setMethod(f = "compare_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object), ...) {
+	definition = function(object, depth = max_depth(object), 
+	method = c("euler", "upset"), ...) {
 
 	lt = object@list
 	al = all_leaves(object)
@@ -707,7 +722,22 @@ setMethod(f = "compare_signatures",
 		}
 	})
 
-	plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different nodes")
+	if(missing(method)) {
+		if(length(sig_list) <= 3) {
+			method = "euler"
+		} else {
+			method = "upset"
+		}
+	} else {
+		method = match.arg(method)[1]
+	}
+
+	if(method == "euler") {
+		plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different nodes")
+	} else {
+		m = make_comb_mat(sig_list)
+		draw(UpSet(m, column_title = "Signatures from different nodes"))
+	}
 
 })
 

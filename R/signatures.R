@@ -845,14 +845,15 @@ Ftest = function(mat, class) {
 # == param
 # -object A `ConsensusPartition-class` object. 
 # -k Number of subgroups. Value should be a vector.
+# -method Method to visualize.
 # -... Other arguments passed to `get_signatures,ConsensusPartition-method`.
 #
 # == details
-# It plots an Euler diagram showing the overlap of signatures from different k.
+# It plots an Euler diagram or a UpSet plot showing the overlap of signatures from different k.
 #
 setMethod(f = "compare_signatures",
 	signature = "ConsensusPartition",
-	definition = function(object, k = object@k, ...) {
+	definition = function(object, k = object@k, method = c("euler", "upset"), ...) {
 
 	sig_list = lapply(k, function(x) {
 		tb = get_signatures(object, k = x, ..., plot = FALSE)
@@ -865,8 +866,22 @@ setMethod(f = "compare_signatures",
 
 	names(sig_list) = paste(k, "-group", sep = "")
 
-	plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different k")
+	if(missing(method)) {
+		if(length(sig_list) <= 3) {
+			method = "euler"
+		} else {
+			method = "upset"
+		}
+	} else {
+		method = match.arg(method)[1]
+	}
 
+	if(method == "euler") {
+		plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different k")
+	} else {
+		m = make_comb_mat(sig_list)
+		draw(UpSet(m, column_title = "Signatures from different k"))
+	}
 })
 
 

@@ -3,7 +3,7 @@
 
 <% 
 if(is_hc) {
-    mark = ifelse(tb[, "Node ID"] %in% all_leaves(res_hc), "", "(p)")
+    mark = ifelse(tb[, "code"] %in% all_leaves(res_hc), "", "(p)")[tb[, "code"] == node]
     chunk_prefix = paste("node", node, sep = "-")
     res = res_hc[node]
 } else {
@@ -21,7 +21,7 @@ if(is_hc) {
 
 <% if(!single_report) { %>
 <% if(is_hc) { %>
-### Node<%=node%><%=mark%>
+### Node_<%=node%>
 <% } else if(!single_report) { %>
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
 <% } %>
