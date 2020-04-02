@@ -158,6 +158,10 @@ consensus_partition = function(data,
 
 	data = data[, .env$column_index, drop = FALSE]
 
+	if(ncol(data) < 3) {
+		stop_wrap("There should be at least three columns in the matrix.")
+	}
+
 	if(verbose) qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 
 	k = sort(k)

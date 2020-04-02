@@ -221,10 +221,14 @@ register_partition_methods = function(..., scale_method = c("z-score", "min-max"
 		# just in case people forgot to add the ...
 		if(length(formals(fun)) == 2) {
 			function(mat, k, ...) {
+				if(ncol(mat) == 2 && k == 2) return(1:2)
 				fun(mat, k)
 			}
 		} else {
-			fun
+			function(mat, k, ...) {
+				if(ncol(mat) == 2 && k == 2) return(1:2)
+				fun(mat, k, ...)
+			}
 		}
 	})
 	for(i in seq_along(lt)) {

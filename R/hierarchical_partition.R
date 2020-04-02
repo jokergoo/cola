@@ -73,6 +73,16 @@ hierarchical_partition = function(data,
 	max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
 	cl = match.call()
+
+	if(min_samples < 3) {
+		if(verbose) qqcat("! 'min_samples' was reset to 3.\n")
+		min_samples = 3
+	}
+
+	if(verbose) {
+		qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
+		qqcat("* hierarchical partition by @{top_value_method}:@{partition_method}.\n")
+	}
 	
 	.hierarchical_partition = function(.env, column_index, node_id = '0', 
 		min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
@@ -87,6 +97,11 @@ hierarchical_partition = function(data,
 		## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
 	   	.env$all_top_value_list = NULL
 	   	.env$column_index = column_index  #note .env$column_index is only for passing to `consensus_partition()` function
+		
+		if(mc.cores > 1 && verbose) {
+			qqcat("@{prefix}* running consensus partitioning with @{mc.cores} cores.\n")
+		}
+
 		part = consensus_partition(verbose = FALSE, .env = .env, max_k = max_k, 
 			top_value_method = top_value_method, partition_method = partition_method, mc.cores = mc.cores, ...)
 		attr(part, "node_id") = node_id
@@ -117,8 +132,13 @@ hierarchical_partition = function(data,
 	    	return(lt)
 	    }
 
-    	if(length(set1) <= min_samples || length(set2) <= min_samples) {
-    		if(verbose) qqcat("@{prefix}* subgroups have too few columns, stop.\n")
+    	if(length(set1) < min_samples) {
+    		if(verbose) qqcat("@{prefix}* one of the subgroup has too few columns (@{length(set1)}), won't split.\n")
+    		return(lt)
+    	}
+
+    	if(length(set2) < min_samples) {
+    		if(verbose) qqcat("@{prefix}* one of the subgroups has too few columns (@{length(set2)}), won't split.\n")
     		return(lt)
     	}
 
@@ -129,14 +149,14 @@ hierarchical_partition = function(data,
     	sub_node_2 = paste0(node_id, "0")
 
     	lt2 = lapply(1:2, function(ind) {
-	    	if(length(set1) > min_samples && ind == 1) {
+	    	if(length(set1) >= min_samples && ind == 1) {
 	    		return(.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1,
-	    			min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
+	    			min_samples = min_samples, max_k = min(max_k, length(set1)-1), mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
 
-	    	if(length(set2) > min_samples && ind == 2) {
+	    	if(length(set2) >= min_samples && ind == 2) {
 	    		return(.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2,
-	    			min_samples = min_samples, max_k = max_k, mc.cores = mc.cores, verbose = verbose, ...))
+	    			min_samples = min_samples, max_k = min(max_k, length(set2)-1), mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
 
 	    	return(NULL)
@@ -151,7 +171,7 @@ hierarchical_partition = function(data,
 	.env = new.env()
 	.env$data = data
 	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), min_samples = min_samples, 
-		node_id = "0", max_k = max_k, verbose = verbose, mc.cores = mc.cores, ...)
+		node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, mc.cores = mc.cores, ...)
 
 	# reformat lt
 	.e = new.env()
@@ -725,7 +745,8 @@ setMethod(f = "collect_classes",
 
 	ht_list = Heatmap(cl, name = "Class", col = object@subgroup_col, width = unit(5, "mm"),
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
-		row_split = length(unique(cl)), show_row_names = FALSE, row_title = NULL)
+		row_split = length(unique(cl)), show_row_names = FALSE, row_title = NULL,
+		row_dend_width = unit(2, "cm"))
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
 			anno_nm = deparse(substitute(anno))
