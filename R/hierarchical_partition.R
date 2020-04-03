@@ -162,8 +162,8 @@ hierarchical_partition = function(data,
 
     	if(verbose) qqcat("@{prefix}* partition into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
     	# insert the two subgroups into the hierarchy
-    	sub_node_1 = paste0(node_id, 0)
-    	sub_node_2 = paste0(node_id, 1)
+    	sub_node_1 = paste0(node_id, 1)
+    	sub_node_2 = paste0(node_id, 0)
 
     	lt2 = lapply(1:2, function(ind) {
 	    	if(length(set1) >= min_samples && ind == 1) {
