@@ -128,10 +128,14 @@ hierarchical_partition = function(data,
 	    	set1 = which(cl$class == kg1)
 	    	set2 = which(cl$class == kg2)
 	    } else {
-	    	group_mean = do.call(rbind, tapply(1:ncol(mat), cl$class, function(ind) rowMeans(mat[, ind, drop = FALSE])))
-	    	kg = kmeans(group_mean, centers = 2)$cluster
-	    	kg1 = as.numeric(rownames(group_mean)[kg == 1])
-	    	kg2 = as.numeric(rownames(group_mean)[kg == 2])
+	    	tb = table(cl$class)
+	    	kg1 = as.numeric(names(tb[which.max(tb)[1]]))
+	    	kg2 = sort(setdiff(cl$class, kg1))
+
+	    	# group_mean = do.call(rbind, tapply(1:ncol(mat), cl$class, function(ind) rowMeans(mat[, ind, drop = FALSE])))
+	    	# kg = kmeans(group_mean, centers = 2)$cluster
+	    	# kg1 = as.numeric(rownames(group_mean)[kg == 1])
+	    	# kg2 = as.numeric(rownames(group_mean)[kg == 2])
 
 	    	set1 = which(cl$class %in% kg1)
 	    	set2 = which(cl$class %in% kg2)
@@ -775,8 +779,7 @@ setMethod(f = "collect_classes",
 
 	ht_list = Heatmap(cl, name = "Class", col = object@subgroup_col, width = unit(5, "mm"),
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
-		row_split = length(unique(cl)), show_row_names = FALSE, row_title = NULL,
-		row_dend_width = unit(2, "cm"))
+		row_split = length(unique(cl)), show_row_names = FALSE, row_title = NULL)
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
 			anno_nm = deparse(substitute(anno))
