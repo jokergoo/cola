@@ -282,7 +282,7 @@ setMethod(f = "get_signatures",
 			if(do_kmeans) {
 				set.seed(seed)
 				if(is.null(row_km)) {
-					wss = (nrow(mat_for_km2)-1)*sum(apply(mat_for_km2,2,var))
+					wss = (nrow(mat_for_km2)-1)*sum(apply(mat_for_km2,1,var))
 					max_km = min(c(nrow(mat_for_km) - 1, 15))
 					# if(verbose) qqcat("* apply k-means on rows with 2~@{max_km} clusters.\n")
 					for (i in 2:max_km) {
