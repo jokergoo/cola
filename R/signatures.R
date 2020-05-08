@@ -482,20 +482,32 @@ setMethod(f = "get_signatures",
 				annotation_name_side = "right",
 				show_legend = TRUE)
 	} else {
-		ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
-			Class = class_df$class[column_used_logical],
-			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
-				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
-					      col = NA),
-				bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
-				height = unit(15, "mm")),
-			col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
-			show_annotation_name = !has_ambiguous & !internal,
-			annotation_name_side = "right",
-			show_legend = TRUE)
 		if(simplify) {
-			ha1 = ha1[c("Class", "silhouette")]
+			ha1 = HeatmapAnnotation(
+				Class = class_df$class[column_used_logical],
+				silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
+					gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
+						      col = NA),
+					bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+					height = unit(15, "mm")),
+				col = list(Class = cola_opt$color_set_2),
+				show_annotation_name = !has_ambiguous & !internal,
+				annotation_name_side = "right",
+				show_legend = TRUE)
+		} else {
+			ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
+				Class = class_df$class[column_used_logical],
+				silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
+					gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
+						      col = NA),
+					bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+					height = unit(15, "mm")),
+				col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
+				show_annotation_name = !has_ambiguous & !internal,
+				annotation_name_side = "right",
+				show_legend = TRUE)
 		}
+
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = ha1, row_split = row_split,
