@@ -7,6 +7,7 @@
 # -top_n Number of top rows.
 # -method ``euler``: plot Euler diagram by `eulerr::euler`; ``venn``: plot Venn diagram by `gplots::venn`; 
 #         ``correspondance``: use `correspond_between_rankings`.
+# -fill Filled color for the Euler diagram. The value should be a color vector. Transparency of 0.5 are added internally.
 # -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
 #
 # == value
@@ -25,11 +26,14 @@
 setMethod(f = "top_rows_overlap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = min(object@list[[1]]@top_n), 
-		method = c("euler", "venn", "correspondance"), ...) {
+		method = c("euler", "venn", "correspondance"), fill= NULL, ...) {
 
 	all_top_value_list = object@.env$all_top_value_list[object@top_value_method]
 
-	top_elements_overlap(all_top_value_list, top_n = top_n, method = method, ...)
+	if(is.null(fill)) {
+		fill = cola_opt$color_set_1[seq_along(top_value_method)]
+	}
+	top_elements_overlap(all_top_value_list, top_n = top_n, method = method, fill = fill, ...)
 })
 
 # == title
