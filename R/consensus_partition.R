@@ -702,6 +702,7 @@ else take the k with higest votes of
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_row_names Whether plot row names on the consensus heatmap (which are the column names in the original matrix)
+# -simplify Internally used.
 # -... other arguments
 #
 # == details
@@ -735,7 +736,7 @@ setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
 	anno = get_anno(object), anno_col = get_anno_col(object), 
-	show_row_names = FALSE, ...) {
+	show_row_names = FALSE, simplify = FALSE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
@@ -748,13 +749,17 @@ setMethod(f = "consensus_heatmap",
 
 	membership_mat = get_membership(object, k)
 
-	ht_list = Heatmap(membership_mat, name = "Prob", cluster_columns = FALSE, show_row_names = FALSE,
-		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red")),
-		show_column_names = !internal) + 
-	Heatmap(class_df$silhouette, name = "Silhouette", width = unit(5, "mm"),
-		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple")),
-		show_column_names = !internal) +
-	Heatmap(class_ids, name = "Class", col = cola_opt$color_set_2,
+	if(simplify) {
+		ht_list = NULL
+	} else {
+		ht_list = Heatmap(membership_mat, name = "Prob", cluster_columns = FALSE, show_row_names = FALSE,
+				width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red")),
+				show_column_names = !internal) + 
+			Heatmap(class_df$silhouette, name = "Silhouette", width = unit(5, "mm"),
+				show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple")),
+				show_column_names = !internal)
+	}
+	ht_list = ht_list + Heatmap(class_ids, name = "Class", col = cola_opt$color_set_2,
 		show_row_names = FALSE, width = unit(5, "mm"),
 		show_column_names = !internal)
 	

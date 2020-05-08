@@ -440,6 +440,7 @@ All individual plots can be made by following functions:
 #       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
+# -simplify Internally used.
 # -... Pass to `ComplexHeatmap::draw,HeatmapList-method`.
 #
 # == details
@@ -466,7 +467,8 @@ All individual plots can be made by following functions:
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, show_column_names = FALSE,
-	anno = get_anno(object), anno_col = get_anno_col(object), ...) {
+	anno = get_anno(object), anno_col = get_anno_col(object), 
+	simplify = FALSE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
@@ -559,7 +561,9 @@ setMethod(f = "collect_classes",
 			           "Partition method" = structure(names = partition_method, cola_opt$color_set_2[seq_along(partition_method)])),
 			width = unit(10, "mm"),
 			show_annotation_name = FALSE))
-
+	if(simplify) {
+		ht@left_annotation = NULL
+	}
 	stat = get_stats(object, k = k)[colnames(class_mat), "1-PAC"]
 	is_stable_k = is_stable_k(object, k = k)[colnames(class_mat)]
 	ht = ht + rowAnnotation("1-PAC" = row_anno_barplot(stat, gp = gpar(fill = ifelse(is_stable_k, "red", "grey")), baseline = 0, axis = TRUE),

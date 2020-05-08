@@ -41,6 +41,7 @@ setMethod(f = "top_rows_overlap",
 # -top_n Number of top rows.
 # -method ``euler``: plot Euler diagram by `eulerr::euler`; ``venn``: plot Venn diagram by `gplots::venn`; 
 #         ``correspondance``: use `correspond_between_rankings`.
+# -fill Filled color for the Euler diagram. The value should be a color vector. Transparency of 0.5 are added internally.
 # -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
 #
 # == details
@@ -63,7 +64,8 @@ setMethod(f = "top_rows_overlap",
 	signature = "matrix",
 	definition = function(object, top_value_method = all_top_value_methods(), 
 		top_n = round(0.25*nrow(object)), 
-		method = c("euler", "venn", "correspondance"), ...) {
+		method = c("euler", "venn", "correspondance"), 
+		fill = NULL, ...) {
 
 	all_top_value_list = lapply(top_value_method, function(x) {
 		get_top_value_fun = get_top_value_method(x)
@@ -73,7 +75,10 @@ setMethod(f = "top_rows_overlap",
 	})
 	names(all_top_value_list) = top_value_method
 
-	top_elements_overlap(all_top_value_list, top_n = top_n, method = method, ...)
+	if(is.null(fill)) {
+		fill = cola_opt$color_set_1[seq_along(top_value_method)]
+	}
+	top_elements_overlap(all_top_value_list, top_n = top_n, method = method, fill = fill, ...)
 })
 
 
@@ -85,6 +90,7 @@ setMethod(f = "top_rows_overlap",
 # -top_n Number of top rows.
 # -method ``euler``: plot Euler diagram by `eulerr::euler`; ``venn``: plot Venn diagram by `gplots::venn`; 
 #         ``correspondance``: use `correspond_between_rankings`.
+# -fill Filled color for the Euler diagram. The value should be a color vector. Transparency of 0.5 are added internally.
 # -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
 #
 # == details
@@ -104,7 +110,7 @@ setMethod(f = "top_rows_overlap",
 # top_elements_overlap(lt, top_n = 25, method = "venn")
 # top_elements_overlap(lt, top_n = 25, method = "correspondance")
 top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])), 
-		method = c("euler", "venn", "correspondance"), ...) {
+		method = c("euler", "venn", "correspondance"), fill = NULL, ...) {
 
 	if(length(unique(sapply(object, length))) > 1) {
 		stop_wrap("Length of all vectors in the input list should be the same.")
@@ -122,7 +128,12 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 		gplots::venn(lt, ...)
 		title(qq("top @{top_n} rows"))
 	} else if(method == "euler") {
-		print(plot(eulerr::euler(lt), main = qq("top @{top_n} rows"), legend = TRUE, ...))
+		if(is.null(fill)) {
+			fills = TRUE
+		} else {
+			fills = list(fill = fill, alpha = 0.5)
+		}
+		print(plot(eulerr::euler(lt), main = qq("top @{top_n} rows"), legend = TRUE, fills = fills, ...))
 	} else if(method == "correspondance") {
 		correspond_between_rankings(object, top_n = top_n, ...)
 	}

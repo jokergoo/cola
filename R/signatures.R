@@ -493,6 +493,9 @@ setMethod(f = "get_signatures",
 			show_annotation_name = !has_ambiguous & !internal,
 			annotation_name_side = "right",
 			show_legend = TRUE)
+		if(simplify) {
+			ha1 = ha1[c("Class", "silhouette")]
+		}
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = ha1, row_split = row_split,
