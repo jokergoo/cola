@@ -31,7 +31,7 @@ setMethod(f = "top_rows_overlap",
 	all_top_value_list = object@.env$all_top_value_list[object@top_value_method]
 
 	if(is.null(fill)) {
-		fill = cola_opt$color_set_1[seq_along(top_value_method)]
+		fill = cola_opt$color_set_1[seq_along(all_top_value_list)]
 	}
 	top_elements_overlap(all_top_value_list, top_n = top_n, method = method, fill = fill, ...)
 })
