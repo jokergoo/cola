@@ -40,7 +40,7 @@ Examples for *cola* analysis can be found at https://jokergoo.github.io/cola_exa
 
 Online documentation is at https://jokergoo.github.io/cola.
 
-Supplementary for the *cola* manuscript is at https://jokergoo.github.io/cola_supplementary and the scripts are at https://github.io/jokergoo/cola_manuscript.
+Supplementary for the *cola* manuscript is at https://jokergoo.github.io/cola_supplementary and the scripts are at https://github.com/jokergoo/cola_manuscript.
 
 ## Vignettes
 
