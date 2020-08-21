@@ -5,7 +5,8 @@
 # == param
 # -object A `ConsensusPartitionList-class` object.
 # -top_n Number of top rows.
-# -method ``euler``: plot Euler diagram by `eulerr::euler`; ``venn``: plot Venn diagram by `gplots::venn`; 
+# -method ``euler``: plot Euler diagram by `eulerr::euler`; 
+#         ``upset``: draw the Upset plot by `ComplexHeatmap::UpSet`; ``venn``: plot Venn diagram by `gplots::venn`; 
 #         ``correspondance``: use `correspond_between_rankings`.
 # -fill Filled color for the Euler diagram. The value should be a color vector. Transparency of 0.5 are added internally.
 # -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
@@ -22,11 +23,12 @@
 # == example
 # data(cola_rl)
 # top_rows_overlap(cola_rl, method = "venn")
+# top_rows_overlap(cola_rl, method = "upset")
 # top_rows_overlap(cola_rl, method = "correspondance")
 setMethod(f = "top_rows_overlap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = min(object@list[[1]]@top_n), 
-		method = c("euler", "venn", "correspondance"), fill= NULL, ...) {
+		method = c("euler", "upset", "venn", "correspondance"), fill= NULL, ...) {
 
 	all_top_value_list = object@.env$all_top_value_list[object@top_value_method]
 
@@ -43,7 +45,8 @@ setMethod(f = "top_rows_overlap",
 # -object A numeric matrix.
 # -top_value_method Methods defined in `all_top_value_methods`.
 # -top_n Number of top rows.
-# -method ``euler``: plot Euler diagram by `eulerr::euler`; ``venn``: plot Venn diagram by `gplots::venn`; 
+# -method ``euler``: plot Euler diagram by `eulerr::euler`; 
+#         ``upset``: draw the Upset plot by `ComplexHeatmap::UpSet`; ``venn``: plot Venn diagram by `gplots::venn`; 
 #         ``correspondance``: use `correspond_between_rankings`.
 # -fill Filled color for the Euler diagram. The value should be a color vector. Transparency of 0.5 are added internally.
 # -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
@@ -68,7 +71,7 @@ setMethod(f = "top_rows_overlap",
 	signature = "matrix",
 	definition = function(object, top_value_method = all_top_value_methods(), 
 		top_n = round(0.25*nrow(object)), 
-		method = c("euler", "venn", "correspondance"), 
+		method = c("euler", "upset", "venn", "correspondance"), 
 		fill = NULL, ...) {
 
 	all_top_value_list = lapply(top_value_method, function(x) {
@@ -92,7 +95,8 @@ setMethod(f = "top_rows_overlap",
 # == param
 # -object A list which contains values from different metrics.
 # -top_n Number of top rows.
-# -method ``euler``: plot Euler diagram by `eulerr::euler`; ``venn``: plot Venn diagram by `gplots::venn`; 
+# -method ``euler``: plot Euler diagram by `eulerr::euler`;
+#         ``upset``: draw the Upset plot by `ComplexHeatmap::UpSet`; ``venn``: plot Venn diagram by `gplots::venn`; 
 #         ``correspondance``: use `correspond_between_rankings`.
 # -fill Filled color for the Euler diagram. The value should be a color vector. Transparency of 0.5 are added internally.
 # -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
@@ -111,10 +115,11 @@ setMethod(f = "top_rows_overlap",
 # set.seed(123)
 # mat = matrix(rnorm(1000), nrow = 100)
 # lt = list(sd = rowSds(mat), mad = rowMads(mat))
-# top_elements_overlap(lt, top_n = 25, method = "venn")
-# top_elements_overlap(lt, top_n = 25, method = "correspondance")
+# top_elements_overlap(lt, top_n = 20, method = "venn")
+# top_elements_overlap(lt, top_n = 20, method = "upset")
+# top_elements_overlap(lt, top_n = 20, method = "correspondance")
 top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])), 
-		method = c("euler", "venn", "correspondance"), fill = NULL, ...) {
+		method = c("euler", "upset", "venn", "correspondance"), fill = NULL, ...) {
 
 	if(length(unique(sapply(object, length))) > 1) {
 		stop_wrap("Length of all vectors in the input list should be the same.")
@@ -126,18 +131,25 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 		stop_wrap("Expect at least two lists.")
 	}
     
+    method = tolower(method)
     method = match.arg(method)
 
     if(method == "venn") {
+    	check_pkg("gplots", bioc = FALSE)
 		gplots::venn(lt, ...)
 		title(qq("top @{top_n} rows"))
 	} else if(method == "euler") {
+		check_pkg("eulerr", bioc = FALSE)
 		if(is.null(fill)) {
 			fills = TRUE
 		} else {
 			fills = list(fill = fill, alpha = 0.5)
 		}
 		print(plot(eulerr::euler(lt), main = qq("top @{top_n} rows"), legend = TRUE, fills = fills, ...))
+	} else if(method == "upset") {
+		cm = make_comb_mat(lt)
+		ht = UpSet(cm, column_title = qq("top @{top_n} rows"))
+		draw(ht)
 	} else if(method == "correspondance") {
 		correspond_between_rankings(object, top_n = top_n, ...)
 	}

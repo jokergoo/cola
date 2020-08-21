@@ -186,9 +186,7 @@ setMethod(f = "cola_report",
 	definition = function(object, output_dir = getwd(), mc.cores = 1, 
 	title = "cola Report for Consensus Partitioning", env = parent.frame()) {
 
-	if(!requireNamespace("genefilter")) {
-		stop_wrap("You need to install genefilter package (from Bioconductor).")
-	}
+	check_pkg("genefilter", bioc = TRUE)
 	var_name = deparse(substitute(object, env = env))
 	make_report(var_name, object, output_dir, mc.cores = mc.cores, title = title, class = "ConsensusPartitionList")
 
@@ -222,9 +220,7 @@ setMethod(f = "cola_report",
 	title = qq("cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"), 
 	env = parent.frame()) {
 
-	if(!requireNamespace("genefilter")) {
-		stop_wrap("You need to install genefilter package (from Bioconductor).")
-	}
+	check_pkg("genefilter", bioc = TRUE)
 	var_name = deparse(substitute(object, env = env))
 	make_report(var_name, object, output_dir, mc.cores = 1, title = title, class = "ConsensusPartition")
 })

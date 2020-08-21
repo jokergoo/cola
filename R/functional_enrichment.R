@@ -41,6 +41,8 @@ submit_to_david = function(genes, email,
 	catalog = c("GOTERM_CC_FAT", "GOTERM_BP_FAT", "GOTERM_MF_FAT", "KEGG_PATHWAY"),
 	idtype = "ENSEMBL_GENE_ID", species = "Homo sapiens") {
 
+    check_pkg("httr", bioc = FALSE)
+
 	if(missing(email)) {
 		stop_wrap("You need to register to DAVID web service.")
 	}
@@ -328,6 +330,14 @@ setMethod(f = "functional_enrichment",
 
     arg_lt = list(...)
 
+    if(any(c("BP", "MF", "CC", "KEGG", "gmt", "MSigDb") %in% ontology)) {
+        check_pkg("clusterProfiler", bioc = TRUE)
+    } else if(any(c("DO") %in% ontology)) {
+        check_pkg("DOSE", bioc = TRUE)
+    } else if("Reactome" %in% ontology) {
+        check_pkg("ReactomePA", bioc = TRUE)
+    }
+
     # if(length(setdiff(ontology, c("BP", "MF", "CC", "KEGG")))) {
     #     stop_wrap("ontology can only be in 'BP', 'MF' and 'CC'")
     # }
@@ -538,6 +548,8 @@ guess_id_type = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
         org_db = paste0(org_db, ".db")
     }
 
+    check_pkg("AnnotationDbi", bioc = TRUE)
+
     all_var = getNamespaceExports(org_db)
     col = eval(parse(text = qq("AnnotationDbi::columns(@{org_db}::@{org_db})")))
 
@@ -617,6 +629,9 @@ guess_id_mapping = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
 #     map_to_entrez_id("ENSEMBL")
 # }
 map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
+
+    check_pkg("AnnotationDbi", bioc = TRUE)
+    check_pkg(org_db, bioc = TRUE)
 
     prefix = gsub("\\.db$", "", org_db)
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")

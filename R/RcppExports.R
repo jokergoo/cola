@@ -2,7 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 get_consensus_matrix <- function(membership_each) {
-	.Call(`_cola_get_consensus_matrix`, membership_each)
+    .Call(`_cola_get_consensus_matrix`, membership_each)
 }
 
 pdist <- function(m1, m2) {

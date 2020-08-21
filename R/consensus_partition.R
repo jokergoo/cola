@@ -1152,6 +1152,8 @@ setMethod(f = "dimension_reduction",
 
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = qq("PC@{pc[1]} (@{round(prop[1]*100)}%)"), ylab = qq("PC@{pc[2]} (@{round(prop[2]*100)}%)"))
 	} else if(method == "t-SNE") {
+
+		check_pkg("Rtsne", bioc = FALSE)
 		fit = prcomp(t(data))
 		sm = summary(fit)
 		loc = fit$x[, pc]
@@ -1162,6 +1164,8 @@ setMethod(f = "dimension_reduction",
 		loc = fit$Y
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "t-SNE 1", ylab = "t-SNE 2")
 	} else if(method == "UMAP") {
+
+		check_pkg("umap", bioc = FALSE)
 
 		fit = prcomp(t(data))
 		sm = summary(fit)

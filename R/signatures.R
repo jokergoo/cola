@@ -658,6 +658,8 @@ knee_finder = function(x, y) {
 
 compare_to_subgroup = function(mat, class, which = "highest") {
 
+	check_pkg("genefilter", bioc = TRUE)
+	
 	od = order(class)
 	class = class[od]
 	mat = mat[, od, drop = FALSE]
@@ -708,6 +710,8 @@ ttest = function(mat, class) {
 }
 
 one_vs_others = function(mat, class) {
+	check_pkg("genefilter", bioc = TRUE)
+	
 	le = unique(class)
 	dfl = list()
 	for(x in le) {
@@ -723,6 +727,7 @@ one_vs_others = function(mat, class) {
 }
 
 samr = function(mat, class, ...) {
+	check_pkg("samr", bioc = FALSE)
 	on.exit(if(sink.number()) sink(NULL))
 	class = as.numeric(factor(class))
 	n_class = length(unique(class))
@@ -756,6 +761,8 @@ samr = function(mat, class, ...) {
 }
 
 pamr = function(mat, class, fdr.cutoff = 0.1, ...) {
+	check_pkg("pamr", bioc = FALSE)
+
 	on.exit(if(sink.number()) sink(NULL))
 
 	class = as.numeric(factor(class))
@@ -779,14 +786,13 @@ pamr = function(mat, class, fdr.cutoff = 0.1, ...) {
 
 
 Ftest = function(mat, class) {
-	if(requireNamespace("genefilter")) {
-		p = getFromNamespace("rowFtests", "genefilter")(mat, factor(class))[, "p.value"]
-		fdr = p.adjust(p, "BH")
-		fdr[is.na(fdr)] = Inf
-		return(fdr)
-	} else {
-		stop_wrap("Cannot find 'genefilter' package.")
-	}
+
+	check_pkg("genefilter", bioc = TRUE)
+	genefilter::rowFtests(mat, factor(class))[, "p.value"]
+	fdr = p.adjust(p, "BH")
+	fdr[is.na(fdr)] = Inf
+	return(fdr)
+
 }
 
 # test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
@@ -883,6 +889,8 @@ setMethod(f = "compare_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k, ...) {
 
+	check_pkg("eulerr", bioc = FALSE)
+	
 	sig_list = sapply(k, function(x) {
 		tb = get_signatures(object, k = x, ..., plot = FALSE)
 		if(is.null(tb)) {

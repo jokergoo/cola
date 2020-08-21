@@ -53,7 +53,8 @@ Suggests: genefilter,
           DOSE,
           AnnotationDbi,
           gplots,
-          hu6800.db 
+          hu6800.db,
+          BiocManager
 Description: Subgroup classification is a basic task in
   genomic data analysis, especially for gene expression and DNA methylation data
   analysis. It can also be used to test the agreement to known clinical
