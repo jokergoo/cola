@@ -788,7 +788,7 @@ pamr = function(mat, class, fdr.cutoff = 0.1, ...) {
 Ftest = function(mat, class) {
 
 	check_pkg("genefilter", bioc = TRUE)
-	genefilter::rowFtests(mat, factor(class))[, "p.value"]
+	p = genefilter::rowFtests(mat, factor(class))[, "p.value"]
 	fdr = p.adjust(p, "BH")
 	fdr[is.na(fdr)] = Inf
 	return(fdr)
