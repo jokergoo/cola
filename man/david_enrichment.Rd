@@ -1,13 +1,13 @@
-\name{submit_to_david}
-\alias{submit_to_david}
+\name{david_enrichment}
+\alias{david_enrichment}
 \title{
-Perform DAVID analysis
+Perform DAVID enrichment analysis
 }
 \description{
-Perform DAVID analysis
+Perform DAVID enrichment analysis
 }
 \usage{
-submit_to_david(genes, email,
+david_enrichment(genes, email,
     catalog = c("GOTERM_CC_FAT", "GOTERM_BP_FAT", "GOTERM_MF_FAT", "KEGG_PATHWAY"),
     idtype = "ENSEMBL_GENE_ID", species = "Homo sapiens")
 }
@@ -36,7 +36,7 @@ If you want to run this function multiple times, please set time intervals betwe
 A data frame with functional enrichment results.
 }
 \seealso{
-\url{https://david.ncifcrf.gov}
+Now cola has a replacement function \code{\link{functional_enrichment}} to perform enrichment anallysis.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

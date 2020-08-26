@@ -7,7 +7,7 @@ DAVID_ALL_CATALOGS = "BBID,BIND,BIOCARTA,BLOCKS,CGAP_EST_QUARTILE,CGAP_SAGE_QUAR
 DAVID_ALL_CATALOGS = strsplit(DAVID_ALL_CATALOGS, ",")[[1]]
 
 # == title
-# Perform DAVID analysis
+# Perform DAVID enrichment analysis
 #
 # == param
 # -genes A vector of gene identifiers.
@@ -32,12 +32,12 @@ DAVID_ALL_CATALOGS = strsplit(DAVID_ALL_CATALOGS, ",")[[1]]
 # A data frame with functional enrichment results.
 #
 # == seealso
-# https://david.ncifcrf.gov
+# Now cola has a replacement function `functional_enrichment` to perform enrichment anallysis.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
-submit_to_david = function(genes, email, 
+david_enrichment = function(genes, email, 
 	catalog = c("GOTERM_CC_FAT", "GOTERM_BP_FAT", "GOTERM_MF_FAT", "KEGG_PATHWAY"),
 	idtype = "ENSEMBL_GENE_ID", species = "Homo sapiens") {
 
@@ -172,6 +172,9 @@ submit_to_david = function(genes, email,
 #
 # For how to control the parameters of functional enrichment, see help page of `functional_enrichment,ANY-method`.
 #
+# == seealso
+# http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html
+#
 # == values
 # A list where each element in the list corresponds to enrichment results from a single method.
 #
@@ -233,6 +236,9 @@ setMethod(f = "functional_enrichment",
 #
 # == details
 # For how to control the parameters of functional enrichment, see help page of `functional_enrichment,ANY-method`.
+#
+# == seealso
+# http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html
 #
 # == value
 # A list of data frames which correspond to results for the functional ontologies:
@@ -300,9 +306,9 @@ setMethod(f = "functional_enrichment",
 #
 # == param
 # -object A vector of gene IDs.
-# -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
-#       named vector should be provided where the names are the gene IDs in the matrix and values
-#       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
+# -id_mapping If the gene IDs are not Entrez IDs, a
+#       named vector should be provided where the names are the gene IDs and values
+#       are the correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
 # -org_db Annotation database.
 # -ontology Following ontologies are allowed: ``BP``, ``CC``, ``MF``, ``KEGG``, ``Reactome``.
 #           ``MSigDb`` with the gmt file set by ``gmt_file`` argument, or ``gmt`` for general gmt gene sets.
@@ -314,6 +320,9 @@ setMethod(f = "functional_enrichment",
 #
 # == details
 # The function enrichment is applied by clusterProfiler, DOSE or ReactomePA packages.
+#
+# == seealso
+# http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html
 #
 # == value
 # A data frame.
@@ -549,6 +558,7 @@ guess_id_type = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
     }
 
     check_pkg("AnnotationDbi", bioc = TRUE)
+    check_pkg(org_db, bioc = TRUE)
 
     all_var = getNamespaceExports(org_db)
     col = eval(parse(text = qq("AnnotationDbi::columns(@{org_db}::@{org_db})")))
@@ -617,7 +627,7 @@ guess_id_mapping = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
 # -org_db The annotation database.
 #
 # == details
-# If there are multiple mappings from the input ID type to an unique Entrez ID, randomly picked one.
+# If there are multiple mappings from the input ID type to an unique Entrez ID, it randomly picks one.
 #
 # == value
 # A named vectors where names are IDs with input ID type and values are the Entrez IDs.
@@ -625,8 +635,9 @@ guess_id_mapping = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
 # The returned object normally is used in `functional_enrichment`.
 #
 # == example
-# \dontrun{
-#     map_to_entrez_id("ENSEMBL")
+# \donttest{
+# map = map_to_entrez_id("ENSEMBL")
+# head(map)
 # }
 map_to_entrez_id = function(from, org_db = "org.Hs.eg.db") {
 

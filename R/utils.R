@@ -134,7 +134,8 @@ column_order_by_group = function(factor, mat) {
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# x = rnorm(10)
+# set.seed(123)
+# x = rnorm(40)
 # x[1] = 100
 # adjust_outlier(x)
 adjust_outlier = function(x, q = 0.05) {
@@ -164,12 +165,13 @@ adjust_outlier = function(x, q = 0.05) {
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# m = matrix(rnorm(200), 10)
-# rownames(m) = letters[1:10]
-# m[1, 1] = 1000
-# range(m)
+# set.seed(123)
+# m = matrix(rnorm(100), nrow = 10)
+# m[sample(length(m), 5)] = NA
+# m[1, ] = 0
+# m
 # m2 = adjust_matrix(m)
-# range(m2)
+# m2
 adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	if(is.data.frame(m)) {
 		m = as.matrix(m)
@@ -402,9 +404,9 @@ check_pkg = function(pkg, bioc = FALSE) {
 		}
 
 		if(bioc) {
-			answer = readline(qq("Package '@{pkg}' is not installed. Do you want to install it from Bioconductor? [y|n] "))
+			answer = readline(qq("Package '@{pkg}' is required but not installed. Do you want to install it from Bioconductor? [y|n] "))
 		} else {
-			answer = readline(qq("Package '@{pkg}' is not installed. Do you want to install it from CRAN? [y|n] "))
+			answer = readline(qq("Package '@{pkg}' is required but not installed. Do you want to install it from CRAN? [y|n] "))
 		}
 
 		if(bioc) {

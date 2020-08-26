@@ -1,41 +1,45 @@
+Changes in version 1.5.1
++ add a `predict_classes()` function.
++ add the cola analysis for Golub dataset as a data object in the package.
++ automatically install the "suggested" packages.
+
 Changes in version 1.3.2
-+ add a new vignette introducing functional enrichment
++ add a new vignette introducing functional enrichment.
 
 Changes in version 1.1.2
-+ improve documentations
++ improve documentations.
 
 Changes in version 1.1.1
 + add `GO_enrichment()` and `map_to_entrez_id()`.
 + add `ncol()`/`nrow()`/`colnames()`/`rownames()`/`dim()` helper functions.
 + use `eulerr::euler()` to make the Euler diagram.
-+ simplified the rules for deciding the best k
++ simplified the rules for deciding the best k.
 
 Changes in version 0.99.15
 + support t-SNE and UMAP.
 
 Changes in version 0.99.14
-+ cola_report() supports `mc.cores`
++ cola_report() supports `mc.cores`.
 
 Changes in version 0.99.13
-+ partition functions all support `mc.cores`
++ partition functions all support `mc.cores`.
 
 Changes in version 0.99.12
-+ implement get_consensus_matrix() by C++
-+ add regiester_NMF() and register_SOM()
++ implement get_consensus_matrix() by Cpp.
++ add regiester_NMF() and register_SOM().
 
 Changes in version 0.99.9
 + move TEMPLATE_DIR to `.onLoad()`.
 
 Changes in version 0.99.5
-+ reduce the number of packages loaded
++ reduce the number of packages loaded.
 + improve the package according to comments in https://github.com/Bioconductor/Contributions/issues/941#issuecomment-452728439
 
 Changes in version 0.99.4
-+ fixed warnings in Rd files
++ fixed warnings in Rd files.
 
 Changes in version 0.99.3
-+ remove venneuler from DESCRIPTION
-
++ remove venneuler from DESCRIPTION.
 
 Changes in version 0.99.0
-+ Submitted to Bioconductor
++ Submitted to Bioconductor/

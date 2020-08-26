@@ -77,6 +77,6 @@ m = cbind(rbind(matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
                 matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
                 matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
          ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-cp = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
-cp
+res = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
+res
 }

@@ -29,14 +29,14 @@ A \code{\link{ConsensusPartitionList-class}} object or a \code{\link{ConsensusPa
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-cola_rl[c("SD", "MAD"), c("hclust", "kmeans")]
-cola_rl["SD", "kmeans"] # a ConsensusPartition object
-cola_rl["SD:kmeans"] # a ConsensusPartition object
-cola_rl[["SD:kmeans"]] # a ConsensusPartition object
-cola_rl["SD", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
-cola_rl["SD:kmeans", drop = FALSE] # still a ConsensusPartitionList object
-cola_rl["SD", ]
-cola_rl[, "hclust"]
-cola_rl[1:2, 1:2]
+data(golub_cola)
+golub_cola[c("SD", "MAD"), c("hclust", "kmeans")]
+golub_cola["SD", "kmeans"] # a ConsensusPartition object
+golub_cola["SD:kmeans"] # a ConsensusPartition object
+golub_cola[["SD:kmeans"]] # a ConsensusPartition object
+golub_cola["SD", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
+golub_cola["SD:kmeans", drop = FALSE] # still a ConsensusPartitionList object
+golub_cola["SD", ]
+golub_cola[, "hclust"]
+golub_cola[1:2, 1:2]
 }

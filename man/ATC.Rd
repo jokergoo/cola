@@ -30,7 +30,7 @@ cumulative distribution function of \code{X} where \code{X} is the absolute corr
 \code{ATC_i = 1 - \\int_{min_cor}^1 F_i(X)}.
 
 By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
-the top-value method by:
+a new top-value method by:
 
   \preformatted{
     register_top_value_methods(

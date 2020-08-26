@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="Test correspondance between predicted classes and known factors — test_to_known_factors-ConsensusPartitionList-method" />
 <meta property="og:description" content="Test correspondance between predicted classes and known factors" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
       </span>
     </div>
 
@@ -95,17 +98,23 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/a_quick_start.html">UNKNOWN TITLE</a>
+      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
     </li>
     <li>
-      <a href="../articles/functional_enrichment.html">UNKNOWN TITLE</a>
+      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/predict.html">Predict classes for new samples</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_big_datasets.html">Working with big datasets</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/cola">
+  <a href="https://github.com/jokergoo/cola/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -174,126 +183,139 @@
 <li><p>number of subgroups.</p></li>
 </ul>
 
+<p>If there are NA values, basically it means there are no efficient data points to perform the test.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='test_between_factors.html'>test_between_factors</a></code>, <code><a href='test_to_known_factors-ConsensusPartition-method.html'>test_to_known_factors,ConsensusPartition-method</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='fu'><a href='test_to_known_factors-dispatch.html'>test_to_known_factors</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>known</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>40</span>)</div><div class='output co'>#&gt;              n     known(p) k
-#&gt; SD:skmeans  58 5.168296e-13 2
-#&gt; SD:skmeans  60 5.168296e-13 3
-#&gt; SD:skmeans  57 5.168296e-13 4
-#&gt; SD:skmeans  45 6.428704e-05 5
-#&gt; SD:skmeans  20 2.615879e-02 6
-#&gt; CV:skmeans  57           NA 2
-#&gt; CV:skmeans  60 5.168296e-13 3
-#&gt; CV:skmeans  60 5.168296e-13 4
-#&gt; CV:skmeans  42 2.006264e-02 5
-#&gt; CV:skmeans   0           NA 6
-#&gt; MAD:skmeans 54 5.168296e-13 2
-#&gt; MAD:skmeans 60 5.168296e-13 3
-#&gt; MAD:skmeans 49 1.441904e-12 4
-#&gt; MAD:skmeans 31           NA 5
-#&gt; MAD:skmeans 18           NA 6
-#&gt; ATC:skmeans 55 5.168296e-13 2
-#&gt; ATC:skmeans 56 5.168296e-13 3
-#&gt; ATC:skmeans 42 1.712029e-12 4
-#&gt; ATC:skmeans 38 5.209289e-12 5
-#&gt; ATC:skmeans 34 3.375703e-10 6
-#&gt; SD:mclust   60 5.168296e-13 2
-#&gt; SD:mclust   60 5.168296e-13 3
-#&gt; SD:mclust   60 5.168296e-13 4
-#&gt; SD:mclust   35           NA 5
-#&gt; SD:mclust   34 5.118827e-06 6
-#&gt; CV:mclust   60           NA 2
-#&gt; CV:mclust   60 5.168296e-13 3
-#&gt; CV:mclust   60 5.168296e-13 4
-#&gt; CV:mclust   57 5.168296e-13 5
-#&gt; CV:mclust   24 4.865012e-03 6
-#&gt; MAD:mclust  59 5.168296e-13 2
-#&gt; MAD:mclust  60 5.168296e-13 3
-#&gt; MAD:mclust  60 5.168296e-13 4
-#&gt; MAD:mclust  53 1.305343e-08 5
-#&gt; MAD:mclust  26 1.047882e-01 6
-#&gt; ATC:mclust  49 5.168296e-13 2
-#&gt; ATC:mclust  58 5.168296e-13 3
-#&gt; ATC:mclust  56 4.581443e-13 4
-#&gt; ATC:mclust  39 1.488786e-12 5
-#&gt; ATC:mclust  16 9.010221e-01 6
-#&gt; SD:pam      45 2.290483e-07 2
-#&gt; SD:pam      59 1.770675e-12 3
-#&gt; SD:pam      43 4.893648e-12 4
-#&gt; SD:pam      30 2.754290e-03 5
-#&gt; SD:pam      16           NA 6
-#&gt; CV:pam      57           NA 2
-#&gt; CV:pam      57 1.426193e-11 3
-#&gt; CV:pam      48 1.928910e-08 4
-#&gt; CV:pam      37 7.646741e-05 5
-#&gt; CV:pam      26 6.766401e-02 6
-#&gt; MAD:pam     58 3.567443e-12 2
-#&gt; MAD:pam     56 7.338144e-12 3
-#&gt; MAD:pam     38 2.896696e-11 4
-#&gt; MAD:pam     32 2.750913e-06 5
-#&gt; MAD:pam      1           NA 6
-#&gt; ATC:pam     54 4.581443e-13 2
-#&gt; ATC:pam     53           NA 3
-#&gt; ATC:pam     33           NA 4
-#&gt; ATC:pam     18           NA 5
-#&gt; ATC:pam     12 7.730048e-01 6
-#&gt; SD:hclust   60 5.168296e-13 2
-#&gt; SD:hclust   60 5.168296e-13 3
-#&gt; SD:hclust   60 5.168296e-13 4
-#&gt; SD:hclust   43 4.617864e-03 5
-#&gt; SD:hclust   35           NA 6
-#&gt; CV:hclust   39           NA 2
-#&gt; CV:hclust   60 5.168296e-13 3
-#&gt; CV:hclust   60 5.168296e-13 4
-#&gt; CV:hclust   40 9.365686e-07 5
-#&gt; CV:hclust   33 9.974796e-03 6
-#&gt; MAD:hclust  60 5.168296e-13 2
-#&gt; MAD:hclust  60 5.168296e-13 3
-#&gt; MAD:hclust  60 5.168296e-13 4
-#&gt; MAD:hclust  32           NA 5
-#&gt; MAD:hclust  29           NA 6
-#&gt; ATC:hclust  52 5.168296e-13 2
-#&gt; ATC:hclust  53 1.543376e-11 3
-#&gt; ATC:hclust  49 9.317917e-11 4
-#&gt; ATC:hclust  30 1.629250e-09 5
-#&gt; ATC:hclust  31 1.313136e-09 6
-#&gt; SD:kmeans   59 5.168296e-13 2
-#&gt; SD:kmeans   60 5.168296e-13 3
-#&gt; SD:kmeans   60 5.168296e-13 4
-#&gt; SD:kmeans   45 5.168296e-13 5
-#&gt; SD:kmeans   16           NA 6
-#&gt; CV:kmeans   60           NA 2
-#&gt; CV:kmeans   60 5.168296e-13 3
-#&gt; CV:kmeans   60 5.168296e-13 4
-#&gt; CV:kmeans   40 5.168296e-13 5
-#&gt; CV:kmeans    6           NA 6
-#&gt; MAD:kmeans  39 1.441904e-12 2
-#&gt; MAD:kmeans  60 5.168296e-13 3
-#&gt; MAD:kmeans  60 5.168296e-13 4
-#&gt; MAD:kmeans  42 4.695351e-08 5
-#&gt; MAD:kmeans  40 1.644612e-09 6
-#&gt; ATC:kmeans  52 5.168296e-13 2
-#&gt; ATC:kmeans  59 5.168296e-13 3
-#&gt; ATC:kmeans  56 4.519811e-12 4
-#&gt; ATC:kmeans  29 3.591702e-04 5
-#&gt; ATC:kmeans   8 6.119776e-01 6</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
+<span class='fu'><a href='test_to_known_factors-dispatch.html'>test_to_known_factors</a></span>(<span class='no'>golub_cola</span>)</div><div class='output co'>#&gt;             n_sample ALL.AML(p-value) k
+#&gt; SD:NMF            66     1.345569e-12 2
+#&gt; SD:NMF            59     7.380186e-12 3
+#&gt; SD:NMF            38     5.336125e-09 4
+#&gt; SD:NMF            49     9.126510e-09 5
+#&gt; SD:NMF            33     3.220673e-07 6
+#&gt; CV:NMF            63     7.819991e-13 2
+#&gt; CV:NMF            61     1.738550e-11 3
+#&gt; CV:NMF            48     3.775135e-11 4
+#&gt; CV:NMF            47     4.063260e-09 5
+#&gt; CV:NMF            37     1.801303e-07 6
+#&gt; MAD:NMF           65     2.131136e-12 2
+#&gt; MAD:NMF           67     8.262374e-12 3
+#&gt; MAD:NMF           48     3.775135e-11 4
+#&gt; MAD:NMF           47     2.266453e-08 5
+#&gt; MAD:NMF           38     2.024822e-07 6
+#&gt; ATC:NMF           69     5.413259e-05 2
+#&gt; ATC:NMF           65     2.973163e-08 3
+#&gt; ATC:NMF           62     1.001843e-09 4
+#&gt; ATC:NMF           48     4.167716e-08 5
+#&gt; ATC:NMF           44     1.867310e-07 6
+#&gt; SD:skmeans        54     1.014943e-11 2
+#&gt; SD:skmeans        65     4.402878e-13 3
+#&gt; SD:skmeans        64     6.162488e-13 4
+#&gt; SD:skmeans        51     4.266678e-09 5
+#&gt; SD:skmeans        48     2.142307e-08 6
+#&gt; CV:skmeans        55     3.766408e-11 2
+#&gt; CV:skmeans        67     1.706206e-13 3
+#&gt; CV:skmeans        60     4.200936e-12 4
+#&gt; CV:skmeans        45     9.252702e-10 5
+#&gt; CV:skmeans        47     9.432819e-09 6
+#&gt; MAD:skmeans       67     2.386428e-06 2
+#&gt; MAD:skmeans       67     1.712295e-13 3
+#&gt; MAD:skmeans       60     4.200936e-12 4
+#&gt; MAD:skmeans       44     1.509182e-09 5
+#&gt; MAD:skmeans       56     5.177647e-10 6
+#&gt; ATC:skmeans       71     5.229760e-05 2
+#&gt; ATC:skmeans       70     1.850005e-12 3
+#&gt; ATC:skmeans       63     8.358601e-12 4
+#&gt; ATC:skmeans       60     2.598166e-10 5
+#&gt; ATC:skmeans       51     1.218846e-07 6
+#&gt; SD:mclust         70     2.935936e-14 2
+#&gt; SD:mclust         60     6.914400e-13 3
+#&gt; SD:mclust         35     2.994405e-07 4
+#&gt; SD:mclust         64     2.684745e-12 5
+#&gt; SD:mclust         58     1.740816e-10 6
+#&gt; CV:mclust         70     2.935936e-14 2
+#&gt; CV:mclust         62     2.603259e-13 3
+#&gt; CV:mclust         62     1.779177e-12 4
+#&gt; CV:mclust         66     9.879568e-13 5
+#&gt; CV:mclust         53     1.779079e-09 6
+#&gt; MAD:mclust        72     8.753640e-14 2
+#&gt; MAD:mclust        61     4.154801e-13 3
+#&gt; MAD:mclust        63     1.060773e-12 4
+#&gt; MAD:mclust        63     4.793373e-12 5
+#&gt; MAD:mclust        47     9.398221e-09 6
+#&gt; ATC:mclust        62     1.255391e-12 2
+#&gt; ATC:mclust        46     5.783239e-10 3
+#&gt; ATC:mclust        46     6.398594e-09 4
+#&gt; ATC:mclust        51     1.678413e-09 5
+#&gt; ATC:mclust        49     2.219252e-09 6
+#&gt; SD:kmeans         71     2.076259e-14 2
+#&gt; SD:kmeans         66     2.723130e-13 3
+#&gt; SD:kmeans         63     9.953511e-13 4
+#&gt; SD:kmeans         50     7.989179e-11 5
+#&gt; SD:kmeans         56     5.626716e-10 6
+#&gt; CV:kmeans         66     2.145933e-13 2
+#&gt; CV:kmeans         68     1.057032e-13 3
+#&gt; CV:kmeans         57     1.778561e-11 4
+#&gt; CV:kmeans         57     7.592622e-11 5
+#&gt; CV:kmeans         61     5.204540e-11 6
+#&gt; MAD:kmeans        65     3.433859e-13 2
+#&gt; MAD:kmeans        68     1.061159e-13 3
+#&gt; MAD:kmeans        60     4.200936e-12 4
+#&gt; MAD:kmeans        58     5.314248e-11 5
+#&gt; MAD:kmeans        60     9.089505e-11 6
+#&gt; ATC:kmeans        72     1.496779e-04 2
+#&gt; ATC:kmeans        60     2.702128e-11 3
+#&gt; ATC:kmeans        56     7.621262e-09 4
+#&gt; ATC:kmeans        56     9.681021e-08 5
+#&gt; ATC:kmeans        62     8.552577e-08 6
+#&gt; SD:pam            54     1.014943e-11 2
+#&gt; SD:pam            58     1.939484e-12 3
+#&gt; SD:pam            63     6.737013e-12 4
+#&gt; SD:pam            45     1.805686e-08 5
+#&gt; SD:pam            31     3.961440e-01 6
+#&gt; CV:pam            65     1.035297e-07 2
+#&gt; CV:pam            61     4.365043e-13 3
+#&gt; CV:pam            64     4.109809e-12 4
+#&gt; CV:pam            50     3.201917e-09 5
+#&gt; CV:pam            38     2.029612e-07 6
+#&gt; MAD:pam           63     2.894708e-07 2
+#&gt; MAD:pam           24               NA 3
+#&gt; MAD:pam           58     6.372531e-11 4
+#&gt; MAD:pam           37     4.816509e-07 5
+#&gt; MAD:pam           49     2.888254e-08 6
+#&gt; ATC:pam           67     1.646876e-04 2
+#&gt; ATC:pam           59     3.743474e-06 3
+#&gt; ATC:pam           57     5.469317e-07 4
+#&gt; ATC:pam           46     1.047418e-05 5
+#&gt; ATC:pam           47     1.078180e-06 6
+#&gt; SD:hclust         70     4.696330e-15 2
+#&gt; SD:hclust         61     5.675685e-14 3
+#&gt; SD:hclust         51     3.345563e-10 4
+#&gt; SD:hclust         55     2.430419e-10 5
+#&gt; SD:hclust         48     9.437836e-10 6
+#&gt; CV:hclust         49     1.249196e-10 2
+#&gt; CV:hclust         59     1.231506e-12 3
+#&gt; CV:hclust         54     1.060706e-10 4
+#&gt; CV:hclust         35     4.645348e-07 5
+#&gt; CV:hclust         30     1.380057e-06 6
+#&gt; MAD:hclust        69     5.205581e-14 2
+#&gt; MAD:hclust        53     1.003667e-10 3
+#&gt; MAD:hclust        48     7.210093e-09 4
+#&gt; MAD:hclust        51     1.573967e-09 5
+#&gt; MAD:hclust        52     4.991274e-09 6
+#&gt; ATC:hclust        66     4.160902e-05 2
+#&gt; ATC:hclust        62     3.035429e-03 3
+#&gt; ATC:hclust        30     8.731023e-01 4
+#&gt; ATC:hclust        52     8.514077e-06 5
+#&gt; ATC:hclust        52     1.573431e-06 6</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -304,7 +326,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

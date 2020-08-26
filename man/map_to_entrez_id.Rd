@@ -16,7 +16,7 @@ map_to_entrez_id(from, org_db = "org.Hs.eg.db")
 
 }
 \details{
-If there are multiple mappings from the input ID type to an unique Entrez ID, randomly picked one.
+If there are multiple mappings from the input ID type to an unique Entrez ID, it randomly picks one.
 }
 \value{
 A named vectors where names are IDs with input ID type and values are the Entrez IDs.
@@ -24,7 +24,8 @@ A named vectors where names are IDs with input ID type and values are the Entrez
 The returned object normally is used in \code{\link{functional_enrichment}}.
 }
 \examples{
-\dontrun{
-    map_to_entrez_id("ENSEMBL")
+\donttest{
+map = map_to_entrez_id("ENSEMBL")
+head(map)
 }
 }

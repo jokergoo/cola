@@ -26,7 +26,8 @@ A numeric vector with same length as the original one.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-x = rnorm(10)
+set.seed(123)
+x = rnorm(40)
 x[1] = 100
 adjust_outlier(x)
 }

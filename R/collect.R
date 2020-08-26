@@ -28,9 +28,9 @@
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
+# \donttest{
+# data(golub_cola)
 # collect_plots(cola_rl, k = 3)
-# \dontrun{
 # collect_plots(cola_rl, k = 3, fun = membership_heatmap)
 # collect_plots(cola_rl, k = 3, fun = get_signatures)
 # }
@@ -42,15 +42,12 @@ setMethod(f = "collect_plots",
 	verbose = TRUE, mc.cores = 1, ...) {
 
 	nv = length(dev.list())
-	op = cola_opt$raster_resize
-	cola_opt$raster_resize = TRUE
 	on.exit({
 		nv2 = length(dev.list())
 		while(nv2 > nv & nv2 > 1) {
 			dev.off2()
 			nv2 = length(dev.list())
 		}
-		cola_opt$raster_resize = op
 	})
 
 	
@@ -188,16 +185,14 @@ setMethod(f = "collect_plots",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# \dontrun{
-# data(cola_rl)
-# collect_plots(cola_rl["SD", "kmeans"])
+# \donttest{
+# data(golub_cola)
+# collect_plots(golub_cola["ATC", "skmeans"])
 # }
 setMethod(f = "collect_plots",
 	signature = "ConsensusPartition",
 	definition = function(object, verbose = TRUE) {
 
-	op = cola_opt$raster_resize
-	cola_opt$raster_resize = TRUE
 	nv = length(dev.list())
 	on.exit({
 		nv2 = length(dev.list())
@@ -205,7 +200,6 @@ setMethod(f = "collect_plots",
 			dev.off2()
 			nv2 = length(dev.list())
 		}
-		cola_opt$raster_resize = op
 	})
 
 	all_k = object@k
@@ -435,7 +429,7 @@ All individual plots can be made by following functions:
 # == param
 # -object A `ConsensusPartitionList-class` object returned by `run_all_consensus_partition_methods`.
 # -k Number of subgroups.
-# -show_column_names Whether show column names in the heatmap (which is the column name in the original matrix).
+# -show_column_names Whether to show column names in the heatmap (which is the column name in the original matrix).
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
@@ -462,8 +456,8 @@ All individual plots can be made by following functions:
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# collect_classes(cola_rl, k = 3)
+# data(golub_cola)
+# collect_classes(golub_cola, k = 3)
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, show_column_names = FALSE,
@@ -578,7 +572,7 @@ setMethod(f = "collect_classes",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -internal Used internally.
-# -show_row_names Whether show row names in the heatmap (which is the column name in the original matrix).
+# -show_row_names Whether to show row names in the heatmap (which is the column name in the original matrix).
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
@@ -596,8 +590,8 @@ setMethod(f = "collect_classes",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# collect_classes(cola_rl["SD", "kmeans"])
+# data(golub_cola)
+# collect_classes(golub_cola["ATC", "skmeans"])
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",
 	definition = function(object, internal = FALSE, show_row_names = FALSE,
@@ -705,8 +699,8 @@ setMethod(f = "collect_stats",
 # of methods gives the best results with given the number of subgroups.
 #
 # == examples
-# data(cola_rl)
-# collect_stats(cola_rl, k = 3)
+# data(golub_cola)
+# collect_stats(golub_cola, k = 3)
 setMethod(f = "collect_stats",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, layout_nrow = 2, all_stats = FALSE, ...) {

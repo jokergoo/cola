@@ -11,7 +11,7 @@ names(brewer_pal_set2_col) = 1:16
 #
 # == param
 # -... Arguments for the parameters, see "details" section.
-# -RESET Whether reset to default values.
+# -RESET Whether to reset to default values.
 # -READ.ONLY Please ignore.
 # -LOCAL Please ignore.
 # -ADD Please ignore.
@@ -31,14 +31,11 @@ names(brewer_pal_set2_col) = 1:16
 # cola_opt(RESET = TRUE)
 cola_opt = function(..., RESET = FALSE, READ.ONLY = NULL, LOCAL = FALSE, ADD = FALSE) {}
 cola_opt = setGlobalOptions(
-	raster_resize = list(
-		.value = FALSE,
-		.visible = FALSE
-	),
 	group_diff = 0,
 	fdr_cutoff = 0.05,
 	color_set_1 = brewer_pal_set1_col,
-	color_set_2 = brewer_pal_set2_col
+	color_set_2 = brewer_pal_set2_col,
+	message = TRUE
 )
 
 TEMPLATE_DIR = NULL

@@ -1,0 +1,25 @@
+---
+title: "Working with big datasets"
+author: "Zuguang Gu ( z.gu@dkfz.de )"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{5. Working with big datasets}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, message = FALSE}
+library(markdown)
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    fig.align = "center")
+options(width = 100)
+options(rmarkdown.html_vignette.check_title = FALSE)
+library(cola)
+```
+
+To be added...

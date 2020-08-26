@@ -21,7 +21,7 @@ A numeric matrix.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-obj = cola_rl["SD", "kmeans"]
+data(golub_cola)
+obj = golub_cola["ATC", "skmeans"]
 get_matrix(obj)
 }

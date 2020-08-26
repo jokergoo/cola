@@ -28,10 +28,11 @@ A numeric matrix.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-m = matrix(rnorm(200), 10)
-rownames(m) = letters[1:10]
-m[1, 1] = 1000
-range(m)
+set.seed(123)
+m = matrix(rnorm(100), nrow = 10)
+m[sample(length(m), 5)] = NA
+m[1, ] = 0
+m
 m2 = adjust_matrix(m)
-range(m2)
+m2
 }

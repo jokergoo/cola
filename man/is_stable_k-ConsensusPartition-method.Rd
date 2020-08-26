@@ -16,11 +16,16 @@ Test whether the current k corresponds to a stable partition
   \item{...}{Pass to \code{\link{suggest_best_k,ConsensusPartition-method}}.}
 
 }
+\details{
+if 1-PAC for the k is larger than 0.9 (10\% ambiguity for
+the partition), cola marks it as a stable partition.
+}
 \value{
-Logical scalar
+Logical scalar.
 }
 \examples{
-# There is no example
-NULL
-
+data(golub_cola)
+obj = golub_cola["ATC", "skmeans"]
+is_stable_k(obj, k = 2)
+is_stable_k(obj, k = 3)
 }

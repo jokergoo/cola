@@ -16,7 +16,7 @@ Perform functional enrichment on signature genes
 \arguments{
 
   \item{object}{A vector of gene IDs.}
-  \item{id_mapping}{If the gene IDs which are row names of the original matrix are not Entrez IDs, a named vector should be provided where the names are the gene IDs in the matrix and values are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.}
+  \item{id_mapping}{If the gene IDs are not Entrez IDs, a named vector should be provided where the names are the gene IDs and values are the correspoinding Entrez IDs. The value can also be a function that converts gene IDs.}
   \item{org_db}{Annotation database.}
   \item{ontology}{Following ontologies are allowed: \code{BP}, \code{CC}, \code{MF}, \code{KEGG}, \code{Reactome}. \code{MSigDb} with the gmt file set by \code{gmt_file} argument, or \code{gmt} for general gmt gene sets.}
   \item{min_set_size}{The minimal size of the gene sets.}
@@ -28,6 +28,9 @@ Perform functional enrichment on signature genes
 }
 \details{
 The function enrichment is applied by clusterProfiler, DOSE or ReactomePA packages.
+}
+\seealso{
+\url{http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html}
 }
 \value{
 A data frame.

@@ -1,10 +1,10 @@
 \name{knitr_add_tab_item}
 \alias{knitr_add_tab_item}
 \title{
-Add one JavaScript tab in the report
+Add JavaScript tab in the report
 }
 \description{
-Add one JavaScript tab in the report
+Add JavaScript tab in the report
 }
 \usage{
 knitr_add_tab_item(code, header, prefix, desc = "", opt = NULL,

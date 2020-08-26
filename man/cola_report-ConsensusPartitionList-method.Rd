@@ -20,9 +20,9 @@ Make HTML report from the ConsensusPartitionList object
 
 }
 \details{
-The \code{\link{ConsensusPartitionList-class}} object contains results for all top-value methods and all partitioning methods.
+The \code{\link{ConsensusPartitionList-class}} object contains results for all combinations of top-value methods and partitioning methods.
 This function generates a HTML report which contains all plots and tables for every combination
-of top-value method and partitioning method.
+of method.
 
 The report generation may take a while because it generates A LOT of heatmaps.
 
@@ -35,8 +35,9 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-\dontrun{
-data(cola_rl)
-cola_report(cola_rl[c("SD", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
+if(FALSE) {
+# the following code is runnable
+data(golub_cola)
+cola_report(golub_cola[c("SD", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
 }
 }

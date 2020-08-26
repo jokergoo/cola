@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="Suggest the best number of subgroups — suggest_best_k-ConsensusPartitionList-method" />
 <meta property="og:description" content="Suggest the best number of subgroups" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
       </span>
     </div>
 
@@ -95,17 +98,23 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/a_quick_start.html">UNKNOWN TITLE</a>
+      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
     </li>
     <li>
-      <a href="../articles/functional_enrichment.html">UNKNOWN TITLE</a>
+      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/predict.html">Predict classes for new samples</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_big_datasets.html">Working with big datasets</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/cola">
+  <a href="https://github.com/jokergoo/cola/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -151,46 +160,43 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>It basically gives the best k for each combination of top-value method and partitioning method by calling <code><a href='suggest_best_k-ConsensusPartition-method.html'>suggest_best_k,ConsensusPartition-method</a></code>.</p>
-<p>1-PAC score higher than 0.95 is treated as very stable partition and higher than 0.9 is treated as stable partition.</p>
+<p>1-PAC score higher than 0.95 is treated as very stable partition (marked by <code>**</code>) and higher than 0.9 is treated as stable partition (marked by <code>*</code>).</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A data frame with the best k and other statistics for each combination of methods.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span>(<span class='no'>cola_rl</span>)</div><div class='output co'>#&gt;             best_k     1-PAC mean_silhouette concordance   
-#&gt; SD:kmeans        3 1.0000000       0.9842509   0.9786667 **
-#&gt; SD:skmeans       3 1.0000000       0.9884698   0.9941111 **
-#&gt; SD:mclust        3 1.0000000       0.9853272   0.9926667 **
-#&gt; MAD:skmeans      3 1.0000000       0.9884390   0.9938889 **
-#&gt; MAD:mclust       3 1.0000000       0.9764124   0.9864444 **
-#&gt; MAD:kmeans       3 0.9993734       0.9822821   0.9842222 **
-#&gt; CV:kmeans        3 0.9586466       0.9633184   0.9530000 **
-#&gt; CV:skmeans       3 0.9548872       0.9650830   0.9810000 **
-#&gt; CV:mclust        3 0.9411028       0.9593721   0.9720000  *
-#&gt; SD:hclust        3 0.9229323       0.9421395   0.9608889  *
-#&gt; MAD:hclust       3 0.8208020       0.9303737   0.9433333   
-#&gt; ATC:skmeans      2 0.7650376       0.8553168   0.9441111   
-#&gt; CV:hclust        3 0.7305764       0.9212745   0.9271111   
-#&gt; ATC:kmeans       2 0.7105263       0.8228562   0.9275556   
-#&gt; SD:pam           3 0.6748120       0.8736248   0.9153333   
-#&gt; MAD:pam          3 0.6591479       0.8278094   0.9061111   
-#&gt; ATC:mclust       3 0.6541353       0.8519580   0.9005556   
-#&gt; CV:pam           2 0.6165414       0.8826227   0.9270000   
-#&gt; ATC:pam          2 0.4899749       0.8106902   0.9093333   
-#&gt; ATC:hclust       2 0.4028822       0.7172447   0.8663333   </div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
+<span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span>(<span class='no'>golub_cola</span>)</div><div class='output co'>#&gt;             best_k     1-PAC mean_silhouette concordance    optional_k
+#&gt; ATC:kmeans       2 1.0000000       0.9815350   0.9915000 **           
+#&gt; ATC:NMF          2 0.9719052       0.9266103   0.9734444 **           
+#&gt; ATC:skmeans      3 0.9609306       0.9318403   0.9731667 **          2
+#&gt; MAD:skmeans      3 0.8656716       0.8722804   0.9462778              
+#&gt; CV:skmeans       3 0.8371378       0.8565841   0.9377778              
+#&gt; MAD:mclust       2 0.8235294       0.9265781   0.9318889              
+#&gt; SD:skmeans       3 0.7445127       0.8364565   0.9178889              
+#&gt; CV:kmeans        3 0.7388060       0.8643745   0.9012778              
+#&gt; MAD:NMF          2 0.6799824       0.8109892   0.9250556              
+#&gt; SD:kmeans        2 0.6624232       0.8355983   0.9114444              
+#&gt; MAD:pam          2 0.6514486       0.8236402   0.9253889              
+#&gt; SD:mclust        5 0.6338894       0.7209468   0.7903333              
+#&gt; SD:NMF           2 0.6334504       0.8232491   0.9275000              
+#&gt; CV:NMF           2 0.6334504       0.7872886   0.9157222              
+#&gt; MAD:kmeans       2 0.6231884       0.8054912   0.9036111              
+#&gt; ATC:pam          2 0.5974539       0.8083550   0.9176111              
+#&gt; ATC:hclust       2 0.5737489       0.8133644   0.9105556              
+#&gt; SD:pam           2 0.5478490       0.6864620   0.8758889              
+#&gt; CV:pam           2 0.5460931       0.7840100   0.9035556              
+#&gt; CV:mclust        2 0.4890269       0.9083927   0.8949444              
+#&gt; ATC:mclust       2 0.3595259       0.7109781   0.8275000              
+#&gt; SD:hclust        2 0.2357331       0.7767183   0.8512778              
+#&gt; MAD:hclust       2 0.2265145       0.7367577   0.8377222              
+#&gt; CV:hclust        2 0.2139812       0.5697315   0.8053333              </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -201,7 +207,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

@@ -9,7 +9,7 @@
 #         ``upset``: draw the Upset plot by `ComplexHeatmap::UpSet`; ``venn``: plot Venn diagram by `gplots::venn`; 
 #         ``correspondance``: use `correspond_between_rankings`.
 # -fill Filled color for the Euler diagram. The value should be a color vector. Transparency of 0.5 are added internally.
-# -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
+# -... Additional arguments passed to `eulerr::plot.euler`, `ComplexHeatmap::UpSet` or `correspond_between_rankings`.
 #
 # == value
 # No value is returned.
@@ -21,10 +21,11 @@
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# top_rows_overlap(cola_rl, method = "venn")
-# top_rows_overlap(cola_rl, method = "upset")
-# top_rows_overlap(cola_rl, method = "correspondance")
+# data(golub_cola)
+# top_rows_overlap(golub_cola, method = "euler")
+# top_rows_overlap(golub_cola, method = "upset")
+# top_rows_overlap(golub_cola, method = "venn")
+# top_rows_overlap(golub_cola, method = "correspondance")
 setMethod(f = "top_rows_overlap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = min(object@list[[1]]@top_n), 
@@ -99,7 +100,7 @@ setMethod(f = "top_rows_overlap",
 #         ``upset``: draw the Upset plot by `ComplexHeatmap::UpSet`; ``venn``: plot Venn diagram by `gplots::venn`; 
 #         ``correspondance``: use `correspond_between_rankings`.
 # -fill Filled color for the Euler diagram. The value should be a color vector. Transparency of 0.5 are added internally.
-# -... Additional arguments passed to `eulerr::plot.euler` or `correspond_between_rankings`.
+# -... Additional arguments passed to `eulerr::plot.euler`, `ComplexHeatmap::UpSet` or `correspond_between_rankings`.
 #
 # == details
 # The i^th value in every vectors in ``object`` should correspond to the same element from the original data.
@@ -115,6 +116,7 @@ setMethod(f = "top_rows_overlap",
 # set.seed(123)
 # mat = matrix(rnorm(1000), nrow = 100)
 # lt = list(sd = rowSds(mat), mad = rowMads(mat))
+# top_elements_overlap(lt, top_n = 20, method = "euler")
 # top_elements_overlap(lt, top_n = 20, method = "venn")
 # top_elements_overlap(lt, top_n = 20, method = "upset")
 # top_elements_overlap(lt, top_n = 20, method = "correspondance")
@@ -139,7 +141,6 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 		gplots::venn(lt, ...)
 		title(qq("top @{top_n} rows"))
 	} else if(method == "euler") {
-		check_pkg("eulerr", bioc = FALSE)
 		if(is.null(fill)) {
 			fills = TRUE
 		} else {
@@ -148,7 +149,7 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 		print(plot(eulerr::euler(lt), main = qq("top @{top_n} rows"), legend = TRUE, fills = fills, ...))
 	} else if(method == "upset") {
 		cm = make_comb_mat(lt)
-		ht = UpSet(cm, column_title = qq("top @{top_n} rows"))
+		ht = UpSet(cm, column_title = qq("top @{top_n} rows"), ...)
 		draw(ht)
 	} else if(method == "correspondance") {
 		correspond_between_rankings(object, top_n = top_n, ...)
@@ -166,7 +167,7 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 #       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -scale_rows Wether scale rows. 
+# -scale_rows Wether to scale rows. 
 # -... Pass to `top_rows_heatmap,matrix-method`
 #
 # == value
@@ -178,6 +179,11 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# \donttest{
+# data(golub_cola)
+# top_rows_heatmap(golub_cola)
+# }
 setMethod(f = "top_rows_heatmap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = min(object@list[[1]]@top_n), 
@@ -224,7 +230,7 @@ setMethod(f = "top_rows_heatmap",
 # -top_value_method Methods defined in `all_top_value_methods`.
 # -bottom_annotation A `ComplexHeatmap::HeatmapAnnotation-class` object.
 # -top_n Number of top rows to show in the heatmap.
-# -scale_rows Whether scale rows.
+# -scale_rows Whether to scale rows.
 #
 # == details
 # The function makes heatmaps where the rows are scaled (or not scaled) for the top n rows

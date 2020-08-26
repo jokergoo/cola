@@ -5,7 +5,7 @@
 # == param
 # -object A `ConsensusPartition-class` object.
 # -k Number of subgroups.
-# -unique Whether apply `base::unique` to rows of the returned data frame.
+# -unique Whether to apply `base::unique` to rows of the returned data frame.
 #
 # == details
 # It is mainly used internally.
@@ -18,8 +18,8 @@
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# obj = cola_rl["SD", "kmeans"]
+# data(golub_cola)
+# obj = golub_cola["ATC", "skmeans"]
 # get_param(obj)
 # get_param(obj, k = 2)
 # get_param(obj, unique = FALSE)
@@ -54,8 +54,8 @@ setMethod(f = "get_param",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# obj = cola_rl["SD", "kmeans"]
+# data(golub_cola)
+# obj = golub_cola["ATC", "skmeans"]
 # get_consensus(obj, k = 2)
 setMethod(f = "get_consensus",
 	signature = "ConsensusPartition",
@@ -71,8 +71,8 @@ setMethod(f = "get_consensus",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -k Number of subgroups.
-# -each Whether return the percentage membership matrix which is summarized from all partitions
-#       or the individual membership in every random partition.
+# -each Whether to return the percentage membership matrix which is summarized from all partitions
+#       or the individual membership in every single partition run.
 #
 # == details
 # If ``each == FALSE``, the value in the membership matrix is the probability
@@ -82,7 +82,8 @@ setMethod(f = "get_consensus",
 # The percent membership matrix is calculated by `clue::cl_consensus`.
 #
 # == value
-# If ``each == TRUE``, it returns a membership matrix where rows correspond to the columns from the original matrix.
+# - If ``each == FALSE``, it returns a membership matrix where rows correspond to the columns from the subgroups.
+# - If ``each == TRUE``, it returns a membership matrix where rows correspond to the columns from the original matrix.
 #
 # == seealso
 # `get_membership,ConsensusPartitionList-method` summarizes membership from partitions from all combinations
@@ -92,8 +93,8 @@ setMethod(f = "get_consensus",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# obj = cola_rl["SD", "kmeans"]
+# data(golub_cola)
+# obj = golub_cola["ATC", "skmeans"]
 # get_membership(obj, k = 2)
 # get_membership(obj, k = 2, each = TRUE)
 setMethod(f = "get_membership",
@@ -131,8 +132,8 @@ setMethod(f = "get_membership",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# get_membership(cola_rl, k = 2)
+# data(golub_cola)
+# get_membership(golub_cola, k = 2)
 setMethod(f = "get_membership",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
@@ -157,8 +158,8 @@ setMethod(f = "get_membership",
 # -1-PAC 1 - proportion of ambiguous clustering, calculated by `PAC`.
 # -mean_silhouette The mean silhouette score. See https://en.wikipedia.org/wiki/Silhouette_(clustering) .
 # -concordance The mean probability that each partition fits the consensus partition, calculated by `concordance`.
-# -area_increased The increased area under eCDF (the empirical cumulative distribution function curve) to the previous k.
-# -Rand the Rand index which is the percent of pairs of samples that are both in a same cluster or both are not 
+# -area_increased The increased area under eCDF (the empirical cumulative distribution function) curve to the previous k.
+# -Rand This is the percent of pairs of samples that are both in a same cluster or both are not 
 #       in a same cluster in the partition of ``k`` and ``k-1``. See https://en.wikipedia.org/wiki/Rand_index .
 # -Jaccard The ratio of pairs of samples are both in a same cluster in the partition of ``k`` and ``k-1`` and the pairs
 #          of samples are both in a same cluster in the partition ``k`` or ``k-1``.
@@ -170,8 +171,8 @@ setMethod(f = "get_membership",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# obj = cola_rl["SD", "kmeans"]
+# data(golub_cola)
+# obj = golub_cola["ATC", "skmeans"]
 # get_stats(obj)
 # get_stats(obj, k = 2)
 setMethod(f = "get_stats",
@@ -209,8 +210,8 @@ setMethod(f = "get_stats",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# get_stats(cola_rl, k = 2)
+# data(golub_cola)
+# get_stats(golub_cola, k = 2)
 setMethod(f = "get_stats",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, all_stats = FALSE) {
@@ -247,8 +248,8 @@ setMethod(f = "get_stats",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# obj = cola_rl["SD", "kmeans"]
+# data(golub_cola)
+# obj = golub_cola["ATC", "skmeans"]
 # get_classes(obj, k = 2)
 # get_classes(obj)
 setMethod(f = "get_classes",
@@ -284,8 +285,8 @@ setMethod(f = "get_classes",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# get_classes(cola_rl, k = 2)
+# data(golub_cola)
+# get_classes(golub_cola, k = 2)
 setMethod(f = "get_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k) {
@@ -301,7 +302,7 @@ setMethod(f = "get_classes",
 # -rl A `ConsensusPartitionList-class` object.
 #
 # == details
-# It updates the statistics slot in the ConsensusPartitionList object, used internally.
+# It updates the ``stat`` slot in the ConsensusPartitionList object, used internally.
 #
 recalc_stats = function(rl) {
 	for(j in seq_along(rl@list)) {
@@ -349,11 +350,14 @@ recalc_stats = function(rl) {
 #   1-PAC score, highest mean silhouette, and highest concordance is taken as
 #   the best k.
 #
-# Additionally, if 1-PAC for the best k is larger than 0.9 (10% ambiguity for
+# Additionally, if 1-PAC for the best k is larger than 0.9 (10\% ambiguity for
 # the partition), cola marks it as a stable partition. It should be noted that
 # it is difficult to find the best k deterministically, we encourage users to
 # compare results for all k and determine a proper one which best explain
 # their studies.
+#
+# == see also
+# The selection of the best k can be visualized by `select_partition_number`.
 #
 # == value
 # The best k.
@@ -362,8 +366,8 @@ recalc_stats = function(rl) {
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# obj = cola_rl["SD", "kmeans"]
+# data(golub_cola)
+# obj = golub_cola["ATC", "skmeans"]
 # suggest_best_k(obj)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
@@ -418,9 +422,17 @@ setMethod(f = "suggest_best_k",
 # -k Number of subgroups.
 # -...  Pass to `suggest_best_k,ConsensusPartition-method`.
 #
+# == details
+# Optional best k is also assigned as ``TRUE``.
+#
 # == value
 # Logical scalar.
 #
+# == example
+# data(golub_cola)
+# obj = golub_cola["ATC", "skmeans"]
+# is_best_k(obj, k = 2)
+# is_best_k(obj, k = 3)
 setMethod(f = "is_best_k",
 	signature = "ConsensusPartition",
 	definition = function(object, k, ...) {
@@ -449,9 +461,18 @@ setMethod(f = "is_best_k",
 # -k Number of subgroups.
 # -...  Pass to `suggest_best_k,ConsensusPartition-method`.
 #
-# == value
-# Logical scalar
+# == details
+# if 1-PAC for the k is larger than 0.9 (10\% ambiguity for
+# the partition), cola marks it as a stable partition.
 #
+# == value
+# Logical scalar.
+#
+# == example
+# data(golub_cola)
+# obj = golub_cola["ATC", "skmeans"]
+# is_stable_k(obj, k = 2)
+# is_stable_k(obj, k = 3)
 setMethod(f = "is_stable_k",
 	signature = "ConsensusPartition",
 	definition = function(object, k, ...) {
@@ -469,7 +490,7 @@ setMethod(f = "is_stable_k",
 # == details
 # It basically gives the best k for each combination of top-value method and partitioning method by calling `suggest_best_k,ConsensusPartition-method`.
 #
-# 1-PAC score higher than 0.95 is treated as very stable partition and higher than 0.9 is treated as stable partition.
+# 1-PAC score higher than 0.95 is treated as very stable partition (marked by ``**``) and higher than 0.9 is treated as stable partition (marked by ``*``).
 #
 # == value
 # A data frame with the best k and other statistics for each combination of methods.
@@ -478,8 +499,8 @@ setMethod(f = "is_stable_k",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# suggest_best_k(cola_rl)
+# data(golub_cola)
+# suggest_best_k(golub_cola)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartitionList",
 	definition = function(object, jaccard_index_cutoff = 0.95) {
@@ -537,11 +558,17 @@ setMethod(f = "suggest_best_k",
 # == param
 # -object A `ConsensusPartitionList-class` object.
 # -k Number of subgroups.
-# -...  Pass to `suggest_best_k,ConsensusPartitionList-method`.
+# -... Pass to `suggest_best_k,ConsensusPartitionList-method`.
+#
+# == details
+# It tests on the partitions for every method.
 #
 # == value
-# Logical vector
+# Logical vector.
 #
+# == example
+# data(golub_cola)
+# is_best_k(golub_cola, k = 3)
 setMethod(f = "is_best_k",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, ...) {
@@ -557,11 +584,17 @@ setMethod(f = "is_best_k",
 # == param
 # -object A `ConsensusPartitionList-class` object.
 # -k Number of subgroups.
-# -...  Pass to `suggest_best_k,ConsensusPartitionList-method`.
+# -... Pass to `suggest_best_k,ConsensusPartitionList-method`.
+#
+# == details
+# It tests on the partitions for every method.
 #
 # == value
 # Logical vector
 #
+# == example
+# data(golub_cola)
+# is_stable_k(golub_cola, k = 3)
 setMethod(f = "is_stable_k",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, ...) {
@@ -584,8 +617,8 @@ setMethod(f = "is_stable_k",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# get_matrix(cola_rl)
+# data(golub_cola)
+# get_matrix(golub_cola)
 setMethod(f = "get_matrix",
 	signature = "ConsensusPartitionList",
 	definition = function(object) {
@@ -605,8 +638,8 @@ setMethod(f = "get_matrix",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# obj = cola_rl["SD", "kmeans"]
+# data(golub_cola)
+# obj = golub_cola["ATC", "skmeans"]
 # get_matrix(obj)
 setMethod(f = "get_matrix",
 	signature = "ConsensusPartition",

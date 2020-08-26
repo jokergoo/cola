@@ -29,10 +29,10 @@ be thought the proportion of abmiguous partitioning is less than 0.05.
 A numeric value.
 }
 \examples{
-data(cola_rl)
-aPAC(get_consensus(cola_rl[1, 1], k = 2))
-aPAC(get_consensus(cola_rl[1, 1], k = 3))
-aPAC(get_consensus(cola_rl[1, 1], k = 4))
-aPAC(get_consensus(cola_rl[1, 1], k = 5))
-aPAC(get_consensus(cola_rl[1, 1], k = 6))
+data(golub_cola)
+aPAC(get_consensus(golub_cola[1, 1], k = 2))
+aPAC(get_consensus(golub_cola[1, 1], k = 3))
+aPAC(get_consensus(golub_cola[1, 1], k = 4))
+aPAC(get_consensus(golub_cola[1, 1], k = 5))
+aPAC(get_consensus(golub_cola[1, 1], k = 6))
 }

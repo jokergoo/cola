@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="Get membership matrix — get_membership-ConsensusPartitionList-method" />
 <meta property="og:description" content="Get membership matrix" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
       </span>
     </div>
 
@@ -95,17 +98,23 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/a_quick_start.html">UNKNOWN TITLE</a>
+      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
     </li>
     <li>
-      <a href="../articles/functional_enrichment.html">UNKNOWN TITLE</a>
+      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/predict.html">Predict classes for new samples</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_big_datasets.html">Working with big datasets</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/cola">
+  <a href="https://github.com/jokergoo/cola/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -162,81 +171,85 @@ when summarizing membership matrix from all methods.</p>
     <div class='dont-index'><p><code><a href='get_membership-ConsensusPartition-method.html'>get_membership,ConsensusPartition-method</a></code> returns membership matrix for a single top-value method and partitioning method.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;               p1        p2
-#&gt;  [1,] 0.74415208 0.2558479
-#&gt;  [2,] 0.74592820 0.2540718
-#&gt;  [3,] 0.76294007 0.2370599
-#&gt;  [4,] 0.79742091 0.2025791
-#&gt;  [5,] 0.73662659 0.2633734
-#&gt;  [6,] 0.84303544 0.1569646
-#&gt;  [7,] 0.80433803 0.1956620
-#&gt;  [8,] 0.73057918 0.2694208
-#&gt;  [9,] 0.75214306 0.2478569
-#&gt; [10,] 0.75540155 0.2445984
-#&gt; [11,] 0.81809734 0.1819027
-#&gt; [12,] 0.75551505 0.2444850
-#&gt; [13,] 0.73581791 0.2641821
-#&gt; [14,] 0.76684885 0.2331511
-#&gt; [15,] 0.74613219 0.2538678
-#&gt; [16,] 0.73601526 0.2639847
-#&gt; [17,] 0.74965338 0.2503466
-#&gt; [18,] 0.74850178 0.2514982
-#&gt; [19,] 0.75934485 0.2406551
-#&gt; [20,] 0.72817674 0.2718233
-#&gt; [21,] 0.04315879 0.9568412
-#&gt; [22,] 0.05015033 0.9498497
-#&gt; [23,] 0.09464973 0.9053503
-#&gt; [24,] 0.04550283 0.9544972
-#&gt; [25,] 0.04999170 0.9500083
-#&gt; [26,] 0.04823444 0.9517656
-#&gt; [27,] 0.06986727 0.9301327
-#&gt; [28,] 0.04682383 0.9531762
-#&gt; [29,] 0.04375333 0.9562467
-#&gt; [30,] 0.07745671 0.9225433
-#&gt; [31,] 0.11626401 0.8837360
-#&gt; [32,] 0.06056634 0.9394337
-#&gt; [33,] 0.04460949 0.9553905
-#&gt; [34,] 0.04999963 0.9500004
-#&gt; [35,] 0.04428233 0.9557177
-#&gt; [36,] 0.08382322 0.9161768
-#&gt; [37,] 0.12180476 0.8781952
-#&gt; [38,] 0.05288527 0.9471147
-#&gt; [39,] 0.09231451 0.9076855
-#&gt; [40,] 0.06748861 0.9325114
-#&gt; [41,] 0.60838684 0.3916132
-#&gt; [42,] 0.60578767 0.3942123
-#&gt; [43,] 0.57035365 0.4296464
-#&gt; [44,] 0.79215081 0.2078492
-#&gt; [45,] 0.71684303 0.2831570
-#&gt; [46,] 0.70669598 0.2933040
-#&gt; [47,] 0.75842682 0.2415732
-#&gt; [48,] 0.53754164 0.4624584
-#&gt; [49,] 0.57024059 0.4297594
-#&gt; [50,] 0.79158144 0.2084186
-#&gt; [51,] 0.64562264 0.3543774
-#&gt; [52,] 0.86557260 0.1344274
-#&gt; [53,] 0.74202445 0.2579756
-#&gt; [54,] 0.48731946 0.5126805
-#&gt; [55,] 0.47026793 0.5297321
-#&gt; [56,] 0.80487983 0.1951202
-#&gt; [57,] 0.85132795 0.1486720
-#&gt; [58,] 0.71255977 0.2874402
-#&gt; [59,] 0.71180830 0.2881917
-#&gt; [60,] 0.77344226 0.2265577</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
+<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>golub_cola</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;                   p1         p2
+#&gt; sample_39 0.59358153 0.40641847
+#&gt; sample_40 0.63018375 0.36981625
+#&gt; sample_42 0.09635172 0.90364828
+#&gt; sample_47 0.05294462 0.94705538
+#&gt; sample_48 0.05005081 0.94994919
+#&gt; sample_49 0.65297818 0.34702182
+#&gt; sample_41 0.05025083 0.94974917
+#&gt; sample_43 0.06129801 0.93870199
+#&gt; sample_44 0.05548161 0.94451839
+#&gt; sample_45 0.05527293 0.94472707
+#&gt; sample_46 0.05995747 0.94004253
+#&gt; sample_70 0.16432186 0.83567814
+#&gt; sample_71 0.11842690 0.88157310
+#&gt; sample_72 0.08399183 0.91600817
+#&gt; sample_68 0.05005081 0.94994919
+#&gt; sample_69 0.05005081 0.94994919
+#&gt; sample_67 0.39884919 0.60115081
+#&gt; sample_55 0.58207028 0.41792972
+#&gt; sample_56 0.56569727 0.43430273
+#&gt; sample_59 0.11471066 0.88528934
+#&gt; sample_52 0.92835728 0.07164272
+#&gt; sample_53 0.94889515 0.05110485
+#&gt; sample_51 0.94939353 0.05060647
+#&gt; sample_50 0.94949354 0.05050646
+#&gt; sample_54 0.59911047 0.40088953
+#&gt; sample_57 0.91765732 0.08234268
+#&gt; sample_58 0.94844836 0.05155164
+#&gt; sample_60 0.82086791 0.17913209
+#&gt; sample_61 0.94662173 0.05337827
+#&gt; sample_65 0.94679645 0.05320355
+#&gt; sample_66 0.16802260 0.83197740
+#&gt; sample_63 0.92826393 0.07173607
+#&gt; sample_64 0.92165799 0.07834201
+#&gt; sample_62 0.92500854 0.07499146
+#&gt; sample_1  0.33585792 0.66414208
+#&gt; sample_2  0.26705523 0.73294477
+#&gt; sample_3  0.58212055 0.41787945
+#&gt; sample_4  0.36375401 0.63624599
+#&gt; sample_5  0.05005081 0.94994919
+#&gt; sample_6  0.61052703 0.38947297
+#&gt; sample_7  0.57766713 0.42233287
+#&gt; sample_8  0.63749456 0.36250544
+#&gt; sample_9  0.12441756 0.87558244
+#&gt; sample_10 0.48741107 0.51258893
+#&gt; sample_11 0.10081389 0.89918611
+#&gt; sample_12 0.90148535 0.09851465
+#&gt; sample_13 0.05005081 0.94994919
+#&gt; sample_14 0.06371323 0.93628677
+#&gt; sample_15 0.05005081 0.94994919
+#&gt; sample_16 0.06185736 0.93814264
+#&gt; sample_17 0.06230041 0.93769959
+#&gt; sample_18 0.30873996 0.69126004
+#&gt; sample_19 0.06112516 0.93887484
+#&gt; sample_20 0.05005081 0.94994919
+#&gt; sample_21 0.05454255 0.94545745
+#&gt; sample_22 0.64971305 0.35028695
+#&gt; sample_23 0.60908848 0.39091152
+#&gt; sample_24 0.05255097 0.94744903
+#&gt; sample_25 0.53147790 0.46852210
+#&gt; sample_26 0.08470674 0.91529326
+#&gt; sample_27 0.66726356 0.33273644
+#&gt; sample_34 0.94342094 0.05657906
+#&gt; sample_35 0.92771261 0.07228739
+#&gt; sample_36 0.94317875 0.05682125
+#&gt; sample_37 0.94930892 0.05069108
+#&gt; sample_38 0.94519319 0.05480681
+#&gt; sample_28 0.94473506 0.05526494
+#&gt; sample_29 0.60464799 0.39535201
+#&gt; sample_30 0.93797171 0.06202829
+#&gt; sample_31 0.94636765 0.05363235
+#&gt; sample_32 0.94612962 0.05387038
+#&gt; sample_33 0.94915750 0.05084250</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -247,7 +260,7 @@ when summarizing membership matrix from all methods.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

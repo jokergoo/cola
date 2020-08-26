@@ -2,10 +2,10 @@
 \alias{consensus_heatmap,ConsensusPartition-method}
 \alias{consensus_heatmap}
 \title{
-Heatmap for the consensus matrix
+Heatmap of the consensus matrix
 }
 \description{
-Heatmap for the consensus matrix
+Heatmap of the consensus matrix
 }
 \usage{
 \S4method{consensus_heatmap}{ConsensusPartition}(object, k, internal = FALSE,
@@ -51,6 +51,6 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-consensus_heatmap(cola_rl["SD", "hclust"], k = 3)
+data(golub_cola)
+consensus_heatmap(golub_cola["ATC", "skmeans"], k = 3)
 }

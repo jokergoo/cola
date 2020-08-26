@@ -8,7 +8,7 @@ KNITR_TAB_ENV$prefix = NULL
 KNITR_TAB_ENV$css_added = FALSE
 
 # == title
-# Add one JavaScript tab in the report
+# Add JavaScript tab in the report
 #
 # == param
 # -code R code to execute.
@@ -106,7 +106,7 @@ $('#@{tab}-a').click(function(){
 # == details
 # The jQuery UI is used to generate html tabs (https://jqueryui.com/tabs/ ).
 #
-# `knitr_insert_tabs` should be used after several callings of `knitr_add_tab_item`
+# `knitr_insert_tabs` should be used after several calls of `knitr_add_tab_item`
 # to generate a complete HTML fragment for all tabs with all necessary Javascript and css code.
 #
 # This function is only for internal use.
@@ -162,9 +162,9 @@ $( function() {
 # -env Where the objects in the report are found, internally used.
 #
 # == details
-# The `ConsensusPartitionList-class` object contains results for all top-value methods and all partitioning methods.
+# The `ConsensusPartitionList-class` object contains results for all combinations of top-value methods and partitioning methods.
 # This function generates a HTML report which contains all plots and tables for every combination
-# of top-value method and partitioning method. 
+# of method. 
 #
 # The report generation may take a while because it generates A LOT of heatmaps.
 #
@@ -177,9 +177,10 @@ $( function() {
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# \dontrun{
-# data(cola_rl)
-# cola_report(cola_rl[c("SD", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
+# if(FALSE) {
+# # the following code is runnable
+# data(golub_cola)
+# cola_report(golub_cola[c("SD", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
 # }
 setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
@@ -245,8 +246,6 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 		          "ConsensusPartitionList" = "cola_report.html",
 		          "ConsensusPartition" = "cola_single.html")
 
-	cola_opt$raster_resize = TRUE
-
 	od = getOption("digits")
 	wd = getwd()
 	on.exit({
@@ -256,7 +255,6 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 			unlink(.ENV$TEMP_DIR, recursive = TRUE, force = TRUE)
 			.ENV$TEMP_DIR = NULL
 		}
-		cola_opt$raster_resize = FALSE
 	})
 
 	options(digits = 3)

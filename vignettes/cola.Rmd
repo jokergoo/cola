@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
     message = FALSE,
     fig.align = "center")
 options(markdown.HTML.stylesheet = "custom.css")
+options(rmarkdown.html_vignette.check_title = FALSE)
 options(width = 100)
 library(ComplexHeatmap)
 library(circlize)

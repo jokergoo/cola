@@ -56,8 +56,8 @@
 #                 matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
 #                 matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
 #          ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-# cp = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
-# cp
+# res = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
+# res
 consensus_partition = function(data,
 	top_value_method = "ATC",
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
@@ -572,7 +572,7 @@ setMethod(f = "show",
 })
 
 # == title
-# Plot the empirical cumulative distribution curve (eCDF) of the consensus matrix
+# Plot the empirical cumulative distribution (eCDF) curve of the consensus matrix
 #
 # == param
 # -object A `ConsensusPartition-class` object.
@@ -593,8 +593,8 @@ setMethod(f = "show",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# plot_ecdf(cola_rl["SD", "hclust"])
+# data(golub_cola)
+# plot_ecdf(golub_cola["ATC", "skmeans"])
 setMethod(f = "plot_ecdf",
 	signature = "ConsensusPartition",
 	definition = function(object, ...) {
@@ -640,8 +640,8 @@ setMethod(f = "plot_ecdf",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# select_partition_number(cola_rl["SD", "hclust"])
+# data(golub_cola)
+# select_partition_number(golub_cola["ATC", "skmeans"])
 setMethod(f = "select_partition_number",
 	signature = "ConsensusPartition",
 	definition = function(object, all_stats = FALSE) {
@@ -691,7 +691,7 @@ else take the k with higest votes of
 
 
 # == title
-# Heatmap for the consensus matrix
+# Heatmap of the consensus matrix
 #
 # == param
 # -object A `ConsensusPartition-class` object.
@@ -730,8 +730,8 @@ else take the k with higest votes of
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# consensus_heatmap(cola_rl["SD", "hclust"], k = 3)
+# data(golub_cola)
+# consensus_heatmap(golub_cola["ATC", "skmeans"], k = 3)
 setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
@@ -828,8 +828,8 @@ setMethod(f = "consensus_heatmap",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# membership_heatmap(cola_rl["SD", "hclust"], k = 3)
+# data(golub_cola)
+# membership_heatmap(golub_cola["ATC", "skmeans"], k = 3)
 setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE, 
@@ -947,8 +947,8 @@ setMethod(f = "membership_heatmap",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# dimension_reduction(cola_rl["SD", "kmeans"], k = 3)
+# data(golub_cola)
+# dimension_reduction(golub_cola["ATC", "skmeans"], k = 3)
 setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,

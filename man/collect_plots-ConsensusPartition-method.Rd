@@ -29,8 +29,8 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-\dontrun{
-data(cola_rl)
-collect_plots(cola_rl["SD", "kmeans"])
+\donttest{
+data(golub_cola)
+collect_plots(golub_cola["ATC", "skmeans"])
 }
 }

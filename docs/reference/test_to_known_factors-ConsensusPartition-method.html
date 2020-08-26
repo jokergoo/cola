@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="Test correspondance between predicted subgroups and known factors — test_to_known_factors-ConsensusPartition-method" />
 <meta property="og:description" content="Test correspondance between predicted subgroups and known factors" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
       </span>
     </div>
 
@@ -95,17 +98,23 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/a_quick_start.html">UNKNOWN TITLE</a>
+      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
     </li>
     <li>
-      <a href="../articles/functional_enrichment.html">UNKNOWN TITLE</a>
+      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/predict.html">Predict classes for new samples</a>
+    </li>
+    <li>
+      <a href="../articles/working_with_big_datasets.html">Working with big datasets</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/cola">
+  <a href="https://github.com/jokergoo/cola/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -161,6 +170,9 @@
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The test is performed by <code><a href='test_between_factors.html'>test_between_factors</a></code> between the predicted classes and user's annotation table.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A data frame with the following columns:</p>
@@ -170,30 +182,92 @@
 <li><p>number of subgroups.</p></li>
 </ul>
 
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='test_between_factors.html'>test_between_factors</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='fu'><a href='test_to_known_factors-dispatch.html'>test_to_known_factors</a></span>(<span class='no'>cola_rl</span>[<span class='fl'>1</span>, <span class='fl'>1</span>], <span class='kw'>known</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>40</span>)</div><div class='output co'>#&gt;            n     known(p) k
-#&gt; SD:hclust 60 5.168296e-13 2
-#&gt; SD:hclust 60 5.168296e-13 3
-#&gt; SD:hclust 60 5.168296e-13 4
-#&gt; SD:hclust 43 4.617864e-03 5
-#&gt; SD:hclust 35           NA 6</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
+<span class='no'>res</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC:skmeans"</span>]
+<span class='no'>anno</span> <span class='kw'>=</span> <span class='fu'><a href='get_anno-dispatch.html'>get_anno</a></span>(<span class='no'>res</span>)
+<span class='no'>anno</span></div><div class='output co'>#&gt;    ALL.AML
+#&gt; 39     ALL
+#&gt; 40     ALL
+#&gt; 42     ALL
+#&gt; 47     ALL
+#&gt; 48     ALL
+#&gt; 49     ALL
+#&gt; 41     ALL
+#&gt; 43     ALL
+#&gt; 44     ALL
+#&gt; 45     ALL
+#&gt; 46     ALL
+#&gt; 70     ALL
+#&gt; 71     ALL
+#&gt; 72     ALL
+#&gt; 68     ALL
+#&gt; 69     ALL
+#&gt; 67     ALL
+#&gt; 55     ALL
+#&gt; 56     ALL
+#&gt; 59     ALL
+#&gt; 52     AML
+#&gt; 53     AML
+#&gt; 51     AML
+#&gt; 50     AML
+#&gt; 54     AML
+#&gt; 57     AML
+#&gt; 58     AML
+#&gt; 60     AML
+#&gt; 61     AML
+#&gt; 65     AML
+#&gt; 66     AML
+#&gt; 63     AML
+#&gt; 64     AML
+#&gt; 62     AML
+#&gt; 1      ALL
+#&gt; 2      ALL
+#&gt; 3      ALL
+#&gt; 4      ALL
+#&gt; 5      ALL
+#&gt; 6      ALL
+#&gt; 7      ALL
+#&gt; 8      ALL
+#&gt; 9      ALL
+#&gt; 10     ALL
+#&gt; 11     ALL
+#&gt; 12     ALL
+#&gt; 13     ALL
+#&gt; 14     ALL
+#&gt; 15     ALL
+#&gt; 16     ALL
+#&gt; 17     ALL
+#&gt; 18     ALL
+#&gt; 19     ALL
+#&gt; 20     ALL
+#&gt; 21     ALL
+#&gt; 22     ALL
+#&gt; 23     ALL
+#&gt; 24     ALL
+#&gt; 25     ALL
+#&gt; 26     ALL
+#&gt; 27     ALL
+#&gt; 34     AML
+#&gt; 35     AML
+#&gt; 36     AML
+#&gt; 37     AML
+#&gt; 38     AML
+#&gt; 28     AML
+#&gt; 29     AML
+#&gt; 30     AML
+#&gt; 31     AML
+#&gt; 32     AML
+#&gt; 33     AML</div><div class='input'><span class='fu'><a href='test_to_known_factors-dispatch.html'>test_to_known_factors</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt;             n_sample ALL.AML(p-value) k
+#&gt; ATC:skmeans       70     1.850005e-12 3</div><div class='input'><span class='co'># or explicitly specify known argument</span>
+<span class='fu'><a href='test_to_known_factors-dispatch.html'>test_to_known_factors</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>known</span> <span class='kw'>=</span> <span class='no'>anno</span>)</div><div class='output co'>#&gt;             n_sample ALL.AML(p-value) k
+#&gt; ATC:skmeans       70     1.850005e-12 3</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -204,7 +278,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

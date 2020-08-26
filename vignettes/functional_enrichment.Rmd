@@ -1,18 +1,13 @@
-<!--
-%\VignetteEngine{knitr}
-%\VignetteIndexEntry{3. Automatic Functional Enrichment on Signature Genes}
--->
-
-Automatic Functional Enrichment on Signature Genes
-=============================================================
-
-**Author**: Zuguang Gu ( z.gu@dkfz.de )
-
-**Date**: `r Sys.Date()`
-
-**Package version**: `r installed.packages()["cola", "Version"]`
-
--------------------------------------------------------------
+---
+title: "Automatic Functional Enrichment on Signature Genes"
+author: "Zuguang Gu ( z.gu@dkfz.de )"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{3. Automatic Functional Enrichment on Signature Genes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
 ```{r, echo = FALSE, message = FALSE}
 library(markdown)
@@ -26,6 +21,7 @@ knitr::opts_chunk$set(
     warning = FALSE,
     fig.align = "center")
 options(width = 100)
+options(rmarkdown.html_vignette.check_title = FALSE)
 library(cola)
 ```
 
@@ -61,7 +57,7 @@ res
 
 We check how the signature genes looks like under 4-group classification:
 
-```{r}
+```{r, fig.width = 8, fig.height = 7, out.width = "500"}
 set.seed(123)
 get_signatures(res, k = 4)
 ```
@@ -146,7 +142,7 @@ file.remove("Golub_leukemia_subgroup.rds")
 
 To simplify, we only take result from one method:
 
-```{r}
+```{r, fig.width = 8, fig.height = 7, out.width = "500"}
 res = rl["ATC:skmeans"]
 head(rownames(res))
 set.seed(123)

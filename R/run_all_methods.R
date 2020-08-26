@@ -21,7 +21,7 @@
 # -p_sampling Proportion of the top n rows to sample.
 # -partition_repeat Number of repeats for the random sampling.
 # -scale_rows Whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
-# -verbose Ahether to print messages.
+# -verbose Whether to print messages.
 #
 # == details
 # The function performs consensus partitioning by `consensus_partition` for all combinations of top-value methods and partitioning methods.
@@ -45,8 +45,6 @@
 #          ) + matrix(rnorm(40*40), nr = 40)
 # rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40))
 # }
-# data(cola_rl)
-# cola_rl
 run_all_consensus_partition_methods = function(data, 
 	top_value_method = all_top_value_methods(), 
 	partition_method = all_partition_methods(), 
@@ -366,16 +364,16 @@ setMethod(f = "show",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# cola_rl[c("SD", "MAD"), c("hclust", "kmeans")]
-# cola_rl["SD", "kmeans"] # a ConsensusPartition object
-# cola_rl["SD:kmeans"] # a ConsensusPartition object
-# cola_rl[["SD:kmeans"]] # a ConsensusPartition object
-# cola_rl["SD", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
-# cola_rl["SD:kmeans", drop = FALSE] # still a ConsensusPartitionList object
-# cola_rl["SD", ]
-# cola_rl[, "hclust"]
-# cola_rl[1:2, 1:2]
+# data(golub_cola)
+# golub_cola[c("SD", "MAD"), c("hclust", "kmeans")]
+# golub_cola["SD", "kmeans"] # a ConsensusPartition object
+# golub_cola["SD:kmeans"] # a ConsensusPartition object
+# golub_cola[["SD:kmeans"]] # a ConsensusPartition object
+# golub_cola["SD", "kmeans", drop = FALSE] # still a ConsensusPartitionList object
+# golub_cola["SD:kmeans", drop = FALSE] # still a ConsensusPartitionList object
+# golub_cola["SD", ]
+# golub_cola[, "hclust"]
+# golub_cola[1:2, 1:2]
 "[.ConsensusPartitionList" = function (x, i, j, drop = TRUE) {
 
 	cl = as.list(match.call())
@@ -497,8 +495,8 @@ setMethod(f = "show",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# cola_rl[["SD:kmeans"]]
+# data(golub_cola)
+# golub_cola[["SD:kmeans"]]
 "[[.ConsensusPartitionList" = function(x, i) {
 	if(length(i) != 1) {
 		stop_wrap("Length of index can only be one.")

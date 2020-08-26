@@ -60,6 +60,11 @@
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(golub_cola)
+# res = golub_cola["ATC", "skmeans"]
+# tb = get_signatures(res, k = 3)
+# head(tb)
 setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
@@ -82,8 +87,6 @@ setMethod(f = "get_signatures",
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 	
-	raster_resize = cola_opt$raster_resize
-
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
 
@@ -132,15 +135,26 @@ setMethod(f = "get_signatures",
 		diff_method = match.arg(diff_method)
 	}
 
-	hash = digest(list(used_samples = which(l), 
-		               class = class,
-		               n_group = k, 
-		               diff_method = diff_method,
-		               column_index = object@column_index,
-		               fdr_cutoff = fdr_cutoff,
-		               group_diff = group_diff,
-		               seed = seed),
-				algo = "md5")
+	if(diff_method %in% c("samr", "pamr")) {
+		hash = digest(list(used_samples = which(l), 
+			               class = class,
+			               n_group = k, 
+			               diff_method = diff_method,
+			               column_index = object@column_index,
+			               fdr_cutoff = fdr_cutoff,
+			               group_diff = group_diff,
+			               seed = seed),
+					algo = "md5")
+	} else {
+		hash = digest(list(used_samples = which(l), 
+			               class = class,
+			               n_group = k, 
+			               diff_method = diff_method,
+			               column_index = object@column_index,
+			               group_diff = group_diff,
+			               seed = seed),
+					algo = "md5")
+	}
 	nm = paste0("signature_fdr_", hash)
 	if(verbose) qqcat("* cache hash: @{hash} (seed @{seed}).\n")
 
@@ -149,14 +163,14 @@ setMethod(f = "get_signatures",
 		if(diff_method == "samr") {
 			if(object@.env[[nm]]$diff_method == "samr" && 
 			   object@.env[[nm]]$n_sample_used == n_sample_used && 
-			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-10) {
 				fdr = object@.env[[nm]]$fdr
 				find_signature = FALSE
 			}
 		} else if(diff_method == "pamr") {
 			if(object@.env[[nm]]$diff_method == "pamr" && 
 			   object@.env[[nm]]$n_sample_used == n_sample_used && 
-			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-10) {
 				fdr = object@.env[[nm]]$fdr
 				find_signature = FALSE
 			}
@@ -514,7 +528,7 @@ setMethod(f = "get_signatures",
 		column_split = factor(class_df$class[column_used_logical], levels = sort(unique(class_df$class[column_used_logical]))), 
 		show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = {if(internal) NULL else qq("@{ncol(use_mat1)} confident samples")},
-		use_raster = use_raster, raster_resize = raster_resize,
+		use_raster = use_raster, raster_by_magick = requireNamespace("magick", quietly = TRUE),
 		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
 		left_annotation = left_annotation, right_annotation = {if(has_ambiguous) NULL else right_annotation})
  	
@@ -565,7 +579,7 @@ setMethod(f = "get_signatures",
 			top_annotation = ha2,
 			cluster_columns = TRUE, show_column_dend = FALSE,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
-			use_raster = use_raster, raster_resize = raster_resize,
+			use_raster = use_raster, raster_by_magick = requireNamespace("magick", quietly = TRUE),
 			bottom_annotation = bottom_anno2, show_column_names = show_column_names,
 			right_annotation = right_annotation)
 	}
@@ -885,6 +899,12 @@ Ftest = function(mat, class) {
 # == details
 # It plots an Euler diagram showing the overlap of signatures from different k.
 #
+# == example
+# \donttest{
+# data(golub_cola)
+# res = golub_cola["ATC", "skmeans"]
+# compare_signatures(res)
+# }
 setMethod(f = "compare_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k = object@k, ...) {

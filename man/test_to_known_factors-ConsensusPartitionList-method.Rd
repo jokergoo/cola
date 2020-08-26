@@ -31,6 +31,8 @@ A data frame with the following columns:
   \item p-values from the tests,
   \item number of subgroups.
 }
+
+If there are NA values, basically it means there are no efficient data points to perform the test.
 }
 \seealso{
 \code{\link{test_between_factors}}, \code{\link{test_to_known_factors,ConsensusPartition-method}}
@@ -39,6 +41,6 @@ A data frame with the following columns:
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-test_to_known_factors(cola_rl, known = 1:40)
+data(golub_cola)
+test_to_known_factors(golub_cola)
 }

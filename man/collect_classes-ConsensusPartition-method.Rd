@@ -14,7 +14,7 @@ Collect subgroups from ConsensusPartition object
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
   \item{internal}{Used internally.}
-  \item{show_row_names}{Whether show row names in the heatmap (which is the column name in the original matrix).}
+  \item{show_row_names}{Whether to show row names in the heatmap (which is the column name in the original matrix).}
   \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
 
@@ -31,6 +31,6 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-collect_classes(cola_rl["SD", "kmeans"])
+data(golub_cola)
+collect_classes(golub_cola["ATC", "skmeans"])
 }

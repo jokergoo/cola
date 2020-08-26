@@ -35,6 +35,6 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-membership_heatmap(cola_rl["SD", "hclust"], k = 3)
+data(golub_cola)
+membership_heatmap(golub_cola["ATC", "skmeans"], k = 3)
 }

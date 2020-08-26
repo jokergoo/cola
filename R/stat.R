@@ -23,7 +23,7 @@
 # ``ATC_i = 1 - \\int_{min_cor}^1 F_i(X)``.
 #
 # By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
-# the top-value method by:
+# a new top-value method by:
 #
 #     register_top_value_methods(
 #         "ATC_spearman" = function(m) ATC(m, method = "spearman")
@@ -211,15 +211,16 @@ PAC2 = function(consensus_mat, x1 = seq(0.1, 0.3, by = 0.02),
 # Zuguang Gu <z.gu@dkfz.de>
 # 
 # == example
-# data(cola_rl)
-# PAC(get_consensus(cola_rl[1, 1], k = 2))
-# PAC(get_consensus(cola_rl[1, 1], k = 3))
-# PAC(get_consensus(cola_rl[1, 1], k = 4))
-# PAC(get_consensus(cola_rl[1, 1], k = 5))
-# PAC(get_consensus(cola_rl[1, 1], k = 6))
+# data(golub_cola)
+# PAC(get_consensus(golub_cola[1, 1], k = 2))
+# PAC(get_consensus(golub_cola[1, 1], k = 3))
+# PAC(get_consensus(golub_cola[1, 1], k = 4))
+# PAC(get_consensus(golub_cola[1, 1], k = 5))
+# PAC(get_consensus(golub_cola[1, 1], k = 6))
 #
 # # with specifying `class`
-# PAC(get_consensus(cola_rl[1, 1], k = 2), class = get_classes(cola_rl[1, 1])[, 1])
+# PAC(get_consensus(golub_cola[1, 1], k = 2), 
+#     class = get_classes(golub_cola[1, 1], k = 2)[, 1])
 PAC = function(consensus_mat, x1 = 0.1, x2 = 0.9, class = NULL) {
 	if(is.null(class)) {
 		F = ecdf(consensus_mat[lower.tri(consensus_mat)])
@@ -255,12 +256,12 @@ stability = function(consensus_mat, x1 = 0.1, x2 = 0.9) {
 # A numeric value.
 #
 # == example
-# data(cola_rl)
-# FCC(get_consensus(cola_rl[1, 1], k = 2))
-# FCC(get_consensus(cola_rl[1, 1], k = 3))
-# FCC(get_consensus(cola_rl[1, 1], k = 4))
-# FCC(get_consensus(cola_rl[1, 1], k = 5))
-# FCC(get_consensus(cola_rl[1, 1], k = 6))
+# data(golub_cola)
+# FCC(get_consensus(golub_cola[1, 1], k = 2))
+# FCC(get_consensus(golub_cola[1, 1], k = 3))
+# FCC(get_consensus(golub_cola[1, 1], k = 4))
+# FCC(get_consensus(golub_cola[1, 1], k = 5))
+# FCC(get_consensus(golub_cola[1, 1], k = 6))
 #
 FCC = function(consensus_mat, diff = 0.1) {
 	F = ecdf(consensus_mat[lower.tri(consensus_mat)])
@@ -294,12 +295,12 @@ FCC = function(consensus_mat, diff = 0.1) {
 # A numeric value.
 #
 # == example
-# data(cola_rl)
-# aPAC(get_consensus(cola_rl[1, 1], k = 2))
-# aPAC(get_consensus(cola_rl[1, 1], k = 3))
-# aPAC(get_consensus(cola_rl[1, 1], k = 4))
-# aPAC(get_consensus(cola_rl[1, 1], k = 5))
-# aPAC(get_consensus(cola_rl[1, 1], k = 6))
+# data(golub_cola)
+# aPAC(get_consensus(golub_cola[1, 1], k = 2))
+# aPAC(get_consensus(golub_cola[1, 1], k = 3))
+# aPAC(get_consensus(golub_cola[1, 1], k = 4))
+# aPAC(get_consensus(golub_cola[1, 1], k = 5))
+# aPAC(get_consensus(golub_cola[1, 1], k = 6))
 #
 aPAC = function(consensus_mat) {
 	x = consensus_mat[lower.tri(consensus_mat)]
@@ -344,7 +345,7 @@ cophcor = function(consensus_mat) {
 # -class Consensus subgroup labels.
 #
 # == details
-# Note subgroup labels in ``membership_each`` should already be adjusted to the consensus labels, e.g. by `relabel_class`.
+# Note subgroup labels in ``membership_each`` should already be adjusted to the consensus labels, i.e. by `relabel_class`.
 #
 # The concordance score is the mean proportion of samples having the same subgroup labels as the consensus labels
 # among individual partition runs.
@@ -356,9 +357,9 @@ cophcor = function(consensus_mat) {
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# membership_each = get_membership(cola_rl["SD", "kmeans"], each = TRUE, k = 3)
-# consensus_classes = get_classes(cola_rl["SD", "kmeans"], k = 3)$class
+# data(golub_cola)
+# membership_each = get_membership(golub_cola["SD", "kmeans"], each = TRUE, k = 3)
+# consensus_classes = get_classes(golub_cola["SD", "kmeans"], k = 3)$class
 # concordance(membership_each, consensus_classes)
 concordance = function(membership_each, class) {
 	mean(apply(membership_each, 2, function(x) sum(x == class, na.rm = TRUE)/length(x)))

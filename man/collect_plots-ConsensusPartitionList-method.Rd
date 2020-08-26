@@ -39,9 +39,9 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
+\donttest{
+data(golub_cola)
 collect_plots(cola_rl, k = 3)
-\dontrun{
 collect_plots(cola_rl, k = 3, fun = membership_heatmap)
 collect_plots(cola_rl, k = 3, fun = get_signatures)
 }

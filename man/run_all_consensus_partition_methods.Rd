@@ -32,7 +32,7 @@ run_all_consensus_partition_methods(data,
   \item{p_sampling}{Proportion of the top n rows to sample.}
   \item{partition_repeat}{Number of repeats for the random sampling.}
   \item{scale_rows}{Whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
-  \item{verbose}{Ahether to print messages.}
+  \item{verbose}{Whether to print messages.}
 
 }
 \details{
@@ -57,6 +57,4 @@ m = cbind(rbind(matrix(rnorm(20*20, mean = 1), nr = 20),
          ) + matrix(rnorm(40*40), nr = 40)
 rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40))
 }
-data(cola_rl)
-cola_rl
 }

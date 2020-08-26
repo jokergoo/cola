@@ -24,6 +24,6 @@ matrix correspond to combinations of top-value methods and partitioning methods.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-get_stats(cola_rl, k = 2)
+data(golub_cola)
+get_stats(golub_cola, k = 2)
 }

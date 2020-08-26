@@ -31,6 +31,9 @@
 # == value
 # No value is returned.
 #
+# == seealso
+# `correspond_between_rankings` draws for more than 2 sets of rankings.
+#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
@@ -61,6 +64,7 @@ correspond_between_two_rankings = function(x1, x2, name1, name2,
 	n = length(x1)
 	text_height = grobHeight(textGrob("foo"))*2
 	pushViewport(viewport(layout = grid.layout(nrow = 1, ncol = 3, widths = unit(ratio, "null")), 
+		width = unit(1, "npc") - unit(2, "mm"),
 		height = unit(1, "npc") - text_height - unit(1, "cm"), y = unit(1, "cm"), just = "bottom"))
 	
 	max_x1 = max(x1)

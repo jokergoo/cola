@@ -80,7 +80,8 @@ A data frame with more than two columns:
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+data(golub_cola)
+res = golub_cola["ATC", "skmeans"]
+tb = get_signatures(res, k = 3)
+head(tb)
 }

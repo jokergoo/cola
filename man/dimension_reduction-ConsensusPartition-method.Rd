@@ -37,6 +37,6 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-dimension_reduction(cola_rl["SD", "kmeans"], k = 3)
+data(golub_cola)
+dimension_reduction(golub_cola["ATC", "skmeans"], k = 3)
 }

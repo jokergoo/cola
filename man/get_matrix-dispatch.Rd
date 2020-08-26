@@ -10,8 +10,8 @@ Method dispatch page for \code{get_matrix}.
 \code{get_matrix} can be dispatched on following classes:
 
 \itemize{
-\item \code{\link{get_matrix,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{get_matrix,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
+\item \code{\link{get_matrix,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 }
 }
 \examples{

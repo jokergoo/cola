@@ -21,7 +21,9 @@ Compare Signatures from Different k
 It plots an Euler diagram showing the overlap of signatures from different k.
 }
 \examples{
-# There is no example
-NULL
-
+\donttest{
+data(golub_cola)
+res = golub_cola["ATC", "skmeans"]
+compare_signatures(res)
+}
 }

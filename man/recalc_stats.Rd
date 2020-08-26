@@ -15,7 +15,7 @@ recalc_stats(rl)
 
 }
 \details{
-It updates the statistics slot in the ConsensusPartitionList object, used internally.
+It updates the \code{stat} slot in the ConsensusPartitionList object, used internally.
 }
 \examples{
 # There is no example
