@@ -29,7 +29,7 @@
 setMethod(f = "top_rows_overlap",
 	signature = "ConsensusPartitionList",
 	definition = function(object, top_n = min(object@list[[1]]@top_n), 
-		method = c("euler", "upset", "venn", "correspondance"), fill= NULL, ...) {
+		method = c("euler", "upset", "venn", "correspondance"), fill = NULL, ...) {
 
 	all_top_value_list = object@.env$all_top_value_list[object@top_value_method]
 
@@ -117,11 +117,12 @@ setMethod(f = "top_rows_overlap",
 # mat = matrix(rnorm(1000), nrow = 100)
 # lt = list(sd = rowSds(mat), mad = rowMads(mat))
 # top_elements_overlap(lt, top_n = 20, method = "euler")
-# top_elements_overlap(lt, top_n = 20, method = "venn")
 # top_elements_overlap(lt, top_n = 20, method = "upset")
+# top_elements_overlap(lt, top_n = 20, method = "venn")
 # top_elements_overlap(lt, top_n = 20, method = "correspondance")
 top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])), 
-		method = c("euler", "upset", "venn", "correspondance"), fill = NULL, ...) {
+	method = c("euler", "upset", "venn", "correspondance"), 
+	fill = NULL, ...) {
 
 	if(length(unique(sapply(object, length))) > 1) {
 		stop_wrap("Length of all vectors in the input list should be the same.")
@@ -141,12 +142,11 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 		gplots::venn(lt, ...)
 		title(qq("top @{top_n} rows"))
 	} else if(method == "euler") {
-		if(is.null(fill)) {
-			fills = TRUE
-		} else {
-			fills = list(fill = fill, alpha = 0.5)
-		}
-		print(plot(eulerr::euler(lt), main = qq("top @{top_n} rows"), legend = TRUE, fills = fills, ...))
+		if(is.null(fill)) fill = cola_opt$color_set_1[seq_along(lt)]
+		
+		print(plot(eulerr::euler(lt), main = qq("top @{top_n} rows"), 
+			legend = legendGrob(labels = names(lt), ncol = 1, pch = 21, gp = gpar(fill = fill)), 
+			fills = add_transparency(fill, 0.5), ...))
 	} else if(method == "upset") {
 		cm = make_comb_mat(lt)
 		ht = UpSet(cm, column_title = qq("top @{top_n} rows"), ...)

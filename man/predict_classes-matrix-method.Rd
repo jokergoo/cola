@@ -26,24 +26,24 @@ The signature centroid matrix is a k-column matrix where each column is the cent
 in the corresponding class (k-group classification).
 
 For each sample in the new matrix, the task is basically to test which signature centroid the 
-current sample is the closest to. There are two methods: the euclidean distance and the 
+current sample is the closest to. There are two methods: the Euclidean distance and the 
 correlation (Spearman) distance.
 
-For the euclidean distance method, for the vector denoted as x which corresponds to sample i 
+For the Euclidean distance method, for the vector denoted as x which corresponds to sample i 
 in the new matrix, to test which class should be assigned to sample i, the distance between 
-sample i and all k signature centroids are calcualted and denoted as d_1, d_2, ..., d_k. The distances 
-for k centroids are sorted increasingly, and we design a statistic named "difference ratio", denoted as r
-and calculated as: (|x_(1) - x_(2)|)/mean(x), which is the difference between the smallest distance and the second
-smallest distance, normalized by the mean distance. The class with the highest r is assigned to sample i.
+sample i and all k signature centroids are calculated and denoted as d_1, d_2, ..., d_k. The class with the smallest distance is assigned to sample i.
+The distances for k centroids are sorted increasingly, and we design a statistic named "difference ratio", denoted as r
+and calculated as: (|d_(1) - d_(2)|)/mean(d), which is the difference between the smallest distance and the second
+smallest distance, normalized by the mean distance. 
 To test the statistical significance of r, we randomly permute rows of the signature centroid matrix and calculate r_rand. 
 The random permutation is performed \code{n_perm} times and the p-value is calculated as the proportion of r_rand being
 larger than r.
 
 For the correlation method, the distance is calculated as the Spearman correlation between sample i and signature
 centroid k. The label for the class with the maximal correlation value is assigned to sample i. The 
-p-value is simply calcualted by \code{\link[stats]{cor.test}} between sample i and centroid k.
+p-value is simply calculated by \code{\link[stats]{cor.test}} between sample i and centroid k.
 
-If a sample is tested with a p-value less than \code{p_cutoff}, the corresponding class label is set to \code{NA}.
+If a sample is tested with a p-value higher than \code{p_cutoff}, the corresponding class label is set to \code{NA}.
 }
 \value{
 A vector of class labels (in numeric).

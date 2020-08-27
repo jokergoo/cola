@@ -8,7 +8,7 @@ Overlap of top rows from different top-value methods
 }
 \usage{
 \S4method{top_rows_overlap}{ConsensusPartitionList}(object, top_n = min(object@list[[1]]@top_n),
-    method = c("euler", "upset", "venn", "correspondance"), fill= NULL, ...)
+    method = c("euler", "upset", "venn", "correspondance"), fill = NULL, ...)
 }
 \arguments{
 

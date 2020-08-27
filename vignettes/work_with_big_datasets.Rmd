@@ -1,0 +1,96 @@
+---
+title: "Work with Big Datasets"
+author: "Zuguang Gu ( z.gu@dkfz.de )"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{5. Work with Big Datasets}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, message = FALSE}
+library(markdown)
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    eval = FALSE,
+    message = FALSE,
+    fig.align = "center")
+options(width = 100)
+options(rmarkdown.html_vignette.check_title = FALSE)
+library(cola)
+```
+
+
+cola can be idealy applied to datasets with intermediate number of samples
+(around 500), however, the running time and the memory usage might not be acceptable
+if the number of samples gets very huge, e.g., more than thousands. Nevertheless,
+we can propose the following two strategies to partially solve this problem.
+
+1. A randomly sampled subset of samples which take relatively short running
+   time (e.g., 100-200 samples) can be firstly applied with cola, from which a
+   specific combination of top-value method and partitioning method that gives
+   the best results can be pre-selected. Later user can only apply these two
+   specific methods to the complete dataset. This would be much faster than
+   blindly running cola with many methods in sequence.
+2. The random subset of samples can be treated as a training set to generate a
+   classification of cells. Then, the class labels of the remaining samples
+   can be predicted, e.g. by testing the distance to the centroid of each cell
+   group, without rerunning consensus partitioning on them. cola implements a
+   `predict_classes()` function for this purpose (see the vignette ["Predict
+   classes for new samples"](predict.html) for details). 
+
+Note, since these two strategies are performed by sampling a small subset of
+cells from the cohort, the cell clusters with small size might not be
+detectable.
+
+In the following examples, we use pseudo code to demonstrate the ideas. Assuming
+the full matrix is in an object `mat`. We randomly sample 200 samples from it:
+
+```{r}
+ind = sample(ncol(mat), 200)
+mat1 = mat[, ind]
+```
+
+**Strategy 1**. First we can apply cola on `mat1`:
+
+```{r}
+rl = run_all_consensus_partition_methods(mat1, ...)
+cola_report(rl, ...)
+```
+
+Then find a best combination of top-value method and partitioining method.
+Assuming they are saved in objects `tm` and `pm`. Next run
+`consensus_partition()` on `mat` only with `tm` and `pm`:
+
+```{r}
+res = consensus_partition(mat, top_value_method = tm, partition_method = pm, ...)
+```
+
+**Strategy 2**. Similar as Strategy 1, we get the `ConsensusPartition` object
+from methods `tm` and `pm`, which was applied on `mat1`:
+
+
+```{r}
+res = rl[tm, pm]
+```
+
+Note the consensus partition object `res` is only based on a subset of
+original samples. With `res`, the classes of remaining samples can be
+predicted:
+
+```{r}
+mat2 = mat[, setdiff(seq_len(ncol(mat)), ind)]
+mat2 = t(scale(t(mat2)))
+cl = predict_classes(res, mat2)
+```
+
+Please note, by default `mat1` is scaled in cola analysis, correspondingly, `mat2` should also be row-scaled.
+
+You can also directly send `mat` to `predict_classes()` function:
+
+```{r}
+cl = predict_classes(res, t(scale(t(mat))))
+```

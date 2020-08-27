@@ -60,7 +60,7 @@ consensus partitioning. It has the following advantages:
 Following flowchart lists the general steps of consensus partitioning
 implemented by *cola*:
 
-<img src="consensus_partition_workflow.png", width="600"/>
+<img src="consensus_partition_workflow.png" width="600" />
 
 The steps are:
 

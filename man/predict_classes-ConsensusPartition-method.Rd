@@ -36,8 +36,8 @@ Predict classes for new samples based on cola classification
 \details{
 The prediction is based on the signature centroid matrix from cola classification. The processes are as follows:
 
-1. For the provided \code{\link{ConsensusPartition-class}} object and the specified k, the signatures that discriminate classes
-   are extracted by \code{\link{get_signatures,ConsensusPartition-method}}.
+1. For the provided \code{\link{ConsensusPartition-class}} object and a selected k, the signatures that discriminate classes
+   are extracted by \code{\link{get_signatures,ConsensusPartition-method}}. If number of signatures is more than 2000, only 2000 signatures are randomly sampled.
 2. The signature centroid matrix is a k-column matrix where each column is the centroid of samples in the corresponding
    class, i.e. the mean across samples. If rows were scaled in cola analysis, the signature centroid matrix is the mean of scaled
    values and vise versa. Please note the samples with silhouette score less than \code{silhouette_cutoff} are removed

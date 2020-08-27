@@ -10,8 +10,8 @@ Method dispatch page for \code{test_to_known_factors}.
 \code{test_to_known_factors} can be dispatched on following classes:
 
 \itemize{
-\item \code{\link{test_to_known_factors,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 \item \code{\link{test_to_known_factors,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
+\item \code{\link{test_to_known_factors,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 }
 }
 \examples{

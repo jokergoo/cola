@@ -104,10 +104,10 @@
       <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
     </li>
     <li>
-      <a href="../articles/predict.html">Predict classes for new samples</a>
+      <a href="../articles/predict.html">Predict Classes for New Samples</a>
     </li>
     <li>
-      <a href="../articles/working_with_big_datasets.html">Working with big datasets</a>
+      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
     </li>
   </ul>
 </li>
@@ -142,7 +142,8 @@
     </div>
 
     <pre class="usage"><span class='fu'>top_elements_overlap</span>(<span class='no'>object</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span>(<span class='fl'>0.25</span>*<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>object</span><span class='kw'>[[</span><span class='fl'>1</span>]])),
-    <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"euler"</span>, <span class='st'>"upset"</span>, <span class='st'>"venn"</span>, <span class='st'>"correspondance"</span>), <span class='kw'>fill</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"euler"</span>, <span class='st'>"upset"</span>, <span class='st'>"venn"</span>, <span class='st'>"correspondance"</span>),
+    <span class='kw'>fill</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -181,9 +182,9 @@
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>123</span>)
 <span class='no'>mat</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>1000</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>100</span>)
 <span class='no'>lt</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>sd</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowSds.html'>rowSds</a></span>(<span class='no'>mat</span>), <span class='kw'>mad</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowSds.html'>rowMads</a></span>(<span class='no'>mat</span>))
-<span class='fu'>top_elements_overlap</span>(<span class='no'>lt</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"euler"</span>)</div><div class='img'><img src='top_elements_overlap-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>top_elements_overlap</span>(<span class='no'>lt</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"venn"</span>)</div><div class='output co'>#&gt; <span class='message'>Registered S3 method overwritten by 'gplots':</span>
+<span class='fu'>top_elements_overlap</span>(<span class='no'>lt</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"euler"</span>)</div><div class='img'><img src='top_elements_overlap-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>top_elements_overlap</span>(<span class='no'>lt</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"upset"</span>)</div><div class='img'><img src='top_elements_overlap-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>top_elements_overlap</span>(<span class='no'>lt</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"venn"</span>)</div><div class='output co'>#&gt; <span class='message'>Registered S3 method overwritten by 'gplots':</span>
 #&gt; <span class='message'>  method    from  </span>
-#&gt; <span class='message'>  plot.venn eulerr</span></div><div class='img'><img src='top_elements_overlap-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>top_elements_overlap</span>(<span class='no'>lt</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"upset"</span>)</div><div class='img'><img src='top_elements_overlap-3.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>top_elements_overlap</span>(<span class='no'>lt</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"correspondance"</span>)</div><div class='img'><img src='top_elements_overlap-4.png' alt='' width='700' height='433' /></div></pre>
+#&gt; <span class='message'>  plot.venn eulerr</span></div><div class='img'><img src='top_elements_overlap-3.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>top_elements_overlap</span>(<span class='no'>lt</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fl'>20</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"correspondance"</span>)</div><div class='img'><img src='top_elements_overlap-4.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -8,7 +8,8 @@ Overlap of top elements from different metrics
 }
 \usage{
 top_elements_overlap(object, top_n = round(0.25*length(object[[1]])),
-    method = c("euler", "upset", "venn", "correspondance"), fill = NULL, ...)
+    method = c("euler", "upset", "venn", "correspondance"),
+    fill = NULL, ...)
 }
 \arguments{
 
@@ -34,7 +35,7 @@ set.seed(123)
 mat = matrix(rnorm(1000), nrow = 100)
 lt = list(sd = rowSds(mat), mad = rowMads(mat))
 top_elements_overlap(lt, top_n = 20, method = "euler")
-top_elements_overlap(lt, top_n = 20, method = "venn")
 top_elements_overlap(lt, top_n = 20, method = "upset")
+top_elements_overlap(lt, top_n = 20, method = "venn")
 top_elements_overlap(lt, top_n = 20, method = "correspondance")
 }
