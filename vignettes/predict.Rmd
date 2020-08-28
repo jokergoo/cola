@@ -125,7 +125,7 @@ We compare to the original classification:
 
 ```{r}
 data.frame(cola_class = get_classes(res, k = 3)[, "class"],
-           predicted = cl)
+           predicted = cl[, "class"])
 ```
 
 `predict_classes()` generates a plot which shows the process of the prediction. 

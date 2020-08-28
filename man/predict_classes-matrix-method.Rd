@@ -46,7 +46,7 @@ p-value is simply calculated by \code{\link[stats]{cor.test}} between sample i a
 If a sample is tested with a p-value higher than \code{p_cutoff}, the corresponding class label is set to \code{NA}.
 }
 \value{
-A vector of class labels (in numeric).
+A data frame with two columns: the class labels (the column names of the signature centroid matrix are treated as class labels) and the corresponding p-values.
 }
 \examples{
 \donttest{

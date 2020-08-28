@@ -94,7 +94,7 @@
       <h1 data-toc-skip>Predict Classes for New Samples</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-08-27</h4>
+            <h4 class="date">2020-08-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/predict.Rmd"><code>vignettes/predict.Rmd</code></a></small>
       <div class="hidden name"><code>predict.Rmd</code></div>
@@ -160,15 +160,85 @@
 ## * split rows into 2 groups by k-means clustering.
 ## * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
 ## 
-## Predict classes based on 3-group classification.</code></pre>
+## Predict classes based on 3-group classification (euclidean method).</code></pre>
 <p><img src="predict_files/figure-html/unnamed-chunk-5-1.png" width="600" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">cl</span></pre></body></html></div>
-<pre><code>##  [1]  3  3  2  2  2  3  2  2  2  2  2  2  2  2  2  2  2  3  3  2  1  1  1  1  2  1  1  1  1  1  2  1
-## [33]  1  1  3  2  3  3  2  3  3  3  2  3  2  1  2  2  2  2  2  3  2  2  2 NA  3  2  3 NA  3  1  1  1
-## [65]  1  1  1  2  1  1  1  1</code></pre>
+<pre><code>##    class     p
+## 1      3 0.000
+## 2      3 0.000
+## 3      2 0.000
+## 4      2 0.000
+## 5      2 0.000
+## 6      3 0.000
+## 7      2 0.000
+## 8      2 0.000
+## 9      2 0.000
+## 10     2 0.000
+## 11     2 0.000
+## 12     2 0.000
+## 13     2 0.000
+## 14     2 0.000
+## 15     2 0.000
+## 16     2 0.000
+## 17     2 0.000
+## 18     3 0.000
+## 19     3 0.000
+## 20     2 0.000
+## 21     1 0.000
+## 22     1 0.000
+## 23     1 0.000
+## 24     1 0.000
+## 25     2 0.000
+## 26     1 0.000
+## 27     1 0.000
+## 28     1 0.000
+## 29     1 0.000
+## 30     1 0.000
+## 31     2 0.000
+## 32     1 0.000
+## 33     1 0.000
+## 34     1 0.000
+## 35     3 0.000
+## 36     2 0.000
+## 37     3 0.000
+## 38     3 0.000
+## 39     2 0.000
+## 40     3 0.000
+## 41     3 0.000
+## 42     3 0.000
+## 43     2 0.000
+## 44     3 0.000
+## 45     2 0.000
+## 46     1 0.000
+## 47     2 0.000
+## 48     2 0.000
+## 49     2 0.000
+## 50     2 0.000
+## 51     2 0.000
+## 52     3 0.000
+## 53     2 0.000
+## 54     2 0.000
+## 55     2 0.000
+## 56     3 0.093
+## 57     3 0.000
+## 58     2 0.000
+## 59     3 0.000
+## 60     2 0.807
+## 61     3 0.000
+## 62     1 0.000
+## 63     1 0.000
+## 64     1 0.000
+## 65     1 0.000
+## 66     1 0.000
+## 67     1 0.000
+## 68     2 0.000
+## 69     1 0.000
+## 70     1 0.000
+## 71     1 0.000
+## 72     1 0.000</code></pre>
 <p>We compare to the original classification:</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">cola_class</span> <span class="kw">=</span> <span class="fu"><a href="../reference/get_classes-dispatch.html">get_classes</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)[, <span class="st">"class"</span>],
-           <span class="kw">predicted</span> <span class="kw">=</span> <span class="no">cl</span>)</pre></body></html></div>
+           <span class="kw">predicted</span> <span class="kw">=</span> <span class="no">cl</span>[, <span class="st">"class"</span>])</pre></body></html></div>
 <pre><code>##    cola_class predicted
 ## 1           3         3
 ## 2           3         3
@@ -225,11 +295,11 @@
 ## 53          2         2
 ## 54          2         2
 ## 55          2         2
-## 56          1        NA
+## 56          1         3
 ## 57          3         3
 ## 58          2         2
 ## 59          3         3
-## 60          3        NA
+## 60          3         2
 ## 61          3         3
 ## 62          1         1
 ## 63          1         1
@@ -256,11 +326,82 @@
 ## * use k-means partition that are already calculated in previous runs.
 ## * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
 ## 
-## Predict classes based on 3-group classification.</code></pre>
+## Predict classes based on 3-group classification (correlation method).</code></pre>
 <p><img src="predict_files/figure-html/unnamed-chunk-7-1.png" width="600" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">cl</span></pre></body></html></div>
-<pre><code>##  [1] 3 3 2 2 2 3 2 2 2 2 2 2 2 2 2 2 2 3 3 2 1 1 1 1 2 1 1 1 1 1 2 1 1 1 3 2 3 3 2 3 3 3 2 3 2 1 2 2
-## [49] 2 2 2 3 2 2 2 3 3 2 3 3 3 1 1 1 1 1 1 2 1 1 1 1</code></pre>
+<pre><code>##           class             p
+## sample_39     3 7.752668e-138
+## sample_40     3  2.596348e-97
+## sample_42     2  8.163258e-48
+## sample_47     2  1.884411e-94
+## sample_48     2  0.000000e+00
+## sample_49     3 1.638068e-297
+## sample_41     2 3.271911e-290
+## sample_43     2  5.199496e-61
+## sample_44     2 9.719419e-121
+## sample_45     2  6.090612e-91
+## sample_46     2  1.542050e-83
+## sample_70     2  5.054467e-13
+## sample_71     2  2.930963e-17
+## sample_72     2  6.535035e-41
+## sample_68     2  0.000000e+00
+## sample_69     2  0.000000e+00
+## sample_67     2  1.223008e-52
+## sample_55     3  4.671348e-63
+## sample_56     3 4.941647e-171
+## sample_59     2  4.400176e-12
+## sample_52     1  2.238125e-85
+## sample_53     1 3.940977e-144
+## sample_51     1 2.233304e-239
+## sample_50     1 6.139192e-246
+## sample_54     2  1.189802e-12
+## sample_57     1  5.020534e-92
+## sample_58     1 1.109193e-175
+## sample_60     1  7.343975e-22
+## sample_61     1 4.566727e-105
+## sample_65     1 5.102799e-120
+## sample_66     2 1.571722e-128
+## sample_63     1 1.367691e-126
+## sample_64     1 2.583172e-116
+## sample_62     1  4.000248e-93
+## sample_1      3  1.053135e-97
+## sample_2      2  4.691498e-49
+## sample_3      3 8.851789e-154
+## sample_4      3  7.354775e-96
+## sample_5      2  0.000000e+00
+## sample_6      3 2.489245e-123
+## sample_7      3 3.375202e-164
+## sample_8      3 1.985453e-204
+## sample_9      2  8.364216e-49
+## sample_10     3  2.362493e-26
+## sample_11     2  1.217347e-70
+## sample_12     1  2.617902e-38
+## sample_13     2  0.000000e+00
+## sample_14     2  2.360508e-67
+## sample_15     2  0.000000e+00
+## sample_16     2  1.587257e-63
+## sample_17     2  1.457730e-33
+## sample_18     3  1.497747e-30
+## sample_19     2  4.292093e-74
+## sample_20     2  0.000000e+00
+## sample_21     2 5.874125e-159
+## sample_22     3  3.710372e-26
+## sample_23     3 6.656415e-148
+## sample_24     2 5.366096e-159
+## sample_25     3  2.944332e-25
+## sample_26     3  1.744421e-08
+## sample_27     3 8.165301e-295
+## sample_34     1 9.922947e-194
+## sample_35     1 4.998274e-122
+## sample_36     1 6.069553e-208
+## sample_37     1 6.363930e-186
+## sample_38     1  6.073310e-94
+## sample_28     1  1.635017e-95
+## sample_29     2  7.794791e-37
+## sample_30     1 8.169302e-118
+## sample_31     1 9.981627e-145
+## sample_32     1 4.702348e-123
+## sample_33     1 4.451670e-286</code></pre>
 <p>As we can see from the above two heatmaps, correlation method is less strict than the Euclidean method that the two samples that cannot be assigned to any class with Euclidean method are assigned with certain classes under correlation method.</p>
 <p><code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> can also be directly applied to a signature centroid matrix. Following is how we manually generate the signature centroid matrix for 3-group classification from Golub dataset:</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">tb</span> <span class="kw">=</span> <span class="fu"><a href="../reference/get_signatures-ConsensusPartition-method.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">plot</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
@@ -309,19 +450,19 @@
 ##  [9] slam_0.1-47          R6_2.4.1             backports_1.1.8      stats4_4.0.2        
 ## [13] RSQLite_2.2.0        evaluate_0.14        httr_1.4.2           GlobalOptions_0.1.2 
 ## [17] rlang_0.4.7          annotate_1.66.0      blob_1.2.1           magick_2.4.0        
-## [21] S4Vectors_0.26.1     GetoptLong_1.0.2     pdist_1.2            Matrix_1.2-18       
-## [25] rmarkdown_2.3        pkgdown_1.5.1        desc_1.2.0           splines_4.0.2       
-## [29] stringr_1.4.0        RCurl_1.98-1.2       bit_4.0.4            compiler_4.0.2      
-## [33] eulerr_6.1.0         xfun_0.16            microbenchmark_1.4-7 BiocGenerics_0.34.0 
-## [37] shape_1.4.4          htmltools_0.5.0      IRanges_2.22.2       matrixStats_0.56.0  
-## [41] XML_3.99-0.5         crayon_1.3.4         MASS_7.3-52          bitops_1.0-6        
-## [45] grid_4.0.2           xtable_1.8-4         DBI_1.1.0            magrittr_1.5        
-## [49] skmeans_0.2-12       stringi_1.4.6        impute_1.62.0        genefilter_1.70.0   
-## [53] fs_1.5.0             xml2_1.3.2           brew_1.0-6           vctrs_0.3.2         
-## [57] rjson_0.2.20         RColorBrewer_1.1-2   tools_4.0.2          bit64_4.0.2         
-## [61] Biobase_2.48.0       parallel_4.0.2       survival_3.2-3       yaml_2.2.1          
-## [65] clue_0.3-57          AnnotationDbi_1.50.3 colorspace_1.4-1     cluster_2.1.0       
-## [69] ComplexHeatmap_2.5.5 memoise_1.1.0</code></pre>
+## [21] S4Vectors_0.26.1     GetoptLong_1.0.2     Matrix_1.2-18        rmarkdown_2.3       
+## [25] pkgdown_1.5.1        desc_1.2.0           splines_4.0.2        stringr_1.4.0       
+## [29] RCurl_1.98-1.2       bit_4.0.4            compiler_4.0.2       eulerr_6.1.0        
+## [33] xfun_0.16            microbenchmark_1.4-7 BiocGenerics_0.34.0  shape_1.4.4         
+## [37] htmltools_0.5.0      IRanges_2.22.2       matrixStats_0.56.0   XML_3.99-0.5        
+## [41] crayon_1.3.4         MASS_7.3-52          bitops_1.0-6         grid_4.0.2          
+## [45] xtable_1.8-4         DBI_1.1.0            magrittr_1.5         skmeans_0.2-12      
+## [49] stringi_1.4.6        impute_1.62.0        genefilter_1.70.0    fs_1.5.0            
+## [53] xml2_1.3.2           brew_1.0-6           vctrs_0.3.2          rjson_0.2.20        
+## [57] RColorBrewer_1.1-2   tools_4.0.2          bit64_4.0.2          Biobase_2.48.0      
+## [61] parallel_4.0.2       survival_3.2-3       yaml_2.2.1           clue_0.3-57         
+## [65] AnnotationDbi_1.50.3 colorspace_1.4-1     cluster_2.1.0        ComplexHeatmap_2.5.5
+## [69] memoise_1.1.0</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

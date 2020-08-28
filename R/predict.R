@@ -32,7 +32,7 @@
 #    used for cola analysis.
 #
 # == value
-# A vector of class labels (in numeric).
+# A data frame with two columns: the class labels (in numeric) and the corresponding p-values.
 #
 # == seealso
 # `predict_classes,matrix-method` that predicts the classes for new samples.
@@ -47,12 +47,12 @@
 # cl = predict_classes(res, k = 3, mat2)
 # # compare the real classification and the predicted classification
 # data.frame(cola_class = get_classes(res, k = 3)[, "class"],
-#            predicted = cl)
+#            predicted = cl[, "class"])
 # # change to correlation method
 # cl = predict_classes(res, k = 3, mat2, dist_method = "correlation")
 # # compare the real classification and the predicted classification
 # data.frame(cola_class = get_classes(res, k = 3)[, "class"],
-#            predicted = cl) 
+#            predicted = cl[, "class"]) 
 # }
 setMethod(f = "predict_classes",
 	signature = "ConsensusPartition",
@@ -106,7 +106,7 @@ setMethod(f = "predict_classes",
 	}
 
 	sig_mat = as.matrix(sig_mat)
-	colnames(sig_mat) = paste0("class", seq_len(ncol(sig_mat)))
+	colnames(sig_mat) = NULL
 
 	mat = mat[tb$which_row, , drop = FALSE]
 
@@ -160,7 +160,7 @@ setMethod(f = "predict_classes",
 # If a sample is tested with a p-value higher than ``p_cutoff``, the corresponding class label is set to ``NA``.
 #
 # == value
-# A vector of class labels (in numeric).
+# A data frame with two columns: the class labels (the column names of the signature centroid matrix are treated as class labels) and the corresponding p-values.
 #
 # == example
 # \donttest{
@@ -196,11 +196,11 @@ setMethod(f = "predict_classes",
 	dist_method = match.arg(dist_method)[1]
 	n_sig = ncol(sig_mat)
 
-	if(verbose) qqcat("Predict classes based on @{ncol(sig_mat)}-group classification.\n")
+	if(verbose) qqcat("Predict classes based on @{ncol(sig_mat)}-group classification (@{dist_method} method).\n")
 
 	if(dist_method == "euclidean") {
-		dist_to_signatures = as.matrix(pdist::pdist(t(mat), t(sig_mat)))
-		colnames(dist_to_signatures) = colnames(sig_mat)
+
+		dist_to_signatures = as.matrix(pdist(t(mat), t(sig_mat)))
 		diff_ratio = apply(dist_to_signatures, 1, function(x) { 
 			x = sort(x)
 			abs(x[1] - x[2])/mean(x)
@@ -209,8 +209,7 @@ setMethod(f = "predict_classes",
 		diff_ratio_r = NULL
 		counter = set_counter(nperm, fmt = "Permute rows of the signature centroid matrix, run %s...")
 		for(i in 1:nperm) {
-			dist_to_signatures_r = as.matrix(pdist::pdist(t(mat), t(sig_mat[sample(nrow(sig_mat)), , drop = FALSE])))
-			colnames(dist_to_signatures_r) = colnames(sig_mat)
+			dist_to_signatures_r = as.matrix(pdist(t(mat), t(sig_mat[sample(nrow(sig_mat)), , drop = FALSE])))
 			diff_ratio_r = cbind(diff_ratio_r, apply(dist_to_signatures_r, 1, function(x) { 
 				x = sort(x)
 				abs(x[1] - x[2])/mean(x)
@@ -220,26 +219,34 @@ setMethod(f = "predict_classes",
 
 		p = rowSums(diff_ratio_r - diff_ratio > 0)/nperm
 
-		predicted_class = colnames(sig_mat)[apply(dist_to_signatures, 1, which.min)]
-		predicted_class[p > p_cutoff] = "unclear"
+		predicted_class = apply(dist_to_signatures, 1, which.min)
 	} else {
 		dist_to_signatures = as.matrix(cor(mat, sig_mat, method = "spearman"))
-		colnames(dist_to_signatures) = colnames(sig_mat)
-		predicted_class = colnames(sig_mat)[apply(dist_to_signatures, 1, which.max)]
+		predicted_class = apply(dist_to_signatures, 1, which.max)
 		p = sapply(seq_along(predicted_class), function(i) {
 			cor.test(mat[, i], sig_mat[, predicted_class[i]])$p.value
 		})
-		predicted_class[p > p_cutoff] = "unclear"
 	}
-	
+
+	if(!is.null(colnames(sig_mat))) {
+		predicted_class = colnames(sig_mat)[predicted_class]
+		predicted_class2 = predicted_class
+		level = colnames(sig_mat)
+	} else {
+		predicted_class2 = paste0("class", predicted_class)
+		level = paste0("class", seq_len(ncol(sig_mat)))
+	}
+
+	predicted_class2[p > p_cutoff] = "unclear"
+
 	if(plot) {
-		predicted_class2 = factor(predicted_class, levels = c(colnames(sig_mat), "unclear"))
-		predicted_col = structure(1:ncol(sig_mat)+1, names = colnames(sig_mat))
+		predicted_class2 = factor(predicted_class2, levels = c(level, "unclear"))
+		predicted_col = structure(1:ncol(sig_mat)+1, names = level)
 		
-		group_col = structure(seq_len(n_sig) + 1, names = colnames(sig_mat))
+		group_col = structure(seq_len(n_sig) + 1, names = level)
 		group_col = c(group_col, c("unclear" = "grey"))
-		row_split = colnames(sig_mat)[apply(sig_mat, 1, which.max)]
-		row_split = factor(row_split, levels = colnames(sig_mat))
+		row_split = level[apply(sig_mat, 1, which.max)]
+		row_split = factor(row_split, levels = level)
 
 		if(dist_method == "euclidean") {
 			dist_col_fun = colorRamp2(range(dist_to_signatures), c("white", "purple"))
@@ -274,7 +281,7 @@ setMethod(f = "predict_classes",
 			# row_split = row_split, cluster_row_slices = FALSE,
 			show_column_names = FALSE, row_title = NULL,
 			cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
-			column_split = predicted_class,
+			column_split = predicted_class2,
 			show_row_dend = FALSE,
 			column_title = qq("Based on @{nrow(sig_mat)} signatures")
 		) + Heatmap(sig_mat, cluster_columns = FALSE, width = unit(4*ncol(sig_mat), "mm"),
@@ -283,9 +290,7 @@ setMethod(f = "predict_classes",
 		draw(ht_list, merge_legend = TRUE)
 	}
 
-	predicted_class = suppressWarnings(as.integer(gsub("class", "", predicted_class)))
-
-	return(predicted_class)
+	return(data.frame(class = predicted_class, p = p))
 })
 
 

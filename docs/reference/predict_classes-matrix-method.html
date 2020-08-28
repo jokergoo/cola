@@ -200,7 +200,7 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 <p>If a sample is tested with a p-value higher than <code>p_cutoff</code>, the corresponding class label is set to <code>NA</code>.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector of class labels (in numeric).</p>
+    <p>A data frame with two columns: the class labels (the column names of the signature centroid matrix are treated as class labels) and the corresponding p-values.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
@@ -228,13 +228,83 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 <span class='no'>mat2</span> <span class='kw'>=</span> <span class='no'>mat2</span>[<span class='no'>tb</span>$<span class='no'>which_row</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]
 
 <span class='co'># now we predict the class for `mat2` based on `sig_mat`</span>
-<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>sig_mat</span>, <span class='no'>mat2</span>)</div><div class='output co'>#&gt; Predict classes based on 3-group classification.</div><div class='output co'>#&gt; <span class='message'>`use_raster` is automatically set to TRUE for a matrix with more than</span>
+<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>sig_mat</span>, <span class='no'>mat2</span>)</div><div class='output co'>#&gt; Predict classes based on 3-group classification (euclidean method).</div><div class='output co'>#&gt; <span class='message'>`use_raster` is automatically set to TRUE for a matrix with more than</span>
 #&gt; <span class='message'>2000 rows. You can control `use_raster` argument by explicitly setting</span>
 #&gt; <span class='message'>TRUE/FALSE to it.</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>Set `ht_opt$message = FALSE` to turn off this message.</span></div><div class='img'><img src='predict_classes-matrix-method-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;  [1]  3  3  2  2  2  3  2  2  2  2  2  2  2  2  2  2  2  3  3  2  1  1  1  1  2
-#&gt; [26]  1  1  1  1  1  2  1  1  1  3  2  3  3  2  3  3  3  2  3  2  1  2  2  2  2
-#&gt; [51]  2  3  2  2  2 NA  3  2  3 NA  3  1  1  1  1  1  1  2  1  1  1  1</div><div class='input'># }
+#&gt; <span class='message'>Set `ht_opt$message = FALSE` to turn off this message.</span></div><div class='img'><img src='predict_classes-matrix-method-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;     class     p
+#&gt; 1  class3 0.000
+#&gt; 2  class3 0.000
+#&gt; 3  class2 0.000
+#&gt; 4  class2 0.000
+#&gt; 5  class2 0.000
+#&gt; 6  class3 0.000
+#&gt; 7  class2 0.000
+#&gt; 8  class2 0.000
+#&gt; 9  class2 0.000
+#&gt; 10 class2 0.000
+#&gt; 11 class2 0.000
+#&gt; 12 class2 0.000
+#&gt; 13 class2 0.000
+#&gt; 14 class2 0.000
+#&gt; 15 class2 0.000
+#&gt; 16 class2 0.000
+#&gt; 17 class2 0.000
+#&gt; 18 class3 0.000
+#&gt; 19 class3 0.000
+#&gt; 20 class2 0.000
+#&gt; 21 class1 0.000
+#&gt; 22 class1 0.000
+#&gt; 23 class1 0.000
+#&gt; 24 class1 0.000
+#&gt; 25 class2 0.000
+#&gt; 26 class1 0.000
+#&gt; 27 class1 0.000
+#&gt; 28 class1 0.000
+#&gt; 29 class1 0.000
+#&gt; 30 class1 0.000
+#&gt; 31 class2 0.000
+#&gt; 32 class1 0.000
+#&gt; 33 class1 0.000
+#&gt; 34 class1 0.000
+#&gt; 35 class3 0.000
+#&gt; 36 class2 0.000
+#&gt; 37 class3 0.000
+#&gt; 38 class3 0.000
+#&gt; 39 class2 0.000
+#&gt; 40 class3 0.000
+#&gt; 41 class3 0.000
+#&gt; 42 class3 0.000
+#&gt; 43 class2 0.000
+#&gt; 44 class3 0.000
+#&gt; 45 class2 0.000
+#&gt; 46 class1 0.000
+#&gt; 47 class2 0.000
+#&gt; 48 class2 0.000
+#&gt; 49 class2 0.000
+#&gt; 50 class2 0.000
+#&gt; 51 class2 0.000
+#&gt; 52 class3 0.000
+#&gt; 53 class2 0.000
+#&gt; 54 class2 0.000
+#&gt; 55 class2 0.000
+#&gt; 56 class3 0.079
+#&gt; 57 class3 0.000
+#&gt; 58 class2 0.000
+#&gt; 59 class3 0.000
+#&gt; 60 class2 0.760
+#&gt; 61 class3 0.000
+#&gt; 62 class1 0.000
+#&gt; 63 class1 0.000
+#&gt; 64 class1 0.000
+#&gt; 65 class1 0.000
+#&gt; 66 class1 0.000
+#&gt; 67 class1 0.000
+#&gt; 68 class2 0.000
+#&gt; 69 class1 0.000
+#&gt; 70 class1 0.000
+#&gt; 71 class1 0.000
+#&gt; 72 class1 0.000</div><div class='input'># }
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

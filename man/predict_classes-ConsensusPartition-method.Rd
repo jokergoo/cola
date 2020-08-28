@@ -47,7 +47,7 @@ The prediction is based on the signature centroid matrix from cola classificatio
    used for cola analysis.
 }
 \value{
-A vector of class labels (in numeric).
+A data frame with two columns: the class labels (in numeric) and the corresponding p-values.
 }
 \seealso{
 \code{\link{predict_classes,matrix-method}} that predicts the classes for new samples.
@@ -62,11 +62,11 @@ mat2 = t(scale(t(mat)))
 cl = predict_classes(res, k = 3, mat2)
 # compare the real classification and the predicted classification
 data.frame(cola_class = get_classes(res, k = 3)[, "class"],
-           predicted = cl)
+           predicted = cl[, "class"])
 # change to correlation method
 cl = predict_classes(res, k = 3, mat2, dist_method = "correlation")
 # compare the real classification and the predicted classification
 data.frame(cola_class = get_classes(res, k = 3)[, "class"],
-           predicted = cl) 
+           predicted = cl[, "class"]) 
 }
 }
