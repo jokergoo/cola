@@ -27,41 +27,41 @@ suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
 ```
 
-<% res_hc = object -%>
+<% res_hcp = object -%>
 
 ## Summary
 
-<% same_var_name = var_name == "res_hc" -%>
+<% same_var_name = var_name == "res_hcp" -%>
 
 <% if(!same_var_name) { -%>
 
-First the variable is renamed to `res_hc`.
+First the variable is renamed to `res_hcp`.
 
 ```{r, eval = FALSE, echo = TRUE}
-res_hc = <%=var_name%>
+res_hcp = <%=var_name%>
 ```
 <% } -%>
 
 ```{r, echo = FALSE}
-res_hc = object
+res_hcp = object
 ```
 
-The partition hierarchy and all available functions which can be applied to `res_hc` object.
+The partition hierarchy and all available functions which can be applied to `res_hcp` object.
 
 ```{r}
-res_hc
+res_hcp
 ```
 
 The call of `hierarchical_partition()` was:
 
 ```{r, echo = FALSE}
-cat(paste(deparse(res_hc@call, width.cutoff = 80), collapse = "\n"), "\n")
+cat(paste(deparse(res_hcp@call, width.cutoff = 80), collapse = "\n"), "\n")
 ```
 
 Dimension of the input matrix:
 
 ```{r}
-mat = get_matrix(res_hc)
+mat = get_matrix(res_hcp)
 dim(mat)
 ```
 
@@ -77,12 +77,12 @@ message(qq("* making density heatmap of global distribution for each sample (@{n
 
 ```{r density-heatmap}
 library(ComplexHeatmap)
-<% if(is.null(get_anno(res_hc))) { -%>
+<% if(is.null(get_anno(res_hcp))) { -%>
 densityHeatmap(mat, ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
     mc.cores = <%=mc.cores%>)
 <% } else { -%>
-densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hc), 
-    col = get_anno_col(res_hc)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
+densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hcp), 
+    col = get_anno_col(res_hcp)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
     mc.cores = <%=mc.cores%>)
 <% } -%>
 ```
@@ -94,9 +94,9 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))))
 Some values about the hierarchy:
 
 ```{r}
-max_depth(res_hc)
-all_nodes(res_hc)
-all_leaves(res_hc)
+max_depth(res_hcp)
+all_nodes(res_hcp)
+all_leaves(res_hcp)
 ```
 
 **cola** uses a special way to encode the node in the hierarchy. The length of
@@ -111,8 +111,8 @@ other subgroups), and 00 contains samples which do not belong to subgroup 2 at
 node 0.
 
 ```{r, echo = FALSE, message = FALSE}
-message(qq("* top rows are extracted by '@{res_hc[1]@top_value_method}' method"))
-message(qq("* subgroups are detected by '@{res_hc[1]@partition_method}' method"))
+message(qq("* top rows are extracted by '@{res_hcp[1]@top_value_method}' method"))
+message(qq("* subgroups are detected by '@{res_hcp[1]@partition_method}' method"))
 ```
 
 ### Suggest the best k
@@ -124,11 +124,11 @@ message("* suggesting the best k for each node")
 Following table shows the best `k` (number of partitions) for each node in the partition hierarchy:
 
 ```{r, eval = FALSE}
-suggest_best_k(res_hc)
+suggest_best_k(res_hcp)
 ```
 
 ```{r, echo = FALSE}
-tb = suggest_best_k(res_hc)
+tb = suggest_best_k(res_hcp)
 tb = cbind(node_id = paste0("Node", rownames(tb)), tb, stringsAsFactors = FALSE)
 # ind = which(tb[, ncol(tb)] == "parent")
 # tb$node_id[ind] = qq("[@{tb$node_id[ind]}](#@{tb$node_id[ind]})", collapse = FALSE)
@@ -139,7 +139,7 @@ kable(tb, row.names = FALSE)
 
 ### Partition hierarchy
 
-<% max_depth = max_depth(res_hc) -%>
+<% max_depth = max_depth(res_hcp) -%>
 
 ```{r, echo = FALSE, message = FALSE}
 t1 = Sys.time()
@@ -148,7 +148,7 @@ message(qq("* collecting classifications for each depth (@{max_depth}..2)"), app
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'collect-classes-from-hierarchical-partition')
+knitr_add_tab_item('collect_classes(res_hcp, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'collect-classes-from-hierarchical-partition')
 <% } -%>
 knitr_insert_tabs('collect-classes-from-hierarchical-partition')
 ```
@@ -158,7 +158,7 @@ code output** link to see it).
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('get_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'get-classes-from-hierarchical-partition', hide_and_show = TRUE)
+knitr_add_tab_item('get_classes(res_hcp, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'get-classes-from-hierarchical-partition', hide_and_show = TRUE)
 <% } -%>
 knitr_insert_tabs('get-classes-from-hierarchical-partition')
 ```
@@ -193,7 +193,7 @@ message(qq("* making PCA plots"), appendLF = FALSE)
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>, method = "<%=dr_method%>")', 'depth = <%=depth%>', prefix = 'dimension-reduction-by-depth')
+knitr_add_tab_item('dimension_reduction(res_hcp, depth = <%=depth%>, method = "<%=dr_method%>")', 'depth = <%=depth%>', prefix = 'dimension-reduction-by-depth')
 <%}-%>
 knitr_insert_tabs('dimension-reduction-by-depth')
 ```
@@ -201,9 +201,9 @@ knitr_insert_tabs('dimension-reduction-by-depth')
 Or you can also do it on each parent node:
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
+<% all_parents = setdiff(all_nodes(res_hcp), all_leaves(res_hcp))
 for(p in all_parents) { -%>
-knitr_add_tab_item('dimension_reduction(res_hc, parent_node = "<%=p%>", method = "<%=dr_method%>")', 'node = "<%=p%>"', prefix = 'dimension-reduction-by-node')
+knitr_add_tab_item('dimension_reduction(res_hcp, parent_node = "<%=p%>", method = "<%=dr_method%>")', 'node = "<%=p%>"', prefix = 'dimension-reduction-by-node')
 <%}-%>
 knitr_insert_tabs('dimension-reduction-by-node')
 ```
@@ -222,7 +222,7 @@ message(qq("* making signature heatmaps"), appendLF = FALSE)
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('get_signatures(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', opt = 'results="hide"', prefix = 'get-signatures-from-hierarchical-partition')
+knitr_add_tab_item('get_signatures(res_hcp, depth = <%=depth%>)', 'depth = <%=depth%>', opt = 'results="hide"', prefix = 'get-signatures-from-hierarchical-partition')
 <%}-%>
 knitr_insert_tabs('get-signatures-from-hierarchical-partition')
 ```
@@ -249,7 +249,7 @@ message(qq("* testing correlation of subgroups to known annotations"))
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('test_to_known_factors(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
+knitr_add_tab_item('test_to_known_factors(res_hcp, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
 <%}-%>
 knitr_insert_tabs('test-to-known-factors-from-hierarchical-partition')
 ```
@@ -261,19 +261,19 @@ knitr_insert_tabs('test-to-known-factors-from-hierarchical-partition')
 
 ```{r, results = "asis", echo = FALSE}
 fs = 2
-is_hc = TRUE
+is_hcp = TRUE
 single_report = FALSE
-# all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
-all_parents = all_nodes(res_hc)
+# all_parents = setdiff(all_nodes(res_hcp), all_leaves(res_hcp))
+all_parents = all_nodes(res_hcp)
 n_section = length(all_parents)
 i_section = 0
 .e = environment()
-all_k = res_hc@list[[1]]@k
+all_k = res_hcp@list[[1]]@k
 md_list = mclapply(seq_along(all_parents), function(ind) {
     i_section = ind
     node = all_parents[ind]
-    top_value_method = res_hc[[node]]@top_value_method
-    partition_method = res_hc[[node]]@partition_method
+    top_value_method = res_hcp[[node]]@top_value_method
+    partition_method = res_hcp[[node]]@partition_method
     
     tmpfile = tempfile(tmpdir = cola:::.ENV$TEMP_DIR)
     

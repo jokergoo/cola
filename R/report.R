@@ -239,10 +239,10 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	KNITR_TAB_ENV$prefix = NULL
 
 	.t1 = Sys.time()
-	template_file = c("HierarchicalPartition" = "cola_hc_template.Rmd-template",
+	template_file = c("HierarchicalPartition" = "cola_hcp_template.Rmd-template",
 		              "ConsensusPartitionList" = "cola_report_template.Rmd-template",
 		              "ConsensusPartition" = "cola_single_report_template.Rmd-template")
-	html_file = c("HierarchicalPartition" = "cola_hc.html",
+	html_file = c("HierarchicalPartition" = "cola_hcp.html",
 		          "ConsensusPartitionList" = "cola_report.html",
 		          "ConsensusPartition" = "cola_single.html")
 

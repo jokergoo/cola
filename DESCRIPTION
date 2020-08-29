@@ -2,7 +2,7 @@ Package: cola
 Type: Package
 Title: A Framework for Consensus Partitioning
 Version: 1.5.1
-Date: 2020-08-23
+Date: 2020-08-29
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.6.0)
@@ -39,8 +39,6 @@ Imports: grDevices,
 Suggests: genefilter,
           mvtnorm,
           testthat (>= 0.3),
-          data.tree,
-          dendextend,
           samr,
           pamr,
           kohonen,

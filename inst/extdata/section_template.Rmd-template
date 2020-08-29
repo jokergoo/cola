@@ -2,10 +2,10 @@
 ---------------------------------------------------
 
 <% 
-if(is_hc) {
+if(is_hcp) {
     mark = ifelse(tb[node, ncol(tb)] == "parent", "(p)", "")
     chunk_prefix = paste("node", node, sep = "-")
-    res = res_hc[node]
+    res = res_hcp[node]
 } else {
     if(single_report) {
         chunk_prefix = paste(top_value_method, partition_method, sep = "-")
@@ -20,7 +20,7 @@ if(is_hc) {
 -%>
 
 <% if(!single_report) { %>
-<% if(is_hc) { %>
+<% if(is_hcp) { %>
 ### Node<%=node%><%=mark%>
 <% } else if(!single_report) { %>
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
@@ -34,7 +34,7 @@ message("-----------------------------------------------------------------")
 <% } -%>
 
 <% 
-if(is_hc) { -%>
+if(is_hcp) { -%>
 ```{r <%=chunk_prefix%>-message0, echo = FALSE, message = FALSE}
 section_t1 = Sys.time()
 message("* generating plots for node <%=node%> (<%=i_section%>/<%=n_section%>)")
@@ -51,8 +51,8 @@ The object with results only for a single top-value method and a single partitio
 can be extracted as:
 
 ```{r <%=chunk_prefix%>-rename}
-<% if(is_hc) { -%>
-res = res_hc["<%=node%>"]
+<% if(is_hcp) { -%>
+res = res_hcp["<%=node%>"]
 <% } else { -%>
 res = res_list["<%=top_value_method%>", "<%=partition_method%>"]
 # you can also extract it by
@@ -370,7 +370,7 @@ If matrix rows can be associated to genes, consider to use `functional_enrichmen
 
 
 <% 
-if(is_hc) { -%>
+if(is_hcp) { -%>
 ```{r <%=chunk_prefix%>-message10, echo = FALSE, message = FALSE}
 section_t2 = Sys.time()
 message(paste0("  - section node <%=node%> used in total ", gsub("^ +", "", format(section_t2 - section_t1))))
