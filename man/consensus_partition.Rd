@@ -23,6 +23,7 @@ consensus_partition(data,
     scale_rows = NULL,
     verbose = TRUE,
     mc.cores = 1,
+    prefix = "",
     .env = NULL)
 }
 \arguments{
@@ -41,6 +42,7 @@ consensus_partition(data,
   \item{scale_rows}{Whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
   \item{verbose}{Whether print messages.}
   \item{mc.cores}{Multiple cores to use.}
+  \item{prefix}{Internally used.}
   \item{.env}{An environment, internally used.}
 
 }

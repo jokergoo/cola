@@ -39,6 +39,15 @@ cola_opt = setGlobalOptions(
 )
 
 TEMPLATE_DIR = NULL
+
+# Only for testing
+if(Sys.info()["user"] == "jokergoo") {
+	TEMPLATE_DIR = "~/project/cola/inst/extdata"
+} else {
+	TEMPLATE_DIR = "/desktop-home/guz/project/development/cola/inst/extdata"
+}
+
+
 .onLoad = function(...) {
 	TEMPLATE_DIR <<- system.file("extdata", package = "cola")
 }

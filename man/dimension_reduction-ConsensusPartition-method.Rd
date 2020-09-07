@@ -25,7 +25,7 @@ Visualize samples (the matrix columns) after dimension reduction
   \item{nr}{If number of matrix rows is larger than this value, random \code{nr} rows are used.}
   \item{silhouette_cutoff}{Cutoff of silhouette score. Data points with values less than it will be mapped with cross symbols.}
   \item{remove}{Whether to remove columns which have less silhouette scores than the cutoff.}
-  \item{scale_rows}{Whether perform scaling on matrix rows.}
+  \item{scale_rows}{Whether to perform scaling on matrix rows.}
   \item{verbose}{Whether print messages.}
   \item{...}{Other arguments.}
 

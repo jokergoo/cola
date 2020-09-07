@@ -23,6 +23,7 @@
 # -scale_rows Whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
 # -verbose Whether print messages.
 # -mc.cores Multiple cores to use.
+# -prefix Internally used.
 # -.env An environment, internally used.
 #
 # == details
@@ -74,6 +75,7 @@ consensus_partition = function(data,
 	scale_rows = NULL,
 	verbose = TRUE,
 	mc.cores = 1,
+	prefix = "",
 	.env = NULL) {
 
 	if(missing(data)) {
@@ -99,6 +101,7 @@ consensus_partition = function(data,
 		scale_rows = scale_rows,
 		verbose = verbose,
 		mc.cores = mc.cores,
+		prefix = prefix,
 		.env = .env))
 	res@hash = digest(res)
 	res@running_time = t[["elapsed"]]
@@ -106,7 +109,7 @@ consensus_partition = function(data,
 	if(verbose) {
 		tc = Sys.time()
 		tf = format(tc + structure(t[["elapsed"]], units = "secs", class = "difftime") - tc)
-		qqcat("* @{top_value_method}:@{partition_method} used @{tf}.\n")
+		qqcat("@{prefix}* @{top_value_method}:@{partition_method} used @{tf}.\n")
 	}
 	return(res)
 }
@@ -127,6 +130,7 @@ consensus_partition = function(data,
 	scale_rows = NULL,
 	verbose = TRUE,
 	mc.cores = 1,
+	prefix = "",
 	.env = NULL) {
 
 	# .env is used to store shared matrix because the matrix will be used multiple times in
@@ -158,12 +162,12 @@ consensus_partition = function(data,
 
 	data = data[, .env$column_index, drop = FALSE]
 
-	if(verbose) qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
+	if(verbose) qqcat("@{prefix}* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 
 	k = sort(k)
 	l = k <= ncol(data)
 	if(sum(l) != length(k)) {
-		qqcat("* Following k (@{paste(k[!l], collapse=', ')}) are removed.\n")
+		qqcat("@{prefix}* Following k (@{paste(k[!l], collapse=', ')}) are removed.\n")
 	}
 	k = k[l]
 	if(length(k) == 0) {
@@ -173,7 +177,7 @@ consensus_partition = function(data,
 	top_n = round(top_n)
 	l = top_n <= nrow(data)
 	if(sum(l) != length(top_n)) {
-		qqcat("* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
+		qqcat("@{prefix}* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
 	}
 	top_n = top_n[l]
 	if(length(top_n) == 0) {
@@ -187,18 +191,18 @@ consensus_partition = function(data,
 	# also since one top value metric will be used for different partition methods,
 	# we cache the top values for repetitive use
 	if(is.null(.env$all_top_value_list)) {
-		if(verbose) qqcat("* calculating @{top_value_method} values.\n")
+		if(verbose) qqcat("@{prefix}* calculating @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list = list()
 		.env$all_top_value_list[[top_value_method]] = all_top_value
 	} else if(is.null(.env$all_top_value_list[[top_value_method]])) {
-		if(verbose) qqcat("* calculating @{top_value_method} values.\n")
+		if(verbose) qqcat("@{prefix}* calculating @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list[[top_value_method]] = all_top_value
 	} else {
-		if(verbose) qqcat("* @{top_value_method} values have already been calculated. Get from cache.\n")
+		if(verbose) qqcat("@{prefix}* @{top_value_method} values have already been calculated. Get from cache.\n")
 		all_top_value = .env$all_top_value_list[[top_value_method]]
 	}
 
@@ -208,10 +212,10 @@ consensus_partition = function(data,
 	if(scale_rows) {
 		scale_method = attr(partition_fun, "scale_method")
 		if("z-score" %in% scale_method) {
-			if(verbose) cat("* rows are scaled before sent to partition, method: 'z-score' (x - mean)/sd\n")
+			if(verbose) qqcat("@{prefix}* rows are scaled before sent to partition, method: 'z-score' (x - mean)/sd\n")
 			data = t(scale(t(data)))
 		} else if("min-max" %in% scale_method) {
-			if(verbose) cat("* rows are scaled before sent to partition, method: 'min-max' (x - min)/(max - min)\n")
+			if(verbose) qqcat("@{prefix}* rows are scaled before sent to partition, method: 'min-max' (x - min)/(max - min)\n")
 			row_min = rowMins(data)
 			row_max = rowMaxs(data)
 			row_range = row_max - row_min
@@ -219,19 +223,20 @@ consensus_partition = function(data,
 		} else {
 			scale_rows = FALSE
 		}
+		attr(scale_rows, "scale_method") = scale_method
 	}
 
 	# in case NA is produced in scaling
 	l = apply(data, 1, function(x) any(is.na(x)))
 	if(any(l)) {
-		if(verbose) qqcat("* remove @{sum(l)} rows with NA values.\n")
+		if(verbose) qqcat("@{prefix}* remove @{sum(l)} rows with NA values.\n")
 		data = data[!l, , drop = FALSE]
 		all_top_value = all_top_value[!l]
 		l = top_n <= nrow(data)
 		top_n = top_n[l]
 
 		if(sum(l) != length(top_n)) {
-			qqcat("* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
+			qqcat("@{prefix}* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
 		}
 		top_n = top_n[l]
 		if(length(top_n) == 0) {
@@ -249,12 +254,12 @@ consensus_partition = function(data,
 
 		if(length(ind) > 5000) {
 			ind = sample(ind, 5000)
-			if(verbose) qqcat("* get top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
+			if(verbose) qqcat("@{prefix}* get top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
 		} else {
-			if(verbose) qqcat("* get top @{top_n[i]} rows by @{top_value_method} method\n")
+			if(verbose) qqcat("@{prefix}* get top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
-		if(verbose && mc.cores > 1) qqcat("  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{mc.cores} cores).\n")
+		if(verbose && mc.cores > 1) qqcat("@{prefix}  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{mc.cores} cores).\n")
 
 		lt = mclapply(seq_len(partition_repeat), function(j) {
 
@@ -270,8 +275,8 @@ consensus_partition = function(data,
 				mat = data[ind, , drop = FALSE]
 			}
 			for(y in k) {
-				if(interactive() && verbose && mc.cores == 1) cat(strrep("\b", 100))
-				if(interactive() && verbose && mc.cores == 1) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
+				if(interactive() && verbose && mc.cores == 1) cat(strrep("\b", 120))
+				if(interactive() && verbose && mc.cores == 1) qqcat("@{prefix}  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
 				partition_list = c(partition_list, list(list(partition_fun(mat, y, column_ind_sub))))
 				param = rbind(param, data.frame(top_n = top_n[i], k = y, n_row = nrow(mat), n_col = ncol(mat), stringsAsFactors = FALSE))
 			}
@@ -420,7 +425,7 @@ consensus_partition = function(data,
 		l = param$k == y
 		
 		top_n_level = unique(param[l, "top_n"])
-		if(verbose) qqcat("* wrap results for k = @{y}\n")
+		if(verbose) qqcat("@{prefix}* wrap results for k = @{y}\n")
 		construct_consensus_object(param[l, ], partition_list[l], y, verbose = FALSE)
 		
 	})
@@ -430,7 +435,7 @@ consensus_partition = function(data,
 	gc(verbose = FALSE, reset = TRUE)
 
 	## adjust class labels for different k should also be adjusted
-	if(verbose) qqcat("* adjust class labels between different k.\n")
+	if(verbose) qqcat("@{prefix}* adjust class labels between different k.\n")
 	reference_class = object_list[[1]]$class_df$class
 	for(i in seq_along(k)[-1]) {
 		class_df = object_list[[i]]$class_df
@@ -936,7 +941,7 @@ setMethod(f = "membership_heatmap",
 #        than it will be mapped with cross symbols.
 # -remove Whether to remove columns which have less silhouette scores than
 #        the cutoff.
-# -scale_rows Whether perform scaling on matrix rows.
+# -scale_rows Whether to perform scaling on matrix rows.
 # -verbose Whether print messages.
 # -... Other arguments.
 #
@@ -995,11 +1000,11 @@ setMethod(f = "dimension_reduction",
 		top_n = min(c(top_n, nrow(data)))
 		all_value = object@.env$all_top_value_list[[object@top_value_method]]
 		ind = order(all_value)[1:top_n]
-		if(length(ind) > 5000) ind = sample(ind, 5000)
+		if(length(ind) > nr) ind = sample(ind, nr)
 		data = data[ind, , drop = FALSE]
 	} else {
 		top_n = nrow(data)
-		if(nrow(data) > 5000) data = data[sample(1:nrow(data), 5000), , drop = FALSE]
+		if(nrow(data) > nr) data = data[sample(1:nrow(data), nr), , drop = FALSE]
 	}
 
 	class_df = get_classes(object, k)

@@ -7,18 +7,19 @@ Predict classes for new samples based on signature centroid matrix
 Predict classes for new samples based on signature centroid matrix
 }
 \usage{
-\S4method{predict_classes}{matrix}(object, mat, dist_method = c("euclidean", "correlation"), nperm = 1000,
-    p_cutoff = 0.05, plot = TRUE, verbose = TRUE)
+\S4method{predict_classes}{matrix}(object, mat, dist_method = c("euclidean", "correlation", "cosine"),
+    nperm = 1000, p_cutoff = 0.05, plot = TRUE, verbose = TRUE, prefix = "")
 }
 \arguments{
 
   \item{object}{The signature centroid matrix. See the Details section.}
   \item{mat}{The new matrix where the classes are going to be predicted. The number of rows should be the same as the signature centroid matrix (also make sure the row orders are the same). Be careful that \code{mat} should be in the same scale as the centroid matrix.}
-  \item{dist_method}{Distance method. Value should be "euclidean" or "correlation".}
-  \item{nperm}{Number of permutatinos. It is used when \code{dist_method} is set to "euclidean".}
+  \item{dist_method}{Distance method. Value should be "euclidean", "correlation" or "cosine".}
+  \item{nperm}{Number of permutatinos. It is used when \code{dist_method} is set to "euclidean" or "cosine".}
   \item{p_cutoff}{Cutoff for the p-values for determining class assignment.}
   \item{plot}{Whether to draw the plot that visualizes the process of prediction.}
   \item{verbose}{Whether to print messages.}
+  \item{prefix}{Used internally.}
 
 }
 \details{
@@ -29,7 +30,7 @@ For each sample in the new matrix, the task is basically to test which signature
 current sample is the closest to. There are two methods: the Euclidean distance and the 
 correlation (Spearman) distance.
 
-For the Euclidean distance method, for the vector denoted as x which corresponds to sample i 
+For the Euclidean/cosine distance method, for the vector denoted as x which corresponds to sample i 
 in the new matrix, to test which class should be assigned to sample i, the distance between 
 sample i and all k signature centroids are calculated and denoted as d_1, d_2, ..., d_k. The class with the smallest distance is assigned to sample i.
 The distances for k centroids are sorted increasingly, and we design a statistic named "difference ratio", denoted as r

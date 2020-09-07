@@ -1,6 +1,6 @@
 
 
-KNITR_TAB_ENV = new.env()
+KNITR_TAB_ENV = new.env(parent = emptyenv())
 KNITR_TAB_ENV$current_tab_index = 0
 KNITR_TAB_ENV$header = NULL
 KNITR_TAB_ENV$current_html = ""

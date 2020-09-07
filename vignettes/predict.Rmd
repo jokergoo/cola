@@ -67,10 +67,10 @@ are as follows:
 
 The class prediction is applied as follows. For each sample in the new matrix,
 the task is basically to test which signature centroid the current sample is
-the closest to. There are two methods: the Euclidean distance and the
+the closest to. There are three methods: the Euclidean distance, cosine distance (it is `1-cos(x, y)`) and the
 correlation (Spearman) distance. 
 
-For the Euclidean distance method, for the vector denoted as $x$ which
+For the Euclidean distance and cosine distance method, for the vector denoted as $x$ which
 corresponds to sample $i$ in the new matrix, to test which class should be
 assigned to sample $i$, the distance between sample $i$ and all $k$ signature
 centroids are calculated and denoted as $d_1$, $d_2$, ..., $d_k$. The class

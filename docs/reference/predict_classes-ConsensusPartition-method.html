@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
       </span>
     </div>
 
@@ -148,8 +148,9 @@
     <span class='kw'>group_diff</span> <span class='kw'>=</span> <span class='no'>cola_opt</span>$<span class='no'>group_diff</span>,
     <span class='kw'>scale_rows</span> <span class='kw'>=</span> <span class='no'>object</span>@<span class='kw'>scale_rows</span>,
     <span class='kw'>diff_method</span> <span class='kw'>=</span> <span class='st'>"Ftest"</span>,
-    <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"euclidean"</span>, <span class='st'>"correlation"</span>), <span class='kw'>nperm</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-    <span class='kw'>p_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"euclidean"</span>, <span class='st'>"correlation"</span>, <span class='st'>"cosine"</span>), <span class='kw'>nperm</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+    <span class='kw'>p_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>force</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+    <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>help</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -188,11 +189,11 @@
     </tr>
     <tr>
       <th>dist_method</th>
-      <td><p>Distance method. Value should be "euclidean" or "correlation". Send to <code><a href='predict_classes-matrix-method.html'>predict_classes,matrix-method</a></code>.</p></td>
+      <td><p>Distance method. Value should be "euclidean", "correlation" or "cosine". Send to <code><a href='predict_classes-matrix-method.html'>predict_classes,matrix-method</a></code>.</p></td>
     </tr>
     <tr>
       <th>nperm</th>
-      <td><p>Number of permutatinos. It is used when <code>dist_method</code> is set to "euclidean". Send to <code><a href='predict_classes-matrix-method.html'>predict_classes,matrix-method</a></code>.</p></td>
+      <td><p>Number of permutatinos. It is used when <code>dist_method</code> is set to "euclidean" or "cosine". Send to <code><a href='predict_classes-matrix-method.html'>predict_classes,matrix-method</a></code>.</p></td>
     </tr>
     <tr>
       <th>p_cutoff</th>
@@ -203,8 +204,20 @@
       <td><p>Whether to draw the plot that visualizes the process of prediction. Send to <code><a href='predict_classes-matrix-method.html'>predict_classes,matrix-method</a></code>.</p></td>
     </tr>
     <tr>
+      <th>force</th>
+      <td><p>If the value is <code>TRUE</code> and when <code><a href='get_signatures-ConsensusPartition-method.html'>get_signatures,ConsensusPartition-method</a></code> internally failed, top 1000 rows with the highest between-group mean difference are used for constructing the signature centroid matrix. It is basically used internally.</p></td>
+    </tr>
+    <tr>
       <th>verbose</th>
       <td><p>Whether to print messages. Send to <code><a href='predict_classes-matrix-method.html'>predict_classes,matrix-method</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>help</th>
+      <td><p>Whether to print help messages.</p></td>
+    </tr>
+    <tr>
+      <th>prefix</th>
+      <td><p>Used internally.</p></td>
     </tr>
     </table>
 
@@ -236,14 +249,13 @@
 <span class='no'>mat2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='no'>mat</span>)))
 <span class='no'>cl</span> <span class='kw'>=</span> <span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='no'>mat2</span>)</div><div class='output co'>#&gt; The matrix has been scaled in cola analysis, thus the new matrix should
 #&gt; also be scaled with the same method ('z-score'). Please double check.
-#&gt; Set `verbose = FALSE` to suppress this message. 
+#&gt; Set `help = FALSE` to suppress this message. 
 #&gt; 
 #&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: 752a6398cc8385b0a09ab87143cd2a1a (seed 888).
+#&gt; * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
 #&gt; * split rows into 2 groups by k-means clustering.
 #&gt; * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
-#&gt; 
 #&gt; Predict classes based on 3-group classification (euclidean method).</div><div class='img'><img src='predict_classes-ConsensusPartition-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># compare the real classification and the predicted classification</span>
 <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>cola_class</span> <span class='kw'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)[, <span class='st'>"class"</span>],
            <span class='kw'>predicted</span> <span class='kw'>=</span> <span class='no'>cl</span>[, <span class='st'>"class"</span>])</div><div class='output co'>#&gt;    cola_class predicted
@@ -321,15 +333,14 @@
 #&gt; 72          1         1</div><div class='input'><span class='co'># change to correlation method</span>
 <span class='no'>cl</span> <span class='kw'>=</span> <span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='no'>mat2</span>, <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='st'>"correlation"</span>)</div><div class='output co'>#&gt; The matrix has been scaled in cola analysis, thus the new matrix should
 #&gt; also be scaled with the same method ('z-score'). Please double check.
-#&gt; Set `verbose = FALSE` to suppress this message. 
+#&gt; Set `help = FALSE` to suppress this message. 
 #&gt; 
 #&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: 752a6398cc8385b0a09ab87143cd2a1a (seed 888).
+#&gt; * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
 #&gt;   - row difference is extracted from cache.
 #&gt; * use k-means partition that are already calculated in previous runs.
 #&gt; * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
-#&gt; 
 #&gt; Predict classes based on 3-group classification (correlation method).</div><div class='img'><img src='predict_classes-ConsensusPartition-method-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># compare the real classification and the predicted classification</span>
 <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>cola_class</span> <span class='kw'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)[, <span class='st'>"class"</span>],
            <span class='kw'>predicted</span> <span class='kw'>=</span> <span class='no'>cl</span>[, <span class='st'>"class"</span>])</div><div class='output co'>#&gt;    cola_class predicted
@@ -392,7 +403,7 @@
 #&gt; 57          3         3
 #&gt; 58          2         2
 #&gt; 59          3         3
-#&gt; 60          3         3
+#&gt; 60          3         2
 #&gt; 61          3         3
 #&gt; 62          1         1
 #&gt; 63          1         1

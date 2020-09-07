@@ -37,7 +37,7 @@ Following code was used to generate \code{golub_cola}:
     register_NMF()
 
     set.seed(123)
-    rl = run_all_consensus_partition_methods(
+    golub_cola = run_all_consensus_partition_methods(
         m,
         mc.cores = 4, 
         anno = anno[, c("ALL.AML"), drop = FALSE],

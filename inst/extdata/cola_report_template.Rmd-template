@@ -345,7 +345,7 @@ knitr_insert_tabs('test-to-known-factors-from-consensus-partition-list')
 
 ```{r, results = "asis", echo = FALSE}
 fs = min(c(3*length(res_list@top_value_method), 14))/length(res_list@top_value_method)
-is_hc = FALSE
+is_hcp = FALSE
 single_report = FALSE
 node = NULL
 n_section = n_top_value_method * n_partition_method
@@ -365,6 +365,10 @@ md_list = mclapply(seq_len(nrow(comb)), function(ind) {
 
     ComplexHeatmap:::dev.null()
     txt = knit(text = rmd, quiet = TRUE, envir = .e)
+    devlt = dev.list()
+    if(names(devlt)[1] == "quartz_off_screen") {
+        invisible(dev.off())
+    }
     dev.off()
     return(txt)
 }, mc.cores = mc.cores)

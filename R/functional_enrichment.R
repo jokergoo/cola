@@ -372,7 +372,7 @@ setMethod(f = "functional_enrichment",
         }
 
         if(!is.null(id_mapping)) {
-            if(verbose) qqcat("@{prefix}- @{length(sig_gene)} genes left after id mapping\n")
+            if(verbose) qqcat("@{prefix}- @{length(sig_gene)}/@{length(object)} (@{round(length(sig_gene)/length(object)*100, 1)}%) genes left after id mapping\n")
         }
 
         if(length(sig_gene)) {

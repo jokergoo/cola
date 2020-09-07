@@ -1,5 +1,5 @@
 
-.ENV = new.env()
+.ENV = new.env(parent = emptyenv())
 .ENV$ALL_TOP_VALUE_METHODS = NULL
 .ENV$ALL_TOP_VALUE_FUN = list()
 .ENV$ALL_PARTITION_FUN = list()

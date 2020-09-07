@@ -304,7 +304,7 @@ setMethod(f = "nrow",
 setMethod(f = "ncol",
 	signature = "ConsensusPartition",
 	definition = function(x) {
-	ncol(x@.env$data)
+	length(x@column_index)
 })
 
 # == title
@@ -354,7 +354,7 @@ setMethod(f = "rownames",
 setMethod(f = "colnames",
 	signature = "ConsensusPartition",
 	definition = function(x) {
-	colnames(x@.env$data)
+	colnames(x@.env$data[, x@column_index, drop = FALSE])
 })
 
 
@@ -377,7 +377,7 @@ setMethod(f = "colnames",
 # -x A `ConsensusPartition-class` object.
 #
 dim.ConsensusPartition = function(x) {
-	dim(x@.env$data)
+	c(nrow(x), ncol(x))
 }
 
 # == title

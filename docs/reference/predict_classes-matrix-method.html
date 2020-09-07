@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
       </span>
     </div>
 
@@ -142,8 +142,8 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for matrix</span>
-<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>object</span>, <span class='no'>mat</span>, <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"euclidean"</span>, <span class='st'>"correlation"</span>), <span class='kw'>nperm</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-    <span class='kw'>p_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>object</span>, <span class='no'>mat</span>, <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"euclidean"</span>, <span class='st'>"correlation"</span>, <span class='st'>"cosine"</span>),
+    <span class='kw'>nperm</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>p_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -158,11 +158,11 @@
     </tr>
     <tr>
       <th>dist_method</th>
-      <td><p>Distance method. Value should be "euclidean" or "correlation".</p></td>
+      <td><p>Distance method. Value should be "euclidean", "correlation" or "cosine".</p></td>
     </tr>
     <tr>
       <th>nperm</th>
-      <td><p>Number of permutatinos. It is used when <code>dist_method</code> is set to "euclidean".</p></td>
+      <td><p>Number of permutatinos. It is used when <code>dist_method</code> is set to "euclidean" or "cosine".</p></td>
     </tr>
     <tr>
       <th>p_cutoff</th>
@@ -176,6 +176,10 @@
       <th>verbose</th>
       <td><p>Whether to print messages.</p></td>
     </tr>
+    <tr>
+      <th>prefix</th>
+      <td><p>Used internally.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -185,7 +189,7 @@ in the corresponding class (k-group classification).</p>
 <p>For each sample in the new matrix, the task is basically to test which signature centroid the 
 current sample is the closest to. There are two methods: the Euclidean distance and the 
 correlation (Spearman) distance.</p>
-<p>For the Euclidean distance method, for the vector denoted as x which corresponds to sample i 
+<p>For the Euclidean/cosine distance method, for the vector denoted as x which corresponds to sample i 
 in the new matrix, to test which class should be assigned to sample i, the distance between 
 sample i and all k signature centroids are calculated and denoted as d_1, d_2, ..., d_k. The class with the smallest distance is assigned to sample i.
 The distances for k centroids are sorted increasingly, and we design a statistic named "difference ratio", denoted as r
@@ -210,8 +214,8 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 <span class='co'># note scaling should be applied here because the matrix was scaled in the cola analysis</span>
 <span class='no'>mat2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='no'>mat</span>)))
 
-<span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-ConsensusPartition-method.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: 752a6398cc8385b0a09ab87143cd2a1a (seed 888).
+<span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
+#&gt; * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
 #&gt; * split rows into 2 groups by k-means clustering.
 #&gt; * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.</div><div class='input'><span class='no'>sig_mat</span> <span class='kw'>=</span> <span class='no'>tb</span>[, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span>(<span class='st'>"scaled_mean"</span>, <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span>(<span class='no'>tb</span>))]
@@ -232,79 +236,79 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 #&gt; <span class='message'>2000 rows. You can control `use_raster` argument by explicitly setting</span>
 #&gt; <span class='message'>TRUE/FALSE to it.</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>Set `ht_opt$message = FALSE` to turn off this message.</span></div><div class='img'><img src='predict_classes-matrix-method-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;     class     p
-#&gt; 1  class3 0.000
-#&gt; 2  class3 0.000
-#&gt; 3  class2 0.000
-#&gt; 4  class2 0.000
-#&gt; 5  class2 0.000
-#&gt; 6  class3 0.000
-#&gt; 7  class2 0.000
-#&gt; 8  class2 0.000
-#&gt; 9  class2 0.000
-#&gt; 10 class2 0.000
-#&gt; 11 class2 0.000
-#&gt; 12 class2 0.000
-#&gt; 13 class2 0.000
-#&gt; 14 class2 0.000
-#&gt; 15 class2 0.000
-#&gt; 16 class2 0.000
-#&gt; 17 class2 0.000
-#&gt; 18 class3 0.000
-#&gt; 19 class3 0.000
-#&gt; 20 class2 0.000
-#&gt; 21 class1 0.000
-#&gt; 22 class1 0.000
-#&gt; 23 class1 0.000
-#&gt; 24 class1 0.000
-#&gt; 25 class2 0.000
-#&gt; 26 class1 0.000
-#&gt; 27 class1 0.000
-#&gt; 28 class1 0.000
-#&gt; 29 class1 0.000
-#&gt; 30 class1 0.000
-#&gt; 31 class2 0.000
-#&gt; 32 class1 0.000
-#&gt; 33 class1 0.000
-#&gt; 34 class1 0.000
-#&gt; 35 class3 0.000
-#&gt; 36 class2 0.000
-#&gt; 37 class3 0.000
-#&gt; 38 class3 0.000
-#&gt; 39 class2 0.000
-#&gt; 40 class3 0.000
-#&gt; 41 class3 0.000
-#&gt; 42 class3 0.000
-#&gt; 43 class2 0.000
-#&gt; 44 class3 0.000
-#&gt; 45 class2 0.000
-#&gt; 46 class1 0.000
-#&gt; 47 class2 0.000
-#&gt; 48 class2 0.000
-#&gt; 49 class2 0.000
-#&gt; 50 class2 0.000
-#&gt; 51 class2 0.000
-#&gt; 52 class3 0.000
-#&gt; 53 class2 0.000
-#&gt; 54 class2 0.000
-#&gt; 55 class2 0.000
-#&gt; 56 class3 0.079
-#&gt; 57 class3 0.000
-#&gt; 58 class2 0.000
-#&gt; 59 class3 0.000
-#&gt; 60 class2 0.760
-#&gt; 61 class3 0.000
-#&gt; 62 class1 0.000
-#&gt; 63 class1 0.000
-#&gt; 64 class1 0.000
-#&gt; 65 class1 0.000
-#&gt; 66 class1 0.000
-#&gt; 67 class1 0.000
-#&gt; 68 class2 0.000
-#&gt; 69 class1 0.000
-#&gt; 70 class1 0.000
-#&gt; 71 class1 0.000
-#&gt; 72 class1 0.000</div><div class='input'># }
+#&gt; <span class='message'>Set `ht_opt$message = FALSE` to turn off this message.</span></div><div class='img'><img src='predict_classes-matrix-method-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;            class     p
+#&gt; sample_39 class3 0.000
+#&gt; sample_40 class3 0.000
+#&gt; sample_42 class2 0.000
+#&gt; sample_47 class2 0.000
+#&gt; sample_48 class2 0.000
+#&gt; sample_49 class3 0.000
+#&gt; sample_41 class2 0.000
+#&gt; sample_43 class2 0.000
+#&gt; sample_44 class2 0.000
+#&gt; sample_45 class2 0.000
+#&gt; sample_46 class2 0.000
+#&gt; sample_70 class2 0.000
+#&gt; sample_71 class2 0.000
+#&gt; sample_72 class2 0.000
+#&gt; sample_68 class2 0.000
+#&gt; sample_69 class2 0.000
+#&gt; sample_67 class2 0.000
+#&gt; sample_55 class3 0.000
+#&gt; sample_56 class3 0.000
+#&gt; sample_59 class2 0.000
+#&gt; sample_52 class1 0.000
+#&gt; sample_53 class1 0.000
+#&gt; sample_51 class1 0.000
+#&gt; sample_50 class1 0.000
+#&gt; sample_54 class2 0.000
+#&gt; sample_57 class1 0.000
+#&gt; sample_58 class1 0.000
+#&gt; sample_60 class1 0.000
+#&gt; sample_61 class1 0.000
+#&gt; sample_65 class1 0.000
+#&gt; sample_66 class2 0.000
+#&gt; sample_63 class1 0.000
+#&gt; sample_64 class1 0.000
+#&gt; sample_62 class1 0.000
+#&gt; sample_1  class3 0.000
+#&gt; sample_2  class2 0.000
+#&gt; sample_3  class3 0.000
+#&gt; sample_4  class3 0.000
+#&gt; sample_5  class2 0.000
+#&gt; sample_6  class3 0.000
+#&gt; sample_7  class3 0.000
+#&gt; sample_8  class3 0.000
+#&gt; sample_9  class2 0.000
+#&gt; sample_10 class3 0.000
+#&gt; sample_11 class2 0.000
+#&gt; sample_12 class1 0.000
+#&gt; sample_13 class2 0.000
+#&gt; sample_14 class2 0.000
+#&gt; sample_15 class2 0.000
+#&gt; sample_16 class2 0.000
+#&gt; sample_17 class2 0.000
+#&gt; sample_18 class3 0.000
+#&gt; sample_19 class2 0.000
+#&gt; sample_20 class2 0.000
+#&gt; sample_21 class2 0.000
+#&gt; sample_22 class3 0.079
+#&gt; sample_23 class3 0.000
+#&gt; sample_24 class2 0.000
+#&gt; sample_25 class3 0.000
+#&gt; sample_26 class2 0.760
+#&gt; sample_27 class3 0.000
+#&gt; sample_34 class1 0.000
+#&gt; sample_35 class1 0.000
+#&gt; sample_36 class1 0.000
+#&gt; sample_37 class1 0.000
+#&gt; sample_38 class1 0.000
+#&gt; sample_28 class1 0.000
+#&gt; sample_29 class2 0.000
+#&gt; sample_30 class1 0.000
+#&gt; sample_31 class1 0.000
+#&gt; sample_32 class1 0.000
+#&gt; sample_33 class1 0.000</div><div class='input'># }
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

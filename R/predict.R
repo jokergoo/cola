@@ -12,11 +12,16 @@
 # -group_diff Send to `get_signatures,ConsensusPartition-method` for determining signatures.
 # -scale_rows Send to `get_signatures,ConsensusPartition-method` for determining signatures.
 # -diff_method Send to `get_signatures,ConsensusPartition-method` for determining signatures.
-# -dist_method Distance method. Value should be "euclidean" or "correlation". Send to `predict_classes,matrix-method`.
-# -nperm Number of permutatinos. It is used when ``dist_method`` is set to "euclidean". Send to `predict_classes,matrix-method`.
+# -dist_method Distance method. Value should be "euclidean", "correlation" or "cosine". Send to `predict_classes,matrix-method`.
+# -nperm Number of permutatinos. It is used when ``dist_method`` is set to "euclidean" or "cosine". Send to `predict_classes,matrix-method`.
 # -p_cutoff Cutoff for the p-values for determining class assignment. Send to `predict_classes,matrix-method`.
 # -plot Whether to draw the plot that visualizes the process of prediction. Send to `predict_classes,matrix-method`.
+# -force If the value is ``TRUE`` and when `get_signatures,ConsensusPartition-method` internally failed, top 1000 rows
+#        with the highest between-group mean difference are used for constructing the signature centroid matrix.
+#        It is basically used internally.
 # -verbose Whether to print messages. Send to `predict_classes,matrix-method`.
+# -help Whether to print help messages.
+# -prefix Used internally.
 #
 # == details
 # The prediction is based on the signature centroid matrix from cola classification. The processes are as follows:
@@ -62,10 +67,11 @@ setMethod(f = "predict_classes",
 	group_diff = cola_opt$group_diff, 
 	scale_rows = object@scale_rows, 
 	diff_method = "Ftest",
-	dist_method = c("euclidean", "correlation"), nperm = 1000,
-	p_cutoff = 0.05, plot = TRUE, verbose = TRUE) {
+	dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
+	p_cutoff = 0.05, plot = TRUE, force = FALSE, 
+	verbose = TRUE, help = TRUE, prefix = "") {
 
-	if(verbose) {
+	if(help) {
 		if(object@scale_rows) {
 			if(object@partition_method %in% all_partition_methods()) {
 				pm = get_partition_method(object@partition_method)
@@ -79,7 +85,7 @@ setMethod(f = "predict_classes",
 			msg = strwrap(qq("The matrix is not scaled in cola analysis, thus the new matrix should not be scaled either. Please double check."))
 		}
 
-		msg = c(msg, "Set `verbose = FALSE` to suppress this message.")
+		msg = c(msg, "Set `help = FALSE` to suppress this message.")
 
 		cat(paste(msg, collapse = "\n"), "\n\n")
 	}
@@ -92,13 +98,38 @@ setMethod(f = "predict_classes",
 
 	tb = get_signatures(object, k = k, plot = FALSE, silhouette_cutoff = silhouette_cutoff, 
 		fdr_cutoff = fdr_cutoff, group_diff = group_diff, scale_rows = scale_rows, 
-		diff_method = diff_method, verbose = verbose)
+		diff_method = diff_method, verbose = verbose, prefix = prefix)
 
 	if(nrow(tb) < 20) {
-		stop_wrap("Number of signatures is too small.")
-	}
-	if(verbose) cat("\n")
+		if(force) {
+			hash = attr(tb, "hash")
+			data = object@.env$data
+			if(object@scale_rows) {
+				data = t(scale(t(data)))
+			}
 
+			class_df = get_classes(object, k = k)
+			sig_mat = do.call(cbind, tapply(1:nrow(class_df), class_df$class, function(ind) {
+				rowMeans(data[, ind, drop = FALSE])
+			}))
+
+			# if no hash attribute, randomly select one sample from each group
+			if(is.null(hash)) {
+				ind = order(apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(1000, nrow(data))]
+				sig_mat = sig_mat[ind, , drop = FALSE]
+			} else {
+				# if there is hash attached, adjust fdr_cutoff
+				hash_nm = paste0("signature_fdr_", hash)
+				fdr = object@.env[[hash_nm]]$fdr
+				ind = order(-fdr, apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(1000, nrow(data))]
+				sig_mat = sig_mat[ind, , drop = FALSE]
+			}
+
+		} else {
+			stop_wrap("Number of signatures is too small.")
+		}
+	}
+	
 	if(object@scale_rows) {
 		sig_mat = tb[, grepl("^scaled_mean_\\d+$", colnames(tb))]
 	} else {
@@ -110,14 +141,14 @@ setMethod(f = "predict_classes",
 
 	mat = mat[tb$which_row, , drop = FALSE]
 
-	if(nrow(mat) > 2000) {
-		ind = sample(nrow(mat), 2000)
+	if(nrow(mat) > 1000) {
+		ind = sample(nrow(mat), 1000)
 		mat = mat[ind, , drop = FALSE]
 		sig_mat = sig_mat[ind, , drop = FALSE]
 	}
-
+	
 	predict_classes(sig_mat, mat, nperm = nperm, dist_method = dist_method, p_cutoff = p_cutoff, 
-		plot = plot, verbose = verbose)
+		plot = plot, verbose = verbose, prefix = prefix)
 })
 
 
@@ -129,11 +160,12 @@ setMethod(f = "predict_classes",
 # -mat The new matrix where the classes are going to be predicted. The number of rows should be
 #      the same as the signature centroid matrix (also make sure the row orders are the same).
 #      Be careful that ``mat`` should be in the same scale as the centroid matrix.
-# -dist_method Distance method. Value should be "euclidean" or "correlation".
-# -nperm Number of permutatinos. It is used when ``dist_method`` is set to "euclidean".
+# -dist_method Distance method. Value should be "euclidean", "correlation" or "cosine".
+# -nperm Number of permutatinos. It is used when ``dist_method`` is set to "euclidean" or "cosine".
 # -p_cutoff Cutoff for the p-values for determining class assignment.
 # -plot Whether to draw the plot that visualizes the process of prediction.
 # -verbose Whether to print messages.
+# -prefix Used internally.
 #
 # == details
 # The signature centroid matrix is a k-column matrix where each column is the centroid of samples 
@@ -143,7 +175,7 @@ setMethod(f = "predict_classes",
 # current sample is the closest to. There are two methods: the Euclidean distance and the 
 # correlation (Spearman) distance.
 #
-# For the Euclidean distance method, for the vector denoted as x which corresponds to sample i 
+# For the Euclidean/cosine distance method, for the vector denoted as x which corresponds to sample i 
 # in the new matrix, to test which class should be assigned to sample i, the distance between 
 # sample i and all k signature centroids are calculated and denoted as d_1, d_2, ..., d_k. The class with the smallest distance is assigned to sample i.
 # The distances for k centroids are sorted increasingly, and we design a statistic named "difference ratio", denoted as r
@@ -184,8 +216,8 @@ setMethod(f = "predict_classes",
 # }
 setMethod(f = "predict_classes",
 	signature = "matrix",
-	definition = function(object, mat, dist_method = c("euclidean", "correlation"), nperm = 1000,
-	p_cutoff = 0.05, plot = TRUE, verbose = TRUE) {
+	definition = function(object, mat, dist_method = c("euclidean", "correlation", "cosine"), 
+	nperm = 1000, p_cutoff = 0.05, plot = TRUE, verbose = TRUE, prefix = "") {
 
 	sig_mat = object
 
@@ -196,20 +228,26 @@ setMethod(f = "predict_classes",
 	dist_method = match.arg(dist_method)[1]
 	n_sig = ncol(sig_mat)
 
-	if(verbose) qqcat("Predict classes based on @{ncol(sig_mat)}-group classification (@{dist_method} method).\n")
+	if(verbose) qqcat("@{prefix}Predict classes based on @{ncol(sig_mat)}-group classification (@{dist_method} method).\n")
 
-	if(dist_method == "euclidean") {
+	if(dist_method %in% c("euclidean", "cosine")) {
 
-		dist_to_signatures = as.matrix(pdist(t(mat), t(sig_mat)))
+		if(dist_method == "euclidean") {
+			dm = as.integer(1)
+		} else if(dist_method == "cosine") {
+			dm = as.integer(2)
+		}
+
+		dist_to_signatures = as.matrix(pdist(t(mat), t(sig_mat), dm))
 		diff_ratio = apply(dist_to_signatures, 1, function(x) { 
 			x = sort(x)
 			abs(x[1] - x[2])/mean(x)
 		})
 
 		diff_ratio_r = NULL
-		counter = set_counter(nperm, fmt = "Permute rows of the signature centroid matrix, run %s...")
+		counter = set_counter(nperm, fmt = qq("@{prefix}Permute rows of the signature centroid matrix, run %s..."))
 		for(i in 1:nperm) {
-			dist_to_signatures_r = as.matrix(pdist(t(mat), t(sig_mat[sample(nrow(sig_mat)), , drop = FALSE])))
+			dist_to_signatures_r = as.matrix(pdist(t(mat), t(sig_mat[sample(nrow(sig_mat)), , drop = FALSE]), dm))
 			diff_ratio_r = cbind(diff_ratio_r, apply(dist_to_signatures_r, 1, function(x) { 
 				x = sort(x)
 				abs(x[1] - x[2])/mean(x)
@@ -248,7 +286,7 @@ setMethod(f = "predict_classes",
 		row_split = level[apply(sig_mat, 1, which.max)]
 		row_split = factor(row_split, levels = level)
 
-		if(dist_method == "euclidean") {
+		if(dist_method != "correlation") {
 			dist_col_fun = colorRamp2(range(dist_to_signatures), c("white", "purple"))
 		} else {
 			mabs = max(abs(dist_to_signatures))
@@ -290,7 +328,9 @@ setMethod(f = "predict_classes",
 		draw(ht_list, merge_legend = TRUE)
 	}
 
-	return(data.frame(class = predicted_class, p = p))
+	df = data.frame(class = predicted_class, p = p)
+	rownames(df) = colnames(mat)
+	return(df)
 })
 
 

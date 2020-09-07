@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'>get_signatures</span>(<span class='no'>object</span>, <span class='no'>k</span>,
+<span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>object</span>, <span class='no'>k</span>,
     <span class='kw'>silhouette_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
     <span class='kw'>fdr_cutoff</span> <span class='kw'>=</span> <span class='no'>cola_opt</span>$<span class='no'>fdr_cutoff</span>,
     <span class='kw'>group_diff</span> <span class='kw'>=</span> <span class='no'>cola_opt</span>$<span class='no'>group_diff</span>,
@@ -157,7 +157,7 @@
     <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>888</span>,
     <span class='kw'>left_annotation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>right_annotation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
     <span class='kw'>col</span> <span class='kw'>=</span> <span class='kw'>if</span>(<span class='no'>scale_rows</span>) <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"green"</span>, <span class='st'>"white"</span>, <span class='st'>"red"</span>) <span class='kw'>else</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"blue"</span>, <span class='st'>"white"</span>, <span class='st'>"red"</span>),
-    <span class='kw'>simplify</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+    <span class='kw'>simplify</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='st'>""</span>,
     <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -245,7 +245,11 @@
     </tr>
     <tr>
       <th>simplify</th>
-      <td><p>Only use internally.</p></td>
+      <td><p>Only used internally.</p></td>
+    </tr>
+    <tr>
+      <th>prefix</th>
+      <td><p>Only used internally.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -282,8 +286,8 @@ and the predicted classes. The function should returns a vector of FDR from the 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
 <span class='no'>res</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span>]
-<span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'>get_signatures</span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: 752a6398cc8385b0a09ab87143cd2a1a (seed 888).
+<span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
+#&gt; * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
 #&gt; * split rows into 2 groups by k-means clustering.
 #&gt; * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.

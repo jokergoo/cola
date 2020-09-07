@@ -5,7 +5,7 @@ get_consensus_matrix <- function(membership_each) {
     .Call(`_cola_get_consensus_matrix`, membership_each)
 }
 
-pdist <- function(m1, m2) {
-    .Call(`_cola_pdist`, m1, m2)
+pdist <- function(m1, m2, dm) {
+    .Call(`_cola_pdist`, m1, m2, dm)
 }
 

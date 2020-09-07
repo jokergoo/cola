@@ -1,3 +1,7 @@
+Cchanges in version 1.5.2
++ add a `DownSamplingConsensusPartition` class and corresponding methods.
++ add back `HierarchicalPartition` class and corresponding methods.
+
 Changes in version 1.5.1
 + add a `predict_classes()` function.
 + add the cola analysis for Golub dataset as a data object in the package.

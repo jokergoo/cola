@@ -102,7 +102,7 @@ has_known_anno = TRUE -%>
 ```{r, results = "asis", echo = FALSE}
 fs = min(c(3*1, 14))/1
 
-is_hc = FALSE
+is_hcp = FALSE
 node = NULL
 single_report = TRUE
 
@@ -120,6 +120,10 @@ invisible(file.remove(tmpfile))
 
 ComplexHeatmap:::dev.null()
 txt = knit(text = rmd, quiet = TRUE)
+devlt = dev.list()
+if(names(devlt)[1] == "quartz_off_screen") {
+	invisible(dev.off())
+}
 invisible(dev.off())
 cat(txt, "\n")
 ```

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
       </span>
     </div>
 
@@ -109,8 +109,8 @@
 <h1 class="hasAnchor">
 <a href="#cola-a-framework-for-consensus-partitioning" class="anchor"></a>cola: A Framework for Consensus Partitioning</h1>
 <p><strong>Author</strong>: Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</p>
-<p><strong>Date</strong>: 2020-08-28</p>
-<p><strong>Package version</strong>: 1.5.1</p>
+<p><strong>Date</strong>: 2020-09-07</p>
+<p><strong>Package version</strong>: 1.5.2</p>
 <hr>
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
@@ -474,7 +474,7 @@ a a a a a a a b b b b b b</code></pre>
 <li>For all <span class="math inline">\(k\)</span> with 1-PAC score larger than 0.9, the maximal <span class="math inline">\(k\)</span> is taken as the best <span class="math inline">\(k\)</span>, and other <span class="math inline">\(k\)</span> are marked as optional <span class="math inline">\(k\)</span>.</li>
 <li>If it does not fit the second rule. The <span class="math inline">\(k\)</span> with the maximal vote of the highest 1-PAC score, highest mean silhouette, and highest concordance is taken as the best <span class="math inline">\(k\)</span>.</li>
 </ul>
-<p><code><a href="../reference/suggest_best_k-dispatch.html">suggest_best_k()</a></code> only gives suggestion on selecting a reasonable <span class="math inline">\(k\)</span>. Users still need to look at the plots (e.g. by <code><a href="../reference/select_partition_number-ConsensusPartition-method.html">select_partition_number()</a></code> or <code><a href="../reference/consensus_heatmap-ConsensusPartition-method.html">consensus_heatmap()</a></code> functions), or even by checking whether the subgrouping gives reasonable signatures by <code><a href="../reference/get_signatures-ConsensusPartition-method.html">get_signatures()</a></code>, to pick a reasonable <span class="math inline">\(k\)</span> that best explains their studies.</p>
+<p><code><a href="../reference/suggest_best_k-dispatch.html">suggest_best_k()</a></code> only gives suggestion on selecting a reasonable <span class="math inline">\(k\)</span>. Users still need to look at the plots (e.g. by <code><a href="../reference/select_partition_number-ConsensusPartition-method.html">select_partition_number()</a></code> or <code><a href="../reference/consensus_heatmap-ConsensusPartition-method.html">consensus_heatmap()</a></code> functions), or even by checking whether the subgrouping gives reasonable signatures by <code><a href="../reference/get_signatures-dispatch.html">get_signatures()</a></code>, to pick a reasonable <span class="math inline">\(k\)</span> that best explains their studies.</p>
 </div>
 </div>
 <div id="find-signatures" class="section level2">
@@ -605,7 +605,7 @@ a a a a a a a b b b b b b</code></pre>
 <li>
 <code><a href="../reference/get_consensus-ConsensusPartition-method.html">get_consensus()</a></code>: Get the consensus matrix for a specific <span class="math inline">\(k\)</span>.</li>
 <li>
-<code><a href="../reference/get_signatures-ConsensusPartition-method.html">get_signatures()</a></code>: Make the heatmap for the signatures.</li>
+<code><a href="../reference/get_signatures-dispatch.html">get_signatures()</a></code>: Make the heatmap for the signatures.</li>
 <li>
 <code><a href="../reference/get_stats-dispatch.html">get_stats()</a></code>: Extract the statistics for determining best number of subgroups.</li>
 <li>
@@ -644,7 +644,7 @@ a a a a a a a b b b b b b</code></pre>
 <pre><code>## use UMAP</code></pre>
 <p><img src="cola_files/figure-html/unnamed-chunk-32-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The heatmap for the signature rows with a certain <span class="math inline">\(k\)</span>. The heatmap is split into two parts by columns. The left heatmap where the barplots on top are in black contains samples with silhouette scores larger than 0.5 and the right heatmap where the barplot son top are in grey contains samples with silhouette scores less than 0.5. Rows are automatically split by k-means.</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="../reference/get_signatures-ConsensusPartition-method.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
 <p><img src="cola_files/figure-html/unnamed-chunk-33-1.png" width="700" style="display: block; margin: auto;"></p>
 <p><code><a href="../reference/collect_classes-dispatch.html">collect_classes()</a></code> which is applied on the <code>ConsensusPartition</code> object visualizes how subgroups are corresponded with increasing <span class="math inline">\(k\)</span>. The same row in all heatmaps corresponds to a same sample.</p>
 <div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_classes-dispatch.html">collect_classes</a></span>(<span class="no">res</span>)</pre></body></html></div>
@@ -738,13 +738,13 @@ a a a a a a a b b b b b b</code></pre>
 ## [1] grid      stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] GetoptLong_1.0.2     mvtnorm_1.1-1        matrixStats_0.56.0   cola_1.5.1          
+## [1] GetoptLong_1.0.2     mvtnorm_1.1-1        matrixStats_0.56.0   cola_1.5.2          
 ## [5] circlize_0.4.11      ComplexHeatmap_2.5.5 knitr_1.29           markdown_1.1        
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] mclust_5.4.6         Rcpp_1.0.5           lattice_0.20-41      png_0.1-7           
 ##  [5] assertthat_0.2.1     rprojroot_1.3-2      digest_0.6.25        RSpectra_0.16-0     
-##  [9] slam_0.1-47          R6_2.4.1             backports_1.1.8      stats4_4.0.2        
+##  [9] slam_0.1-47          R6_2.4.1             backports_1.1.9      stats4_4.0.2        
 ## [13] RSQLite_2.2.0        evaluate_0.14        httr_1.4.2           GlobalOptions_0.1.2 
 ## [17] rlang_0.4.7          annotate_1.66.0      blob_1.2.1           magick_2.4.0        
 ## [21] S4Vectors_0.26.1     Matrix_1.2-18        reticulate_1.16      rmarkdown_2.3       
@@ -755,9 +755,9 @@ a a a a a a a b b b b b b</code></pre>
 ## [41] IRanges_2.22.2       XML_3.99-0.5         crayon_1.3.4         MASS_7.3-52         
 ## [45] bitops_1.0-6         jsonlite_1.7.0       xtable_1.8-4         DBI_1.1.0           
 ## [49] magrittr_1.5         skmeans_0.2-12       stringi_1.4.6        impute_1.62.0       
-## [53] genefilter_1.70.0    fs_1.5.0             xml2_1.3.2           vctrs_0.3.2         
+## [53] genefilter_1.70.0    fs_1.5.0             xml2_1.3.2           vctrs_0.3.4         
 ## [57] brew_1.0-6           rjson_0.2.20         RColorBrewer_1.1-2   tools_4.0.2         
-## [61] bit64_4.0.2          Biobase_2.48.0       survival_3.2-3       parallel_4.0.2      
+## [61] bit64_4.0.5          Biobase_2.48.0       survival_3.2-3       parallel_4.0.2      
 ## [65] clue_0.3-57          AnnotationDbi_1.50.3 colorspace_1.4-1     cluster_2.1.0       
 ## [69] memoise_1.1.0</code></pre>
 </div>

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
       </span>
     </div>
 
@@ -142,7 +142,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'>compare_signatures</span>(<span class='no'>object</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>object</span>@<span class='kw'>k</span>, <span class='no'>...</span>)</pre>
+<span class='fu'><a href='compare_signatures-dispatch.html'>compare_signatures</a></span>(<span class='no'>object</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>object</span>@<span class='kw'>k</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span>(), <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,6 +154,10 @@
     <tr>
       <th>k</th>
       <td><p>Number of subgroups. Value should be a vector.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Whether to print message.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -169,31 +173,7 @@
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
 <span class='no'>res</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span>]
-<span class='fu'>compare_signatures</span>(<span class='no'>res</span>)</div><div class='output co'>#&gt; * 71/72 samples (in 2 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: 418c18ae9fc283952d12f6e83623e6d3 (seed 888).
-#&gt; * calculating row difference between subgroups by Ftest.
-#&gt; * split rows into 2 groups by k-means clustering.
-#&gt; * 1810 signatures (44.0%) under fdr &lt; 0.05, group_diff &gt; 0.
-#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: 7518210f8bff96e48515f47ac03dabc1 (seed 888).
-#&gt; * calculating row difference between subgroups by Ftest.
-#&gt; * split rows into 2 groups by k-means clustering.
-#&gt; * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
-#&gt; * 63/72 samples (in 4 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: e1f62e2b3575bbec1152b47e852bc77d (seed 888).
-#&gt; * calculating row difference between subgroups by Ftest.
-#&gt; * split rows into 2 groups by k-means clustering.
-#&gt; * 2150 signatures (52.2%) under fdr &lt; 0.05, group_diff &gt; 0.
-#&gt; * 60/72 samples (in 4 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: e1a8d241580a1237eee642e55cf506f5 (seed 888).
-#&gt; * calculating row difference between subgroups by Ftest.
-#&gt; * split rows into 2 groups by k-means clustering.
-#&gt; * 2181 signatures (53.0%) under fdr &lt; 0.05, group_diff &gt; 0.
-#&gt; * 51/72 samples (in 5 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: dbebd0bf934e7b3e2d2f14a26f120fd0 (seed 888).
-#&gt; * calculating row difference between subgroups by Ftest.
-#&gt; * split rows into 2 groups by k-means clustering.
-#&gt; * 2144 signatures (52.1%) under fdr &lt; 0.05, group_diff &gt; 0.</div><div class='img'><img src='compare_signatures-ConsensusPartition-method-1.png' alt='' width='700' height='433' /></div><div class='input'># }
+<span class='fu'><a href='compare_signatures-dispatch.html'>compare_signatures</a></span>(<span class='no'>res</span>)</div><div class='img'><img src='compare_signatures-ConsensusPartition-method-1.png' alt='' width='700' height='433' /></div><div class='input'># }
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

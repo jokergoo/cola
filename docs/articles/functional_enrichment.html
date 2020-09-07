@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@
       <h1 data-toc-skip>Automatic Functional Enrichment on Signature Genes</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-08-28</h4>
+            <h4 class="date">2020-09-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/functional_enrichment.Rmd"><code>vignettes/functional_enrichment.Rmd</code></a></small>
       <div class="hidden name"><code>functional_enrichment.Rmd</code></div>
@@ -133,9 +133,9 @@
 ## [28] "show"                    "suggest_best_k"          "test_to_known_factors"</code></pre>
 <p>We check how the signature genes looks like under 4-group classification:</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
-<span class="fu"><a href="../reference/get_signatures-ConsensusPartition-method.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
+<span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
 <pre><code>## * 167/173 samples (in 4 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: bd4ac85264e9269e14d6f20d7ec85c81 (seed 888).
+## * cache hash: eef958f7cb17f1f44dd5ec01d14dd902 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ## * split rows into 2 groups by k-means clustering.
 ## * 10023 signatures (89.0%) under fdr &lt; 0.05, group_diff &gt; 0.
@@ -163,7 +163,7 @@
 <code>Reactome</code>, <code>organism</code> argument should be set to the corresponding species, such as <code>"human"</code>.</li>
 </ul>
 <p><code>ontology</code> can be set as a vector of multiple ontologies.</p>
-<p>The value of <code>lt</code> is a list of data frames for different ontologies combined with different k-means groups. Since k-means clustering has already been applied in previous <code><a href="../reference/get_signatures-ConsensusPartition-method.html">get_signatures()</a></code>, the k-means clustering result is stored in <code>res</code> object and <code><a href="../reference/functional_enrichment-dispatch.html">functional_enrichment()</a></code> directly uses the classification from it.</p>
+<p>The value of <code>lt</code> is a list of data frames for different ontologies combined with different k-means groups. Since k-means clustering has already been applied in previous <code><a href="../reference/get_signatures-dispatch.html">get_signatures()</a></code>, the k-means clustering result is stored in <code>res</code> object and <code><a href="../reference/functional_enrichment-dispatch.html">functional_enrichment()</a></code> directly uses the classification from it.</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">lt</span>)</pre></body></html></div>
 <pre><code>## [1] "BP_km1" "BP_km2" "BP_km3" "BP_km4"</code></pre>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">lt</span><span class="kw">[[</span><span class="fl">1</span>]])</pre></body></html></div>
@@ -207,9 +207,9 @@
 <pre><code>## [1] "AFFX-BioC-5_at"  "AFFX-CreX-3_at"  "AFFX-BioDn-3_st" "hum_alu_at"      "AFFX-DapX-M_at" 
 ## [6] "AFFX-LysX-3_at"</code></pre>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
-<span class="fu"><a href="../reference/get_signatures-ConsensusPartition-method.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
+<span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <pre><code>## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: 752a6398cc8385b0a09ab87143cd2a1a (seed 888).
+## * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ## * split rows into 2 groups by k-means clustering.
 ## * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
@@ -251,13 +251,13 @@
 ## 
 ## other attached packages:
 ##  [1] hu6800.db_3.2.3      org.Hs.eg.db_3.11.4  AnnotationDbi_1.50.3 IRanges_2.22.2      
-##  [5] S4Vectors_0.26.1     Biobase_2.48.0       BiocGenerics_0.34.0  cola_1.5.1          
+##  [5] S4Vectors_0.26.1     Biobase_2.48.0       BiocGenerics_0.34.0  cola_1.5.2          
 ##  [9] knitr_1.29           markdown_1.1        
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] mclust_5.4.6         Rcpp_1.0.5           lattice_0.20-41      circlize_0.4.11     
 ##  [5] png_0.1-7            assertthat_0.2.1     rprojroot_1.3-2      digest_0.6.25       
-##  [9] slam_0.1-47          R6_2.4.1             backports_1.1.8      RSQLite_2.2.0       
+##  [9] slam_0.1-47          R6_2.4.1             backports_1.1.9      RSQLite_2.2.0       
 ## [13] evaluate_0.14        httr_1.4.2           GlobalOptions_0.1.2  rlang_0.4.7         
 ## [17] annotate_1.66.0      blob_1.2.1           magick_2.4.0         GetoptLong_1.0.2    
 ## [21] Matrix_1.2-18        rmarkdown_2.3        pkgdown_1.5.1        desc_1.2.0          
@@ -267,8 +267,8 @@
 ## [37] XML_3.99-0.5         crayon_1.3.4         MASS_7.3-52          bitops_1.0-6        
 ## [41] grid_4.0.2           xtable_1.8-4         DBI_1.1.0            magrittr_1.5        
 ## [45] skmeans_0.2-12       stringi_1.4.6        impute_1.62.0        genefilter_1.70.0   
-## [49] fs_1.5.0             xml2_1.3.2           brew_1.0-6           vctrs_0.3.2         
-## [53] rjson_0.2.20         RColorBrewer_1.1-2   tools_4.0.2          bit64_4.0.2         
+## [49] fs_1.5.0             xml2_1.3.2           brew_1.0-6           vctrs_0.3.4         
+## [53] rjson_0.2.20         RColorBrewer_1.1-2   tools_4.0.2          bit64_4.0.5         
 ## [57] survival_3.2-3       yaml_2.2.1           clue_0.3-57          colorspace_1.4-1    
 ## [61] cluster_2.1.0        ComplexHeatmap_2.5.5 memoise_1.1.0</code></pre>
   </div>

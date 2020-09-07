@@ -13,8 +13,9 @@ Predict classes for new samples based on cola classification
     group_diff = cola_opt$group_diff,
     scale_rows = object@scale_rows,
     diff_method = "Ftest",
-    dist_method = c("euclidean", "correlation"), nperm = 1000,
-    p_cutoff = 0.05, plot = TRUE, verbose = TRUE)
+    dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
+    p_cutoff = 0.05, plot = TRUE, force = FALSE,
+    verbose = TRUE, help = TRUE, prefix = "")
 }
 \arguments{
 
@@ -26,11 +27,14 @@ Predict classes for new samples based on cola classification
   \item{group_diff}{Send to \code{\link{get_signatures,ConsensusPartition-method}} for determining signatures.}
   \item{scale_rows}{Send to \code{\link{get_signatures,ConsensusPartition-method}} for determining signatures.}
   \item{diff_method}{Send to \code{\link{get_signatures,ConsensusPartition-method}} for determining signatures.}
-  \item{dist_method}{Distance method. Value should be "euclidean" or "correlation". Send to \code{\link{predict_classes,matrix-method}}.}
-  \item{nperm}{Number of permutatinos. It is used when \code{dist_method} is set to "euclidean". Send to \code{\link{predict_classes,matrix-method}}.}
+  \item{dist_method}{Distance method. Value should be "euclidean", "correlation" or "cosine". Send to \code{\link{predict_classes,matrix-method}}.}
+  \item{nperm}{Number of permutatinos. It is used when \code{dist_method} is set to "euclidean" or "cosine". Send to \code{\link{predict_classes,matrix-method}}.}
   \item{p_cutoff}{Cutoff for the p-values for determining class assignment. Send to \code{\link{predict_classes,matrix-method}}.}
   \item{plot}{Whether to draw the plot that visualizes the process of prediction. Send to \code{\link{predict_classes,matrix-method}}.}
+  \item{force}{If the value is \code{TRUE} and when \code{\link{get_signatures,ConsensusPartition-method}} internally failed, top 1000 rows with the highest between-group mean difference are used for constructing the signature centroid matrix. It is basically used internally.}
   \item{verbose}{Whether to print messages. Send to \code{\link{predict_classes,matrix-method}}.}
+  \item{help}{Whether to print help messages.}
+  \item{prefix}{Used internally.}
 
 }
 \details{
