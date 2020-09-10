@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -142,9 +142,9 @@
     </div>
 
     <pre class="usage"><span class='fu'>hierarchical_partition</span>(<span class='no'>data</span>,
-    <span class='kw'>top_value_method</span> <span class='kw'>=</span> <span class='st'>"MAD"</span>,
-    <span class='kw'>partition_method</span> <span class='kw'>=</span> <span class='st'>"kmeans"</span>,
-    <span class='kw'>PAC_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>min_samples</span> <span class='kw'>=</span> <span class='fl'>6</span>,
+    <span class='kw'>top_value_method</span> <span class='kw'>=</span> <span class='st'>"ATC"</span>,
+    <span class='kw'>partition_method</span> <span class='kw'>=</span> <span class='st'>"skmeans"</span>,
+    <span class='kw'>PAC_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>min_samples</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>subset</span> <span class='kw'>=</span> <span class='fl'>Inf</span>,
     <span class='kw'>max_k</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -169,6 +169,10 @@
     <tr>
       <th>min_samples</th>
       <td><p>the cutoff of number of samples to determine whether to continue looking for subgroups.</p></td>
+    </tr>
+    <tr>
+      <th>subset</th>
+      <td><p>Number of columns to randomly sample.</p></td>
     </tr>
     <tr>
       <th>max_k</th>

@@ -13,7 +13,6 @@ Get signatures rows
     anno_col = get_anno_col(object),
     show_column_names = FALSE,
     verbose = TRUE, plot = TRUE,
-    silhouette_cutoff = 0.5,
     ...)
 }
 \arguments{
@@ -26,8 +25,7 @@ Get signatures rows
   \item{show_column_names}{whether show column names in the heatmap.}
   \item{verbose}{whether to print messages.}
   \item{plot}{whether to make the plot.}
-  \item{silhouette_cutoff}{cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
-  \item{...}{other arguments}
+  \item{...}{other arguments pass to \code{\link{get_signatures,ConsensusPartition-method}}.}
 
 }
 \details{

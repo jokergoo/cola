@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -168,30 +168,26 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
 <span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span>(<span class='no'>golub_cola</span>)</div><div class='output co'>#&gt;             best_k     1-PAC mean_silhouette concordance    optional_k
-#&gt; ATC:kmeans       2 1.0000000       0.9815350   0.9915000 **           
-#&gt; ATC:NMF          2 0.9719052       0.9266103   0.9734444 **           
-#&gt; ATC:skmeans      3 0.9609306       0.9318403   0.9731667 **          2
-#&gt; MAD:skmeans      3 0.8656716       0.8722804   0.9462778              
-#&gt; CV:skmeans       3 0.8371378       0.8565841   0.9377778              
-#&gt; MAD:mclust       2 0.8235294       0.9265781   0.9318889              
-#&gt; SD:skmeans       3 0.7445127       0.8364565   0.9178889              
-#&gt; CV:kmeans        3 0.7388060       0.8643745   0.9012778              
-#&gt; MAD:NMF          2 0.6799824       0.8109892   0.9250556              
-#&gt; SD:kmeans        2 0.6624232       0.8355983   0.9114444              
-#&gt; MAD:pam          2 0.6514486       0.8236402   0.9253889              
-#&gt; SD:mclust        5 0.6338894       0.7209468   0.7903333              
-#&gt; SD:NMF           2 0.6334504       0.8232491   0.9275000              
-#&gt; CV:NMF           2 0.6334504       0.7872886   0.9157222              
-#&gt; MAD:kmeans       2 0.6231884       0.8054912   0.9036111              
-#&gt; ATC:pam          2 0.5974539       0.8083550   0.9176111              
-#&gt; ATC:hclust       2 0.5737489       0.8133644   0.9105556              
-#&gt; SD:pam           2 0.5478490       0.6864620   0.8758889              
-#&gt; CV:pam           2 0.5460931       0.7840100   0.9035556              
-#&gt; CV:mclust        2 0.4890269       0.9083927   0.8949444              
-#&gt; ATC:mclust       2 0.3595259       0.7109781   0.8275000              
-#&gt; SD:hclust        2 0.2357331       0.7767183   0.8512778              
-#&gt; MAD:hclust       2 0.2265145       0.7367577   0.8377222              
-#&gt; CV:hclust        2 0.2139812       0.5697315   0.8053333              </div></pre>
+#&gt; ATC:kmeans       2 1.0000000       0.9648659   0.9856481 **           
+#&gt; ATC:skmeans      3 1.0000000       0.9486435   0.9801852 **          2
+#&gt; CV:kmeans        2 0.9155280       0.9619138   0.9759259  *           
+#&gt; CV:mclust        2 0.9056190       0.9340854   0.9402778  *           
+#&gt; MAD:skmeans      3 0.8665496       0.8721511   0.9463889              
+#&gt; MAD:mclust       2 0.8327480       0.9221557   0.9536111              
+#&gt; MAD:kmeans       2 0.6811594       0.9425210   0.9659259              
+#&gt; CV:skmeans       2 0.6808604       0.8880965   0.9402778              
+#&gt; SD:kmeans        2 0.6753623       0.9366896   0.9565741              
+#&gt; SD:skmeans       2 0.6553995       0.9064890   0.9505556              
+#&gt; MAD:pam          2 0.6518876       0.8205751   0.9236111              
+#&gt; ATC:pam          2 0.5935031       0.7591574   0.8985185              
+#&gt; ATC:mclust       5 0.5834065       0.6282300   0.7741667              
+#&gt; SD:pam           2 0.5478490       0.7326234   0.8897222              
+#&gt; ATC:hclust       2 0.5465320       0.7759363   0.8945370              
+#&gt; CV:pam           2 0.5443371       0.8335799   0.9152778              
+#&gt; MAD:hclust       2 0.4253731       0.8392771   0.9059259              
+#&gt; SD:hclust        2 0.4214223       0.8656393   0.9102778              
+#&gt; SD:mclust        2 0.3050302       0.8020404   0.7658333              
+#&gt; CV:hclust        2 0.1966637       0.7391751   0.8315741              </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

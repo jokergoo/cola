@@ -10,7 +10,7 @@ Visualize columns after dimension reduction
 \S4method{dimension_reduction}{HierarchicalPartition}(object,
     depth = max_depth(object), parent_node,
     top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
-    silhouette_cutoff = 0.5, scale_rows = TRUE, verbose = TRUE, ...)
+    scale_rows = TRUE, verbose = TRUE, ...)
 }
 \arguments{
 
@@ -19,10 +19,9 @@ Visualize columns after dimension reduction
   \item{top_n}{Top n rows to use. By default it uses all rows in the original matrix.}
   \item{parent_node}{Parent node. If it is set, the function call is identical to \code{dimension_reduction(object[parent_node])}}
   \item{method}{Which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}. \code{t-SNE} uses \code{\link[Rtsne]{Rtsne}}. \code{UMAP} uses \code{\link[umap]{umap}}.}
-  \item{silhouette_cutoff}{Cutoff of silhouette score. Data points with values less than it will be mapped with cross symbols.}
   \item{scale_rows}{Whether to perform scaling on matrix rows.}
   \item{verbose}{Whether print messages.}
-  \item{...}{Other arguments.}
+  \item{...}{Other arguments passed to \code{\link{dimension_reduction,ConsensusPartition-method}}.}
 
 }
 \details{

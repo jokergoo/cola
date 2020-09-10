@@ -7,13 +7,14 @@ Get subgroup labels
 Get subgroup labels
 }
 \usage{
-\S4method{get_classes}{DownSamplingConsensusPartition}(object, k = object@k, p_cutoff = 0.05)
+\S4method{get_classes}{DownSamplingConsensusPartition}(object, k = object@k, p_cutoff = 0.05, reduce = FALSE)
 }
 \arguments{
 
   \item{object}{A \code{\link{DownSamplingConsensusPartition-class}} object.}
   \item{k}{Number of subgroups.}
   \item{p_cutoff}{Cutoff of p-values of class label prediction. It is only used when \code{k} is a vector.}
+  \item{reduce}{Used internally.}
 
 }
 \value{

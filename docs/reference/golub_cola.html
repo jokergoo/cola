@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -168,12 +168,9 @@
     colnames(m) = cn
     rownames(m) = rn
 
-    register_NMF()
-
     set.seed(123)
     golub_cola = run_all_consensus_partition_methods(
-        m,
-        mc.cores = 4, 
+        m, mc.cores = 2, 
         anno = anno[, c("ALL.AML"), drop = FALSE],
         anno_col = c("ALL" = "red", "AML" = "blue")
     )  </pre>
@@ -184,12 +181,12 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='no'>golub_cola</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 24 methods.
+<span class='no'>golub_cola</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 20 methods.
 #&gt;   On a matrix with 4116 rows and 72 columns.
 #&gt;   Top rows are extracted by 'SD, CV, MAD, ATC' methods.
-#&gt;   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust, NMF' method.
+#&gt;   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
-#&gt;   Performed in total 30000 partitions by row resampling.
+#&gt;   Performed in total 15000 partitions by row resampling.
 #&gt; 
 #&gt; Following methods can be applied to this 'ConsensusPartitionList' object:
 #&gt;  [1] "cola_report"           "collect_classes"       "collect_plots"        

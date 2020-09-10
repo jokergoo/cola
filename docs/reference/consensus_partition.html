@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -144,8 +144,8 @@
     <pre class="usage"><span class='fu'>consensus_partition</span>(<span class='no'>data</span>,
     <span class='kw'>top_value_method</span> <span class='kw'>=</span> <span class='st'>"ATC"</span>,
     <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>1000</span>, <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span>(<span class='fu'><a href='nrow-dispatch.html'>nrow</a></span>(<span class='no'>data</span>)*<span class='fl'>0.1</span>)),
-    <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>5000</span>, <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span>(<span class='fu'><a href='nrow-dispatch.html'>nrow</a></span>(<span class='no'>data</span>)*<span class='fl'>0.5</span>)),
-    <span class='kw'>length.out</span> <span class='kw'>=</span> <span class='fl'>5</span>),
+    <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>3000</span>, <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span>(<span class='fu'><a href='nrow-dispatch.html'>nrow</a></span>(<span class='no'>data</span>)*<span class='fl'>0.3</span>)),
+    <span class='kw'>length.out</span> <span class='kw'>=</span> <span class='fl'>3</span>),
     <span class='kw'>partition_method</span> <span class='kw'>=</span> <span class='st'>"skmeans"</span>,
     <span class='kw'>max_k</span> <span class='kw'>=</span> <span class='fl'>6</span>,
     <span class='kw'>sample_by</span> <span class='kw'>=</span> <span class='st'>"row"</span>,
@@ -272,7 +272,7 @@ and multiple partitioning methods.</p></div>
 #&gt; * wrap results for k = 5
 #&gt; * wrap results for k = 6
 #&gt; * adjust class labels between different k.
-#&gt; * ATC:skmeans used 20.613 secs.</div><div class='input'><span class='no'>res</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
+#&gt; * ATC:skmeans used 20.248 secs.</div><div class='input'><span class='no'>res</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
 #&gt;   On a matrix with 60 rows and 60 columns.
 #&gt;   Top rows (10, 20, 50) are extracted by 'ATC' method.
 #&gt;   Subgroups are detected by 'skmeans' method.

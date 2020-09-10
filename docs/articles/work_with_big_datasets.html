@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@
       <h1 data-toc-skip>Work with Big Datasets</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-09-07</h4>
+            <h4 class="date">2020-09-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/work_with_big_datasets.Rmd"><code>vignettes/work_with_big_datasets.Rmd</code></a></small>
       <div class="hidden name"><code>work_with_big_datasets.Rmd</code></div>
@@ -144,9 +144,9 @@
 <span class="no">golub_cola_ds</span></pre></body></html></div>
 <pre><code>## A 'DownSamplingConsensusPartition' object with k = 2, 3, 4, 5, 6.
 ##   On a matrix with 4116 rows and 50 columns, randomly sampled from 72 columns.
-##   Top rows (412, 824, 1235, 1646, 2058) are extracted by 'SD' method.
-##   Subgroups are detected by 'kmeans' method.
-##   Performed in total 1250 partitions by row resampling.
+##   Top rows (412, 824, 1235) are extracted by 'ATC' method.
+##   Subgroups are detected by 'skmeans' method.
+##   Performed in total 750 partitions by row resampling.
 ##   Best k for subgroups seems to be 2.
 ## 
 ## Following methods can be applied to this 'DownSamplingConsensusPartition' object:
@@ -170,152 +170,152 @@
 <pre><code>##           class     p
 ## sample_39     2 0.000
 ## sample_40     2 0.000
-## sample_42     2 0.000
-## sample_47     2 0.000
-## sample_48     2 0.000
+## sample_42     1 0.000
+## sample_47     1 0.000
+## sample_48     1 0.000
 ## sample_49     2 0.000
-## sample_41     2 0.000
-## sample_43     2 0.000
-## sample_44     2 0.000
-## sample_45     2 0.000
-## sample_46     2 0.000
-## sample_70     2 0.000
-## sample_71     2 0.000
-## sample_72     2 0.000
-## sample_68     2 0.000
-## sample_69     2 0.000
-## sample_67     2 0.999
-## sample_55     2 0.001
+## sample_41     1 0.000
+## sample_43     1 0.000
+## sample_44     1 0.000
+## sample_45     1 0.000
+## sample_46     1 0.000
+## sample_70     1 0.000
+## sample_71     1 0.000
+## sample_72     1 0.000
+## sample_68     1 0.000
+## sample_69     1 0.000
+## sample_67     1 0.000
+## sample_55     2 0.000
 ## sample_56     2 0.000
-## sample_59     2 0.000
-## sample_52     1 0.000
-## sample_53     1 0.000
-## sample_51     1 0.000
-## sample_50     1 0.000
-## sample_54     1 0.001
-## sample_57     1 0.000
-## sample_58     1 0.000
-## sample_60     1 0.000
-## sample_61     1 0.000
-## sample_65     1 0.000
-## sample_66     2 0.001
-## sample_63     1 0.000
-## sample_64     1 0.000
-## sample_62     1 0.000
+## sample_59     1 0.330
+## sample_52     2 0.000
+## sample_53     2 0.000
+## sample_51     2 0.000
+## sample_50     2 0.000
+## sample_54     1 0.000
+## sample_57     2 0.000
+## sample_58     2 0.000
+## sample_60     2 0.000
+## sample_61     2 0.000
+## sample_65     2 0.000
+## sample_66     1 0.000
+## sample_63     2 0.000
+## sample_64     2 0.000
+## sample_62     2 0.000
 ## sample_1      2 0.000
-## sample_2      2 0.234
+## sample_2      1 0.000
 ## sample_3      2 0.000
 ## sample_4      2 0.000
-## sample_5      2 0.000
+## sample_5      1 0.000
 ## sample_6      2 0.000
 ## sample_7      2 0.000
 ## sample_8      2 0.000
-## sample_9      2 0.000
-## sample_10     2 0.000
-## sample_11     2 0.000
-## sample_12     1 0.637
-## sample_13     2 0.000
-## sample_14     2 0.000
-## sample_15     2 0.000
-## sample_16     2 0.000
-## sample_17     2 0.000
+## sample_9      1 0.000
+## sample_10     2 0.838
+## sample_11     1 0.000
+## sample_12     2 0.000
+## sample_13     1 0.000
+## sample_14     1 0.000
+## sample_15     1 0.000
+## sample_16     1 0.000
+## sample_17     1 0.000
 ## sample_18     2 0.000
-## sample_19     2 0.000
-## sample_20     2 0.000
-## sample_21     2 0.000
-## sample_22     2 0.260
+## sample_19     1 0.000
+## sample_20     1 0.000
+## sample_21     1 0.000
+## sample_22     2 0.000
 ## sample_23     2 0.000
-## sample_24     2 0.000
-## sample_25     2 0.032
-## sample_26     2 0.000
+## sample_24     1 0.000
+## sample_25     2 0.006
+## sample_26     1 0.001
 ## sample_27     2 0.000
-## sample_34     1 0.000
-## sample_35     1 0.000
-## sample_36     1 0.000
-## sample_37     1 0.000
-## sample_38     1 0.000
-## sample_28     1 0.000
+## sample_34     2 0.000
+## sample_35     2 0.000
+## sample_36     2 0.000
+## sample_37     2 0.000
+## sample_38     2 0.000
+## sample_28     2 0.000
 ## sample_29     1 0.000
-## sample_30     1 0.000
-## sample_31     1 0.000
-## sample_32     1 0.000
-## sample_33     1 0.000</code></pre>
+## sample_30     2 0.000
+## sample_31     2 0.000
+## sample_32     2 0.000
+## sample_33     2 0.000</code></pre>
 <p>There is an additional column named <code>p</code> which is the p-value for predicting the class labels. For more details of how the p-value is calculated, please refer to the vignette <a href="predict.html">“Predict classes for new samples”</a>.</p>
 <p>If the argument <code>k</code> is not specified or <code>k</code> is specified as a vector, the class labels for all <code>k</code> are returned. Now you can set the <code>p_cutoff</code> argument so that the class label with p-value larger than this is set to <code>NA</code>.</p>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="../reference/get_classes-dispatch.html">get_classes</a></span>(<span class="no">golub_cola_ds</span>, <span class="kw">p_cutoff</span> <span class="kw">=</span> <span class="fl">0.05</span>)</pre></body></html></div>
 <pre><code>##           k=2 k=3 k=4 k=5 k=6
 ## sample_39   2   3   3   3   3
 ## sample_40   2   3   3   3   3
-## sample_42   2   2   2   5  NA
-## sample_47   2   2   2   2   2
-## sample_48   2   2   2   2   2
+## sample_42   1   1   1   1   1
+## sample_47   1   1   1   1   1
+## sample_48   1   1   1   1   1
 ## sample_49   2   3   3   3   3
-## sample_41   2   2   2   2   2
-## sample_43   2   2   2   2   6
-## sample_44   2   2   2   2   6
-## sample_45   2   2   2   2   6
-## sample_46   2   2   2   2   6
-## sample_70   2   3   3   3  NA
-## sample_71   2   2  NA   5   5
-## sample_72   2   2   2   5   5
-## sample_68   2   2   2   2   2
-## sample_69   2   2   2   2   2
-## sample_67  NA   2   2   5   5
+## sample_41   1   1   1   1   1
+## sample_43   1   1   1   1   1
+## sample_44   1   1   1   1   1
+## sample_45   1   1   1   1   1
+## sample_46   1   1   1   1   1
+## sample_70   1   1   1   1   1
+## sample_71   1   1  NA   4   4
+## sample_72   1   1   1   4   4
+## sample_68   1   1   1   1   1
+## sample_69   1   1   1   1   1
+## sample_67   1   1   1   4   4
 ## sample_55   2   3   3   3   3
 ## sample_56   2   3   3   3   3
-## sample_59   2  NA  NA  NA   1
-## sample_52   1   1   1   1   1
-## sample_53   1   1  NA   4   4
-## sample_51   1   1  NA   4   4
-## sample_50   1   1   1   4   4
-## sample_54   1   1   1   1   1
-## sample_57   1   1   1   1   1
-## sample_58   1   1   1   1   1
-## sample_60   1   1   1   1   1
-## sample_61   1   1  NA   4   4
-## sample_65   1   1   1   4  NA
-## sample_66   2   2   2   5   5
-## sample_63   1   1   1   1   1
-## sample_64   1   1  NA  NA  NA
-## sample_62   1   1   1   1   1
+## sample_59  NA  NA  NA  NA  NA
+## sample_52   2   2   2  NA   5
+## sample_53   2   2   2   2   2
+## sample_51   2   2   2   2   2
+## sample_50   2   2   2   2   2
+## sample_54   1   1  NA   1   1
+## sample_57   2   2   2  NA  NA
+## sample_58   2   2   2   2  NA
+## sample_60   2   2   2  NA  NA
+## sample_61   2   2   2   2   2
+## sample_65   2   2   2   2   2
+## sample_66   1   1   1   1   1
+## sample_63   2   2   2   2   5
+## sample_64   2  NA   2  NA  NA
+## sample_62   2   2   2   2   5
 ## sample_1    2   3   3   3   3
-## sample_2   NA   2   2   5   5
-## sample_3    2   3   3   3  NA
+## sample_2    1   1   1  NA  NA
+## sample_3    2   3   3   3   3
 ## sample_4    2   3   3   3   3
-## sample_5    2   2   2   2   2
-## sample_6    2   3   3   3  NA
+## sample_5    1   1   1   1   1
+## sample_6    2   3   3   3   3
 ## sample_7    2   3   3   3   3
 ## sample_8    2   3   3   3   3
-## sample_9    2   2   2   5   5
-## sample_10   2  NA   3   5   5
-## sample_11   2   2   2   5   5
-## sample_12  NA   1   3   4   4
-## sample_13   2   2   2   2   2
-## sample_14   2   2   2   5   5
-## sample_15   2   2   2   2   2
-## sample_16   2   2   2  NA  NA
-## sample_17   2   2   2   5   5
-## sample_18   2   3   3   3  NA
-## sample_19   2   2   2  NA  NA
-## sample_20   2   2   2   2   2
-## sample_21   2   2   2   2   2
-## sample_22  NA   3   3  NA  NA
+## sample_9    1   1   1   1   1
+## sample_10  NA  NA  NA  NA  NA
+## sample_11   1   1   1   1   1
+## sample_12   2   2   2  NA  NA
+## sample_13   1   1   1   1   1
+## sample_14   1   1   1   1   1
+## sample_15   1   1   1   1   1
+## sample_16   1   1   1   1   1
+## sample_17   1   1   1   1   1
+## sample_18   2   3  NA  NA   6
+## sample_19   1   1   1   1   1
+## sample_20   1   1   1   1   1
+## sample_21   1   1   1   1   1
+## sample_22   2   3   3  NA  NA
 ## sample_23   2   3   3   3   3
-## sample_24   2   2   2   2   2
-## sample_25   2  NA   3  NA  NA
-## sample_26   2  NA  NA   3   3
+## sample_24   1   1   1   1   1
+## sample_25   2  NA  NA  NA  NA
+## sample_26   1   3  NA  NA   6
 ## sample_27   2   3   3   3   3
-## sample_34   1   1  NA   4   4
-## sample_35   1   1   3   4   4
-## sample_36   1   1   1   4   4
-## sample_37   1   1   1   4   4
-## sample_38   1   1   3   4   4
-## sample_28   1   1   3   4   4
-## sample_29   1  NA   2   4   4
-## sample_30   1   1   1   4   4
-## sample_31   1   1  NA   4   4
-## sample_32   1   1  NA   4   4
-## sample_33   1   1  NA   4   4</code></pre>
+## sample_34   2   2   2   2   2
+## sample_35   2   2   2   2  NA
+## sample_36   2   2   2   2   2
+## sample_37   2   2   2   2   2
+## sample_38   2   2   2   2   2
+## sample_28   2   2   2   2   2
+## sample_29   1   1   1   1   1
+## sample_30   2   2   2   2   2
+## sample_31   2   2   2   2   2
+## sample_32   2   2   2   2   2
+## sample_33   2   2   2   2   2</code></pre>
 <p>There are several functions uses <code>p_cutoff</code> argument which controls the number of “usable samples” or the samples with reliable classifications. These functions are <code><a href="../reference/get_classes-dispatch.html">get_classes()</a></code>, <code><a href="../reference/test_to_known_factors-dispatch.html">test_to_known_factors()</a></code>, <code><a href="../reference/dimension_reduction-dispatch.html">dimension_reduction()</a></code> and <code><a href="../reference/get_signatures-dispatch.html">get_signatures()</a></code>.</p>
 <p>For <code><a href="../reference/dimension_reduction-dispatch.html">dimension_reduction()</a></code> function, the samples with p-value higher than <code>p_cutoff</code> are marked by crosses. The samples that were not selected in the random sampling were mapped with smaller dots.</p>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="../reference/dimension_reduction-dispatch.html">dimension_reduction</a></span>(<span class="no">golub_cola_ds</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">2</span>)</pre></body></html></div>
@@ -323,11 +323,11 @@
 <p><img src="work_with_big_datasets_files/figure-html/unnamed-chunk-12-1.png" width="500" style="display: block; margin: auto;"></p>
 <p>For <code><a href="../reference/get_signatures-dispatch.html">get_signatures()</a></code> function, the signatures are only found in the samples with p-values less than <code>p_cutoff</code>.</p>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">golub_cola_ds</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">2</span>)</pre></body></html></div>
-<pre><code>## * 68/72 samples (in 2 classes) remain after filtering by p-value (&lt;= 0.05).
-## * cache hash: f309cb8397d9a7b8d62eea544c88a8fa (seed 888).
+<pre><code>## * 70/72 samples (in 2 classes) remain after filtering by p-value (&lt;= 0.05).
+## * cache hash: d7ed9b16253695bd9adb86dbaa84b708 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ## * split rows into 2 groups by k-means clustering.
-## * 1134 signatures (27.6%) under fdr &lt; 0.05, group_diff &gt; 0.
+## * 1847 signatures (44.9%) under fdr &lt; 0.05, group_diff &gt; 0.
 ## * making heatmaps for signatures.</code></pre>
 <p><img src="work_with_big_datasets_files/figure-html/unnamed-chunk-13-1.png" width="500" style="display: block; margin: auto;"></p>
 </div>
@@ -350,7 +350,7 @@
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] cola_1.5.2   knitr_1.29   markdown_1.1
+## [1] cola_1.5.3   knitr_1.29   markdown_1.1
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] mclust_5.4.6         Rcpp_1.0.5           lattice_0.20-41      circlize_0.4.11     

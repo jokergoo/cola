@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -148,7 +148,6 @@
     <span class='kw'>anno_col</span> <span class='kw'>=</span> <span class='fu'><a href='get_anno_col-dispatch.html'>get_anno_col</a></span>(<span class='no'>object</span>),
     <span class='kw'>show_column_names</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
     <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-    <span class='kw'>silhouette_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
     <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -187,12 +186,8 @@
       <td><p>whether to make the plot.</p></td>
     </tr>
     <tr>
-      <th>silhouette_cutoff</th>
-      <td><p>cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to <a href='https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.'>https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.</a></p></td>
-    </tr>
-    <tr>
       <th>...</th>
-      <td><p>other arguments</p></td>
+      <td><p>other arguments pass to <code><a href='get_signatures-ConsensusPartition-method.html'>get_signatures,ConsensusPartition-method</a></code>.</p></td>
     </tr>
     </table>
 

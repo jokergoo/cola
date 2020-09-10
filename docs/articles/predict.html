@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -94,7 +94,7 @@
       <h1 data-toc-skip>Predict Classes for New Samples</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-09-07</h4>
+            <h4 class="date">2020-09-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/predict.Rmd"><code>vignettes/predict.Rmd</code></a></small>
       <div class="hidden name"><code>predict.Rmd</code></div>
@@ -114,9 +114,9 @@
 <span class="no">res</span></pre></body></html></div>
 <pre><code>## A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
 ##   On a matrix with 4116 rows and 72 columns.
-##   Top rows (412, 824, 1235, 1646, 2058) are extracted by 'ATC' method.
+##   Top rows (412, 824, 1235) are extracted by 'ATC' method.
 ##   Subgroups are detected by 'skmeans' method.
-##   Performed in total 1250 partitions by row resampling.
+##   Performed in total 750 partitions by row resampling.
 ##   Best k for subgroups seems to be 3.
 ## 
 ## Following methods can be applied to this 'ConsensusPartition' object:
@@ -155,162 +155,162 @@
 ## Set `help = FALSE` to suppress this message. 
 ## 
 ## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
+## * cache hash: 63cd178a621632b97602d93df602c979 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ## * split rows into 2 groups by k-means clustering.
-## * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
+## * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
 ## Predict classes based on 3-group classification (euclidean method).</code></pre>
 <p><img src="predict_files/figure-html/unnamed-chunk-5-1.png" width="600" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">cl</span></pre></body></html></div>
 <pre><code>##           class     p
 ## sample_39     3 0.000
 ## sample_40     3 0.000
-## sample_42     2 0.000
-## sample_47     2 0.000
-## sample_48     2 0.000
+## sample_42     1 0.000
+## sample_47     1 0.000
+## sample_48     1 0.000
 ## sample_49     3 0.000
-## sample_41     2 0.000
-## sample_43     2 0.000
-## sample_44     2 0.000
-## sample_45     2 0.000
-## sample_46     2 0.000
-## sample_70     2 0.015
-## sample_71     2 0.000
-## sample_72     2 0.000
-## sample_68     2 0.000
-## sample_69     2 0.000
-## sample_67     2 0.000
+## sample_41     1 0.000
+## sample_43     1 0.000
+## sample_44     1 0.000
+## sample_45     1 0.000
+## sample_46     1 0.000
+## sample_70     1 0.000
+## sample_71     1 0.000
+## sample_72     1 0.000
+## sample_68     1 0.000
+## sample_69     1 0.000
+## sample_67     1 0.000
 ## sample_55     3 0.000
 ## sample_56     3 0.000
-## sample_59     2 0.000
-## sample_52     1 0.000
-## sample_53     1 0.000
-## sample_51     1 0.000
-## sample_50     1 0.000
-## sample_54     2 0.000
-## sample_57     1 0.000
-## sample_58     1 0.000
-## sample_60     1 0.000
-## sample_61     1 0.000
-## sample_65     1 0.000
-## sample_66     2 0.000
-## sample_63     1 0.000
-## sample_64     1 0.000
-## sample_62     1 0.000
+## sample_59     1 0.000
+## sample_52     2 0.000
+## sample_53     2 0.000
+## sample_51     2 0.000
+## sample_50     2 0.000
+## sample_54     1 0.000
+## sample_57     2 0.000
+## sample_58     2 0.000
+## sample_60     2 0.283
+## sample_61     2 0.000
+## sample_65     2 0.000
+## sample_66     1 0.000
+## sample_63     2 0.000
+## sample_64     2 0.000
+## sample_62     2 0.000
 ## sample_1      3 0.000
-## sample_2      2 0.000
+## sample_2      1 0.000
 ## sample_3      3 0.000
 ## sample_4      3 0.000
-## sample_5      2 0.000
+## sample_5      1 0.000
 ## sample_6      3 0.000
 ## sample_7      3 0.000
 ## sample_8      3 0.000
-## sample_9      2 0.000
+## sample_9      1 0.000
 ## sample_10     3 0.000
-## sample_11     2 0.000
-## sample_12     1 0.000
-## sample_13     2 0.000
-## sample_14     2 0.000
-## sample_15     2 0.000
-## sample_16     2 0.000
-## sample_17     2 0.000
+## sample_11     1 0.000
+## sample_12     2 0.001
+## sample_13     1 0.000
+## sample_14     1 0.000
+## sample_15     1 0.000
+## sample_16     1 0.000
+## sample_17     1 0.000
 ## sample_18     3 0.000
-## sample_19     2 0.000
-## sample_20     2 0.000
-## sample_21     2 0.000
-## sample_22     3 0.418
+## sample_19     1 0.000
+## sample_20     1 0.000
+## sample_21     1 0.000
+## sample_22     2 0.103
 ## sample_23     3 0.000
-## sample_24     2 0.000
-## sample_25     3 0.000
-## sample_26     2 0.301
+## sample_24     1 0.000
+## sample_25     3 0.709
+## sample_26     1 0.041
 ## sample_27     3 0.000
-## sample_34     1 0.000
-## sample_35     1 0.000
-## sample_36     1 0.000
-## sample_37     1 0.000
-## sample_38     1 0.000
-## sample_28     1 0.000
-## sample_29     2 0.000
-## sample_30     1 0.000
-## sample_31     1 0.000
-## sample_32     1 0.000
-## sample_33     1 0.000</code></pre>
+## sample_34     2 0.000
+## sample_35     2 0.000
+## sample_36     2 0.000
+## sample_37     2 0.000
+## sample_38     2 0.000
+## sample_28     2 0.000
+## sample_29     1 0.000
+## sample_30     2 0.000
+## sample_31     2 0.000
+## sample_32     2 0.000
+## sample_33     2 0.000</code></pre>
 <p>We compare to the original classification:</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">cola_class</span> <span class="kw">=</span> <span class="fu"><a href="../reference/get_classes-dispatch.html">get_classes</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)[, <span class="st">"class"</span>],
            <span class="kw">predicted</span> <span class="kw">=</span> <span class="no">cl</span>[, <span class="st">"class"</span>])</pre></body></html></div>
 <pre><code>##    cola_class predicted
 ## 1           3         3
 ## 2           3         3
-## 3           2         2
-## 4           2         2
-## 5           2         2
+## 3           1         1
+## 4           1         1
+## 5           1         1
 ## 6           3         3
-## 7           2         2
-## 8           2         2
-## 9           2         2
-## 10          2         2
-## 11          2         2
-## 12          2         2
-## 13          2         2
-## 14          2         2
-## 15          2         2
-## 16          2         2
-## 17          2         2
+## 7           1         1
+## 8           1         1
+## 9           1         1
+## 10          1         1
+## 11          1         1
+## 12          1         1
+## 13          1         1
+## 14          1         1
+## 15          1         1
+## 16          1         1
+## 17          1         1
 ## 18          3         3
 ## 19          3         3
-## 20          2         2
-## 21          1         1
-## 22          1         1
-## 23          1         1
-## 24          1         1
-## 25          2         2
-## 26          1         1
-## 27          1         1
-## 28          1         1
-## 29          1         1
-## 30          1         1
-## 31          2         2
-## 32          1         1
-## 33          1         1
-## 34          1         1
+## 20          1         1
+## 21          2         2
+## 22          2         2
+## 23          2         2
+## 24          2         2
+## 25          1         1
+## 26          2         2
+## 27          2         2
+## 28          2         2
+## 29          2         2
+## 30          2         2
+## 31          1         1
+## 32          2         2
+## 33          2         2
+## 34          2         2
 ## 35          3         3
-## 36          2         2
+## 36          1         1
 ## 37          3         3
 ## 38          3         3
-## 39          2         2
+## 39          1         1
 ## 40          3         3
 ## 41          3         3
 ## 42          3         3
-## 43          2         2
+## 43          1         1
 ## 44          3         3
-## 45          2         2
-## 46          1         1
-## 47          2         2
-## 48          2         2
-## 49          2         2
-## 50          2         2
-## 51          2         2
+## 45          1         1
+## 46          2         2
+## 47          1         1
+## 48          1         1
+## 49          1         1
+## 50          1         1
+## 51          1         1
 ## 52          3         3
-## 53          2         2
-## 54          2         2
-## 55          2         2
-## 56          1         3
+## 53          1         1
+## 54          1         1
+## 55          1         1
+## 56          2         2
 ## 57          3         3
-## 58          2         2
+## 58          1         1
 ## 59          3         3
-## 60          3         2
+## 60          1         1
 ## 61          3         3
-## 62          1         1
-## 63          1         1
-## 64          1         1
-## 65          1         1
-## 66          1         1
-## 67          1         1
-## 68          2         2
-## 69          1         1
-## 70          1         1
-## 71          1         1
-## 72          1         1</code></pre>
+## 62          2         2
+## 63          2         2
+## 64          2         2
+## 65          2         2
+## 66          2         2
+## 67          2         2
+## 68          1         1
+## 69          2         2
+## 70          2         2
+## 71          2         2
+## 72          2         2</code></pre>
 <p><code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> generates a plot which shows the process of the prediction. The left heatmap corresponds to the new matrix and the right small heatmap corresponds to the signature centroid matrix. The purple annotation on top of the first heatmap illustrates the distance of each sample to the k signatures.</p>
 <p>And if we change to correlation method:</p>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">cl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/predict_classes-dispatch.html">predict_classes</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="no">mat2</span>, <span class="kw">dist_method</span> <span class="kw">=</span> <span class="st">"correlation"</span>)</pre></body></html></div>
@@ -319,108 +319,108 @@
 ## Set `help = FALSE` to suppress this message. 
 ## 
 ## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
+## * cache hash: 63cd178a621632b97602d93df602c979 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ##   - row difference is extracted from cache.
 ## * use k-means partition that are already calculated in previous runs.
-## * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
+## * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
 ## Predict classes based on 3-group classification (correlation method).</code></pre>
 <p><img src="predict_files/figure-html/unnamed-chunk-7-1.png" width="600" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">cl</span></pre></body></html></div>
 <pre><code>##           class             p
-## sample_39     3  4.496961e-77
-## sample_40     3  4.710331e-47
-## sample_42     2  2.280029e-24
-## sample_47     2  2.224338e-48
-## sample_48     2 5.055983e-170
-## sample_49     3 5.121954e-150
-## sample_41     2 4.274310e-148
-## sample_43     2  1.385213e-33
-## sample_44     2  1.796451e-62
-## sample_45     2  6.134669e-48
-## sample_46     2  6.258091e-43
-## sample_70     2  9.124487e-06
-## sample_71     2  6.801611e-07
-## sample_72     2  1.211892e-19
-## sample_68     2 3.825195e-177
-## sample_69     2 2.080941e-172
-## sample_67     2  6.451131e-27
-## sample_55     3  8.580832e-33
-## sample_56     3  6.496815e-80
-## sample_59     2  4.538026e-08
-## sample_52     1  1.388249e-34
-## sample_53     1  1.916879e-72
-## sample_51     1 2.933802e-106
-## sample_50     1 6.057518e-121
-## sample_54     2  3.056699e-06
-## sample_57     1  2.928306e-44
-## sample_58     1  6.104740e-87
-## sample_60     1  9.736525e-10
-## sample_61     1  2.303702e-56
-## sample_65     1  2.555556e-55
-## sample_66     2  7.755182e-66
-## sample_63     1  4.358574e-57
-## sample_64     1  6.978296e-58
-## sample_62     1  1.720816e-48
-## sample_1      3  7.844115e-48
-## sample_2      2  1.115791e-24
-## sample_3      3  9.490994e-71
-## sample_4      3  1.620665e-48
-## sample_5      2 4.678053e-165
-## sample_6      3  7.884436e-63
-## sample_7      3  3.383006e-91
-## sample_8      3 1.084813e-109
-## sample_9      2  3.311182e-23
-## sample_10     3  6.083293e-12
-## sample_11     2  2.074883e-33
-## sample_12     1  6.943166e-23
-## sample_13     2 7.585027e-181
-## sample_14     2  2.954314e-40
-## sample_15     2 1.227569e-206
-## sample_16     2  1.864422e-35
-## sample_17     2  3.928053e-21
-## sample_18     3  5.852228e-15
-## sample_19     2  8.613950e-41
-## sample_20     2 2.926765e-184
-## sample_21     2  1.124695e-75
-## sample_22     3  4.325799e-19
-## sample_23     3  2.684005e-78
-## sample_24     2  1.019800e-83
-## sample_25     3  4.008997e-15
-## sample_26     2  4.186802e-05
-## sample_27     3 1.901731e-156
-## sample_34     1  1.345342e-90
-## sample_35     1  5.110602e-65
-## sample_36     1 2.668358e-102
-## sample_37     1  9.143571e-87
-## sample_38     1  1.526653e-51
-## sample_28     1  1.395663e-49
-## sample_29     2  1.159795e-25
-## sample_30     1  9.047929e-56
-## sample_31     1  6.036531e-75
-## sample_32     1  8.249507e-63
-## sample_33     1 3.937507e-142</code></pre>
+## sample_39     3  1.658336e-56
+## sample_40     3  8.683441e-55
+## sample_42     1  1.780402e-22
+## sample_47     1  3.574170e-60
+## sample_48     1 3.149420e-172
+## sample_49     3 4.431385e-146
+## sample_41     1 1.300322e-150
+## sample_43     1  5.141114e-30
+## sample_44     1  4.229475e-59
+## sample_45     1  2.352999e-48
+## sample_46     1  8.605056e-41
+## sample_70     1  4.314183e-07
+## sample_71     1  5.180276e-12
+## sample_72     1  2.436367e-16
+## sample_68     1 9.530645e-174
+## sample_69     1 4.556761e-177
+## sample_67     1  8.232903e-24
+## sample_55     3  2.808262e-34
+## sample_56     3  6.378984e-88
+## sample_59     1  3.213910e-07
+## sample_52     2  1.438209e-37
+## sample_53     2  2.416162e-82
+## sample_51     2 1.404240e-133
+## sample_50     2 1.278661e-132
+## sample_54     1  5.110002e-08
+## sample_57     2  2.326019e-42
+## sample_58     2  3.550931e-90
+## sample_60     2  2.849395e-05
+## sample_61     2  2.404612e-57
+## sample_65     2  3.977894e-60
+## sample_66     1  3.821916e-71
+## sample_63     2  1.850416e-56
+## sample_64     2  1.245659e-62
+## sample_62     2  1.538775e-44
+## sample_1      3  1.638200e-49
+## sample_2      1  7.077143e-26
+## sample_3      3  7.513644e-79
+## sample_4      3  5.035576e-41
+## sample_5      1 2.953563e-171
+## sample_6      3  2.476614e-78
+## sample_7      3  2.718054e-92
+## sample_8      3  8.021824e-96
+## sample_9      1  2.850654e-22
+## sample_10     3  2.795441e-15
+## sample_11     1  1.765643e-32
+## sample_12     2  7.217610e-22
+## sample_13     1 1.000228e-172
+## sample_14     1  8.212651e-34
+## sample_15     1 1.822876e-208
+## sample_16     1  6.551850e-41
+## sample_17     1  6.941861e-18
+## sample_18     3  3.204818e-17
+## sample_19     1  1.130141e-42
+## sample_20     1 2.691216e-193
+## sample_21     1  2.622904e-79
+## sample_22     2  3.842481e-22
+## sample_23     3  4.824666e-82
+## sample_24     1  3.650621e-82
+## sample_25     3  2.273061e-03
+## sample_26     1  2.061467e-10
+## sample_27     3 4.825021e-156
+## sample_34     2 1.831984e-104
+## sample_35     2  3.170413e-77
+## sample_36     2 4.456350e-104
+## sample_37     2  7.003564e-91
+## sample_38     2  7.234684e-55
+## sample_28     2  8.458259e-54
+## sample_29     1  3.421201e-18
+## sample_30     2  1.488897e-58
+## sample_31     2  1.360429e-87
+## sample_32     2  3.019094e-66
+## sample_33     2 1.664306e-163</code></pre>
 <p>As we can see from the above two heatmaps, correlation method is less strict than the Euclidean method that the two samples that cannot be assigned to any class with Euclidean method are assigned with certain classes under correlation method.</p>
 <p><code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> can also be directly applied to a signature centroid matrix. Following is how we manually generate the signature centroid matrix for 3-group classification from Golub dataset:</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">tb</span> <span class="kw">=</span> <span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">plot</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
 <pre><code>## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
+## * cache hash: 63cd178a621632b97602d93df602c979 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ##   - row difference is extracted from cache.
 ## * use k-means partition that are already calculated in previous runs.
-## * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.</code></pre>
+## * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.</code></pre>
 <div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="co"># the centroids are already in `tb`, both scaled and unscaled, we just simply extract it</span>
 <span class="no">sig_mat</span> <span class="kw">=</span> <span class="no">tb</span>[, <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span>(<span class="st">"scaled_mean"</span>, <span class="fu"><a href="../reference/colnames-dispatch.html">colnames</a></span>(<span class="no">tb</span>))]
 <span class="no">sig_mat</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">sig_mat</span>)
 <span class="fu"><a href="../reference/colnames-dispatch.html">colnames</a></span>(<span class="no">sig_mat</span>) <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"class"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(<span class="fu"><a href="../reference/ncol-dispatch.html">ncol</a></span>(<span class="no">sig_mat</span>)))
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">sig_mat</span>)</pre></body></html></div>
-<pre><code>##          class1     class2     class3
-## [1,]  0.4975305 -0.5891191  0.4262181
-## [2,]  0.1337879 -0.4261118  0.6332715
-## [3,]  0.5535304 -0.3088889 -0.1972277
-## [4,]  0.4513507 -0.1728869 -0.3138483
-## [5,] -0.2650615 -0.1805491  0.7308398
-## [6,] -0.1462731 -0.2171580  0.6310112</code></pre>
+<pre><code>##          class1      class2     class3
+## [1,] -0.5519215  0.52395127  0.3740407
+## [2,] -0.4025209  0.06789322  0.7546084
+## [3,] -0.3077090  0.58853214 -0.2459700
+## [4,] -0.1548451  0.47963596 -0.4051056
+## [5,] -0.2048139 -0.15871813  0.6803041
+## [6,] -0.3427458  0.40763038  0.1061578</code></pre>
 <p>And <code>sig_mat</code> can be used in <code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code>:</p>
 <div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">cl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/predict_classes-dispatch.html">predict_classes</a></span>(<span class="no">sig_mat</span>, <span class="no">mat2</span>)
 <span class="no">cl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/predict_classes-dispatch.html">predict_classes</a></span>(<span class="no">sig_mat</span>, <span class="no">mat2</span>, <span class="kw">dist_method</span> <span class="kw">=</span> <span class="st">"correlation"</span>)</pre></body></html></div>
@@ -440,7 +440,7 @@
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] cola_1.5.2   knitr_1.29   markdown_1.1
+## [1] cola_1.5.3   knitr_1.29   markdown_1.1
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] mclust_5.4.6         Rcpp_1.0.5           lattice_0.20-41      circlize_0.4.11     

@@ -15,34 +15,13 @@ Following code was used to generate \code{golub_cola_rh}:
 
   \preformatted{
     library(cola)
-
-    library(golubEsets)  # from bioc
-    data(Golub_Merge)
-    m = exprs(Golub_Merge)
-    colnames(m) = paste0("sample_", colnames(m))
-    anno = pData(Golub_Merge)
-
-    m[m <= 1] = NA
-    m = log10(m)
-
-    m = adjust_matrix(m)
-
-    library(preprocessCore)  # from bioc
-    cn = colnames(m)
-    rn = rownames(m)
-    m = normalize.quantiles(m)
-    colnames(m) = cn
-    rownames(m) = rn
-
-    register_NMF()
-
+    data(golub_cola)
+    m = get_matrix(golub_cola)
     set.seed(123)
     golub_cola_rh = hierarchical_partition(
-        m,
-        PAC_cutoff = 0.3,
-        mc.cores = 4, 
-        anno = anno[, c("ALL.AML"), drop = FALSE],
-        anno_col = c("ALL" = "red", "AML" = "blue")
+        m, mc.cores = 2, 
+        anno = get_anno(golub_cola), 
+        anno_col = get_anno_col(golub_cola)
     )  }
 }
 \author{

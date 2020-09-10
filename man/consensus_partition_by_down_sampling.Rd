@@ -8,8 +8,9 @@ Consensus partitioning only with a subset of columns
 }
 \usage{
 consensus_partition_by_down_sampling(data, subset = min(round(ncol(data)*0.2), 250),
-    verbose = TRUE, prefix = "", anno = NULL, dist_method = c("euclidean", "correlation", "cosine"),
-    ...)
+    verbose = TRUE, prefix = "", anno = NULL,
+    dist_method = c("euclidean", "correlation", "cosine"),
+    .env = NULL, ...)
 }
 \arguments{
 
@@ -19,6 +20,7 @@ consensus_partition_by_down_sampling(data, subset = min(round(ncol(data)*0.2), 2
   \item{prefix}{Internally used.}
   \item{anno}{Annotation data frame.}
   \item{dist_method}{Method for predict the class for other columns.}
+  \item{.env}{An environment, internally used.}
   \item{...}{All pass to \code{\link{consensus_partition}}.}
 
 }

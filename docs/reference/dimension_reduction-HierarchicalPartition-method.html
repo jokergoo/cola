@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -145,7 +145,7 @@
 <span class='fu'><a href='dimension_reduction-dispatch.html'>dimension_reduction</a></span>(<span class='no'>object</span>,
     <span class='kw'>depth</span> <span class='kw'>=</span> <span class='fu'><a href='max_depth-HierarchicalPartition-method.html'>max_depth</a></span>(<span class='no'>object</span>), <span class='no'>parent_node</span>,
     <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"PCA"</span>, <span class='st'>"MDS"</span>, <span class='st'>"t-SNE"</span>, <span class='st'>"UMAP"</span>),
-    <span class='kw'>silhouette_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.5</span>, <span class='kw'>scale_rows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <span class='kw'>scale_rows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,10 +171,6 @@
       <td><p>Which method to reduce the dimension of the data. <code>MDS</code> uses <code><a href='https://rdrr.io/r/stats/cmdscale.html'>cmdscale</a></code>, <code>PCA</code> uses <code><a href='https://rdrr.io/r/stats/prcomp.html'>prcomp</a></code>. <code>t-SNE</code> uses <code><a href='https://rdrr.io/pkg/Rtsne/man/Rtsne.html'>Rtsne</a></code>. <code>UMAP</code> uses <code><a href='https://rdrr.io/pkg/umap/man/umap.html'>umap</a></code>.</p></td>
     </tr>
     <tr>
-      <th>silhouette_cutoff</th>
-      <td><p>Cutoff of silhouette score. Data points with values less than it will be mapped with cross symbols.</p></td>
-    </tr>
-    <tr>
       <th>scale_rows</th>
       <td><p>Whether to perform scaling on matrix rows.</p></td>
     </tr>
@@ -184,7 +180,7 @@
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Other arguments.</p></td>
+      <td><p>Other arguments passed to <code><a href='dimension_reduction-ConsensusPartition-method.html'>dimension_reduction,ConsensusPartition-method</a></code>.</p></td>
     </tr>
     </table>
 

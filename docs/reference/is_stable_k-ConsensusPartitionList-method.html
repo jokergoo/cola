@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -170,14 +170,14 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='fu'><a href='is_stable_k-dispatch.html'>is_stable_k</a></span>(<span class='no'>golub_cola</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt;      SD:NMF      CV:NMF     MAD:NMF     ATC:NMF  SD:skmeans  CV:skmeans 
+<span class='fu'><a href='is_stable_k-dispatch.html'>is_stable_k</a></span>(<span class='no'>golub_cola</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt;  SD:skmeans  CV:skmeans MAD:skmeans ATC:skmeans   SD:mclust   CV:mclust 
+#&gt;       FALSE       FALSE       FALSE        TRUE       FALSE       FALSE 
+#&gt;  MAD:mclust  ATC:mclust   SD:kmeans   CV:kmeans  MAD:kmeans  ATC:kmeans 
 #&gt;       FALSE       FALSE       FALSE       FALSE       FALSE       FALSE 
-#&gt; MAD:skmeans ATC:skmeans   SD:mclust   CV:mclust  MAD:mclust  ATC:mclust 
-#&gt;       FALSE        TRUE       FALSE       FALSE       FALSE       FALSE 
-#&gt;   SD:kmeans   CV:kmeans  MAD:kmeans  ATC:kmeans      SD:pam      CV:pam 
+#&gt;      SD:pam      CV:pam     MAD:pam     ATC:pam   SD:hclust   CV:hclust 
 #&gt;       FALSE       FALSE       FALSE       FALSE       FALSE       FALSE 
-#&gt;     MAD:pam     ATC:pam   SD:hclust   CV:hclust  MAD:hclust  ATC:hclust 
-#&gt;       FALSE       FALSE       FALSE       FALSE       FALSE       FALSE </div></pre>
+#&gt;  MAD:hclust  ATC:hclust 
+#&gt;       FALSE       FALSE </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

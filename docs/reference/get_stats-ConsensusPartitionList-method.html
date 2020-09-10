@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -169,55 +169,47 @@ matrix correspond to combinations of top-value methods and partitioning methods.
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
 <span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>golub_cola</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;             k     1-PAC mean_silhouette concordance area_increased      Rand
-#&gt; SD:NMF      2 0.6334504       0.8232491   0.9275000      0.4892486 0.5121283
-#&gt; CV:NMF      2 0.6334504       0.7872886   0.9157222      0.4909393 0.5070423
-#&gt; MAD:NMF     2 0.6799824       0.8109892   0.9250556      0.4898557 0.5070423
-#&gt; ATC:NMF     2 0.9719052       0.9266103   0.9734444      0.5047301 0.4945227
-#&gt; SD:skmeans  2 0.6167691       0.6592361   0.8646667      0.4970037 0.5121283
-#&gt; CV:skmeans  2 0.6286216       0.7477727   0.8901111      0.4969645 0.4945227
-#&gt; MAD:skmeans 2 0.6395961       0.7279295   0.8836667      0.4967373 0.4933490
-#&gt; ATC:skmeans 2 1.0000000       0.9767344   0.9905000      0.5051585 0.4964789
-#&gt; SD:mclust   2 0.3730849       0.8011169   0.8177778      0.4100016 0.5179969
-#&gt; CV:mclust   2 0.4890269       0.9083927   0.8949444      0.4313367 0.5320814
-#&gt; MAD:mclust  2 0.8235294       0.9265781   0.9318889      0.4416306 0.5320814
-#&gt; ATC:mclust  2 0.3595259       0.7109781   0.8275000      0.4257086 0.4929577
-#&gt; SD:kmeans   2 0.6624232       0.8355983   0.9114444      0.4793021 0.5402973
-#&gt; CV:kmeans   2 0.6527656       0.8059867   0.9048889      0.4836249 0.5320814
-#&gt; MAD:kmeans  2 0.6231884       0.8054912   0.9036111      0.4827648 0.5402973
-#&gt; ATC:kmeans  2 1.0000000       0.9815350   0.9915000      0.5025009 0.4992175
-#&gt; SD:pam      2 0.5478490       0.6864620   0.8758889      0.4897065 0.4929577
-#&gt; CV:pam      2 0.5460931       0.7840100   0.9035556      0.4957916 0.4964789
-#&gt; MAD:pam     2 0.6514486       0.8236402   0.9253889      0.4956635 0.4992175
-#&gt; ATC:pam     2 0.5974539       0.8083550   0.9176111      0.4754645 0.5179969
-#&gt; SD:hclust   2 0.2357331       0.7767183   0.8512778      0.4347693 0.5590767
-#&gt; CV:hclust   2 0.2139812       0.5697315   0.8053333      0.4537550 0.5121283
-#&gt; MAD:hclust  2 0.2265145       0.7367577   0.8377222      0.4437254 0.5492958
-#&gt; ATC:hclust  2 0.5737489       0.8133644   0.9105556      0.4863788 0.4945227
+#&gt; SD:skmeans  2 0.6553995       0.9064890   0.9505556      0.4908054 0.5179969
+#&gt; CV:skmeans  2 0.6808604       0.8880965   0.9402778      0.4899117 0.5179969
+#&gt; MAD:skmeans 2 0.7050044       0.8300409   0.9241667      0.4905336 0.5179969
+#&gt; ATC:skmeans 2 1.0000000       0.9602287   0.9866667      0.5056038 0.4945227
+#&gt; SD:mclust   2 0.3050302       0.8020404   0.7658333      0.4206131 0.5179969
+#&gt; CV:mclust   2 0.9056190       0.9340854   0.9402778      0.4515678 0.5246479
+#&gt; MAD:mclust  2 0.8327480       0.9221557   0.9536111      0.4519860 0.5320814
+#&gt; ATC:mclust  2 0.4433714       0.6696123   0.8418519      0.4075390 0.5070423
+#&gt; SD:kmeans   2 0.6753623       0.9366896   0.9565741      0.4721032 0.5320814
+#&gt; CV:kmeans   2 0.9155280       0.9619138   0.9759259      0.4732467 0.5320814
+#&gt; MAD:kmeans  2 0.6811594       0.9425210   0.9659259      0.4745559 0.5320814
+#&gt; ATC:kmeans  2 1.0000000       0.9648659   0.9856481      0.5030414 0.4992175
+#&gt; SD:pam      2 0.5478490       0.7326234   0.8897222      0.4922305 0.4929577
+#&gt; CV:pam      2 0.5443371       0.8335799   0.9152778      0.4990158 0.4945227
+#&gt; MAD:pam     2 0.6518876       0.8205751   0.9236111      0.4998962 0.4933490
+#&gt; ATC:pam     2 0.5935031       0.7591574   0.8985185      0.4765846 0.5246479
+#&gt; SD:hclust   2 0.4214223       0.8656393   0.9102778      0.4434748 0.5492958
+#&gt; CV:hclust   2 0.1966637       0.7391751   0.8315741      0.4548719 0.5492958
+#&gt; MAD:hclust  2 0.4253731       0.8392771   0.9059259      0.4481700 0.5590767
+#&gt; ATC:hclust  2 0.5465320       0.7759363   0.8945370      0.4755652 0.4933490
 #&gt;               Jaccard
-#&gt; SD:NMF      0.5121283
-#&gt; CV:NMF      0.5070423
-#&gt; MAD:NMF     0.5070423
-#&gt; ATC:NMF     0.4945227
-#&gt; SD:skmeans  0.5121283
-#&gt; CV:skmeans  0.4945227
-#&gt; MAD:skmeans 0.4933490
-#&gt; ATC:skmeans 0.4964789
+#&gt; SD:skmeans  0.5179969
+#&gt; CV:skmeans  0.5179969
+#&gt; MAD:skmeans 0.5179969
+#&gt; ATC:skmeans 0.4945227
 #&gt; SD:mclust   0.5179969
-#&gt; CV:mclust   0.5320814
+#&gt; CV:mclust   0.5246479
 #&gt; MAD:mclust  0.5320814
-#&gt; ATC:mclust  0.4929577
-#&gt; SD:kmeans   0.5402973
+#&gt; ATC:mclust  0.5070423
+#&gt; SD:kmeans   0.5320814
 #&gt; CV:kmeans   0.5320814
-#&gt; MAD:kmeans  0.5402973
+#&gt; MAD:kmeans  0.5320814
 #&gt; ATC:kmeans  0.4992175
 #&gt; SD:pam      0.4929577
-#&gt; CV:pam      0.4964789
-#&gt; MAD:pam     0.4992175
-#&gt; ATC:pam     0.5179969
-#&gt; SD:hclust   0.5590767
-#&gt; CV:hclust   0.5121283
-#&gt; MAD:hclust  0.5492958
-#&gt; ATC:hclust  0.4945227</div></pre>
+#&gt; CV:pam      0.4945227
+#&gt; MAD:pam     0.4933490
+#&gt; ATC:pam     0.5246479
+#&gt; SD:hclust   0.5492958
+#&gt; CV:hclust   0.5492958
+#&gt; MAD:hclust  0.5590767
+#&gt; ATC:hclust  0.4933490</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -166,151 +166,151 @@ and the silhouette scores which measure the stability of a sample to stay in its
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
 <span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span>]
-<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;           class    entropy silhouette
-#&gt; sample_39     1 0.00000000  0.9820987
-#&gt; sample_40     1 0.00000000  0.9820987
-#&gt; sample_42     2 0.00000000  0.9997442
-#&gt; sample_47     2 0.00000000  0.9997442
-#&gt; sample_48     2 0.00000000  0.9997442
-#&gt; sample_49     1 0.00000000  0.9820987
-#&gt; sample_41     2 0.00000000  0.9997442
-#&gt; sample_43     2 0.00000000  0.9997442
-#&gt; sample_44     2 0.00000000  0.9997442
-#&gt; sample_45     2 0.00000000  0.9997442
-#&gt; sample_46     2 0.00000000  0.9997442
-#&gt; sample_70     2 0.00000000  0.9997442
-#&gt; sample_71     2 0.00000000  0.9997442
-#&gt; sample_72     2 0.00000000  0.9997442
-#&gt; sample_68     2 0.00000000  0.9997442
-#&gt; sample_69     2 0.00000000  0.9997442
-#&gt; sample_67     2 0.00000000  0.9997442
-#&gt; sample_55     1 0.00000000  0.9820987
-#&gt; sample_56     1 0.00000000  0.9820987
-#&gt; sample_59     2 0.00000000  0.9997442
-#&gt; sample_52     1 0.00000000  0.9820987
-#&gt; sample_53     1 0.00000000  0.9820987
-#&gt; sample_51     1 0.00000000  0.9820987
-#&gt; sample_50     1 0.00000000  0.9820987
-#&gt; sample_54     2 0.00000000  0.9997442
-#&gt; sample_57     1 0.00000000  0.9820987
-#&gt; sample_58     1 0.00000000  0.9820987
-#&gt; sample_60     1 0.91695673  0.5149407
-#&gt; sample_61     1 0.00000000  0.9820987
-#&gt; sample_65     1 0.00000000  0.9820987
-#&gt; sample_66     2 0.00000000  0.9997442
-#&gt; sample_63     1 0.00000000  0.9820987
-#&gt; sample_64     1 0.00000000  0.9820987
-#&gt; sample_62     1 0.00000000  0.9820987
-#&gt; sample_1      1 0.00000000  0.9820987
-#&gt; sample_2      2 0.00000000  0.9997442
-#&gt; sample_3      1 0.00000000  0.9820987
-#&gt; sample_4      1 0.00000000  0.9820987
-#&gt; sample_5      2 0.00000000  0.9997442
-#&gt; sample_6      1 0.00000000  0.9820987
-#&gt; sample_7      1 0.00000000  0.9820987
-#&gt; sample_8      1 0.00000000  0.9820987
-#&gt; sample_9      2 0.00000000  0.9997442
-#&gt; sample_10     2 0.06722154  0.9917483
-#&gt; sample_11     2 0.00000000  0.9997442
-#&gt; sample_12     1 0.00000000  0.9820987
-#&gt; sample_13     2 0.00000000  0.9997442
-#&gt; sample_14     2 0.00000000  0.9997442
-#&gt; sample_15     2 0.00000000  0.9997442
-#&gt; sample_16     2 0.00000000  0.9997442
-#&gt; sample_17     2 0.00000000  0.9997442
-#&gt; sample_18     1 0.92859509  0.4887252
-#&gt; sample_19     2 0.00000000  0.9997442
-#&gt; sample_20     2 0.00000000  0.9997442
-#&gt; sample_21     2 0.00000000  0.9997442
-#&gt; sample_22     1 0.00000000  0.9820987
-#&gt; sample_23     1 0.00000000  0.9820987
-#&gt; sample_24     2 0.00000000  0.9997442
-#&gt; sample_25     1 0.00000000  0.9820987
-#&gt; sample_26     2 0.00000000  0.9997442
-#&gt; sample_27     1 0.00000000  0.9820987
-#&gt; sample_34     1 0.00000000  0.9820987
-#&gt; sample_35     1 0.00000000  0.9820987
-#&gt; sample_36     1 0.00000000  0.9820987
-#&gt; sample_37     1 0.00000000  0.9820987
-#&gt; sample_38     1 0.00000000  0.9820987
-#&gt; sample_28     1 0.00000000  0.9820987
-#&gt; sample_29     2 0.00000000  0.9997442
-#&gt; sample_30     1 0.00000000  0.9820987
-#&gt; sample_31     1 0.00000000  0.9820987
-#&gt; sample_32     1 0.00000000  0.9820987
-#&gt; sample_33     1 0.00000000  0.9820987</div><div class='input'><span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>)</div><div class='output co'>#&gt;           k=2 k=3 k=4 k=5 k=6
-#&gt; sample_39   1   3   3   3   3
-#&gt; sample_40   1   3   3   3   3
-#&gt; sample_42   2   2   4   4   6
-#&gt; sample_47   2   2   2   2   2
-#&gt; sample_48   2   2   2   2   2
-#&gt; sample_49   1   3   3   3   3
-#&gt; sample_41   2   2   2   2   2
-#&gt; sample_43   2   2   2   2   2
-#&gt; sample_44   2   2   2   2   2
-#&gt; sample_45   2   2   2   2   2
-#&gt; sample_46   2   2   2   2   2
-#&gt; sample_70   2   2   2   2   2
-#&gt; sample_71   2   2   4   4   6
-#&gt; sample_72   2   2   4   4   6
-#&gt; sample_68   2   2   2   2   2
-#&gt; sample_69   2   2   2   2   2
-#&gt; sample_67   2   2   4   4   6
-#&gt; sample_55   1   3   3   3   3
-#&gt; sample_56   1   3   3   3   3
-#&gt; sample_59   2   2   2   5   5
-#&gt; sample_52   1   1   1   1   5
-#&gt; sample_53   1   1   1   1   1
-#&gt; sample_51   1   1   1   1   1
-#&gt; sample_50   1   1   1   1   1
-#&gt; sample_54   2   2   2   5   5
-#&gt; sample_57   1   1   1   1   5
-#&gt; sample_58   1   1   1   1   1
-#&gt; sample_60   1   1   1   5   5
-#&gt; sample_61   1   1   1   1   1
-#&gt; sample_65   1   1   1   1   1
-#&gt; sample_66   2   2   2   2   2
-#&gt; sample_63   1   1   1   1   5
-#&gt; sample_64   1   1   1   1   3
-#&gt; sample_62   1   1   1   1   5
-#&gt; sample_1    1   3   3   3   3
-#&gt; sample_2    2   2   2   4   6
-#&gt; sample_3    1   3   3   3   4
-#&gt; sample_4    1   3   3   3   3
-#&gt; sample_5    2   2   2   2   2
-#&gt; sample_6    1   3   3   3   4
-#&gt; sample_7    1   3   3   3   3
-#&gt; sample_8    1   3   3   3   3
-#&gt; sample_9    2   2   2   2   2
-#&gt; sample_10   2   3   4   4   4
-#&gt; sample_11   2   2   4   4   6
-#&gt; sample_12   1   1   1   1   1
-#&gt; sample_13   2   2   2   2   2
-#&gt; sample_14   2   2   2   2   2
-#&gt; sample_15   2   2   2   2   2
-#&gt; sample_16   2   2   2   2   2
-#&gt; sample_17   2   2   2   2   2
-#&gt; sample_18   1   3   3   5   4
-#&gt; sample_19   2   2   2   2   2
-#&gt; sample_20   2   2   2   2   2
-#&gt; sample_21   2   2   2   2   2
-#&gt; sample_22   1   1   1   1   1
-#&gt; sample_23   1   3   3   3   4
-#&gt; sample_24   2   2   2   2   2
-#&gt; sample_25   1   3   3   3   1
-#&gt; sample_26   2   3   2   2   2
-#&gt; sample_27   1   3   3   3   3
-#&gt; sample_34   1   1   1   1   1
-#&gt; sample_35   1   1   1   1   3
-#&gt; sample_36   1   1   1   1   1
-#&gt; sample_37   1   1   1   1   1
-#&gt; sample_38   1   1   1   1   1
-#&gt; sample_28   1   1   1   1   1
-#&gt; sample_29   2   2   2   4   6
-#&gt; sample_30   1   1   1   1   1
-#&gt; sample_31   1   1   1   1   1
-#&gt; sample_32   1   1   1   1   1
-#&gt; sample_33   1   1   1   1   1</div></pre>
+<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;           class    entropy  silhouette
+#&gt; sample_39     2 0.00000000 0.987257383
+#&gt; sample_40     2 0.00000000 0.987257383
+#&gt; sample_42     1 0.00000000 0.984506868
+#&gt; sample_47     1 0.00000000 0.984506868
+#&gt; sample_48     1 0.00000000 0.984506868
+#&gt; sample_49     2 0.00000000 0.987257383
+#&gt; sample_41     1 0.00000000 0.984506868
+#&gt; sample_43     1 0.00000000 0.984506868
+#&gt; sample_44     1 0.00000000 0.984506868
+#&gt; sample_45     1 0.00000000 0.984506868
+#&gt; sample_46     1 0.00000000 0.984506868
+#&gt; sample_70     1 0.00000000 0.984506868
+#&gt; sample_71     1 0.00000000 0.984506868
+#&gt; sample_72     1 0.00000000 0.984506868
+#&gt; sample_68     1 0.00000000 0.984506868
+#&gt; sample_69     1 0.00000000 0.984506868
+#&gt; sample_67     1 0.00000000 0.984506868
+#&gt; sample_55     2 0.00000000 0.987257383
+#&gt; sample_56     2 0.00000000 0.987257383
+#&gt; sample_59     1 0.00000000 0.984506868
+#&gt; sample_52     2 0.00000000 0.987257383
+#&gt; sample_53     2 0.00000000 0.987257383
+#&gt; sample_51     2 0.00000000 0.987257383
+#&gt; sample_50     2 0.00000000 0.987257383
+#&gt; sample_54     1 0.00000000 0.984506868
+#&gt; sample_57     2 0.00000000 0.987257383
+#&gt; sample_58     2 0.00000000 0.987257383
+#&gt; sample_60     1 0.99987176 0.001789621
+#&gt; sample_61     2 0.00000000 0.987257383
+#&gt; sample_65     2 0.00000000 0.987257383
+#&gt; sample_66     1 0.00000000 0.984506868
+#&gt; sample_63     2 0.00000000 0.987257383
+#&gt; sample_64     2 0.00000000 0.987257383
+#&gt; sample_62     2 0.00000000 0.987257383
+#&gt; sample_1      2 0.00000000 0.987257383
+#&gt; sample_2      1 0.00000000 0.984506868
+#&gt; sample_3      2 0.00000000 0.987257383
+#&gt; sample_4      2 0.00000000 0.987257383
+#&gt; sample_5      1 0.00000000 0.984506868
+#&gt; sample_6      2 0.00000000 0.987257383
+#&gt; sample_7      2 0.00000000 0.987257383
+#&gt; sample_8      2 0.00000000 0.987257383
+#&gt; sample_9      1 0.00000000 0.984506868
+#&gt; sample_10     1 0.05777796 0.978129400
+#&gt; sample_11     1 0.00000000 0.984506868
+#&gt; sample_12     2 0.00000000 0.987257383
+#&gt; sample_13     1 0.00000000 0.984506868
+#&gt; sample_14     1 0.00000000 0.984506868
+#&gt; sample_15     1 0.00000000 0.984506868
+#&gt; sample_16     1 0.00000000 0.984506868
+#&gt; sample_17     1 0.00000000 0.984506868
+#&gt; sample_18     2 0.99537844 0.123807706
+#&gt; sample_19     1 0.00000000 0.984506868
+#&gt; sample_20     1 0.00000000 0.984506868
+#&gt; sample_21     1 0.00000000 0.984506868
+#&gt; sample_22     2 0.00000000 0.987257383
+#&gt; sample_23     2 0.00000000 0.987257383
+#&gt; sample_24     1 0.00000000 0.984506868
+#&gt; sample_25     2 0.00000000 0.987257383
+#&gt; sample_26     1 0.00000000 0.984506868
+#&gt; sample_27     2 0.00000000 0.987257383
+#&gt; sample_34     2 0.00000000 0.987257383
+#&gt; sample_35     2 0.00000000 0.987257383
+#&gt; sample_36     2 0.00000000 0.987257383
+#&gt; sample_37     2 0.00000000 0.987257383
+#&gt; sample_38     2 0.00000000 0.987257383
+#&gt; sample_28     2 0.00000000 0.987257383
+#&gt; sample_29     1 0.00000000 0.984506868
+#&gt; sample_30     2 0.00000000 0.987257383
+#&gt; sample_31     2 0.00000000 0.987257383
+#&gt; sample_32     2 0.00000000 0.987257383
+#&gt; sample_33     2 0.00000000 0.987257383</div><div class='input'><span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>)</div><div class='output co'>#&gt;           k=2 k=3 k=4 k=5 k=6
+#&gt; sample_39   2   3   3   3   3
+#&gt; sample_40   2   3   3   3   3
+#&gt; sample_42   1   1   4   4   6
+#&gt; sample_47   1   1   1   1   1
+#&gt; sample_48   1   1   1   1   1
+#&gt; sample_49   2   3   3   3   3
+#&gt; sample_41   1   1   1   1   1
+#&gt; sample_43   1   1   1   1   1
+#&gt; sample_44   1   1   1   1   1
+#&gt; sample_45   1   1   1   1   1
+#&gt; sample_46   1   1   1   1   1
+#&gt; sample_70   1   1   1   1   1
+#&gt; sample_71   1   1   4   4   6
+#&gt; sample_72   1   1   4   4   6
+#&gt; sample_68   1   1   1   1   1
+#&gt; sample_69   1   1   1   1   1
+#&gt; sample_67   1   1   4   4   6
+#&gt; sample_55   2   3   3   3   3
+#&gt; sample_56   2   3   3   3   3
+#&gt; sample_59   1   1   1   1   5
+#&gt; sample_52   2   2   2   2   2
+#&gt; sample_53   2   2   2   2   2
+#&gt; sample_51   2   2   2   2   2
+#&gt; sample_50   2   2   2   2   2
+#&gt; sample_54   1   1   1   5   5
+#&gt; sample_57   2   2   2   2   2
+#&gt; sample_58   2   2   2   2   3
+#&gt; sample_60   1   2   1   5   5
+#&gt; sample_61   2   2   2   2   2
+#&gt; sample_65   2   2   2   2   2
+#&gt; sample_66   1   1   1   1   1
+#&gt; sample_63   2   2   2   2   2
+#&gt; sample_64   2   2   2   2   3
+#&gt; sample_62   2   2   2   2   2
+#&gt; sample_1    2   3   3   3   3
+#&gt; sample_2    1   1   1   4   6
+#&gt; sample_3    2   3   3   3   4
+#&gt; sample_4    2   3   3   3   3
+#&gt; sample_5    1   1   1   1   1
+#&gt; sample_6    2   3   3   3   4
+#&gt; sample_7    2   3   3   3   3
+#&gt; sample_8    2   3   3   3   3
+#&gt; sample_9    1   1   1   1   1
+#&gt; sample_10   1   3   4   4   4
+#&gt; sample_11   1   1   4   4   6
+#&gt; sample_12   2   2   2   2   2
+#&gt; sample_13   1   1   1   1   1
+#&gt; sample_14   1   1   1   1   1
+#&gt; sample_15   1   1   1   1   1
+#&gt; sample_16   1   1   1   1   1
+#&gt; sample_17   1   1   1   1   1
+#&gt; sample_18   2   3   3   5   4
+#&gt; sample_19   1   1   1   1   1
+#&gt; sample_20   1   1   1   1   1
+#&gt; sample_21   1   1   1   1   1
+#&gt; sample_22   2   2   2   2   2
+#&gt; sample_23   2   3   3   3   4
+#&gt; sample_24   1   1   1   1   1
+#&gt; sample_25   2   3   2   2   2
+#&gt; sample_26   1   1   1   1   1
+#&gt; sample_27   2   3   3   3   3
+#&gt; sample_34   2   2   2   2   2
+#&gt; sample_35   2   2   2   2   3
+#&gt; sample_36   2   2   2   2   2
+#&gt; sample_37   2   2   2   2   2
+#&gt; sample_38   2   2   2   2   2
+#&gt; sample_28   2   2   2   2   2
+#&gt; sample_29   1   1   1   4   6
+#&gt; sample_30   2   2   2   2   2
+#&gt; sample_31   2   2   2   2   2
+#&gt; sample_32   2   2   2   2   2
+#&gt; sample_33   2   2   2   2   2</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -24,12 +24,9 @@
 #     colnames(m) = cn
 #     rownames(m) = rn
 #     
-#     register_NMF()
-#     
 #     set.seed(123)
 #     golub_cola = run_all_consensus_partition_methods(
-#         m,
-#         mc.cores = 4, 
+#         m, mc.cores = 2, 
 #         anno = anno[, c("ALL.AML"), drop = FALSE],
 #         anno_col = c("ALL" = "red", "AML" = "blue")
 #     )
@@ -51,34 +48,13 @@
 # Following code was used to generate ``golub_cola_rh``:
 #
 #     library(cola)
-#     
-#     library(golubEsets)  # from bioc
-#     data(Golub_Merge)
-#     m = exprs(Golub_Merge)
-#     colnames(m) = paste0("sample_", colnames(m))
-#     anno = pData(Golub_Merge)
-#     
-#     m[m <= 1] = NA
-#     m = log10(m)
-#     
-#     m = adjust_matrix(m)
-#     
-#     library(preprocessCore)  # from bioc
-#     cn = colnames(m)
-#     rn = rownames(m)
-#     m = normalize.quantiles(m)
-#     colnames(m) = cn
-#     rownames(m) = rn
-#     
-#     register_NMF()
-#     
+#     data(golub_cola)
+#     m = get_matrix(golub_cola)
 #     set.seed(123)
 #     golub_cola_rh = hierarchical_partition(
-#         m,
-#         PAC_cutoff = 0.3,
-#         mc.cores = 4, 
-#         anno = anno[, c("ALL.AML"), drop = FALSE],
-#         anno_col = c("ALL" = "red", "AML" = "blue")
+#         m, mc.cores = 2, 
+#         anno = get_anno(golub_cola), 
+#         anno_col = get_anno_col(golub_cola)
 #     )
 #
 # == author
@@ -99,9 +75,11 @@
 #     data(golub_cola)
 #     m = get_matrix(golub_cola)
 #     set.seed(123)
-#     golub_cola_ds = consensus_partition_by_down_sampling(m, subset = 50,
-#         anno = get_anno(golub_cola), anno_col = get_anno_col(golub_cola),
-#         top_value_method = "SD", partition_method = "kmeans")
+#     golub_cola_ds = consensus_partition_by_down_sampling(
+#         m, subset = 50, mc.cores = 2,
+#         anno = get_anno(golub_cola), 
+#         anno_col = get_anno_col(golub_cola),
+#     )
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>

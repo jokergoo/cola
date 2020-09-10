@@ -62,8 +62,8 @@
 consensus_partition = function(data,
 	top_value_method = "ATC",
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
-		        min(5000, round(nrow(data)*0.5)), 
-		        length.out = 5),
+		        min(3000, round(nrow(data)*0.3)), 
+		        length.out = 3),
 	partition_method = "skmeans",
 	max_k = 6, 
 	sample_by = "row",
@@ -117,8 +117,8 @@ consensus_partition = function(data,
 .consensus_partition = function(data,
 	top_value_method = "MAD",
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
-		        min(5000, round(nrow(data)*0.5)), 
-		        length.out = 5),
+		        min(3000, round(nrow(data)*0.3)), 
+		        length.out = 3),
 	partition_method = "kmeans",
 	k = 2:6, 
 	p_sampling = 0.8,
@@ -528,7 +528,7 @@ consensus_partition = function(data,
 	}
 
 	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n) * length(k),  
-		partition_method = partition_method, top_value_method = top_value_method, top_n = top_n,
+		partition_method = partition_method, top_value_method = top_value_method, top_n = top_n, top_value_list = all_top_value,
 		anno = anno, anno_col = anno_col, scale_rows = scale_rows, sample_by = sample_by,
 		column_index = .env$column_index, .env = .env)
 
@@ -745,7 +745,11 @@ setMethod(f = "consensus_heatmap",
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
-	class_df = get_classes(object, k)
+	if(inherits(object, "DownSamplingConsensusPartition")) {
+		class_df = get_classes(object, k, reduce = TRUE)
+	} else {
+		class_df = get_classes(object, k)
+	}
 	class_ids = class_df$class
 
 	consensus_mat = get_consensus(object, k)
@@ -843,7 +847,11 @@ setMethod(f = "membership_heatmap",
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
-	class_df = get_classes(object, k)
+	if(inherits(object, "DownSamplingConsensusPartition")) {
+		class_df = get_classes(object, k, reduce = TRUE)
+	} else {
+		class_df = get_classes(object, k)
+	}
 	class_ids = class_df$class
 
 	membership_mat = get_membership(object, k)
@@ -998,7 +1006,7 @@ setMethod(f = "dimension_reduction",
 
 	if(!is.null(top_n)) {
 		top_n = min(c(top_n, nrow(data)))
-		all_value = object@.env$all_top_value_list[[object@top_value_method]]
+		all_value = object@top_value_list
 		ind = order(all_value)[1:top_n]
 		if(length(ind) > nr) ind = sample(ind, nr)
 		data = data[ind, , drop = FALSE]

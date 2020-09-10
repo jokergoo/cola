@@ -17,6 +17,7 @@
 #
 DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 	slots = list(predict = "ANY",
+		         full_column_index = "ANY",
 		         full_anno = "ANY"),
 	contains = "ConsensusPartition"
 )
@@ -31,6 +32,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # -prefix Internally used.
 # -anno Annotation data frame.
 # -dist_method Method for predict the class for other columns.
+# -.env An environment, internally used.
 # -... All pass to `consensus_partition`.
 #
 # == details
@@ -48,19 +50,39 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # 	top_value_method = "SD", partition_method = "kmeans")
 # }
 consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(data)*0.2), 250),
-	verbose = TRUE, prefix = "", anno = NULL, dist_method = c("euclidean", "correlation", "cosine"),
-	...) {
+	verbose = TRUE, prefix = "", anno = NULL, 
+	dist_method = c("euclidean", "correlation", "cosine"),
+	.env = NULL, ...) {
 
-	.env = new.env(parent = emptyenv())
-	.env$data = data
+	if(is.null(.env)) {
+		if(is.data.frame(data)) data = as.matrix(data)
+
+		.env = new.env(parent = emptyenv())
+		.env$data = data
+		.env$column_index = seq_len(ncol(data))
+	} else if(is.null(.env$data)) {
+		if(is.data.frame(data)) data = as.matrix(data)
+
+		.env$data = data
+		.env$column_index = seq_len(ncol(data))
+	} else if(is.null(.env$column_index)) {
+		data = .env$data
+		.env$column_index = seq_len(ncol(data))
+	} else {
+		data = .env$data
+	}
+
+	data = data[, .env$column_index, drop = FALSE]
 
 	qqcat("@{prefix}* @{subset} columns were randomly sampled from @{ncol(data)} columns.\n")
+		
+	column_index = .env$column_index
+	subset_index = sample(column_index, subset)
+	.env$column_index = subset_index
 	
-	column_index = sample(seq_len(ncol(data)), subset)
-	
+	# top_value_list cannot be repetitively used here
 	.env$all_top_value_list = NULL
-   	.env$column_index = column_index 
-	cp = consensus_partition(.env = .env, ...)
+	cp = consensus_partition(.env = .env, prefix = prefix, ...)
 	
 	obj = new("DownSamplingConsensusPartition")
 	for(nm in slotNames(cp)) {
@@ -80,7 +102,7 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 	}
 
 	for(k in cp@k) {
-		qqcat("@{prefix}* predict class with k = @{k}\n")
+		qqcat("@{prefix}* predict class for @{ncol(data)} samples with k = @{k}\n")
 		if(cp@scale_rows) {
 			cl[[as.character(k)]] = predict_classes(cp, k = k, data2, p_cutoff = 1, dist_method = dist_method, 
 				plot = FALSE, verbose = verbose, help = FALSE, prefix = qq("@{prefix}  "))
@@ -92,6 +114,7 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 
 	obj@predict$class = cl
 	obj@full_anno = anno
+	obj@full_column_index = column_index
 
 	return(obj)
 }
@@ -121,7 +144,7 @@ setMethod(f = "show",
 		object@sample_by = "row"
 	}
 	qqcat("A 'DownSamplingConsensusPartition' object with k = @{paste(object@k, collapse = ', ')}.\n")
-	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{length(object@column_index)} columns, randomly sampled from @{ncol(object@.env$data)} columns.\n")
+	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{length(object@column_index)} columns, randomly sampled from @{length(object@full_column_index)} columns.\n")
 	top_n_str = object@top_n
 	qqcat("  Top rows (@{paste(top_n_str, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
 	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")
@@ -169,6 +192,7 @@ setMethod(f = "get_anno",
 # -object A `DownSamplingConsensusPartition-class` object.
 # -k Number of subgroups.
 # -p_cutoff Cutoff of p-values of class label prediction. It is only used when ``k`` is a vector.
+# -reduce Used internally.
 #
 # == return
 # If ``k`` is a scalar, it returns a data frame with two columns:
@@ -185,7 +209,11 @@ setMethod(f = "get_anno",
 # get_classes(golub_cola_ds)
 setMethod(f = "get_classes",
 	signature = "DownSamplingConsensusPartition",
-	definition = function(object, k = object@k, p_cutoff = 0.05) {
+	definition = function(object, k = object@k, p_cutoff = 0.05, reduce = FALSE) {
+
+	if(reduce) {
+		return(selectMethod("get_classes", signature = "ConsensusPartition")(object, k = k))
+	}
 	if(length(k) == 1) {
 		i = which(object@k == k)
 		object@predict$class[[i]]
@@ -201,43 +229,6 @@ setMethod(f = "get_classes",
 		df
 	}
 })
-
-# == title
-# Number of columns in the matrix
-#
-# == param
-# -x A `DownSamplingConsensusPartition-class` object.
-#
-setMethod(f = "ncol",
-	signature = "DownSamplingConsensusPartition",
-	definition = function(x) {
-	ncol(x@.env$data)
-})
-
-
-# == title
-# Column names of the matrix
-#
-# == param
-# -x A `DownSamplingConsensusPartition-class` object.
-#
-setMethod(f = "colnames",
-	signature = "DownSamplingConsensusPartition",
-	definition = function(x) {
-	colnames(x@.env$data)
-})
-
-
-# == title
-# Dimension of the matrix
-#
-# == param
-# -x A `DownSamplingConsensusPartition-class` object.
-#
-dim.DownSamplingConsensusPartition = function(x) {
-	c(nrow(x), ncol(x))
-}
-
 
 # == title
 # Test correspondance between predicted subgroups and known factors
@@ -377,11 +368,11 @@ setMethod(f = "dimension_reduction",
 	}
 
 	method = match.arg(method)
-	data = object@.env$data
+	data = object@.env$data[, object@full_column_index, drop = FALSE]
 
 	if(!is.null(top_n)) {
 		top_n = min(c(top_n, nrow(data)))
-		all_value = object@.env$all_top_value_list[[object@top_value_method]]
+		all_value = object@top_value_list
 		ind = order(all_value)[1:top_n]
 		if(length(ind) > nr) ind = sample(ind, nr)
 		data = data[ind, , drop = FALSE]
@@ -510,7 +501,7 @@ setMethod(f = "get_signatures",
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
 
-	data = object@.env$data
+	data = object@.env$data[, object@full_column_index, drop = FALSE]
 
 	l = class_df$p <= p_cutoff
 	data2 = data[, l, drop = FALSE]
@@ -1014,4 +1005,43 @@ setMethod(f = "get_signatures",
 
 	return(invisible(returned_obj))
 })
+
+
+
+# == title
+# Number of columns in the matrix
+#
+# == param
+# -x A `DownSamplingConsensusPartition-class` object.
+#
+setMethod(f = "ncol",
+	signature = "DownSamplingConsensusPartition",
+	definition = function(x) {
+	length(x@full_column_index)
+})
+
+
+# == title
+# Column names of the matrix
+#
+# == param
+# -x A `DownSamplingConsensusPartition-class` object.
+#
+setMethod(f = "colnames",
+	signature = "DownSamplingConsensusPartition",
+	definition = function(x) {
+	colnames(x@.env$data)[x@full_column_index]
+})
+
+
+# == title
+# Dimension of the matrix
+#
+# == param
+# -x A `DownSamplingConsensusPartition-class` object.
+#
+dim.DownSamplingConsensusPartition = function(x) {
+	c(nrow(x), ncol(x))
+}
+
 

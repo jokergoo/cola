@@ -43,6 +43,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -partition_method a single partition method. Available methods are in `all_partition_methods`.
 # -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
 # -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
+# -subset Number of columns to randomly sample.
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
@@ -65,9 +66,9 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 hierarchical_partition = function(data, 
-	top_value_method = "MAD", 
-	partition_method = "kmeans",
-	PAC_cutoff = 0.2, min_samples = 6, 
+	top_value_method = "ATC", 
+	partition_method = "skmeans",
+	PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
 	max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
 	cl = match.call()
@@ -92,6 +93,7 @@ hierarchical_partition = function(data,
 
 		if(verbose) qqcat("@{prefix}=========================================================\n")
 		if(verbose) qqcat("@{prefix}* submatrix with @{length(column_index)} columns, node_id: @{node_id}.\n")
+		
 		## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
 	   	.env$all_top_value_list = NULL
 	   	.env$column_index = column_index  #note .env$column_index is only for passing to `consensus_partition()` function
@@ -100,8 +102,13 @@ hierarchical_partition = function(data,
 			qqcat("@{prefix}* running consensus partitioning with @{mc.cores} cores.\n")
 		}
 
-		part = consensus_partition(verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
-			top_value_method = top_value_method, partition_method = partition_method, mc.cores = mc.cores, ...)
+		if(length(column_index) <= subset) {
+			part = consensus_partition(verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
+				top_value_method = top_value_method, partition_method = partition_method, mc.cores = mc.cores, ...)
+		} else {
+			part = consensus_partition_by_down_sampling(subset = subset, verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
+				top_value_method = top_value_method, partition_method = partition_method, mc.cores = mc.cores, ...)
+		}
 		attr(part, "node_id") = node_id
 
 		lt = list(obj = part)
@@ -261,6 +268,29 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 			attr(d, "node_id") = attr(d, "label")
 		} else {
 			attr(d, "node_id") = attr(d, "edgetext")
+		}
+		d
+	})
+
+	# make sure all nodes have a node_id attribute
+	# depth first
+	.get_node_id = function(d) {
+		node_id = attr(d, "node_id")
+		if(is.null(node_id)) {
+			child_node_id = .get_node_id(d[[1]])
+			if(is.null(child_node_id)) {
+				child_node_id = .get_node_id(d[[2]])
+			}
+			return(gsub("\\d$", "", child_node_id))
+		}
+		return(node_id)
+	}
+
+	dend = edit_node(dend, function(d, index) {
+		node_id = attr(d, "node_id")
+		if(is.null(node_id)) {
+			node_id = .get_node_id(d)
+			attr(d, "node_id") = node_id
 		}
 		d
 	})
@@ -482,7 +512,7 @@ setMethod(f = "show",
 			}
 		}
 		# substr(lines[1], 1, 1) = "+"
-		lines = c(qq("  0, @{length(object@list[['0']]@column_index)} cols"), lines)
+		lines = c(qq("  0, @{ncol(object@list[['0']])} cols"), lines)
 		cat(lines, sep = "\n")
 	} else {
 		cat("No hierarchy found.\n")
@@ -515,10 +545,7 @@ setMethod(f = "show",
 # -show_column_names whether show column names in the heatmap.
 # -verbose whether to print messages.
 # -plot whether to make the plot.
-# -silhouette_cutoff cutoff for silhouette scores. Samples with values 
-#        less than it are not used for finding signature rows. For selecting a 
-#        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
-# -... other arguments
+# -... other arguments pass to `get_signatures,ConsensusPartition-method`.
 # 
 # == details
 # The function calls `get_signatures,ConsensusPartition-method` to find signatures at
@@ -538,7 +565,6 @@ setMethod(f = "get_signatures",
 	anno_col = get_anno_col(object),
 	show_column_names = FALSE, 
 	verbose = TRUE, plot = TRUE,
-	silhouette_cutoff = 0.5, 
 	...) {
 
 	if(depth <= 1) {
@@ -552,7 +578,7 @@ setMethod(f = "get_signatures",
 	for(p in ap) {
 		best_k = suggest_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
-		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, silhouette_cutoff = silhouette_cutoff, ...)
+		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, ...)
 		
 		sig_lt[[p]] = sig_tb
 		if(verbose) qqcat("  - find @{nrow(sig_tb)} signatures at node @{p}\n")
@@ -654,7 +680,7 @@ setMethod(f = "get_signatures",
 
 	ha1 = HeatmapAnnotation(
 		Class = class,
-		col = list(class = object@subgroup_col))
+		col = list(Class = object@subgroup_col))
 
 	dend = cluster_within_group(use_mat1, class)
 	
@@ -662,7 +688,7 @@ setMethod(f = "get_signatures",
 		name = heatmap_name, show_row_names = FALSE, 
 		show_column_names = show_column_names, col = col_fun,
 		use_raster = TRUE, row_split = row_split,
-		show_row_dend = FALSE, cluster_columns = dend,
+		show_row_dend = FALSE, cluster_columns = dend, column_split = length(unique(class)),
 		column_title = qq("@{length(unique(class))} groups, @{length(all_sig)} signatures"),
 		bottom_annotation = bottom_anno1,
 		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
@@ -735,6 +761,9 @@ setMethod(f = "compare_signatures",
 		plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different nodes")
 	} else {
 		m = make_comb_mat(sig_list)
+		if(length(comb_size(m)) > 40) {
+			m = m[order(comb_size(m), decreasing = TRUE)[1:40]]
+		}
 		draw(UpSet(m, column_title = "Signatures from different nodes"))
 	}
 
@@ -913,11 +942,9 @@ setMethod(f = "test_to_known_factors",
 # -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
 #         `umap::umap`.
-# -silhouette_cutoff Cutoff of silhouette score. Data points with values less
-#        than it will be mapped with cross symbols.
 # -scale_rows Whether to perform scaling on matrix rows.
 # -verbose Whether print messages.
-# -... Other arguments.
+# -... Other arguments passed to `dimension_reduction,ConsensusPartition-method`.
 #
 # == details
 # The class IDs are extract at ``depth``.
@@ -933,7 +960,7 @@ setMethod(f = "dimension_reduction",
 	definition = function(object,
 	depth = max_depth(object), parent_node,
 	top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
-	silhouette_cutoff = 0.5, scale_rows = TRUE, verbose = TRUE, ...) {
+	scale_rows = TRUE, verbose = TRUE, ...) {
 
 	cl = as.list(match.call())
 	# default value
@@ -995,7 +1022,7 @@ setMethod(f = "dimension_reduction",
 		}
 		obj = object[parent_node]
 		dimension_reduction(obj, k = suggest_best_k(obj), top_n = top_n, method = method,
-			silhouette_cutoff = silhouette_cutoff, scale_rows = scale_rows, ...)
+			scale_rows = scale_rows, ...)
 		legend(x = par("usr")[2], y = par("usr")[4], legend = qq("node @{parent_node}"))
 	}
 

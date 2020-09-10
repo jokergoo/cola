@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -215,20 +215,20 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 <span class='no'>mat2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='no'>mat</span>)))
 
 <span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
+#&gt; * cache hash: 63cd178a621632b97602d93df602c979 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
 #&gt; * split rows into 2 groups by k-means clustering.
-#&gt; * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.</div><div class='input'><span class='no'>sig_mat</span> <span class='kw'>=</span> <span class='no'>tb</span>[, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span>(<span class='st'>"scaled_mean"</span>, <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span>(<span class='no'>tb</span>))]
+#&gt; * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.</div><div class='input'><span class='no'>sig_mat</span> <span class='kw'>=</span> <span class='no'>tb</span>[, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span>(<span class='st'>"scaled_mean"</span>, <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span>(<span class='no'>tb</span>))]
 <span class='no'>sig_mat</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>sig_mat</span>)
 <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span>(<span class='no'>sig_mat</span>) <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"class"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span>(<span class='fu'><a href='ncol-dispatch.html'>ncol</a></span>(<span class='no'>sig_mat</span>)))
 <span class='co'># this is how the signature centroid matrix looks like:</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>sig_mat</span>)</div><div class='output co'>#&gt;          class1     class2     class3
-#&gt; [1,]  0.4975305 -0.5891191  0.4262181
-#&gt; [2,]  0.1337879 -0.4261118  0.6332715
-#&gt; [3,]  0.5535304 -0.3088889 -0.1972277
-#&gt; [4,]  0.4513507 -0.1728869 -0.3138483
-#&gt; [5,] -0.2650615 -0.1805491  0.7308398
-#&gt; [6,] -0.1462731 -0.2171580  0.6310112</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>sig_mat</span>)</div><div class='output co'>#&gt;          class1      class2     class3
+#&gt; [1,] -0.5519215  0.52395127  0.3740407
+#&gt; [2,] -0.4025209  0.06789322  0.7546084
+#&gt; [3,] -0.3077090  0.58853214 -0.2459700
+#&gt; [4,] -0.1548451  0.47963596 -0.4051056
+#&gt; [5,] -0.2048139 -0.15871813  0.6803041
+#&gt; [6,] -0.3427458  0.40763038  0.1061578</div><div class='input'>
 <span class='no'>mat2</span> <span class='kw'>=</span> <span class='no'>mat2</span>[<span class='no'>tb</span>$<span class='no'>which_row</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]
 
 <span class='co'># now we predict the class for `mat2` based on `sig_mat`</span>
@@ -239,76 +239,76 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 #&gt; <span class='message'>Set `ht_opt$message = FALSE` to turn off this message.</span></div><div class='img'><img src='predict_classes-matrix-method-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;            class     p
 #&gt; sample_39 class3 0.000
 #&gt; sample_40 class3 0.000
-#&gt; sample_42 class2 0.000
-#&gt; sample_47 class2 0.000
-#&gt; sample_48 class2 0.000
+#&gt; sample_42 class1 0.000
+#&gt; sample_47 class1 0.000
+#&gt; sample_48 class1 0.000
 #&gt; sample_49 class3 0.000
-#&gt; sample_41 class2 0.000
-#&gt; sample_43 class2 0.000
-#&gt; sample_44 class2 0.000
-#&gt; sample_45 class2 0.000
-#&gt; sample_46 class2 0.000
-#&gt; sample_70 class2 0.000
-#&gt; sample_71 class2 0.000
-#&gt; sample_72 class2 0.000
-#&gt; sample_68 class2 0.000
-#&gt; sample_69 class2 0.000
-#&gt; sample_67 class2 0.000
+#&gt; sample_41 class1 0.000
+#&gt; sample_43 class1 0.000
+#&gt; sample_44 class1 0.000
+#&gt; sample_45 class1 0.000
+#&gt; sample_46 class1 0.000
+#&gt; sample_70 class1 0.000
+#&gt; sample_71 class1 0.000
+#&gt; sample_72 class1 0.000
+#&gt; sample_68 class1 0.000
+#&gt; sample_69 class1 0.000
+#&gt; sample_67 class1 0.000
 #&gt; sample_55 class3 0.000
 #&gt; sample_56 class3 0.000
-#&gt; sample_59 class2 0.000
-#&gt; sample_52 class1 0.000
-#&gt; sample_53 class1 0.000
-#&gt; sample_51 class1 0.000
-#&gt; sample_50 class1 0.000
-#&gt; sample_54 class2 0.000
-#&gt; sample_57 class1 0.000
-#&gt; sample_58 class1 0.000
-#&gt; sample_60 class1 0.000
-#&gt; sample_61 class1 0.000
-#&gt; sample_65 class1 0.000
-#&gt; sample_66 class2 0.000
-#&gt; sample_63 class1 0.000
-#&gt; sample_64 class1 0.000
-#&gt; sample_62 class1 0.000
+#&gt; sample_59 class1 0.000
+#&gt; sample_52 class2 0.000
+#&gt; sample_53 class2 0.000
+#&gt; sample_51 class2 0.000
+#&gt; sample_50 class2 0.000
+#&gt; sample_54 class1 0.000
+#&gt; sample_57 class2 0.000
+#&gt; sample_58 class2 0.000
+#&gt; sample_60 class2 0.322
+#&gt; sample_61 class2 0.000
+#&gt; sample_65 class2 0.000
+#&gt; sample_66 class1 0.000
+#&gt; sample_63 class2 0.000
+#&gt; sample_64 class2 0.000
+#&gt; sample_62 class2 0.000
 #&gt; sample_1  class3 0.000
-#&gt; sample_2  class2 0.000
+#&gt; sample_2  class1 0.000
 #&gt; sample_3  class3 0.000
 #&gt; sample_4  class3 0.000
-#&gt; sample_5  class2 0.000
+#&gt; sample_5  class1 0.000
 #&gt; sample_6  class3 0.000
 #&gt; sample_7  class3 0.000
 #&gt; sample_8  class3 0.000
-#&gt; sample_9  class2 0.000
+#&gt; sample_9  class1 0.000
 #&gt; sample_10 class3 0.000
-#&gt; sample_11 class2 0.000
-#&gt; sample_12 class1 0.000
-#&gt; sample_13 class2 0.000
-#&gt; sample_14 class2 0.000
-#&gt; sample_15 class2 0.000
-#&gt; sample_16 class2 0.000
-#&gt; sample_17 class2 0.000
+#&gt; sample_11 class1 0.000
+#&gt; sample_12 class2 0.000
+#&gt; sample_13 class1 0.000
+#&gt; sample_14 class1 0.000
+#&gt; sample_15 class1 0.000
+#&gt; sample_16 class1 0.000
+#&gt; sample_17 class1 0.000
 #&gt; sample_18 class3 0.000
-#&gt; sample_19 class2 0.000
-#&gt; sample_20 class2 0.000
-#&gt; sample_21 class2 0.000
-#&gt; sample_22 class3 0.079
+#&gt; sample_19 class1 0.000
+#&gt; sample_20 class1 0.000
+#&gt; sample_21 class1 0.000
+#&gt; sample_22 class2 0.040
 #&gt; sample_23 class3 0.000
-#&gt; sample_24 class2 0.000
-#&gt; sample_25 class3 0.000
-#&gt; sample_26 class2 0.760
+#&gt; sample_24 class1 0.000
+#&gt; sample_25 class2 0.989
+#&gt; sample_26 class1 0.000
 #&gt; sample_27 class3 0.000
-#&gt; sample_34 class1 0.000
-#&gt; sample_35 class1 0.000
-#&gt; sample_36 class1 0.000
-#&gt; sample_37 class1 0.000
-#&gt; sample_38 class1 0.000
-#&gt; sample_28 class1 0.000
-#&gt; sample_29 class2 0.000
-#&gt; sample_30 class1 0.000
-#&gt; sample_31 class1 0.000
-#&gt; sample_32 class1 0.000
-#&gt; sample_33 class1 0.000</div><div class='input'># }
+#&gt; sample_34 class2 0.000
+#&gt; sample_35 class2 0.000
+#&gt; sample_36 class2 0.000
+#&gt; sample_37 class2 0.000
+#&gt; sample_38 class2 0.000
+#&gt; sample_28 class2 0.000
+#&gt; sample_29 class1 0.000
+#&gt; sample_30 class2 0.000
+#&gt; sample_31 class2 0.000
+#&gt; sample_32 class2 0.000
+#&gt; sample_33 class2 0.000</div><div class='input'># }
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

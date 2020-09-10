@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -166,12 +166,18 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola_rh</span>)
-<span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span>(<span class='no'>golub_cola_rh</span>)</div><div class='output co'>#&gt;   node best_k     1-PAC mean_silhouette concordance n_sample   
-#&gt; 1    0      3 0.7251975       0.8566418   0.8986111       72   
-#&gt; 2   01      3 0.5108696       0.7842618   0.8496923       26   
-#&gt; 3   00      2 1.0000000       0.9981248   0.9990435       46 **
-#&gt; 4  001      2 0.6205534       0.7806911   0.8977600       25   
-#&gt; 5  000      3 0.5210526       0.6742516   0.8045714       21   </div></pre>
+<span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span>(<span class='no'>golub_cola_rh</span>)</div><div class='output co'>#&gt;    node best_k     1-PAC mean_silhouette concordance n_sample   
+#&gt; 1     0      3 0.9841967       0.9434198   0.9769444       72 **
+#&gt; 2    01      3 1.0000000       0.9909769   0.9954167       32 **
+#&gt; 3   011      2 1.0000000       1.0000000   1.0000000       11 **
+#&gt; 4   010      3 1.0000000       0.9590033   0.9838095       21 **
+#&gt; 5  0101      2 0.6222222       0.7091442   0.6953333       10   
+#&gt; 6  0100      3 1.0000000       0.9950715   0.9963636       11 **
+#&gt; 7    00      3 0.9046942       0.9132447   0.9595000       40  *
+#&gt; 8   001      2 0.6764706       0.9018468   0.9592157       17   
+#&gt; 9   000      3 1.0000000       0.9703099   0.9855072       23 **
+#&gt; 10 0001      2 0.8181818       0.9307668   0.9721212       11   
+#&gt; 11 0000      2 1.0000000       0.9943694   0.9966667       12 **</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

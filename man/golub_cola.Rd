@@ -34,12 +34,9 @@ Following code was used to generate \code{golub_cola}:
     colnames(m) = cn
     rownames(m) = rn
 
-    register_NMF()
-
     set.seed(123)
     golub_cola = run_all_consensus_partition_methods(
-        m,
-        mc.cores = 4, 
+        m, mc.cores = 2, 
         anno = anno[, c("ALL.AML"), drop = FALSE],
         anno_col = c("ALL" = "red", "AML" = "blue")
     )  }

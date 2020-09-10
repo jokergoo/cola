@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -287,25 +287,25 @@ and the predicted classes. The function should returns a vector of FDR from the 
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
 <span class='no'>res</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span>]
 <span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
+#&gt; * cache hash: 63cd178a621632b97602d93df602c979 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
 #&gt; * split rows into 2 groups by k-means clustering.
-#&gt; * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
+#&gt; * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
 #&gt;   - randomly sample 2000 signatures.
 #&gt; * making heatmaps for signatures.</div><div class='img'><img src='get_signatures-ConsensusPartition-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>tb</span>)</div><div class='output co'>#&gt;   which_row          fdr   mean_1   mean_2   mean_3 group_diff scaled_mean_1
-#&gt; 1         2 0.0001192136 2.063067 1.710522 2.039931  0.3525453     0.4975305
-#&gt; 2         3 0.0042584724 2.275020 2.156904 2.380390  0.2234858     0.1337879
-#&gt; 3        11 0.0102310719 2.523382 2.350498 2.372882  0.1728842     0.5535304
-#&gt; 4        12 0.0498375045 2.543432 2.383571 2.347472  0.1959600     0.4513507
-#&gt; 5        13 0.0079923353 2.706587 2.767599 3.425553  0.7189654    -0.2650615
-#&gt; 6        14 0.0299572600 3.296595 3.268508 3.604578  0.3360702    -0.1462731
+#&gt; 1         2 0.0002185571 1.724614 2.073819 2.025161  0.3492051    -0.5519215
+#&gt; 2         3 0.0021344643 2.165184 2.263688 2.407486  0.2423019    -0.4025209
+#&gt; 3        11 0.0055215848 2.347884 2.528039 2.360294  0.1801552    -0.3077090
+#&gt; 4        12 0.0269779019 2.378765 2.539212 2.315479  0.2237332    -0.1548451
+#&gt; 5        13 0.0231658067 2.760360 2.793240 3.391696  0.6313355    -0.2048139
+#&gt; 6        17 0.0385593480 2.173987 2.401406 2.310037  0.2274190    -0.3427458
 #&gt;   scaled_mean_2 scaled_mean_3 km
-#&gt; 1    -0.5891191     0.4262181  1
-#&gt; 2    -0.4261118     0.6332715  1
-#&gt; 3    -0.3088889    -0.1972277  1
-#&gt; 4    -0.1728869    -0.3138483  1
-#&gt; 5    -0.1805491     0.7308398  1
-#&gt; 6    -0.2171580     0.6310112  1</div></pre>
+#&gt; 1    0.52395127     0.3740407  1
+#&gt; 2    0.06789322     0.7546084  1
+#&gt; 3    0.58853214    -0.2459700  1
+#&gt; 4    0.47963596    -0.4051056  1
+#&gt; 5   -0.15871813     0.6803041  1
+#&gt; 6    0.40763038     0.1061578  1</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

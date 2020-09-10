@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -169,7 +169,7 @@ among individual partition runs.</p>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
 <span class='no'>membership_each</span> <span class='kw'>=</span> <span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>golub_cola</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>], <span class='kw'>each</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)
 <span class='no'>consensus_classes</span> <span class='kw'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>golub_cola</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)$<span class='no'>class</span>
-<span class='fu'>concordance</span>(<span class='no'>membership_each</span>, <span class='no'>consensus_classes</span>)</div><div class='output co'>#&gt; [1] 0.8699444</div></pre>
+<span class='fu'>concordance</span>(<span class='no'>membership_each</span>, <span class='no'>consensus_classes</span>)</div><div class='output co'>#&gt; [1] 0.8507407</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

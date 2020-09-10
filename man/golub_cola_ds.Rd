@@ -18,9 +18,11 @@ Following code was used to generate \code{golub_cola_ds}:
     data(golub_cola)
     m = get_matrix(golub_cola)
     set.seed(123)
-    golub_cola_ds = consensus_partition_by_down_sampling(m, subset = 50,
-        anno = get_anno(golub_cola), anno_col = get_anno_col(golub_cola),
-        top_value_method = "SD", partition_method = "kmeans")  }
+    golub_cola_ds = consensus_partition_by_down_sampling(
+        m, subset = 50, mc.cores = 2,
+        anno = get_anno(golub_cola), 
+        anno_col = get_anno_col(golub_cola),
+    )  }
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

@@ -1,54 +1,46 @@
 
+next_k = local({
+	k = 0
+	function(reset = FALSE) {
+		if(reset) {
+			k <<- 0
+		} else {
+			k <<- k + 1
+		}
+		k
+	}
+})
+
 dend_node_apply = function(dend, fun) {
 
-	next_k = local({
-		k = 0
-		function(reset = FALSE) {
-			if(reset) {
-				k <<- 0
-			} else {
-				k <<- k + 1
-			}
-			k
-		}
-	})
+	next_k(reset = TRUE)
 
 	assign_to = function(env, k, v) {
 		n = length(env$var)
 		if(n == 0) {
-			if(is.atomic(v)) {
-				env$var[k] = v
-			} else {
-				env$var = list()
-				env$var[[k]] = v
-			}
-		} else {
-			if(is.list(env$var)) {
-				env$var[[k]] = v
-			} else {
-				if(is.atomic(v)) {
-					env$var[k] = v
-				} else {
-					env$var = lapply(1:n, function(i) env$var[i])
-					env$var[[k]] = v
-				}
-			}
+			env$var = list()
 		}
-		
+		env$var[[k]] = v
 	}
 
-	env = new.env(parent = emptyenv())
+
+	if(length(as.list(formals(fun))) == 1) {
+		fun2 = fun
+		fun = function(d, index) fun2(d)
+	}
+
+	env = new.env()
 	.do = function(dend, fun, index) {
 
 		if(is.null(index)) {
 			if(is.leaf(dend)) {
-				assign_to(env, next_k(), fun(dend))
+				assign_to(env, next_k(), fun(dend, index))
 				return(NULL)
 			} else {
-				assign_to(env, next_k(), fun(dend))
+				assign_to(env, next_k(), fun(dend, index))
 			}
 		} else {
-			assign_to(env, next_k(), fun(dend[[index]]))
+			assign_to(env, next_k(), fun(dend[[index]], index))
 
 			if(is.leaf(dend[[index]])) {
 				return(NULL)
@@ -63,13 +55,27 @@ dend_node_apply = function(dend, fun) {
 
 	.do(dend, fun, NULL)
 
-	return(env$var)
+	var = env$var
+	if(all(vapply(var, is.atomic, TRUE))) {
+		if(all(vapply(var, length, 0) == 1)) {
+			var = unlist(var)
+		}
+	}
+
+	return(var)
 }
 
-edit_node = function(dend, fun = function(dend, index) dend) {
+edit_node = function(dend, fun = function(d, index) d) {
 
-	env = new.env(parent = emptyenv())
+	# breadth first
+
+	env = new.env()
 	env$dend = dend
+
+	if(length(as.list(formals(fun))) == 1) {
+		fun2 = fun
+		fun = function(d, index) fun2(d)
+	}
 
 	traversal_dend = function(env, index = NULL) {
 		# index is null means it is the top node
