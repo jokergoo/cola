@@ -215,7 +215,7 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 <span class='no'>mat2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='no'>mat</span>)))
 
 <span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: 63cd178a621632b97602d93df602c979 (seed 888).
+#&gt; * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
 #&gt; * split rows into 2 groups by k-means clustering.
 #&gt; * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.</div><div class='input'><span class='no'>sig_mat</span> <span class='kw'>=</span> <span class='no'>tb</span>[, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span>(<span class='st'>"scaled_mean"</span>, <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span>(<span class='no'>tb</span>))]
@@ -232,7 +232,7 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 <span class='no'>mat2</span> <span class='kw'>=</span> <span class='no'>mat2</span>[<span class='no'>tb</span>$<span class='no'>which_row</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]
 
 <span class='co'># now we predict the class for `mat2` based on `sig_mat`</span>
-<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>sig_mat</span>, <span class='no'>mat2</span>)</div><div class='output co'>#&gt; Predict classes based on 3-group classification (euclidean method).</div><div class='output co'>#&gt; <span class='message'>`use_raster` is automatically set to TRUE for a matrix with more than</span>
+<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>sig_mat</span>, <span class='no'>mat2</span>)</div><div class='output co'>#&gt; Predict classes based on 3-group classification (euclidean method) on a 72-column matrix.</div><div class='output co'>#&gt; <span class='message'>`use_raster` is automatically set to TRUE for a matrix with more than</span>
 #&gt; <span class='message'>2000 rows. You can control `use_raster` argument by explicitly setting</span>
 #&gt; <span class='message'>TRUE/FALSE to it.</span>
 #&gt; <span class='message'></span>
@@ -264,7 +264,7 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 #&gt; sample_54 class1 0.000
 #&gt; sample_57 class2 0.000
 #&gt; sample_58 class2 0.000
-#&gt; sample_60 class2 0.322
+#&gt; sample_60 class2 0.230
 #&gt; sample_61 class2 0.000
 #&gt; sample_65 class2 0.000
 #&gt; sample_66 class1 0.000
@@ -292,10 +292,10 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 #&gt; sample_19 class1 0.000
 #&gt; sample_20 class1 0.000
 #&gt; sample_21 class1 0.000
-#&gt; sample_22 class2 0.040
+#&gt; sample_22 class2 0.016
 #&gt; sample_23 class3 0.000
 #&gt; sample_24 class1 0.000
-#&gt; sample_25 class2 0.989
+#&gt; sample_25 class2 0.998
 #&gt; sample_26 class1 0.000
 #&gt; sample_27 class3 0.000
 #&gt; sample_34 class2 0.000

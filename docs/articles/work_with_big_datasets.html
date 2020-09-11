@@ -94,7 +94,7 @@
       <h1 data-toc-skip>Work with Big Datasets</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-09-10</h4>
+            <h4 class="date">2020-09-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/work_with_big_datasets.Rmd"><code>vignettes/work_with_big_datasets.Rmd</code></a></small>
       <div class="hidden name"><code>work_with_big_datasets.Rmd</code></div>
@@ -103,7 +103,7 @@
 
     
     
-<p>cola can be idealy applied to datasets with intermediate number of samples (around 500), however, the running time and the memory usage might not be acceptable if the number of samples gets very huge, e.g., more than thousands. Nevertheless, we can propose the following two strategies to partially solve this problem.</p>
+<p><em>cola</em> can be idealy applied to datasets with intermediate number of samples (around 500), however, the running time and the memory usage might not be acceptable if the number of samples gets very huge, e.g., more than thousands. Nevertheless, we can propose the following two strategies to partially solve this problem.</p>
 <ol style="list-style-type: decimal">
 <li>A randomly sampled subset of samples which take relatively short running time (e.g., 100-200 samples) can be firstly applied with cola, from which a specific combination of top-value method and partitioning method that gives the best results can be pre-selected. Later user can only apply these two specific methods to the complete dataset. This would be much faster than blindly running cola with many methods in sequence.</li>
 <li>The random subset of samples can be treated as a training set to generate a classification of cells. Then, the class labels of the remaining samples can be predicted, e.g. by testing the distance to the centroid of each cell group, without rerunning consensus partitioning on them. cola implements a <code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> function for this purpose (see the vignette <a href="predict.html">“Predict classes for new samples”</a> for details).</li>
@@ -129,7 +129,7 @@
 <div id="the-downsamplingconsensuspartition-class" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-downsamplingconsensuspartition-class" class="anchor"></a>The <code>DownSamplingConsensusPartition</code> class</h2>
-<p><strong>cola</strong> implements a new <code>DownSamplingConsensusPartition</code> class for <strong>Strategy 2</strong> mentioned above. It runs consensus partitioning only on a subset of samples and the classes of other samples are predicted by <code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> internally. The <code>DownSamplingConsensusPartition</code> class inherits the <code>ConsensusPartition</code> class, so the functions that can be applied to the <code>ConsensusPartition</code> objects can also be applied to the <code>DownSamplingConsensusPartition</code> objects, just with some tiny difference.</p>
+<p><em>cola</em> implements a new <code>DownSamplingConsensusPartition</code> class for <strong>Strategy 2</strong> mentioned above. It runs consensus partitioning only on a subset of samples and the classes of other samples are predicted by <code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> internally. The <code>DownSamplingConsensusPartition</code> class inherits the <code>ConsensusPartition</code> class, so the functions that can be applied to the <code>ConsensusPartition</code> objects can also be applied to the <code>DownSamplingConsensusPartition</code> objects, just with some tiny difference.</p>
 <p>In the following example, we demonstrate the usage of <code>DownSamplingConsensusPartition</code> class with the Golub dataset. Here the Golub dataset was used to generate another data object <code>golub_cola</code> and we can extract the matrix and the annotations by <code><a href="../reference/get_matrix-dispatch.html">get_matrix()</a></code> and <code><a href="../reference/get_anno-dispatch.html">get_anno()</a></code> functions.</p>
 <p>To perform down sampling consensus partitioning, use the helper function <code><a href="../reference/consensus_partition_by_down_sampling.html">consensus_partition_by_down_sampling()</a></code>. This function basically run <code><a href="../reference/consensus_partition.html">consensus_partition()</a></code> on a subset of samples and later predict the classes for all samples by <code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> function. Here we set <code>subset</code> argument to 50, which means to randomly sample 50 samples from the whole dataset.</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">golub_cola</span>)

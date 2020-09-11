@@ -23,7 +23,7 @@ library(cola)
 ```
 
 
-cola can be idealy applied to datasets with intermediate number of samples
+*cola* can be idealy applied to datasets with intermediate number of samples
 (around 500), however, the running time and the memory usage might not be acceptable
 if the number of samples gets very huge, e.g., more than thousands. Nevertheless,
 we can propose the following two strategies to partially solve this problem.
@@ -96,7 +96,7 @@ cl = predict_classes(res, t(scale(t(mat))))
 
 ## The `DownSamplingConsensusPartition` class
 
-**cola** implements a new `DownSamplingConsensusPartition` class for
+*cola* implements a new `DownSamplingConsensusPartition` class for
 **Strategy 2** mentioned above. It runs consensus partitioning only on a
 subset of samples and the classes of other samples are predicted by
 `predict_classes()` internally. The `DownSamplingConsensusPartition` class

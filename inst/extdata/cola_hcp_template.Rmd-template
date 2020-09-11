@@ -249,6 +249,16 @@ Compare signatures from different nodes:
 compare_signatures(res_hcp)
 ```
 
+If there are too many signatures, `top_signatures = ...` can be set to only show the 
+signatures with the highest FDRs. Note it only works on every node and the final signatures
+are the union of all signatures of all nodes.
+
+```{r, eval = FALSE}
+# code only for demonstration
+# e.g. to show the top 500 most significant rows on each node.
+tb = get_signature(res_hcp, top_signatures = 500)
+```
+
 <% has_known_anno = FALSE
 if(!is.null(res_hcp@list[['0']]@anno)) { 
 has_known_anno = TRUE -%>

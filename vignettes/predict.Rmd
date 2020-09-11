@@ -26,10 +26,10 @@ library(cola)
 classification. It is mainly used in the following two scenarios: 
 
 1. Predict sample classes in a new study.
-2. For a dataset with huge number of samples, users can apply cola on a randomly 
+2. For a dataset with huge number of samples, users can apply *cola* on a randomly 
    sampled subset of samples and predict classes for the remaining samples.
 
-To use a cola classification, users need to select the result from a specific
+To use a *cola* classification, users need to select the result from a specific
 top-value method and partitioning method, i.e., the input should be a
 `ConsensusPartition` object. In the following example, we use the analysis
 from [Golub dataset](https://jokergoo.github.io/cola_examples/Golub_leukemia/)
@@ -45,7 +45,7 @@ res
 object, the number of subgroups and the new matrix. The first two are for
 extracting the classification as well as the signatures that best separate
 subgroups. The new matrix should have the same number of rows as the matrix
-used for cola analysis, also the row orders should be the same. **Be careful
+used for *cola* analysis, also the row orders should be the same. **Be careful
 that the scaling of the new matrix should also be the same as the one applied
 in cola analysis.**
 
@@ -58,7 +58,7 @@ are as follows:
    sampled.
 2. The signature centroid matrix is a k-column matrix where each column is the
    centroid of samples in the corresponding class, i.e., the mean across
-   samples. If rows were scaled in cola analysis, the signature centroid
+   samples. If rows were scaled in *cola* analysis, the signature centroid
    matrix is the mean of scaled values and vise versa. Please note the samples
    with silhouette score less than `silhouette_cutoff` (0.5 as the default)
    are removed for calculating the centroids.
@@ -99,14 +99,14 @@ centroid $k$.
 If a sample is tested with a p-value higher than 0.05, the
 corresponding class label is set to `NA`.
 
-To demonstrate the use of `predict_classes()`, we use the same matrix as for cola
+To demonstrate the use of `predict_classes()`, we use the same matrix as for *cola*
 analysis.
 
 ```{r}
 mat = get_matrix(res)
 ```
 
-Note the matrix was row-scaled in cola analysis, thus, `mat` should also be scaled
+Note the matrix was row-scaled in *cola* analysis, thus, `mat` should also be scaled
 with the same method (z-score scaling).
 
 ```{r}

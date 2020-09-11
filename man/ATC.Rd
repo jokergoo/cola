@@ -8,7 +8,7 @@ Ability to correlate to other rows
 }
 \usage{
 ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
-    mc.cores = 1, n_sampling = 1000, q_sd = 0, group = NULL, ...)
+    mc.cores = 1, n_sampling = c(1000, 500), q_sd = 0, group = NULL, ...)
 }
 \arguments{
 

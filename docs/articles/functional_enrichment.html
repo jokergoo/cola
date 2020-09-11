@@ -94,7 +94,7 @@
       <h1 data-toc-skip>Automatic Functional Enrichment on Signature Genes</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-09-10</h4>
+            <h4 class="date">2020-09-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/functional_enrichment.Rmd"><code>vignettes/functional_enrichment.Rmd</code></a></small>
       <div class="hidden name"><code>functional_enrichment.Rmd</code></div>
@@ -135,7 +135,7 @@
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
 <span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
 <pre><code>## * 167/173 samples (in 4 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: eef958f7cb17f1f44dd5ec01d14dd902 (seed 888).
+## * cache hash: e7202d95261591c1a2b460b79f6eddf3 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ## * split rows into 2 groups by k-means clustering.
 ## * 10023 signatures (89.0%) under fdr &lt; 0.05, group_diff &gt; 0.
@@ -163,7 +163,7 @@
 <code>Reactome</code>, <code>organism</code> argument should be set to the corresponding species, such as <code>"human"</code>.</li>
 </ul>
 <p><code>ontology</code> can be set as a vector of multiple ontologies.</p>
-<p>The value of <code>lt</code> is a list of data frames for different ontologies combined with different k-means groups. Since k-means clustering has already been applied in previous <code><a href="../reference/get_signatures-dispatch.html">get_signatures()</a></code>, the k-means clustering result is stored in <code>res</code> object and <code><a href="../reference/functional_enrichment-dispatch.html">functional_enrichment()</a></code> directly uses the classification from it.</p>
+<p>The value of <code>lt</code> is a list of data frames for different ontologies combined with different k-means groups. Since k-means clustering has already been applied in previous <code><a href="../reference/get_signatures-dispatch.html">get_signatures()</a></code>, the k-means clustering result is stored in <code>res</code> object and <code><a href="../reference/functional_enrichment-dispatch.html">functional_enrichment()</a></code> directly uses the grouping from it.</p>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">lt</span>)</pre></body></html></div>
 <pre><code>## [1] "BP_km1" "BP_km2" "BP_km3" "BP_km4"</code></pre>
 <div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">lt</span><span class="kw">[[</span><span class="fl">1</span>]])</pre></body></html></div>
@@ -196,23 +196,20 @@
 ## GO:0030855   123
 ## GO:0055080   102</code></pre>
 <p>If the gene ID type is not any of Ensembl ID, RefSeq ID or gene symbol, user needs to provide a named vector which provides mapping between user’s ID types to Entrez IDs.</p>
-<p>In following example we demonstrate how to properly set the ID mapping by <a href="https://jokergoo.github.io/cola_examples/Golub_leukemia/">the Golub leukemia dataset</a>. The result file is already generated.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span>(<span class="st">"https://jokergoo.github.io/cola_examples/Golub_leukemia/Golub_leukemia_subgroup.rds"</span>,
-    <span class="kw">destfile</span> <span class="kw">=</span> <span class="st">"Golub_leukemia_subgroup.rds"</span>, <span class="kw">quiet</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
-<span class="no">rl</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"Golub_leukemia_subgroup.rds"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/files.html">file.remove</a></span>(<span class="st">"Golub_leukemia_subgroup.rds"</span>)</pre></body></html></div>
+<p>In following example we demonstrate how to properly set the ID mapping by <a href="https://jokergoo.github.io/cola_examples/Golub_leukemia/">the Golub leukemia dataset</a>. The result file is already generated and integrate in <em>cola</em> package.</p>
+<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">golub_cola</span>)</pre></body></html></div>
 <p>To simplify, we only take result from one method:</p>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">res</span> <span class="kw">=</span> <span class="no">rl</span>[<span class="st">"ATC:skmeans"</span>]
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">res</span> <span class="kw">=</span> <span class="no">golub_cola</span>[<span class="st">"ATC:skmeans"</span>]
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="fu"><a href="../reference/rownames-dispatch.html">rownames</a></span>(<span class="no">res</span>))</pre></body></html></div>
 <pre><code>## [1] "AFFX-BioC-5_at"  "AFFX-CreX-3_at"  "AFFX-BioDn-3_st" "hum_alu_at"      "AFFX-DapX-M_at" 
 ## [6] "AFFX-LysX-3_at"</code></pre>
 <div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">123</span>)
 <span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <pre><code>## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: f28d6331c7f86199f6c7209c9678af05 (seed 888).
+## * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ## * split rows into 2 groups by k-means clustering.
-## * 2074 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
+## * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
 ##   - randomly sample 2000 signatures.
 ## * making heatmaps for signatures.</code></pre>
 <p><img src="functional_enrichment_files/figure-html/unnamed-chunk-10-1.png" width="500" style="display: block; margin: auto;"></p>

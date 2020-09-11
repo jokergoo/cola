@@ -9,3 +9,7 @@ pdist <- function(m1, m2, dm) {
     .Call(`_cola_pdist`, m1, m2, dm)
 }
 
+cal_diff_ratio_r <- function(mat, sig_mat, n_perm, dm) {
+    .Call(`_cola_cal_diff_ratio_r`, mat, sig_mat, n_perm, dm)
+}
+

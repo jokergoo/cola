@@ -94,7 +94,7 @@
       <h1 data-toc-skip>Predict Classes for New Samples</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-09-10</h4>
+            <h4 class="date">2020-09-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/predict.Rmd"><code>vignettes/predict.Rmd</code></a></small>
       <div class="hidden name"><code>predict.Rmd</code></div>
@@ -106,9 +106,9 @@
 <p><code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> function predicts sample classes based on cola classification. It is mainly used in the following two scenarios:</p>
 <ol style="list-style-type: decimal">
 <li>Predict sample classes in a new study.</li>
-<li>For a dataset with huge number of samples, users can apply cola on a randomly sampled subset of samples and predict classes for the remaining samples.</li>
+<li>For a dataset with huge number of samples, users can apply <em>cola</em> on a randomly sampled subset of samples and predict classes for the remaining samples.</li>
 </ol>
-<p>To use a cola classification, users need to select the result from a specific top-value method and partitioning method, i.e., the input should be a <code>ConsensusPartition</code> object. In the following example, we use the analysis from <a href="https://jokergoo.github.io/cola_examples/Golub_leukemia/">Golub dataset</a> and we take the result from the method <code>ATC:skmeans</code>.</p>
+<p>To use a <em>cola</em> classification, users need to select the result from a specific top-value method and partitioning method, i.e., the input should be a <code>ConsensusPartition</code> object. In the following example, we use the analysis from <a href="https://jokergoo.github.io/cola_examples/Golub_leukemia/">Golub dataset</a> and we take the result from the method <code>ATC:skmeans</code>.</p>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">golub_cola</span>)
 <span class="no">res</span> <span class="kw">=</span> <span class="no">golub_cola</span>[<span class="st">"ATC:skmeans"</span>]
 <span class="no">res</span></pre></body></html></div>
@@ -130,11 +130,11 @@
 ## [22] "ncol"                    "nrow"                    "plot_ecdf"              
 ## [25] "predict_classes"         "rownames"                "select_partition_number"
 ## [28] "show"                    "suggest_best_k"          "test_to_known_factors"</code></pre>
-<p><code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> needs at least three arguments: a <code>ConsensusPartition</code> object, the number of subgroups and the new matrix. The first two are for extracting the classification as well as the signatures that best separate subgroups. The new matrix should have the same number of rows as the matrix used for cola analysis, also the row orders should be the same. <strong>Be careful that the scaling of the new matrix should also be the same as the one applied in cola analysis.</strong></p>
+<p><code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> needs at least three arguments: a <code>ConsensusPartition</code> object, the number of subgroups and the new matrix. The first two are for extracting the classification as well as the signatures that best separate subgroups. The new matrix should have the same number of rows as the matrix used for <em>cola</em> analysis, also the row orders should be the same. <strong>Be careful that the scaling of the new matrix should also be the same as the one applied in cola analysis.</strong></p>
 <p>The prediction is based on <strong>the signature centroid matrix</strong>. The processes are as follows:</p>
 <ol style="list-style-type: decimal">
 <li>For the provided <code>ConsensusPartition</code> object and a selected k, the signatures that discriminate classes are extracted by <code><a href="../reference/get_signatures-dispatch.html">get_signatures()</a></code>. If number of signatures is more than 2000, only 2000 signatures are randomly sampled.</li>
-<li>The signature centroid matrix is a k-column matrix where each column is the centroid of samples in the corresponding class, i.e., the mean across samples. If rows were scaled in cola analysis, the signature centroid matrix is the mean of scaled values and vise versa. Please note the samples with silhouette score less than <code>silhouette_cutoff</code> (0.5 as the default) are removed for calculating the centroids.</li>
+<li>The signature centroid matrix is a k-column matrix where each column is the centroid of samples in the corresponding class, i.e., the mean across samples. If rows were scaled in <em>cola</em> analysis, the signature centroid matrix is the mean of scaled values and vise versa. Please note the samples with silhouette score less than <code>silhouette_cutoff</code> (0.5 as the default) are removed for calculating the centroids.</li>
 <li>With the signature centroid matrix and the new matrix, it perform the prediction.</li>
 </ol>
 <p>The class prediction is applied as follows. For each sample in the new matrix, the task is basically to test which signature centroid the current sample is the closest to. There are three methods: the Euclidean distance, cosine distance (it is <code>1-cos(x, y)</code>) and the correlation (Spearman) distance.</p>
@@ -144,9 +144,9 @@
 <p>which is the difference between the smallest distance and the second smallest distance, normalized by the mean distance. To test the statistical significance of <span class="math inline">\(r\)</span>, we randomly permute rows of the signature centroid matrix and calculate <span class="math inline">\(r_{rand}\)</span>. The random permutation is performed 1000 times and the p-value is calculated as the proportion of <span class="math inline">\(r_{rand}\)</span> being larger than <span class="math inline">\(r\)</span>.</p>
 <p>For the correlation method, the distance is calculated as the Spearman correlation between sample <span class="math inline">\(i\)</span> and signature centroid <span class="math inline">\(k\)</span>. The label for the class with the maximal correlation value is assigned to sample <span class="math inline">\(i\)</span>. The p-value is simply calculated by <code><a href="https://rdrr.io/r/stats/cor.test.html">stats::cor.test()</a></code> between sample <span class="math inline">\(i\)</span> and centroid <span class="math inline">\(k\)</span>.</p>
 <p>If a sample is tested with a p-value higher than 0.05, the corresponding class label is set to <code>NA</code>.</p>
-<p>To demonstrate the use of <code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code>, we use the same matrix as for cola analysis.</p>
+<p>To demonstrate the use of <code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code>, we use the same matrix as for <em>cola</em> analysis.</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">mat</span> <span class="kw">=</span> <span class="fu"><a href="../reference/get_matrix-dispatch.html">get_matrix</a></span>(<span class="no">res</span>)</pre></body></html></div>
-<p>Note the matrix was row-scaled in cola analysis, thus, <code>mat</code> should also be scaled with the same method (z-score scaling).</p>
+<p>Note the matrix was row-scaled in <em>cola</em> analysis, thus, <code>mat</code> should also be scaled with the same method (z-score scaling).</p>
 <div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">mat2</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="no">mat</span>)))</pre></body></html></div>
 <p>And we predict the class of <code>mat2</code> with the 3-group classification from <code>res</code>.</p>
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">cl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/predict_classes-dispatch.html">predict_classes</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="no">mat2</span>)</pre></body></html></div>
@@ -155,11 +155,11 @@
 ## Set `help = FALSE` to suppress this message. 
 ## 
 ## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: 63cd178a621632b97602d93df602c979 (seed 888).
+## * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ## * split rows into 2 groups by k-means clustering.
 ## * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
-## Predict classes based on 3-group classification (euclidean method).</code></pre>
+## Predict classes based on 3-group classification (euclidean method) on a 72-column matrix.</code></pre>
 <p><img src="predict_files/figure-html/unnamed-chunk-5-1.png" width="600" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">cl</span></pre></body></html></div>
 <pre><code>##           class     p
@@ -190,7 +190,7 @@
 ## sample_54     1 0.000
 ## sample_57     2 0.000
 ## sample_58     2 0.000
-## sample_60     2 0.283
+## sample_60     2 0.203
 ## sample_61     2 0.000
 ## sample_65     2 0.000
 ## sample_66     1 0.000
@@ -208,7 +208,7 @@
 ## sample_9      1 0.000
 ## sample_10     3 0.000
 ## sample_11     1 0.000
-## sample_12     2 0.001
+## sample_12     2 0.000
 ## sample_13     1 0.000
 ## sample_14     1 0.000
 ## sample_15     1 0.000
@@ -218,11 +218,11 @@
 ## sample_19     1 0.000
 ## sample_20     1 0.000
 ## sample_21     1 0.000
-## sample_22     2 0.103
+## sample_22     2 0.044
 ## sample_23     3 0.000
 ## sample_24     1 0.000
-## sample_25     3 0.709
-## sample_26     1 0.041
+## sample_25     3 0.804
+## sample_26     1 0.010
 ## sample_27     3 0.000
 ## sample_34     2 0.000
 ## sample_35     2 0.000
@@ -319,92 +319,92 @@
 ## Set `help = FALSE` to suppress this message. 
 ## 
 ## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: 63cd178a621632b97602d93df602c979 (seed 888).
+## * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ##   - row difference is extracted from cache.
 ## * use k-means partition that are already calculated in previous runs.
 ## * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
-## Predict classes based on 3-group classification (correlation method).</code></pre>
+## Predict classes based on 3-group classification (correlation method) on a 72-column matrix.</code></pre>
 <p><img src="predict_files/figure-html/unnamed-chunk-7-1.png" width="600" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">cl</span></pre></body></html></div>
 <pre><code>##           class             p
-## sample_39     3  1.658336e-56
-## sample_40     3  8.683441e-55
-## sample_42     1  1.780402e-22
-## sample_47     1  3.574170e-60
-## sample_48     1 3.149420e-172
-## sample_49     3 4.431385e-146
-## sample_41     1 1.300322e-150
-## sample_43     1  5.141114e-30
-## sample_44     1  4.229475e-59
-## sample_45     1  2.352999e-48
-## sample_46     1  8.605056e-41
-## sample_70     1  4.314183e-07
-## sample_71     1  5.180276e-12
-## sample_72     1  2.436367e-16
-## sample_68     1 9.530645e-174
-## sample_69     1 4.556761e-177
-## sample_67     1  8.232903e-24
-## sample_55     3  2.808262e-34
-## sample_56     3  6.378984e-88
-## sample_59     1  3.213910e-07
-## sample_52     2  1.438209e-37
-## sample_53     2  2.416162e-82
-## sample_51     2 1.404240e-133
-## sample_50     2 1.278661e-132
-## sample_54     1  5.110002e-08
-## sample_57     2  2.326019e-42
-## sample_58     2  3.550931e-90
-## sample_60     2  2.849395e-05
-## sample_61     2  2.404612e-57
-## sample_65     2  3.977894e-60
-## sample_66     1  3.821916e-71
-## sample_63     2  1.850416e-56
-## sample_64     2  1.245659e-62
-## sample_62     2  1.538775e-44
-## sample_1      3  1.638200e-49
-## sample_2      1  7.077143e-26
-## sample_3      3  7.513644e-79
-## sample_4      3  5.035576e-41
-## sample_5      1 2.953563e-171
-## sample_6      3  2.476614e-78
-## sample_7      3  2.718054e-92
-## sample_8      3  8.021824e-96
-## sample_9      1  2.850654e-22
-## sample_10     3  2.795441e-15
-## sample_11     1  1.765643e-32
-## sample_12     2  7.217610e-22
-## sample_13     1 1.000228e-172
-## sample_14     1  8.212651e-34
-## sample_15     1 1.822876e-208
-## sample_16     1  6.551850e-41
-## sample_17     1  6.941861e-18
-## sample_18     3  3.204818e-17
-## sample_19     1  1.130141e-42
-## sample_20     1 2.691216e-193
-## sample_21     1  2.622904e-79
-## sample_22     2  3.842481e-22
-## sample_23     3  4.824666e-82
-## sample_24     1  3.650621e-82
-## sample_25     3  2.273061e-03
-## sample_26     1  2.061467e-10
-## sample_27     3 4.825021e-156
-## sample_34     2 1.831984e-104
-## sample_35     2  3.170413e-77
-## sample_36     2 4.456350e-104
-## sample_37     2  7.003564e-91
-## sample_38     2  7.234684e-55
-## sample_28     2  8.458259e-54
-## sample_29     1  3.421201e-18
-## sample_30     2  1.488897e-58
-## sample_31     2  1.360429e-87
-## sample_32     2  3.019094e-66
-## sample_33     2 1.664306e-163</code></pre>
+## sample_39     3  1.879136e-72
+## sample_40     3  9.818580e-50
+## sample_42     1  4.726915e-28
+## sample_47     1  4.368519e-52
+## sample_48     1 9.595020e-164
+## sample_49     3 8.966020e-145
+## sample_41     1 1.355841e-155
+## sample_43     1  2.124976e-28
+## sample_44     1  1.129990e-63
+## sample_45     1  2.862219e-43
+## sample_46     1  1.463918e-39
+## sample_70     1  9.555535e-09
+## sample_71     1  1.883125e-08
+## sample_72     1  1.890317e-21
+## sample_68     1 7.434706e-169
+## sample_69     1 8.727398e-164
+## sample_67     1  2.342032e-26
+## sample_55     3  1.167792e-50
+## sample_56     3  2.129338e-84
+## sample_59     1  8.745044e-09
+## sample_52     2  4.990070e-35
+## sample_53     2  2.225819e-79
+## sample_51     2 3.855936e-128
+## sample_50     2 2.690689e-133
+## sample_54     1  2.396841e-06
+## sample_57     2  9.747602e-38
+## sample_58     2  8.959459e-91
+## sample_60     2  3.846989e-04
+## sample_61     2  6.257010e-47
+## sample_65     2  6.262522e-59
+## sample_66     1  1.996473e-58
+## sample_63     2  4.024436e-66
+## sample_64     2  3.250437e-59
+## sample_62     2  6.065638e-47
+## sample_1      3  1.265338e-45
+## sample_2      1  1.177492e-23
+## sample_3      3  1.683713e-65
+## sample_4      3  1.531594e-54
+## sample_5      1 6.191909e-170
+## sample_6      3  4.257850e-73
+## sample_7      3  7.828966e-99
+## sample_8      3  4.445058e-97
+## sample_9      1  4.291423e-26
+## sample_10     3  1.040207e-13
+## sample_11     1  1.188730e-33
+## sample_12     2  6.107449e-21
+## sample_13     1 3.186049e-177
+## sample_14     1  4.878387e-33
+## sample_15     1 2.349793e-198
+## sample_16     1  1.502211e-36
+## sample_17     1  1.656820e-16
+## sample_18     3  2.807438e-17
+## sample_19     1  9.592796e-40
+## sample_20     1 2.289534e-176
+## sample_21     1  1.806297e-81
+## sample_22     2  3.539478e-18
+## sample_23     3  4.171210e-76
+## sample_24     1  2.445660e-76
+## sample_25     2  1.157628e-01
+## sample_26     1  1.750686e-07
+## sample_27     3 1.362532e-135
+## sample_34     2 4.331738e-101
+## sample_35     2  6.367166e-78
+## sample_36     2 8.758828e-114
+## sample_37     2  6.245463e-98
+## sample_38     2  5.815944e-57
+## sample_28     2  1.616753e-51
+## sample_29     1  2.970516e-19
+## sample_30     2  2.921410e-53
+## sample_31     2  1.693478e-77
+## sample_32     2  3.601003e-67
+## sample_33     2 5.194996e-163</code></pre>
 <p>As we can see from the above two heatmaps, correlation method is less strict than the Euclidean method that the two samples that cannot be assigned to any class with Euclidean method are assigned with certain classes under correlation method.</p>
 <p><code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code> can also be directly applied to a signature centroid matrix. Following is how we manually generate the signature centroid matrix for 3-group classification from Golub dataset:</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">tb</span> <span class="kw">=</span> <span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">plot</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
 <pre><code>## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-## * cache hash: 63cd178a621632b97602d93df602c979 (seed 888).
+## * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
 ##   - row difference is extracted from cache.
 ## * use k-means partition that are already calculated in previous runs.

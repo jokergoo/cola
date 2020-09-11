@@ -94,7 +94,7 @@
       <h1 data-toc-skip>A Quick Start of cola Package</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-09-10</h4>
+            <h4 class="date">2020-09-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/cola_quick.Rmd"><code>vignettes/cola_quick.Rmd</code></a></small>
       <div class="hidden name"><code>cola_quick.Rmd</code></div>
@@ -116,6 +116,10 @@
 </ol>
 <p><code><a href="../reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods()</a></code> runs multiple methods in sequence, which might take long time for big datasets. Users can also run consensus partitioining with a specific top-value methods (e.g. SD) and partitioning methods (e.g. skmeans) by <code><a href="../reference/consensus_partition.html">consensus_partition()</a></code> function:</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">res</span> <span class="kw">=</span> <span class="fu"><a href="../reference/consensus_partition.html">consensus_partition</a></span>(<span class="no">mat</span>, <span class="kw">top_value_method</span> <span class="kw">=</span> <span class="no">...</span>, <span class="kw">partition_method</span> <span class="kw">=</span> <span class="no">...</span>)
+<span class="fu"><a href="../reference/cola_report-dispatch.html">cola_report</a></span>(<span class="no">res</span>, <span class="kw">output_dir</span> <span class="kw">=</span> <span class="no">...</span>, <span class="kw">mc.cores</span> <span class="kw">=</span> <span class="no">...</span>)</pre></body></html></div>
+<p>For extremely large datasets, users can run <code><a href="../reference/consensus_partition_by_down_sampling.html">consensus_partition_by_down_sampling()</a></code> by randomly sampling a subset of samples for classification, later the classes of the remaining samples are predicted by the signatures of the <em>cola</em> classification. More details can be found in the vignette <a href="working_with_big_datasets.html">“Work with Big Datasets”</a>.</p>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">res</span> <span class="kw">=</span> <span class="fu"><a href="../reference/consensus_partition_by_down_sampling.html">consensus_partition_by_down_sampling</a></span>(<span class="no">mat</span>, <span class="kw">subset</span> <span class="kw">=</span> <span class="no">...</span>,
+    <span class="kw">top_value_method</span> <span class="kw">=</span> <span class="no">...</span>, <span class="kw">partition_method</span> <span class="kw">=</span> <span class="no">...</span>)
 <span class="fu"><a href="../reference/cola_report-dispatch.html">cola_report</a></span>(<span class="no">res</span>, <span class="kw">output_dir</span> <span class="kw">=</span> <span class="no">...</span>, <span class="kw">mc.cores</span> <span class="kw">=</span> <span class="no">...</span>)</pre></body></html></div>
 <p>There are examples on real datasets for <em>cola</em> analysis that can be found at <a href="https://jokergoo.github.io/cola_collection/" class="uri">https://jokergoo.github.io/cola_collection/</a>.</p>
   </div>

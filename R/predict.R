@@ -228,7 +228,7 @@ setMethod(f = "predict_classes",
 	dist_method = match.arg(dist_method)[1]
 	n_sig = ncol(sig_mat)
 
-	if(verbose) qqcat("@{prefix}Predict classes based on @{ncol(sig_mat)}-group classification (@{dist_method} method).\n")
+	if(verbose) qqcat("@{prefix}Predict classes based on @{ncol(sig_mat)}-group classification (@{dist_method} method) on a @{ncol(mat)}-column matrix.\n")
 
 	if(dist_method %in% c("euclidean", "cosine")) {
 
@@ -244,16 +244,18 @@ setMethod(f = "predict_classes",
 			abs(x[1] - x[2])/mean(x)
 		})
 
-		diff_ratio_r = NULL
-		counter = set_counter(nperm, fmt = qq("@{prefix}Permute rows of the signature centroid matrix, run %s..."))
-		for(i in 1:nperm) {
-			dist_to_signatures_r = as.matrix(pdist(t(mat), t(sig_mat[sample(nrow(sig_mat)), , drop = FALSE]), dm))
-			diff_ratio_r = cbind(diff_ratio_r, apply(dist_to_signatures_r, 1, function(x) { 
-				x = sort(x)
-				abs(x[1] - x[2])/mean(x)
-			}))
-			if(verbose) counter()
-		}
+# 		diff_ratio_r = NULL
+# 		counter = set_counter(nperm, fmt = qq("@{prefix}Permute rows of the signature centroid matrix, run %s..."))
+# 		for(i in 1:nperm) {
+# 			dist_to_signatures_r = as.matrix(pdist(t(mat), t(sig_mat[sample(nrow(sig_mat)), , drop = FALSE]), dm))
+# 			diff_ratio_r = cbind(diff_ratio_r, apply(dist_to_signatures_r, 1, function(x) { 
+# 				x = sort(x)
+# 				abs(x[1] - x[2])/mean(x)
+# 			}))
+# 			if(verbose) counter()
+# 		}
+
+		diff_ratio_r = cal_diff_ratio_r(t(mat), t(sig_mat), nperm, dm)
 
 		p = rowSums(diff_ratio_r - diff_ratio > 0)/nperm
 
@@ -345,7 +347,7 @@ set_counter = function(n, fmt = "%s") {
 			str = paste0(i, "/", n, " (", pct, "%)")
 			str = sprintf(fmt, str)
 
-			cat(paste(rep("\r", nchar(str)), collapse=""))
+			cat(strrep("\r", nchar(str)))
 			cat(str)
 			if(i == n) cat("\n")
 

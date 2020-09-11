@@ -10,6 +10,7 @@ Get signature rows
 \S4method{get_signatures}{ConsensusPartition}(object, k,
     silhouette_cutoff = 0.5,
     fdr_cutoff = cola_opt$fdr_cutoff,
+    top_signatures = NULL,
     group_diff = cola_opt$group_diff,
     scale_rows = object@scale_rows,
     row_km = NULL,
@@ -31,6 +32,7 @@ Get signature rows
   \item{k}{Number of subgroups.}
   \item{silhouette_cutoff}{Cutoff for silhouette scores. Samples with values  less than it are not used for finding signature rows. For selecting a  proper silhouette cutoff, please refer to \url{https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.}}
   \item{fdr_cutoff}{Cutoff for FDR of the difference test between subgroups.}
+  \item{top_signatures}{Top signatures with most significant fdr. Note since fdr might be same for multiple rows, the final number of signatures might not be exactly the same as the one that has been set.}
   \item{group_diff}{Cutoff for the maximal difference between group means.}
   \item{scale_rows}{Whether apply row scaling when making the heatmap.}
   \item{row_km}{Number of groups for performing k-means clustering on rows. By default it is automatically selected.}
@@ -84,4 +86,5 @@ data(golub_cola)
 res = golub_cola["ATC", "skmeans"]
 tb = get_signatures(res, k = 3)
 head(tb)
+get_signatures(res, k = 3, top_signatures = 100)
 }

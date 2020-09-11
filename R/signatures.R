@@ -9,6 +9,8 @@
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
 # -fdr_cutoff Cutoff for FDR of the difference test between subgroups.
+# -top_signatures Top signatures with most significant fdr. Note since fdr might be same for multiple rows,
+#          the final number of signatures might not be exactly the same as the one that has been set.
 # -group_diff Cutoff for the maximal difference between group means.
 # -scale_rows Whether apply row scaling when making the heatmap.
 # -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
@@ -66,11 +68,13 @@
 # res = golub_cola["ATC", "skmeans"]
 # tb = get_signatures(res, k = 3)
 # head(tb)
+# get_signatures(res, k = 3, top_signatures = 100)
 setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = cola_opt$fdr_cutoff, 
+	top_signatures = NULL,
 	group_diff = cola_opt$group_diff,
 	scale_rows = object@scale_rows,
 	row_km = NULL,
@@ -138,27 +142,23 @@ setMethod(f = "get_signatures",
 		diff_method = match.arg(diff_method)
 	}
 
-	if(diff_method %in% c("samr", "pamr")) {
-		hash = digest(list(used_samples = which(l), 
-			               class = class,
-			               n_group = k, 
-			               diff_method = diff_method,
-			               column_index = object@column_index,
-			               fdr_cutoff = fdr_cutoff,
-			               group_diff = group_diff,
-			               seed = seed),
-					algo = "md5")
-	} else {
-		hash = digest(list(used_samples = which(l), 
-			               class = class,
-			               n_group = k, 
-			               diff_method = diff_method,
-			               column_index = object@column_index,
-			               fdr_cutoff = fdr_cutoff,
-			               group_diff = group_diff,
-			               seed = seed),
-					algo = "md5")
+	if(!is.null(top_signatures)) {
+		if(diff_method %in% c("samr", "pamr")) {
+			if(verbose) qqcat("`top_signatures` is ignored when `diff_method` is set to samr/pamr.\n")
+		}
 	}
+
+	hash = digest(list(used_samples = which(l), 
+		               class = class,
+		               n_group = k, 
+		               diff_method = diff_method,
+		               column_index = object@column_index,
+		               group_diff = group_diff,
+		               fdr_cutoff = fdr_cutoff,
+		               top_signatures = top_signatures,
+		               seed = seed),
+					algo = "md5")
+	
 	nm = paste0("signature_fdr_", hash)
 	if(verbose) qqcat("@{prefix}* cache hash: @{hash} (seed @{seed}).\n")
 
@@ -189,6 +189,7 @@ setMethod(f = "get_signatures",
 
 	if(verbose) qqcat("@{prefix}* calculating row difference between subgroups by @{diff_method}.\n")
 	if(find_signature) {
+
 		if(diff_method == "ttest") {
 			fdr = ttest(data2, class)
 		} else if(diff_method == "samr") {
@@ -204,11 +205,9 @@ setMethod(f = "get_signatures",
 		if(verbose) qqcat("@{prefix}  - row difference is extracted from cache.\n")
 	}
 
-	object@.env[[nm]]$diff_method = diff_method
-	object@.env[[nm]]$fdr_cutoff = fdr_cutoff
-	object@.env[[nm]]$fdr = fdr
-	object@.env[[nm]]$n_sample_used = n_sample_used
-	object@.env[[nm]]$group_diff = group_diff
+	if(!is.null(top_signatures)) {
+		fdr_cutoff = fdr[order(fdr)[min(length(fdr), top_signatures)]]
+	}
 
 	if(scale_rows && !is.null(object@.env[[nm]]$row_order_scaled)) {
 		row_order = object@.env[[nm]]$row_order_scaled
@@ -220,10 +219,16 @@ setMethod(f = "get_signatures",
 		do_row_clustering = FALSE
 	}
 
+	object@.env[[nm]]$diff_method = diff_method
+	object@.env[[nm]]$fdr_cutoff = fdr_cutoff
+	object@.env[[nm]]$fdr = fdr
+	object@.env[[nm]]$n_sample_used = n_sample_used
+	object@.env[[nm]]$group_diff = group_diff
+
 	# filter by fdr
 	fdr[is.na(fdr)] = 1
 
-	l_fdr = fdr < fdr_cutoff
+	l_fdr = fdr <= fdr_cutoff
 	mat = data[l_fdr, , drop = FALSE]
 	fdr2 = fdr[l_fdr]
 	
@@ -326,7 +331,13 @@ setMethod(f = "get_signatures",
 		}
 	}
 
-	if(verbose) qqcat("@{prefix}* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) under fdr < @{fdr_cutoff}, group_diff > @{group_diff}.\n")
+	if(verbose) {
+		if(is.null(top_signatures)) {
+			qqcat("@{prefix}* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) under fdr < @{fdr_cutoff}, group_diff > @{group_diff}.\n")
+		} else {
+			qqcat("@{prefix}* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with most significant fdr, group_diff > @{group_diff}.\n")
+		}
+	}
 
 	if(nrow(mat) == 0) {
 		if(plot) {
@@ -342,17 +353,17 @@ setMethod(f = "get_signatures",
 	}
 
 	set.seed(seed)
-	more_than_5k = FALSE
+	more_than_2k = FALSE
 	if(!is.null(object@.env[[nm]]$row_index)) {
-		if(verbose) qqcat("@{prefix}  - use the 2000 signatures what are already generated in previous runs.\n")
+		if(verbose) qqcat("@{prefix}  - use the signatures that are already generated in previous runs.\n")
 		row_index = object@.env[[nm]]$row_index
 		mat1 = mat[row_index, column_used_logical, drop = FALSE]
 		mat2 = mat[row_index, !column_used_logical, drop = FALSE]
-		more_than_5k = TRUE
+		more_than_2k = TRUE
 		if(!is.null(left_annotation)) left_annotation = left_annotation[row_index, ]
 		if(!is.null(right_annotation)) right_annotation = right_annotation[row_index, ]
 	} else if(nrow(mat) > 2000) {
-		more_than_5k = TRUE
+		more_than_2k = TRUE
 		row_index = sample(1:nrow(mat), 2000)
 		object@.env[[nm]]$row_index = row_index
 		# mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
@@ -597,7 +608,12 @@ setMethod(f = "get_signatures",
 	}
 
 	if(do_row_clustering) {
-		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}")),
+		if(is.null(top_signatures)) {
+			column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}"))
+		} else {
+			column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with most significant fdr@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}"))
+		}
+		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = column_title,
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			heatmap_legend_list = heatmap_legend_list,
 			row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")}
@@ -613,7 +629,12 @@ setMethod(f = "get_signatures",
 		
 	} else {
 		if(verbose) qqcat("@{prefix}  - use row order from cache.\n")
-		draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}")),
+		if(is.null(top_signatures)) {
+			column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}"))
+		} else {
+			column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with most significant fdr@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}"))
+		}
+		draw(ht_list, main_heatmap = heatmap_name, column_title = column_title,
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = heatmap_legend_list,
 			row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")}

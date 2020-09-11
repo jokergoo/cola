@@ -286,6 +286,15 @@ The columns in `tb` are:
 4. `scaled_mean_x`: The mean value in group x after rows are scaled.
 5. `km`: Row groups if k-means clustering is applied to rows (which is done by automatically selecting number of clusters).
 
+If there are too many signatures, `top_signatures = ...` can be set to only show the 
+signatures with the highest FDRs:
+
+```{r <%=chunk_prefix%>-signature-no-run2, eval = FALSE}
+# code only for demonstration
+# e.g. to show the top 500 most significant rows
+tb = get_signature(res, k = ..., top_signatures = 500)
+```
+
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()

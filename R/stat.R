@@ -62,7 +62,7 @@
 # ATC_score = ATC(mat)
 # plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
 ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
-	mc.cores = 1, n_sampling = 1000, q_sd = 0, group = NULL, ...) {
+	mc.cores = 1, n_sampling = c(1000, 500), q_sd = 0, group = NULL, ...) {
 
 	if(!is.null(group)) {
 		if(length(group) != nrow(mat)) {
@@ -85,7 +85,12 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 		return(v)
 	}
 
+	if(length(n_sampling) == 1) n_sampling = rep(n_sampling, 2)
+
 	# internally we do it by columns to avoid too many t() callings
+	if(ncol(mat) > n_sampling[2]) {
+		mat = mat[, sample(ncol(mat), n_sampling[2])]
+	}
 	mat = t(mat)
 
 	col_sd = colSds(mat)
@@ -107,8 +112,8 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 		v = numeric(length(ind))
 		for(i in seq_along(ind)) {
 			ind2 = seq_len(ncol(mat))[-ind[i]]
-			if(length(ind2) > n_sampling) {
-				ind2 = sample(ind2, n_sampling)
+			if(length(ind2) > n_sampling[1]) {
+				ind2 = sample(ind2, n_sampling[1])
 			}
 			suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
 			cor_v = cor_v^power

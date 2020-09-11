@@ -74,7 +74,7 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 
 	data = data[, .env$column_index, drop = FALSE]
 
-	qqcat("@{prefix}* @{subset} columns were randomly sampled from @{ncol(data)} columns.\n")
+	qqcat("@{prefix}* @{subset} columns are randomly sampled from @{ncol(data)} columns.\n")
 		
 	column_index = .env$column_index
 	subset_index = sample(column_index, subset)
@@ -105,10 +105,10 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 		qqcat("@{prefix}* predict class for @{ncol(data)} samples with k = @{k}\n")
 		if(cp@scale_rows) {
 			cl[[as.character(k)]] = predict_classes(cp, k = k, data2, p_cutoff = 1, dist_method = dist_method, 
-				plot = FALSE, verbose = verbose, help = FALSE, prefix = qq("@{prefix}  "))
+				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "))
 		} else {
 			cl[[as.character(k)]] = predict_classes(cp, k = k, data, p_cutoff = 1, dist_method = dist_method, 
-				plot = FALSE, verbose = verbose, help = FALSE, prefix = qq("@{prefix}  "))
+				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "))
 		}
 	}
 

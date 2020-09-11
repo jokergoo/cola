@@ -58,4 +58,15 @@ res = consensus_partition(mat, top_value_method = ..., partition_method = ...)
 cola_report(res, output_dir = ..., mc.cores = ...)
 ```
 
+For extremely large datasets, users can run `consensus_partition_by_down_sampling()` by randomly 
+sampling a subset of samples for classification, later the classes of the remaining
+samples are predicted by the signatures of the _cola_ classification. More details
+can be found in the vignette ["Work with Big Datasets"](working_with_big_datasets.html).
+
+```{r, eval = FALSE}
+res = consensus_partition_by_down_sampling(mat, subset = ...,
+    top_value_method = ..., partition_method = ...)
+cola_report(res, output_dir = ..., mc.cores = ...)
+```
+
 There are examples on real datasets for _cola_ analysis that can be found at https://jokergoo.github.io/cola_collection/.

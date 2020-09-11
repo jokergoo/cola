@@ -109,7 +109,7 @@
 <h1 class="hasAnchor">
 <a href="#cola-a-framework-for-consensus-partitioning" class="anchor"></a>cola: A Framework for Consensus Partitioning</h1>
 <p><strong>Author</strong>: Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</p>
-<p><strong>Date</strong>: 2020-09-10</p>
+<p><strong>Date</strong>: 2020-09-11</p>
 <p><strong>Package version</strong>: 1.5.3</p>
 <hr>
 <div id="introduction" class="section level2">
@@ -167,7 +167,7 @@
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># code is only for demonstration</span>
 <span class="no">res</span> <span class="kw">=</span> <span class="fu"><a href="../reference/consensus_partition.html">consensus_partition</a></span>(<span class="no">mat</span>,
     <span class="kw">top_value_method</span> <span class="kw">=</span> <span class="st">"MAD"</span>,
-    <span class="kw">top_n</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1000</span>, <span class="fl">2000</span>, <span class="fl">3000</span>, <span class="fl">4000</span>, <span class="fl">5000</span>),
+    <span class="kw">top_n</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1000</span>, <span class="fl">2000</span>, <span class="fl">3000</span>),
     <span class="kw">partition_method</span> <span class="kw">=</span> <span class="st">"kmeans"</span>,
     <span class="kw">max_k</span> <span class="kw">=</span> <span class="fl">6</span>,
     <span class="kw">p_sampling</span> <span class="kw">=</span> <span class="fl">0.8</span>,
@@ -350,12 +350,12 @@
 <div id="consensus-partitioning" class="section level2">
 <h2 class="hasAnchor">
 <a href="#consensus-partitioning" class="anchor"></a>Consensus partitioning</h2>
-<p>For a given number of top rows <span class="math inline">\(n_i\)</span>, the corresponding matrix with top rows denoted as <span class="math inline">\(M_i\)</span>, a subset of rows with a probability of <span class="math inline">\(p\)</span> are randomly sampled from <span class="math inline">\(M_i\)</span> and a certain partitioning method is applied to it, generating a partition <span class="math inline">\(P_a\)</span>. In most cases, we have no prior knowledge of which <span class="math inline">\(n_i\)</span> gives better results, thus, <em>cola</em> allows to try multiple <span class="math inline">\(n_i\)</span> and pool partitions from all <span class="math inline">\(n_i\)</span> together to find a consensus subgrouping, which also lets rows more on the top of the ranked list give higher weight for determining the final subgroups. Let’s assume top rows are tried for <span class="math inline">\(n_1\)</span>, <span class="math inline">\(n_2\)</span>, …, <span class="math inline">\(n_m\)</span> and the randomly sampling is performed for <span class="math inline">\(N_s\)</span> times, then, for a given number of subgroups <span class="math inline">\(k\)</span> for trying, the total number of partitions is <span class="math inline">\(N_P = m*N_s\)</span>.</p>
+<p>For a given number of top rows <span class="math inline">\(n_i\)</span>, the corresponding matrix with top rows denoted as <span class="math inline">\(M_i\)</span>, a subset of rows with a probability of <span class="math inline">\(p\)</span> are randomly sampled from <span class="math inline">\(M_i\)</span> and a certain partitioning method is applied to it, generating a partition <span class="math inline">\(P_a\)</span>. In most cases, we have no prior knowledge of which <span class="math inline">\(n_i\)</span> gives better results, thus, <em>cola</em> allows to try multiple <span class="math inline">\(n_i\)</span> and pool partitions from all <span class="math inline">\(n_i\)</span> together to find a consensus subgrouping, which also lets rows more on the top of the ranked list give higher weight for determining the final subgroups. Let’s assume top rows are tried for <span class="math inline">\(n_1\)</span>, <span class="math inline">\(n_2\)</span>, …, <span class="math inline">\(n_m\)</span> and the randomly sampling is performed for <span class="math inline">\(N_s\)</span> times, then, for a given number of subgroups <span class="math inline">\(k\)</span> for trying, the total number of partitions is <span class="math inline">\(N_P = m \times N_s\)</span>.</p>
 <div id="consensus-matrix" class="section level3">
 <h3 class="hasAnchor">
 <a href="#consensus-matrix" class="anchor"></a>Consensus matrix</h3>
 <p>The consensus matrix measures how consistent two samples are in the same subgroup and it can be used to visualize or analysis the stability of the subgrouping. The value <span class="math inline">\(c_{ij}\)</span> in the consensus matrix is the probability of sample <span class="math inline">\(i\)</span> and sample <span class="math inline">\(j\)</span> in the same subgroup in all <span class="math inline">\(N_P\)</span> partitions. It is calculated as:</p>
-<p><span class="math display">\[c_{ij} = \sum_a^{N_p}I(s_{ia}, s_{ja})/N_P\]</span></p>
+<p><span class="math display">\[c_{ij} = \sum_a^{N_P}I(s_{ia}, s_{ja})/N_P\]</span></p>
 <p>where <span class="math inline">\(s_{ia}\)</span> is the subgroup label for sample <span class="math inline">\(i\)</span> in partition <span class="math inline">\(a\)</span> and <span class="math inline">\(I()\)</span> is the indicator function there <span class="math inline">\(I(x = y) = 1\)</span> and <span class="math inline">\(I(x \neq y) = 0\)</span>.</p>
 <p>Assuming there are stable subgroups in a dataset, which means, for any pair of samples <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> both in a same subgroup, <span class="math inline">\(c_{ij}\)</span> is close to 1, and for any pairs in different subgroups, <span class="math inline">\(c_{ij}\)</span> is close to 0, if the consensus matrix is visualized as a heatmap, samples in the same subgroup will be represented as a block in the diagonal of the heatmap.</p>
 <p>Following two heatmaps visualize two consensus matrices. The left one shows less stability of subgrouping than the right one, while for the right one, there are three very obvious blocks in the diagonal that in each block, the corresponding samples are very likely to be in the same subgroup.</p>
@@ -382,7 +382,7 @@ a a a a a a a b b b b b b</code></pre>
 <pre><code>1 1 1 1 1 1 1 2 2 2 2 2
 1 1 1 1 1 2 2 2 2 2 2 2 # switch 1 &lt;-&gt; 2</code></pre>
 <p>For the subgroups predicted by <code><a href="https://rdrr.io/pkg/clue/man/cl_consensus.html">clue::cl_consensus()</a></code>, the labels are additionally adjusted by the mean distance in each subgroup (calculated from the scaled data matrix), which means, the subgroup with label 1 always has the smallest mean intra-group distance.</p>
-<p><strong>This subgroup label adjustment is frequently used in cola to help the visualization as well as downstream analysis. E.g. for a specific combination of top-value method and partitioning method, the subgroup labels for different <code>k</code> are adjusted, and for the subgroups from different top-value methods and partitioning methods, the subgroup labels are also adjusted to make the label difference from different methods minimal.</strong></p>
+<p><strong>This subgroup label adjustment is frequently used in <em>cola</em> to help the visualization as well as downstream analysis. E.g. for a specific combination of top-value method and partitioning method, the subgroup labels for different k are adjusted, and for the subgroups from different top-value methods and partitioning methods, the subgroup labels are also adjusted to make the label difference from different methods minimal.</strong></p>
 </div>
 <div id="membership-matrix" class="section level3">
 <h3 class="hasAnchor">
@@ -498,6 +498,7 @@ a a a a a a a b b b b b b</code></pre>
 <h2 class="hasAnchor">
 <a href="#functional-enrichment" class="anchor"></a>Functional Enrichment</h2>
 <p>If the matrix rows can correspond to genes (e.g. the gene expression matrix, or the methylation array data where CpG sites can be annotated to the transcription start site of genes), <em>cola</em> performs functional enrichment by <code><a href="../reference/functional_enrichment-dispatch.html">functional_enrichment()</a></code> function with hypergeometric test to the signatures by <em>ClusterProfiler</em>, <em>DOSE</em> or <em>ReactomePA</em> packages. k-means clustering with automatically selecting the number of groups of the signature is performed and functional enrichment is applied to each row signature group, to the fact that there may exist different expression patterns and genes involved may play different functional roles.</p>
+<p>More details on functional enrichment analysis can be found in the vignette <a href="functional_enrichment.html">“Automatic Functional Enrichment on Signature Genes”</a>.</p>
 </div>
 <div id="compare-multiple-methods" class="section level2">
 <h2 class="hasAnchor">
@@ -523,19 +524,16 @@ a a a a a a a b b b b b b</code></pre>
 <h2 class="hasAnchor">
 <a href="#implementation-of-the-package" class="anchor"></a>Implementation of the package</h2>
 <p><em>cola</em> is implemented in an object-oriented way. There are two main classes where <code>ConsensusPartition</code> class contains results for a single top-value method and a single partitioning method, while <code>ConsensusPartitionList</code> class contains results for multiple top-value methods and multiple partitioning methods.</p>
-<p>In the following example code, <code>TCGA_GBM_subgroup.rds</code> is generated by the code demonstrated <a href="https://jokergoo.github.io/cola_examples/TCGA_GBM/">here</a> (Running cola analysis is always time-consuming, so we use the object that has already be generated.).</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span>(<span class="st">"https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup.rds"</span>,
-    <span class="kw">destfile</span> <span class="kw">=</span> <span class="st">"TCGA_GBM_subgroup.rds"</span>, <span class="kw">quiet</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
-<span class="no">rl</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"TCGA_GBM_subgroup.rds"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/files.html">file.remove</a></span>(<span class="st">"TCGA_GBM_subgroup.rds"</span>)</pre></body></html></div>
+<p>In the following example code, we use the analysis on Golub dataset. The more information of how to generate <code>golub_cola</code> can be find by <code><a href="../reference/golub_cola.html">?golub_cola</a></code>.</p>
+<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="no">golub_cola</span>)</pre></body></html></div>
 <p>Simply entering the variable name gives you the summary of the analysis and a list of functions that can be applied to this object:</p>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">rl</span></pre></body></html></div>
-<pre><code>## A 'ConsensusPartitionList' object with 24 methods.
-##   On a matrix with 11268 rows and 173 columns.
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">golub_cola</span></pre></body></html></div>
+<pre><code>## A 'ConsensusPartitionList' object with 20 methods.
+##   On a matrix with 4116 rows and 72 columns.
 ##   Top rows are extracted by 'SD, CV, MAD, ATC' methods.
-##   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust, NMF' method.
+##   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust' method.
 ##   Number of partitions are tried for k = 2, 3, 4, 5, 6.
-##   Performed in total 30000 partitions by row resampling.
+##   Performed in total 15000 partitions by row resampling.
 ## 
 ## Following methods can be applied to this 'ConsensusPartitionList' object:
 ##  [1] "cola_report"           "collect_classes"       "collect_plots"         "collect_stats"        
@@ -547,14 +545,14 @@ a a a a a a a b b b b b b</code></pre>
 ## 
 ## You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
 ## or a subset of methods by object[c("SD", "CV")], c("hclust", "kmeans")]</code></pre>
-<p>To get results for a single top-value method and partitioning method, you can subset <code>rl</code> by the name of the combination of the methods.</p>
-<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="no">rl</span>[<span class="st">"SD:hclust"</span>]</pre></body></html></div>
+<p>To get results for a single top-value method and partitioning method, you can subset <code>golub_cola</code> by the name of the combination of the methods.</p>
+<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="no">golub_cola</span>[<span class="st">"ATC:skmeans"</span>]</pre></body></html></div>
 <pre><code>## A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
-##   On a matrix with 11268 rows and 173 columns.
-##   Top rows (1000, 2000, 3000, 4000, 5000) are extracted by 'SD' method.
-##   Subgroups are detected by 'hclust' method.
-##   Performed in total 1250 partitions by row resampling.
-##   Best k for subgroups seems to be 2.
+##   On a matrix with 4116 rows and 72 columns.
+##   Top rows (412, 824, 1235) are extracted by 'ATC' method.
+##   Subgroups are detected by 'skmeans' method.
+##   Performed in total 750 partitions by row resampling.
+##   Best k for subgroups seems to be 3.
 ## 
 ## Following methods can be applied to this 'ConsensusPartition' object:
 ##  [1] "cola_report"             "collect_classes"         "collect_plots"          
@@ -607,6 +605,8 @@ a a a a a a a b b b b b b</code></pre>
 <li>
 <code><a href="../reference/get_signatures-dispatch.html">get_signatures()</a></code>: Make the heatmap for the signatures.</li>
 <li>
+<code><a href="../reference/compare_signatures-dispatch.html">compare_signatures()</a></code>: Compare signatures for different k.</li>
+<li>
 <code><a href="../reference/get_stats-dispatch.html">get_stats()</a></code>: Extract the statistics for determining best number of subgroups.</li>
 <li>
 <code><a href="../reference/suggest_best_k-dispatch.html">suggest_best_k()</a></code>: Guess the best <span class="math inline">\(k\)</span>.</li>
@@ -620,6 +620,8 @@ a a a a a a a b b b b b b</code></pre>
 <code><a href="../reference/test_to_known_factors-dispatch.html">test_to_known_factors()</a></code>: Apply tests to the annotations if provides. The test will be Fisher’s exact test or ANOVA depending on the data type of the annotation.</li>
 <li>
 <code><a href="../reference/functional_enrichment-dispatch.html">functional_enrichment()</a></code>: If rows can be associated to genes, it applies functional enrichment analysis.</li>
+<li>
+<code><a href="../reference/predict_classes-dispatch.html">predict_classes()</a></code>: Predict classes of new samples.</li>
 </ul>
 </div>
 <div id="visualizations" class="section level2">
@@ -630,99 +632,65 @@ a a a a a a a b b b b b b</code></pre>
 <h3 class="hasAnchor">
 <a href="#on-the-consensuspartition-object" class="anchor"></a>On the ConsensusPartition object</h3>
 <p>The object which is generated with a single top-value method and a single partitioning method belongs to the class <code>ConsensusPartition</code>. There are several visualization functions that can be applied to it. <code><a href="../reference/select_partition_number-ConsensusPartition-method.html">select_partition_number()</a></code> makes several plots to show different statistics along with different <span class="math inline">\(k\)</span>, which helps to determine the “best k”.</p>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="no">res</span> <span class="kw">=</span> <span class="no">rl</span>[<span class="st">"MAD:kmeans"</span>] <span class="co"># the ConsensusPartition object</span>
+<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="no">res</span> <span class="kw">=</span> <span class="no">golub_cola</span>[<span class="st">"ATC:skmeans"</span>] <span class="co"># the ConsensusPartition object</span>
 <span class="fu"><a href="../reference/select_partition_number-ConsensusPartition-method.html">select_partition_number</a></span>(<span class="no">res</span>)</pre></body></html></div>
 <p><img src="cola_files/figure-html/unnamed-chunk-29-1.png" width="960" style="display: block; margin: auto;"></p>
 <p>The heatmap for the consensus matrix with a certain <span class="math inline">\(k\)</span>:</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="../reference/consensus_heatmap-ConsensusPartition-method.html">consensus_heatmap</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="../reference/consensus_heatmap-ConsensusPartition-method.html">consensus_heatmap</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <p><img src="cola_files/figure-html/unnamed-chunk-30-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The heatmap for the membership matrix with a certain <span class="math inline">\(k\)</span>:</p>
-<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="fu"><a href="../reference/membership_heatmap-ConsensusPartition-method.html">membership_heatmap</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span><span class="fl">4</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="fu"><a href="../reference/membership_heatmap-ConsensusPartition-method.html">membership_heatmap</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <p><img src="cola_files/figure-html/unnamed-chunk-31-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The dimension reduction plot with a certain <span class="math inline">\(k\)</span>:</p>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu"><a href="../reference/dimension_reduction-dispatch.html">dimension_reduction</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu"><a href="../reference/dimension_reduction-dispatch.html">dimension_reduction</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <pre><code>## use UMAP</code></pre>
 <p><img src="cola_files/figure-html/unnamed-chunk-32-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>The heatmap for the signature rows with a certain <span class="math inline">\(k\)</span>. The heatmap is split into two parts by columns. The left heatmap where the barplots on top are in black contains samples with silhouette scores larger than 0.5 and the right heatmap where the barplot son top are in grey contains samples with silhouette scores less than 0.5. Rows are automatically split by k-means.</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <p><img src="cola_files/figure-html/unnamed-chunk-33-1.png" width="700" style="display: block; margin: auto;"></p>
-<p><code><a href="../reference/collect_classes-dispatch.html">collect_classes()</a></code> which is applied on the <code>ConsensusPartition</code> object visualizes how subgroups are corresponded with increasing <span class="math inline">\(k\)</span>. The same row in all heatmaps corresponds to a same sample.</p>
-<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_classes-dispatch.html">collect_classes</a></span>(<span class="no">res</span>)</pre></body></html></div>
+<p><code>fdr_cutoff</code> and <code>top_signatures</code> arguments control the number of signatures shown in the heatmap.</p>
+<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="fu"><a href="../reference/get_signatures-dispatch.html">get_signatures</a></span>(<span class="no">res</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">top_signatures</span> <span class="kw">=</span> <span class="fl">100</span>)</pre></body></html></div>
 <p><img src="cola_files/figure-html/unnamed-chunk-34-1.png" width="700" style="display: block; margin: auto;"></p>
+<p><code><a href="../reference/collect_classes-dispatch.html">collect_classes()</a></code> which is applied on the <code>ConsensusPartition</code> object visualizes how subgroups are corresponded with increasing <span class="math inline">\(k\)</span>. The same row in all heatmaps corresponds to a same sample.</p>
+<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_classes-dispatch.html">collect_classes</a></span>(<span class="no">res</span>)</pre></body></html></div>
+<p><img src="cola_files/figure-html/unnamed-chunk-35-1.png" width="700" style="display: block; margin: auto;"></p>
 <p><code><a href="../reference/collect_plots-dispatch.html">collect_plots()</a></code> which is applied on the <code>ConsensusPartition</code> object puts all the plots from all <span class="math inline">\(k\)</span> into one single page.</p>
-<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_plots-dispatch.html">collect_plots</a></span>(<span class="no">res</span>)</pre></body></html></div>
-<p><img src="cola_files/figure-html/unnamed-chunk-35-1.png" width="1344" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb38"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_plots-dispatch.html">collect_plots</a></span>(<span class="no">res</span>)</pre></body></html></div>
+<p><img src="cola_files/figure-html/unnamed-chunk-36-1.png" width="1344" style="display: block; margin: auto;"></p>
 </div>
 <div id="on-the-consensuspartitionlist-object" class="section level3">
 <h3 class="hasAnchor">
 <a href="#on-the-consensuspartitionlist-object" class="anchor"></a>On the ConsensusPartitionList object</h3>
 <p><code><a href="../reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods()</a></code> returns a <code>ConsensusPartitionList</code> object. There are two main functions which can visualize results from all combinations of methods and compare directly.</p>
-<div class="sourceCode" id="cb38"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_plots-dispatch.html">collect_plots</a></span>(<span class="no">rl</span>, <span class="kw">fun</span> <span class="kw">=</span> <span class="no">consensus_heatmap</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
-<p><img src="cola_files/figure-html/unnamed-chunk-36-1.png" width="1344" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_plots-dispatch.html">collect_plots</a></span>(<span class="no">golub_cola</span>, <span class="kw">fun</span> <span class="kw">=</span> <span class="no">consensus_heatmap</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
+<p><img src="cola_files/figure-html/unnamed-chunk-37-1.png" width="1344" style="display: block; margin: auto;"></p>
 <p><code>fun</code> can also be <code>membership_heatmap</code> or <code>get_signatures</code> that membership heatmap and signature heatmap for each method will be plotted.</p>
 <p><code><a href="../reference/collect_classes-dispatch.html">collect_classes()</a></code> which is applied on the <code>ConsensusPartitionList</code> object plots the partition for each combination of methods and the lightness correspond to the silhouette scores for samples in each method. Rows are clustered by the dissimilarity measurement from <code><a href="https://rdrr.io/pkg/clue/man/cl_dissimilarity.html">clue::cl_dissimilarity(..., method = "comembership")</a></code>. On top the consensus subgroup is inferred from all methods by taking the mean silhouette scores as weight.</p>
-<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_classes-dispatch.html">collect_classes</a></span>(<span class="no">rl</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
-<p><img src="cola_files/figure-html/unnamed-chunk-37-1.png" width="960" style="display: block; margin: auto;"></p>
-<p><code><a href="../reference/collect_stats-dispatch.html">collect_stats()</a></code> helps to compare statistics from multiple methods and multiple metrics.</p>
-<div class="sourceCode" id="cb40"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_stats-dispatch.html">collect_stats</a></span>(<span class="no">rl</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">4</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb40"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_classes-dispatch.html">collect_classes</a></span>(<span class="no">golub_cola</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
 <p><img src="cola_files/figure-html/unnamed-chunk-38-1.png" width="960" style="display: block; margin: auto;"></p>
+<p><code><a href="../reference/collect_stats-dispatch.html">collect_stats()</a></code> helps to compare statistics from multiple methods and multiple metrics.</p>
+<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="fu"><a href="../reference/collect_stats-dispatch.html">collect_stats</a></span>(<span class="no">golub_cola</span>, <span class="kw">k</span> <span class="kw">=</span> <span class="fl">3</span>)</pre></body></html></div>
+<p><img src="cola_files/figure-html/unnamed-chunk-39-1.png" width="960" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div id="the-html-report" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-html-report" class="anchor"></a>The HTML report</h2>
 <p>All the content introduced above is mainly for the deep understanding of the package. In real data analysis, users do not need to type that amount of code. <code><a href="../reference/cola_report-dispatch.html">cola_report()</a></code> function wraps all the code and performs the complete analysis automatically. Normally, applying <em>cola</em> analysis, following three lines of code are enough for you.</p>
-<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="co"># code is only for demonstration</span>
+<div class="sourceCode" id="cb42"><html><body><pre class="r"><span class="co"># code is only for demonstration</span>
 <span class="no">mat</span> <span class="kw">=</span> <span class="fu"><a href="../reference/adjust_matrix.html">adjust_matrix</a></span>(<span class="no">mat</span>) <span class="co"># for some datasets, you don't need this line.</span>
 <span class="no">rl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods</a></span>(<span class="no">mat</span>, <span class="kw">mc.cores</span> <span class="kw">=</span> <span class="no">...</span>)
 <span class="fu"><a href="../reference/cola_report-dispatch.html">cola_report</a></span>(<span class="no">rl</span>, <span class="kw">output_dir</span> <span class="kw">=</span> <span class="no">...</span>) <span class="co"># Alles ist da!</span></pre></body></html></div>
 </div>
-<div id="a-real-world-example" class="section level2">
+<div id="real-world-examples" class="section level2">
 <h2 class="hasAnchor">
-<a href="#a-real-world-example" class="anchor"></a>A Real-world example</h2>
-<p>In this example, we use <a href="https://www.ncbi.nlm.nih.gov/pubmed/20129251">the TCGA GBM microarray data set</a> where four subtypes are predicted. The two files (<code>unifiedScaled.txt</code> and <code>TCGA_unified_CORE_ClaNC840.txt</code>) for use is from <a href="https://gdc.cancer.gov/about-data/publications/gbm_exp">here</a>. The web page for the analysis is <a href="https://jokergoo.github.io/cola_examples/TCGA_GBM/" class="uri">https://jokergoo.github.io/cola_examples/TCGA_GBM/</a>.</p>
-<p>Following code is used to perform analysis of consensus partition.</p>
-<div class="sourceCode" id="cb42"><html><body><pre class="r"><span class="co"># code is only for demonstration</span>
-<span class="no">mat</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span>(<span class="st">"https://jokergoo.github.io/cola_examples/TCGA_GBM/unifiedScaled.txt"</span>,
-    <span class="kw">header</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">row.names</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">check.names</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="no">mat</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="no">mat</span>)
-
-<span class="no">subtype</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.table</a></span>(<span class="st">"https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_unified_CORE_ClaNC840.txt"</span>,
-    <span class="kw">sep</span> <span class="kw">=</span> <span class="st">"\t"</span>, <span class="kw">header</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">check.names</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">stringsAsFactors</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
-<span class="no">subtype</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/structure.html">structure</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="no">subtype</span>[<span class="fl">1</span>, -(<span class="fl">1</span>:<span class="fl">2</span>)]), <span class="kw">names</span> <span class="kw">=</span> <span class="fu"><a href="../reference/colnames-dispatch.html">colnames</a></span>(<span class="no">subtype</span>)[-(<span class="fl">1</span>:<span class="fl">2</span>)])
-
-<span class="no">mat</span> <span class="kw">=</span> <span class="no">mat</span>[, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">subtype</span>)]
-
-<span class="no">mat</span> <span class="kw">=</span> <span class="fu"><a href="../reference/adjust_matrix.html">adjust_matrix</a></span>(<span class="no">mat</span>)
-<span class="no">rl</span> <span class="kw">=</span> <span class="fu"><a href="../reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods</a></span>(<span class="no">mat</span>, <span class="kw">top_n</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1000</span>, <span class="fl">2000</span>, <span class="fl">3000</span>, <span class="fl">4000</span>),
-    <span class="kw">max_k</span> <span class="kw">=</span> <span class="fl">6</span>, <span class="kw">mc.cores</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">anno</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="kw">subtype</span> <span class="kw">=</span> <span class="no">subtype</span>),
-    <span class="kw">anno_col</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">subtype</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/structure.html">structure</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(<span class="fl">4</span>), <span class="kw">names</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>(<span class="no">subtype</span>))))</pre></body></html></div>
-<p>Simply typing <code>rl</code> gives a summary of the analysis:</p>
-<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="no">rl</span></pre></body></html></div>
-<pre><code>## A 'ConsensusPartitionList' object with 24 methods.
-##   On a matrix with 11268 rows and 173 columns.
-##   Top rows are extracted by 'SD, CV, MAD, ATC' methods.
-##   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust, NMF' method.
-##   Number of partitions are tried for k = 2, 3, 4, 5, 6.
-##   Performed in total 30000 partitions by row resampling.
-## 
-## Following methods can be applied to this 'ConsensusPartitionList' object:
-##  [1] "cola_report"           "collect_classes"       "collect_plots"         "collect_stats"        
-##  [5] "colnames"              "functional_enrichment" "get_anno_col"          "get_anno"             
-##  [9] "get_classes"           "get_matrix"            "get_membership"        "get_stats"            
-## [13] "is_best_k"             "is_stable_k"           "ncol"                  "nrow"                 
-## [17] "rownames"              "show"                  "suggest_best_k"        "test_to_known_factors"
-## [21] "top_rows_heatmap"      "top_rows_overlap"     
-## 
-## You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
-## or a subset of methods by object[c("SD", "CV")], c("hclust", "kmeans")]</code></pre>
-<p>The HTML report for the analysis is available at <a href="https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_cola_report/cola_report.html" class="uri">https://jokergoo.github.io/cola_examples/TCGA_GBM/TCGA_GBM_subgroup_cola_report/cola_report.html</a>.</p>
+<a href="#real-world-examples" class="anchor"></a>Real-world examples</h2>
 <p>More examples for <em>cola</em> analysis can be found at <a href="https://jokergoo.github.io/cola_collection/" class="uri">https://jokergoo.github.io/cola_collection/</a>.</p>
 </div>
 <div id="session-info" class="section level2">
 <h2 class="hasAnchor">
 <a href="#session-info" class="anchor"></a>Session info</h2>
-<div class="sourceCode" id="cb45"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()</pre></body></html></div>
+<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span>()</pre></body></html></div>
 <pre><code>## R version 4.0.2 (2020-06-22)
 ## Platform: x86_64-apple-darwin17.0 (64-bit)
 ## Running under: macOS Catalina 10.15.5

@@ -1,4 +1,9 @@
-Cchanges in version 1.5.2
+Changes in version 1.5.3
++ `predict_classes()` is speeded up 2x.
++ `get_signatures()`: add `top_signatures` argument to control the number of 
+   top signatures.
+
+Changes in version 1.5.2
 + add a `DownSamplingConsensusPartition` class and corresponding methods.
 + add back `HierarchicalPartition` class and corresponding methods.
 

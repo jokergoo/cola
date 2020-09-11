@@ -1,4 +1,5 @@
 #include <Rcpp.h>
+
 using namespace Rcpp;
 
 
@@ -55,4 +56,36 @@ NumericMatrix pdist(NumericMatrix m1, NumericMatrix m2, int dm) {
 		}
 	}
 	return md;
+}
+
+// [[Rcpp::export]]
+NumericMatrix cal_diff_ratio_r(NumericMatrix mat, NumericMatrix sig_mat, int n_perm, int dm) {
+	// mat: a n_sample x n_sig matrix
+	// sig_mat: a n_group x n_sig matrix
+	// return diff_ratio_r: a n_sample x n_perm matrix
+	int n_sample = mat.nrow();
+	int n_sig = mat.ncol();
+	int n_group = sig_mat.nrow();
+
+	NumericMatrix diff_ratio_r(n_sample, n_perm);
+
+	for(int i = 0; i < n_perm; i ++) {
+		// a n_sample x n_group matrix
+		NumericMatrix sig_mat_r(n_group, n_sig);
+		for(int k = 0; k < n_group; k ++) {
+			NumericVector foo = sig_mat(k, _);
+			NumericVector v = clone(foo);
+			std::random_shuffle(v.begin(), v.end());
+			sig_mat_r(k, _) = v;
+		}
+		NumericMatrix dist_to_signatures_r = pdist(mat, sig_mat_r, dm);
+
+		for(int j = 0; j < n_sample; j ++) {
+			NumericVector x = dist_to_signatures_r(j, _);
+			std::sort(x.begin(), x.end());
+			diff_ratio_r(j, i) = std::abs(x[0] - x[1])/(std::accumulate(std::begin(x), std::end(x), 0.0) / x.size());
+		}
+	}
+
+	return diff_ratio_r;
 }

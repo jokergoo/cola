@@ -27,7 +27,7 @@ library(cola)
 
 If the matrix rows can correspond to genes (e.g. the gene expression matrix,
 or the methylation array data where CpG sites can be annotated to the
-transcription start site of genes), _cola_ performs functional enrichment by
+transcription start site of genes), *cola* performs functional enrichment by
 the `functional_enrichment()` function to the signatures by
 [*ClusterProfiler*](https://bioconductor.org/packages/clusterProfiler/),
 [*DOSE*](https://bioconductor.org/packages/DOSE/) or
@@ -117,7 +117,7 @@ The value of `lt` is a list of data frames for different ontologies combined
 with different k-means groups. Since k-means clustering has already been
 applied in previous `get_signatures()`, the k-means clustering result is
 stored in `res` object and `functional_enrichment()` directly uses the
-classification from it.
+grouping from it.
 
 ```{r}
 names(lt)
@@ -131,19 +131,16 @@ to Entrez IDs.
 In following example we demonstrate how to properly set the ID mapping by [the
 Golub leukemia
 dataset](https://jokergoo.github.io/cola_examples/Golub_leukemia/). The result
-file is already generated.
+file is already generated and integrate in *cola* package.
 
-```{r, results = "hide"}
-download.file("https://jokergoo.github.io/cola_examples/Golub_leukemia/Golub_leukemia_subgroup.rds", 
-    destfile = "Golub_leukemia_subgroup.rds", quiet = TRUE)
-rl = readRDS("Golub_leukemia_subgroup.rds")
-file.remove("Golub_leukemia_subgroup.rds") 
+```{r}
+data(golub_cola) 
 ```
 
 To simplify, we only take result from one method:
 
 ```{r, fig.width = 8, fig.height = 7, out.width = "500"}
-res = rl["ATC:skmeans"]
+res = golub_cola["ATC:skmeans"]
 head(rownames(res))
 set.seed(123)
 get_signatures(res, k = 3)

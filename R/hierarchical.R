@@ -263,6 +263,8 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 	}
 	dend = as.dendrogram(lt[["0"]], heightAttribute = "node_height", edgetext = TRUE)
 
+	dend = dendextend::`order.dendrogram<-`(dend, value = 1:nobs(dend))
+
 	dend = edit_node(dend, function(d, index) {
 		if(is.leaf(d)) {
 			attr(d, "node_id") = attr(d, "label")
@@ -295,53 +297,64 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 		d
 	})
 
-	od = structure(1:length(order.dendrogram(dend)), names = labels(dend))
-	dend_env = new.env(parent = emptyenv())
-	dend_env$dend = dend
+	# od = structure(1:length(order.dendrogram(dend)), names = labels(dend))
+	# dend_env = new.env(parent = emptyenv())
+	# dend_env$dend = dend
 
-	update_midpoint = function(index = NULL) {
-		if(is.null(index)) {
-			if(is.leaf(dend_env$dend)) {
-				pos = od[attr(dend_env$dend, "label")]
-				midpoint = 0
+	# update_midpoint = function(index = NULL) {
+	# 	if(is.null(index)) {
+	# 		if(is.leaf(dend_env$dend)) {
+	# 			pos = od[attr(dend_env$dend, "label")]
+	# 			midpoint = 0
+	# 		} else {
+	# 			x = NULL
+	# 			for(i in seq_len(length(dend_env$dend))) {
+	# 				if(is.null(attr(dend_env$dend[[i]], "x"))) {
+	# 					update_midpoint(i)
+	# 				}
+	# 				x[i] = attr(dend_env$dend[[i]], "x")
+	# 			}
+	# 			pos = (max(x) + min(x))/2
+	# 			midpoint = (max(x) - min(x))/2
+	# 		}
+	# 	} else {
+	# 		if(is.leaf(dend_env$dend[[index]])) {
+	# 			pos = od[attr(dend_env$dend[[index]], "label")]
+	# 			midpoint = 0
+	# 		} else {
+	# 			x = NULL
+	# 			for(i in seq_len(length(dend_env$dend[[index]]))) {
+	# 				if(is.null(attr(dend_env$dend[[c(index, i)]], "x"))) {
+	# 					update_midpoint(c(index, i))
+	# 				}
+	# 				x[i] = attr(dend_env$dend[[c(index, i)]], "x")
+	# 			}
+	# 			pos = (max(x) + min(x))/2
+	# 			midpoint = (max(x) - min(x))/2
+	# 		}
+	# 	}
+	# 	if(is.null(index)) {
+	# 		attr(dend_env$dend, "x") = pos
+	# 	} else {
+	# 		attr(dend_env$dend[[index]], "x") = pos
+	# 		attr(dend_env$dend[[index]], "midpoint") = midpoint
+	# 	}
+	# }
+	# update_midpoint()
+
+	oe = try(dend_tmp <- as.dendrogram(as.hclust(dend)), silent = TRUE)
+
+	if(!inherits(oe, "try-error")) {
+		dend = edit_node(dend, function(d, ind) {
+			if(length(ind) == 0) {
+				attr(d, "midpoint") = attr(dend_tmp, "midpoint")
 			} else {
-				x = NULL
-				for(i in seq_len(length(dend_env$dend))) {
-					if(is.null(attr(dend_env$dend[[i]], "x"))) {
-						update_midpoint(i)
-					}
-					x[i] = attr(dend_env$dend[[i]], "x")
-				}
-				pos = (max(x) + min(x))/2
-				midpoint = (max(x) - min(x))/2
+				attr(d, "midpoint") = attr(dend_tmp[[ind]], "midpoint")
 			}
-		} else {
-			if(is.leaf(dend_env$dend[[index]])) {
-				pos = od[attr(dend_env$dend[[index]], "label")]
-				midpoint = 0
-			} else {
-				x = NULL
-				for(i in seq_len(length(dend_env$dend[[index]]))) {
-					if(is.null(attr(dend_env$dend[[c(index, i)]], "x"))) {
-						update_midpoint(c(index, i))
-					}
-					x[i] = attr(dend_env$dend[[c(index, i)]], "x")
-				}
-				pos = (max(x) + min(x))/2
-				midpoint = (max(x) - min(x))/2
-			}
-		}
-		if(is.null(index)) {
-			attr(dend_env$dend, "x") = pos
-		} else {
-			attr(dend_env$dend[[index]], "x") = pos
-			attr(dend_env$dend[[index]], "midpoint") = midpoint
-		}
+			d
+		})
 	}
-	update_midpoint()
 
-	# reorder(dend_env$dend, wts = order(labels(dend_env$dend)))
-	dend = dend_env$dend
 	dendrapply(dend, function(d) {
 		if(is.leaf(d)) {
 			attr(d, "height") = 0
@@ -358,7 +371,6 @@ get_hierarchy = function(object, depth = max_depth(object)) {
 	}
 
 	dend = subgroup_dend(object, hierarchy)
-	dend = dendextend::`order.dendrogram<-`(dend, value = 1:nobs(dend))
 	dend
 }
 
@@ -370,6 +382,21 @@ random_dend = function(n) {
 	dendrapply(dend, function(x) {attr(x, "height") = 0; x})
 }
 
+zero_height_dend = function(n) {
+	check_pkg("data.tree", bioc = FALSE)
+
+	lt = data.tree::Node$new("foo")
+	lt$node_height = 0
+	for(i in 1:n) {
+		lt$AddChildNode({
+			node = data.tree::Node$new(paste0("foo", i))
+			node$node_height = 0
+			node
+		})
+	}
+	dend = as.dendrogram(lt, heightAttribute = "node_height")
+	
+}
 
 calc_dend = function(object, depth = max_depth(object)) {
 
