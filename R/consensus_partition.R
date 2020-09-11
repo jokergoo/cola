@@ -275,8 +275,11 @@ consensus_partition = function(data,
 				mat = data[ind, , drop = FALSE]
 			}
 			for(y in k) {
-				if(interactive() && verbose && mc.cores == 1) cat(strrep("\b", 120))
-				if(interactive() && verbose && mc.cores == 1) qqcat("@{prefix}  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
+				if(interactive() && verbose && mc.cores == 1) {
+					msg = qq("@{prefix}  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
+					cat(strrep("\r", nchar(msg)))
+					cat(msg)
+				}
 				partition_list = c(partition_list, list(list(partition_fun(mat, y, column_ind_sub))))
 				param = rbind(param, data.frame(top_n = top_n[i], k = y, n_row = nrow(mat), n_col = ncol(mat), stringsAsFactors = FALSE))
 			}

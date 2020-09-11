@@ -345,7 +345,7 @@ set_counter = function(n, fmt = "%s") {
 			str = paste0(i, "/", n, " (", pct, "%)")
 			str = sprintf(fmt, str)
 
-			cat(paste(rep("\b", 200), collapse=""))
+			cat(paste(rep("\r", nchar(str)), collapse=""))
 			cat(str)
 			if(i == n) cat("\n")
 
