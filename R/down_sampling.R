@@ -31,6 +31,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # -verbose Whether to print messages.
 # -prefix Internally used.
 # -anno Annotation data frame.
+# -anno_col Annotation colors.
 # -dist_method Method for predict the class for other columns.
 # -.env An environment, internally used.
 # -... All pass to `consensus_partition`.
@@ -50,7 +51,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # 	top_value_method = "SD", partition_method = "kmeans")
 # }
 consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(data)*0.2), 250),
-	verbose = TRUE, prefix = "", anno = NULL, 
+	verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
 	dist_method = c("euclidean", "correlation", "cosine"),
 	.env = NULL, ...) {
 
@@ -74,6 +75,28 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 
 	data = data[, .env$column_index, drop = FALSE]
 
+	if(!is.null(anno)) {
+		if(is.atomic(anno)) {
+			anno_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = anno_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = anno_nm
+			}
+		} else if(ncol(anno) == 1) {
+			if(!is.null(anno_col)) {
+				if(is.atomic(anno_col)) {
+					anno_col = list(anno_col)
+					names(anno_col) = colnames(anno)
+				}
+			}
+		}
+		anno2 = anno[.env$column_index, , drop = FALSE]
+	} else {
+		anno2 = NULL
+	}
+
 	qqcat("@{prefix}* @{subset} columns are randomly sampled from @{ncol(data)} columns.\n")
 		
 	column_index = .env$column_index
@@ -82,7 +105,7 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 	
 	# top_value_list cannot be repetitively used here
 	.env$all_top_value_list = NULL
-	cp = consensus_partition(.env = .env, prefix = prefix, ...)
+	cp = consensus_partition(.env = .env, prefix = prefix, anno = anno2, anno_col = anno_col, ...)
 	
 	obj = new("DownSamplingConsensusPartition")
 	for(nm in slotNames(cp)) {
@@ -169,6 +192,7 @@ setMethod(f = "show",
 #
 # == param
 # -object A `DownSamplingConsensusPartition-class` object.
+# -reduce Used internally.
 #
 # == value
 # A data frame if ``anno`` was specified in `consensus_partition_by_down_sampling`, or else ``NULL``.
@@ -181,8 +205,12 @@ setMethod(f = "show",
 # get_anno(golub_cola_ds)
 setMethod(f = "get_anno",
 	signature = "DownSamplingConsensusPartition",
-	definition = function(object) {
-	object@full_anno
+	definition = function(object, reduce = FALSE) {
+	if(reduce) {
+		object@anno
+	} else {
+		object@full_anno
+	}
 })
 
 # == title
@@ -270,7 +298,7 @@ setMethod(f = "test_to_known_factors",
 	}
 
 	class_df = get_classes(object, k)
-	l = class_df$p >= p_cutoff
+	l = class_df$p <= p_cutoff
 	class = as.character(class_df$class)[l]
 
 	if(is.null(known)) {

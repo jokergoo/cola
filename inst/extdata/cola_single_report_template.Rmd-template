@@ -65,8 +65,6 @@ Partitioning method used:
 res@partition_method
 ```
 
-### Density distribution
-
 The density distribution for each sample is visualized as in one column in the
 following heatmap. The clustering is based on the distance which is the
 Kolmogorov-Smirnov statistic between two distributions.

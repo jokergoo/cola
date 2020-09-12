@@ -9,7 +9,7 @@ Heatmap of membership in each partition
 }
 \usage{
 \S4method{membership_heatmap}{ConsensusPartition}(object, k, internal = FALSE,
-    anno = get_anno(object), anno_col = get_anno_col(object),
+    anno = object@anno, anno_col = get_anno_col(object),
     show_column_names = FALSE, ...)
 }
 \arguments{

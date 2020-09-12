@@ -175,9 +175,13 @@ matrix and the silhouette score is calculated from the consensus matrix.
 
 
 ```{r <%=chunk_prefix%>-get-classes, results = "asis", echo = FALSE, include = TRUE}
-<% for(k in all_k) { -%>
+<% for(k in all_k) {
+if(inherits(res, "DownSamplingConsensusPartition")) {-%>
+knitr_add_tab_item('get_classes(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-get-classes', hide_and_show = TRUE)
+<%} else {-%>
 knitr_add_tab_item('cbind(get_classes(res, k = <%=k%>), get_membership(res, k = <%=k%>))', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-get-classes', hide_and_show = TRUE)
-<%}-%>
+<%}
+}-%>
 knitr_insert_tabs('<%=chunk_prefix%>-get-classes')
 ```
 

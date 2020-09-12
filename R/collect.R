@@ -595,7 +595,7 @@ setMethod(f = "collect_classes",
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",
 	definition = function(object, internal = FALSE, show_row_names = FALSE,
-	anno = get_anno(object), anno_col = get_anno_col(object)) {
+	anno = object@anno, anno_col = object@anno_col) {
 
 	all_k = object@k
 

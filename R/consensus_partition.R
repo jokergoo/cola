@@ -743,7 +743,7 @@ else take the k with higest votes of
 setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
-	anno = get_anno(object), anno_col = get_anno_col(object), 
+	anno = object@anno, anno_col = get_anno_col(object), 
 	show_row_names = FALSE, simplify = FALSE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
@@ -802,6 +802,7 @@ setMethod(f = "consensus_heatmap",
 			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col, show_annotation_name = !internal)
 		}
 	}
+
 	if(show_row_names && !is.null(rownames(consensus_mat))) {
 		ht_list = ht_list + rowAnnotation(rn = anno_text(rownames(consensus_mat)))
 	}
@@ -845,7 +846,7 @@ setMethod(f = "consensus_heatmap",
 setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE, 
-	anno = get_anno(object), anno_col = get_anno_col(object),
+	anno = object@anno, anno_col = get_anno_col(object),
 	show_column_names = FALSE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")

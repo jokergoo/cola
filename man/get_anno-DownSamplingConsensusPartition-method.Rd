@@ -7,11 +7,12 @@ Get annotations
 Get annotations
 }
 \usage{
-\S4method{get_anno}{DownSamplingConsensusPartition}(object)
+\S4method{get_anno}{DownSamplingConsensusPartition}(object, reduce = FALSE)
 }
 \arguments{
 
   \item{object}{A \code{\link{DownSamplingConsensusPartition-class}} object.}
+  \item{reduce}{Used internally.}
 
 }
 \value{

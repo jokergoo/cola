@@ -790,6 +790,8 @@ setMethod(f = "compare_signatures",
 		m = make_comb_mat(sig_list)
 		if(length(comb_size(m)) > 40) {
 			m = m[order(comb_size(m), decreasing = TRUE)[1:40]]
+		} else {
+			m = m[order(comb_size(m), decreasing = TRUE)]
 		}
 		draw(UpSet(m, column_title = "Signatures from different nodes"))
 	}

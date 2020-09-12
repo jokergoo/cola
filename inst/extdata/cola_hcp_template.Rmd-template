@@ -246,7 +246,7 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 Compare signatures from different nodes:
 
 ```{r, prefix = "comapre_signatures-from-hierarchical-partition"}
-compare_signatures(res_hcp)
+compare_signatures(res_hcp, verbose = FALSE)
 ```
 
 If there are too many signatures, `top_signatures = ...` can be set to only show the 
