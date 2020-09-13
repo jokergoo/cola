@@ -1,8 +1,8 @@
 Package: cola
 Type: Package
 Title: A Framework for Consensus Partitioning
-Version: 1.5.3
-Date: 2020-09-10
+Version: 1.5.4
+Date: 2020-09-13
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.6.0)
