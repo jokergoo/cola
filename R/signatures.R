@@ -198,6 +198,8 @@ setMethod(f = "get_signatures",
 			fdr = Ftest(data2, class)
 		} else if(diff_method == "pamr") {
 			fdr = pamr(data2, class, fdr.ouput = fdr_cutoff)
+		} else if(diff_method == "one_vs_others") {
+			fdr = one_vs_others(data2, class)
 		} else {
 			fdr = diff_method_fun(data2, class)
 		}
@@ -756,8 +758,8 @@ one_vs_others = function(mat, class) {
 	dfl = list()
 	for(x in le) {
 		fa = as.vector(class)
-		fa[class == le] = "a"
-		fa[class != le] = "b"
+		fa[class == x] = "a"
+		fa[class != x] = "b"
 		fa = factor(fa, levels = c("a", "b"))
 		dfl[[x]] = genefilter::rowttests(mat, fa)[, "p.value"]
 	}
