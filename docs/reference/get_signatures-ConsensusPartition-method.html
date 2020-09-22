@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.5</span>
       </span>
     </div>
 
@@ -158,7 +158,7 @@
     <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>888</span>,
     <span class='kw'>left_annotation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>right_annotation</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
     <span class='kw'>col</span> <span class='kw'>=</span> <span class='kw'>if</span>(<span class='no'>scale_rows</span>) <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"green"</span>, <span class='st'>"white"</span>, <span class='st'>"red"</span>) <span class='kw'>else</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"blue"</span>, <span class='st'>"white"</span>, <span class='st'>"red"</span>),
-    <span class='kw'>simplify</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='st'>""</span>,
+    <span class='kw'>simplify</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>enforce</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
     <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -255,6 +255,10 @@
     <tr>
       <th>prefix</th>
       <td><p>Only used internally.</p></td>
+    </tr>
+    <tr>
+      <th>enforce</th>
+      <td><p>The analysis is cached by default, so that the analysis with the same input will be automatically extracted without rerunning them. Set <code>enforce</code> to <code>TRUE</code> to enforce the funtion to re-perform the analysis.</p></td>
     </tr>
     <tr>
       <th>...</th>
