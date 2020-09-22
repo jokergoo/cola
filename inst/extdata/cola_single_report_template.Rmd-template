@@ -25,6 +25,7 @@ opts_chunk$set(
 )
 suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
+ht_opt$message = FALSE
 ```
 
 <% res = object -%>
@@ -110,6 +111,7 @@ i_section = 1
 n_section = 1
 top_value_method = res@top_value_method
 partition_method = res@partition_method
+
 tmpfile = tempfile(tmpdir = cola:::.ENV$TEMP_DIR)
 
 brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)

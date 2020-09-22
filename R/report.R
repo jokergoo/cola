@@ -236,6 +236,10 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 		mc.cores = 1
 	}
 
+	if(identical(topenv(), .GlobalEnv)) {
+		stop_wrap("`cola_report()` cannot be run under test mode.")
+	}
+
 	KNITR_TAB_ENV$prefix = NULL
 
 	.t1 = Sys.time()
@@ -248,12 +252,18 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 
 	od = getOption("digits")
 	wd = getwd()
+	nv = length(dev.list())
 	on.exit({
 		options(digits = od)
 		setwd(wd)
 		if(!is.null(.ENV$TEMP_DIR)) {
 			unlink(.ENV$TEMP_DIR, recursive = TRUE, force = TRUE)
 			.ENV$TEMP_DIR = NULL
+		}
+		nv2 = length(dev.list())
+		while(nv2 > nv & nv2 > 1) {
+			dev.off2()
+			nv2 = length(dev.list())
 		}
 	})
 

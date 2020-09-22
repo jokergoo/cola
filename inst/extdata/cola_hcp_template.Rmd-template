@@ -25,6 +25,7 @@ opts_chunk$set(
 )
 suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
+ht_opt$message = FALSE
 ```
 
 <% res_hcp = object -%>
