@@ -33,6 +33,8 @@
 # -col Colors.
 # -simplify Only used internally.
 # -prefix Only used internally.
+# -enforce The analysis is cached by default, so that the analysis with the same input will be automatically extracted
+#     without rerunning them. Set ``enforce`` to ``TRUE`` to enforce the funtion to re-perform the analysis.
 # -... Other arguments.
 # 
 # == details 
@@ -87,7 +89,7 @@ setMethod(f = "get_signatures",
 	plot = TRUE, verbose = TRUE, seed = 888,
 	left_annotation = NULL, right_annotation = NULL,
 	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
-	simplify = FALSE, prefix = "",
+	simplify = FALSE, prefix = "", enforce = FALSE,
 	...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
@@ -161,6 +163,8 @@ setMethod(f = "get_signatures",
 	
 	nm = paste0("signature_fdr_", hash)
 	if(verbose) qqcat("@{prefix}* cache hash: @{hash} (seed @{seed}).\n")
+
+	if(enforce) object@.env[[nm]] = NULL
 
 	find_signature = TRUE
 	if(!is.null(object@.env[[nm]])) {

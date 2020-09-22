@@ -27,7 +27,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 #
 # == param
 # -data A numeric matrix where subgroups are found by columns.
-# -subset Number of columns to randomly sample.
+# -subset Number of columns to randomly sample, or a vector of selected indices.
 # -verbose Whether to print messages.
 # -prefix Internally used.
 # -anno Annotation data frame.
@@ -97,10 +97,17 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 		anno2 = NULL
 	}
 
-	qqcat("@{prefix}* @{subset} columns are randomly sampled from @{ncol(data)} columns.\n")
+	qqcat("@{prefix}* @{ifelse(length(subset) == 1, subset, length(subset))} columns are randomly sampled from @{ncol(data)} columns.\n")
 		
 	column_index = .env$column_index
-	subset_index = sample(column_index, subset)
+	if(length(subset) == 1) {
+		subset_index = sample(column_index, subset)
+	} else {
+		if(!is.numeric(subset)) {
+			stop_wrap("If `subset` is specified as an indices vector, it should be in numeric.")
+		}
+		subset_index = column_index[subset]
+	}
 	.env$column_index = subset_index
 	
 	# top_value_list cannot be repetitively used here

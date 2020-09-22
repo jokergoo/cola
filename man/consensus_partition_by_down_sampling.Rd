@@ -15,7 +15,7 @@ consensus_partition_by_down_sampling(data, subset = min(round(ncol(data)*0.2), 2
 \arguments{
 
   \item{data}{A numeric matrix where subgroups are found by columns.}
-  \item{subset}{Number of columns to randomly sample.}
+  \item{subset}{Number of columns to randomly sample, or a vector of selected indices.}
   \item{verbose}{Whether to print messages.}
   \item{prefix}{Internally used.}
   \item{anno}{Annotation data frame.}
