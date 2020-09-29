@@ -11,6 +11,7 @@ hierarchical_partition(data,
     top_value_method = "ATC",
     partition_method = "skmeans",
     PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
+    min_n_signatures = 100, min_p_signatures = 0.05,
     max_k = 4, verbose = TRUE, mc.cores = 1, ...)
 }
 \arguments{
@@ -21,6 +22,8 @@ hierarchical_partition(data,
   \item{PAC_cutoff}{the cutoff of PAC scores to determine whether to continue looking for subgroups.}
   \item{min_samples}{the cutoff of number of samples to determine whether to continue looking for subgroups.}
   \item{subset}{Number of columns to randomly sample.}
+  \item{min_n_signatures}{Minimal number of signatures under the best classification.}
+  \item{min_p_signatures}{Minimal proportion of signatures under the best classification. If the corresponding values are smaller than both \code{min_n_signatures} and \code{min_p_signatures}, the hierarchical partitioning stops on that node.}
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}
   \item{verbose}{whether print message.}
   \item{mc.cores}{multiple cores to use. }
@@ -42,7 +45,18 @@ to see which functions can be applied on it.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+\dontrun{
+set.seed(123)
+m = cbind(rbind(matrix(rnorm(20*20, mean = 2, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20)),
+          rbind(matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 1, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20)),
+          rbind(matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 1, sd = 0.3), nr = 20))
+         ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
+rh = hierarchical_partition(m, top_value_method = "SD", partition_method = "kmeans")
+}
 }

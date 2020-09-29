@@ -44,6 +44,9 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
 # -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
 # -subset Number of columns to randomly sample.
+# -min_n_signatures Minimal number of signatures under the best classification.
+# -min_p_signatures Minimal proportion of signatures under the best classification. If the corresponding values
+#     are smaller than both ``min_n_signatures`` and ``min_p_signatures``, the hierarchical partitioning stops on that node.
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
@@ -65,10 +68,26 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == examples
+# \dontrun{
+# set.seed(123)
+# m = cbind(rbind(matrix(rnorm(20*20, mean = 2, sd = 0.3), nr = 20),
+#                 matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+#                 matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20)),
+#           rbind(matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+#                 matrix(rnorm(20*20, mean = 1, sd = 0.3), nr = 20),
+#                 matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20)),
+#           rbind(matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+#                 matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+#                 matrix(rnorm(20*20, mean = 1, sd = 0.3), nr = 20))
+#          ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
+# rh = hierarchical_partition(m, top_value_method = "SD", partition_method = "kmeans")
+# }
 hierarchical_partition = function(data, 
 	top_value_method = "ATC", 
 	partition_method = "skmeans",
 	PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
+	min_n_signatures = 100, min_p_signatures = 0.05,
 	max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
 
 	cl = match.call()
@@ -77,6 +96,8 @@ hierarchical_partition = function(data,
 		if(verbose) qqcat("! 'min_samples' was reset to 3.\n")
 		min_samples = 3
 	}
+
+	check_pkg("Polychrome", bioc = FALSE)
 
 	if(verbose) {
 		qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
@@ -115,6 +136,7 @@ hierarchical_partition = function(data,
 
 	    best_k = suggest_best_k(part)
 	    if(is.na(best_k)) {
+	    	attr(lt$obj, "stop_reason") = "Rand indices for all k were too high."
 	    	if(verbose) qqcat("@{prefix}* Rand index is too high, no meaningful subgroups, stop.\n")
 	    	return(lt)
 	    }
@@ -126,57 +148,83 @@ hierarchical_partition = function(data,
 	    }
 	    mat = mat[order(.env$all_top_value_list[[1]], decreasing = TRUE), , drop = FALSE]
 
-	    ## split k classes into two groups
+	    # check PAC score
+	    PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
+	    if(PAC_score > PAC_cutoff) {
+	    	if(verbose) qqcat("@{prefix}* PAC score is too big (@{sprintf('%.2f', PAC_score)}), stop.\n")
+	    	attr(lt$obj, "stop_reason") = "PAC score was too big."
+	    	return(lt)
+	    }
+
+	    .env$all_top_value_list = NULL
+
+	    ## test the number of samples
+	    sample_too_small = FALSE
 	    if(best_k == 2) {
 	    	kg1 = 1
 	    	kg2 = 2
 	    	set1 = which(cl$class == kg1)
 	    	set2 = which(cl$class == kg2)
+
+	    	if(length(set1) < min_samples || length(set2) < min_samples) {
+	    		sample_too_small = TRUE
+	    	}
 	    } else {
 	    	tb = table(cl$class)
-	    	kg1 = as.numeric(names(tb[which.max(tb)[1]]))
-	    	kg2 = sort(setdiff(cl$class, kg1))
 
-	    	# group_mean = do.call(rbind, tapply(1:ncol(mat), cl$class, function(ind) rowMeans(mat[, ind, drop = FALSE])))
-	    	# kg = kmeans(group_mean, centers = 2)$cluster
-	    	# kg1 = as.numeric(rownames(group_mean)[kg == 1])
-	    	# kg2 = as.numeric(rownames(group_mean)[kg == 2])
+	    	# method1: take the largest group as group 1
+	    	# kg1 = as.numeric(names(tb[which.max(tb)[1]]))
+	    	# kg2 = sort(setdiff(cl$class, kg1))
+	    	# set1 = which(cl$class %in% kg1)
+	    	# set2 = which(cl$class %in% kg2)
 
-	    	set1 = which(cl$class %in% kg1)
-	    	set2 = which(cl$class %in% kg2)
+	    	# method2: take the group with minimal within-group mean distance as group 1
+	    	#   the class labels were already sorted by that
+	    	sample_too_small = TRUE
+	    	for(ik in sort(as.numeric(names(tb)))) {
+	    		kg1 = ik
+	    		kg2 = sort(setdiff(cl$class, kg1))
+
+	    		set1 = which(cl$class %in% kg1)
+	    		set2 = which(cl$class %in% kg2)
+
+	    		if(length(set1) >= min_samples && length(set2) >= min_samples) {
+		    		sample_too_small = FALSE
+		    		break
+		    	}
+	    	}
 	    }
 
-	    .env$all_top_value_list = NULL
-
-	    if(verbose) qqcat("@{prefix}* best k = @{best_k}, split into two groups with class IDs (@{paste(kg1, collapse=',')}) and (@{paste(kg2, collapse=',')})\n")
-		PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
-	    if(PAC_score > PAC_cutoff) {
-	    	if(verbose) qqcat("@{prefix}* PAC score is too big (@{sprintf('%.2f', PAC_score)}), stop.\n")
-	    	return(lt)
-	    }
-
-    	if(length(set1) < min_samples) {
-    		if(verbose) qqcat("@{prefix}* one of the subgroup has too few columns (@{length(set1)}), won't split.\n")
+    	if(sample_too_small) {
+    		if(verbose) qqcat("@{prefix}* some of the subgroups have too few columns (< @{min_samples}), won't split.\n")
+    		attr(lt$obj, "stop_reason") = "Subgroup had too few columns."
     		return(lt)
     	}
 
-    	if(length(set2) < min_samples) {
-    		if(verbose) qqcat("@{prefix}* one of the subgroups has too few columns (@{length(set2)}), won't split.\n")
+    	# check the numbers of signatures
+    	if(verbose) qqcat("@{prefix}* checking number of signatures in the best classification.\n")
+    	sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE)
+    	n_sig = nrow(sig_df)
+    	p_sig = n_sig/nrow(part)
+    	if(n_sig <= min_n_signatures && p_sig <= min_p_signatures) {
+    		if(verbose) qqcat("@{prefix}* too few signatures (n = @{n_sig}, p = @{sprintf('%.3f', p_sig)}) under the best classification, stop.\n")
+    		attr(lt$obj, "stop_reason") = "There were too few signatures."
     		return(lt)
     	}
 
-    	if(verbose) qqcat("@{prefix}* partition into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
+    	if(verbose) qqcat("@{prefix}* best k = @{best_k}, split into two groups with class IDs (@{paste(kg1, collapse=',')}) and (@{paste(kg2, collapse=',')})\n")
+		if(verbose) qqcat("@{prefix}* partition into two subgroups with @{length(set1)} and @{length(set2)} columns.\n")
     	# insert the two subgroups into the hierarchy
     	sub_node_1 = paste0(node_id, 1)
     	sub_node_2 = paste0(node_id, 0)
 
     	lt2 = lapply(1:2, function(ind) {
-	    	if(length(set1) >= min_samples && ind == 1) {
+	    	if(ind == 1) {
 	    		return(.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1,
 	    			min_samples = min_samples, max_k = min(max_k, length(set1)-1), mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
 
-	    	if(length(set2) >= min_samples && ind == 2) {
+	    	if(ind == 2) {
 	    		return(.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2,
 	    			min_samples = min_samples, max_k = min(max_k, length(set2)-1), mc.cores = mc.cores, verbose = verbose, ...))
 	    	}
@@ -229,10 +277,12 @@ hierarchical_partition = function(data,
 	names(hp@subgroup) = colnames(data)
 
 	le = unique(as.vector(hp@hierarchy))
-	if(length(le) <= 16) {
-		hp@subgroup_col = structure(brewer_pal_set2_col[seq_along(le)], names = le)
+	col_pal = Polychrome::kelly.colors(22)
+	col_pal = col_pal[!(names(col_pal) %in% c("white", "black"))]
+	if(length(le) <= 20) {
+		hp@subgroup_col = structure(col_pal[seq_along(le)], names = le)
 	} else {
-		hp@subgroup_col = structure(rand_color(length(le), luminosity = "bright"), names = le)
+		hp@subgroup_col = structure(c(col_pal, rand_color(length(le) - length(col_pal))), names = le)
 	}
 	hp@call = cl
 	hp@.env = hp@list[[1]]@.env
@@ -476,6 +526,10 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(golub_cola_rh)
+# get_classes(golub_cola_rh)
+# get_classes(golub_cola_rh, depth = 2)
 setMethod(f = "get_classes",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object)) {
@@ -505,6 +559,9 @@ setMethod(f = "get_classes",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(golub_cola_rh)
+# golub_cola_rh
 setMethod(f = "show",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
@@ -564,34 +621,50 @@ setMethod(f = "show",
 # == param
 # -object a `HierarchicalPartition-class` object.
 # -depth depth of the hierarchy.
+# -group_diff Cutoff for the maximal difference between group means.
+# -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
 # -scale_rows whether apply row scaling when making the heatmap.
 # -anno a data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `hierarchical_partition`.
 # -anno_col a list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_column_names whether show column names in the heatmap.
+# -column_names_gp Graphic parameters for column names.
 # -verbose whether to print messages.
 # -plot whether to make the plot.
+# -seed Random seed.
 # -... other arguments pass to `get_signatures,ConsensusPartition-method`.
 # 
 # == details
 # The function calls `get_signatures,ConsensusPartition-method` to find signatures at
 # each node of the partition hierarchy.
 #
-# == value
-# A list of row indices where rows are significantly different between subgroups in at least one node.
+# == return 
+# A data frame with more than two columns:
+#
+# -``which_row``: row index corresponding to the original matrix.
+# -``km``: the k-means groups if ``row_km`` is set.
+# -other_columns: the mean value (depending rows are scaled or not) in each subgroup.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == examples
+# \donttest{
+# data(golub_cola_rh)
+# tb = get_signatures(golub_cola_rh)
+# head(tb)
+# }
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object),
+	group_diff = cola_opt$group_diff,
+	row_km = NULL,
 	scale_rows = object[1]@scale_rows, 
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
-	show_column_names = FALSE, 
-	verbose = TRUE, plot = TRUE,
+	show_column_names = FALSE, column_names_gp = gpar(fontsize = 8),
+	verbose = TRUE, plot = TRUE, seed = 888,
 	...) {
 
 	if(depth <= 1) {
@@ -613,29 +686,104 @@ setMethod(f = "get_signatures",
 
 	all_index = sort(unique(unlist(lapply(sig_lt, function(x) x[, 1]))))
 
-	sig = data.frame(which_row = all_index)
-	
-	if(!plot) {
-		return(invisible(sig))
-	}
+	returned_df = data.frame(which_row = all_index)
 
-	all_sig = all_index
-	if(verbose) qqcat("* in total @{length(all_sig)} signatures in all classes found\n")
-
-	m = object@.env$data[all_sig, , drop = FALSE]
-
+	# filter by group_diff
+	mat = object@.env$data[all_index, , drop = FALSE]
 	class = get_classes(object, depth = depth)[, 1]
 
-	if(nrow(m) > 2000) {
-		if(verbose) qqcat("* randomly sample @{2000} rows from @{nrow(m)} total rows.\n")
-		ind = sample(nrow(m), 2000)
+	mat1 = mat
+	if(nrow(mat) == 1) {
+		group_mean = rbind(tapply(mat1, class, mean))
 	} else {
-		ind = seq_len(nrow(m))
+		group_mean = do.call("cbind", tapply(seq_len(ncol(mat1)), class, function(ind) {
+			rowMeans(mat1[, ind, drop = FALSE])
+		}))
 	}
-	mat1 = m[ind, , drop = FALSE]
+	colnames(group_mean) = paste0("mean_", colnames(group_mean))
+	returned_df = cbind(returned_df, group_mean)
+	returned_df$group_diff = apply(group_mean, 1, function(x) max(x) - min(x))
+
+	if(group_diff > 0) {
+		l_diff = returned_df$group_diff >= group_diff
+		mat = mat[l_diff, , drop = FALSE]
+		mat1 = mat1[l_diff, , drop = FALSE]
+		returned_df = returned_df[l_diff, , drop = FALSE]
+	}
+
+	if(scale_rows) {
+		mat1_scaled = t(scale(t(mat)))
+		if(nrow(mat) == 1) {
+			group_mean_scaled = rbind(tapply(mat1_scaled, class, mean))
+		} else {
+			group_mean_scaled = do.call("cbind", tapply(seq_len(ncol(mat1_scaled)), class, function(ind) {
+				rowMeans(mat1_scaled[, ind, drop = FALSE])
+			}))
+		}
+		colnames(group_mean_scaled) = paste0("scaled_mean_", colnames(group_mean_scaled))
+		returned_df = cbind(returned_df, group_mean_scaled)
+	}
+
+	returned_obj = returned_df
+	rownames(returned_obj) = NULL
+
+	## add k-means
+	row_km_fit = NULL
+	if(nrow(mat1) > 10) {
+		if(scale_rows) {
+			mat_for_km = t(scale(t(mat1)))
+		} else {
+			mat_for_km = mat1
+		}
+
+		if(nrow(mat_for_km) > 5000) {
+			set.seed(seed)
+			mat_for_km2 = mat_for_km[sample(nrow(mat_for_km), 5000), , drop = FALSE]
+		} else {
+			mat_for_km2 = mat_for_km
+		}
+
+		set.seed(seed)
+		if(is.null(row_km)) {
+			row_km = guess_best_km(mat_for_km2)
+			if(length(unique(class)) == 1) row_km = 1
+			if(length(unique(class)) == 2) row_km = min(row_km, 2)
+		}
+		if(row_km > 1) {
+			row_km_fit = kmeans(mat_for_km2, centers = row_km)
+			returned_obj$km = apply(pdist(row_km_fit$centers, mat_for_km, as.integer(1)), 2, which.min)
+		}
+		if(verbose) qqcat("* split rows into @{row_km} groups by k-means clustering.\n")
+	}
+
+	if(verbose) {
+		qqcat("* found @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%).\n")
+	}
+
+	if(nrow(mat) == 0) {
+		if(plot) {
+			grid.newpage()
+			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
+			grid.text("no sigatures", gp = gpar(fontsize = fontsize))
+		}
+		return(invisible(data.frame(which_row = integer(0))))
+	}
+	
+	if(!plot) {
+		return(invisible(returned_obj))
+	}
+
+	if(nrow(mat) > 2000) {
+		set.seed(seed)
+		if(verbose) qqcat("* randomly sample @{2000} rows from @{nrow(mat)} total rows.\n")
+		row_index = sample(nrow(mat), 2000)
+	} else {
+		row_index = seq_len(nrow(mat))
+	}
+	mat1 = mat[row_index, , drop = FALSE]
 
 	base_mean = rowMeans(mat1)
-	if(nrow(mat1) == 1) {
+	if(nrow(mat) == 1) {
 		group_mean = matrix(tapply(mat1, class, mean), nrow = 1)
 	} else {
 		group_mean = do.call("cbind", tapply(seq_len(ncol(mat1)), class, function(ind) {
@@ -689,19 +837,7 @@ setMethod(f = "get_signatures",
 		heatmap_name = "expr"
 	}
 
-	row_split = NULL
-	if(nrow(use_mat1) > 10) {
-		wss <- (nrow(use_mat1)-1)*sum(apply(use_mat1,2,var))
-		for (i in 2:15) wss[i] <- sum(kmeans(use_mat1, centers = i, iter.max = 50)$withinss)
-		row_km = min(elbow_finder(1:15, wss)[1], knee_finder(1:15, wss)[1])
-		if(length(unique(class)) == 1) row_km = 1
-		if(length(unique(class)) == 2) row_km = min(row_km, 2)
-		if(row_km > 1) {
-			row_split = kmeans(use_mat1, centers = row_km)$cluster
-		}
-		if(verbose) qqcat("  - split rows into @{row_km} groups by k-means clustering.\n")
-	}
-			
+	row_split = factor(returned_obj$km[row_index], levels = sort(unique(returned_obj$km[row_index])))
 
 	if(verbose) qqcat("* making heatmaps for signatures\n")
 
@@ -713,14 +849,15 @@ setMethod(f = "get_signatures",
 	
 	ht_list = Heatmap(use_mat1, top_annotation = ha1,
 		name = heatmap_name, show_row_names = FALSE, 
-		show_column_names = show_column_names, col = col_fun,
+		show_column_names = show_column_names, column_names_gp = column_names_gp,
+		col = col_fun,
 		use_raster = TRUE, row_split = row_split,
 		show_row_dend = FALSE, cluster_columns = dend, column_split = length(unique(class)),
-		column_title = qq("@{length(unique(class))} groups, @{length(all_sig)} signatures"),
+		column_title = qq("@{length(unique(class))} groups, @{length(all_index)} signatures"),
 		bottom_annotation = bottom_anno1,
 		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
 
-	all_value_positive = !any(m < 0)
+	all_value_positive = !any(mat1 < 0)
  	if(scale_rows && all_value_positive) {
 		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm")) +
 			Heatmap(rel_diff, col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")), 
@@ -728,7 +865,7 @@ setMethod(f = "get_signatures",
 	}
 
 	draw(ht_list)
-	return(invisible(sig))
+	return(invisible(returned_obj))
 })
 
 
@@ -804,6 +941,8 @@ setMethod(f = "compare_signatures",
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -depth Depth of the hierarchy.
+# -show_row_names Whether to show the row names.
+# -row_names_gp Graphic parameters for row names.
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `hierarchical_partition`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
@@ -825,6 +964,7 @@ setMethod(f = "compare_signatures",
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
 	definition = function(object, depth = max_depth(object), 
+	show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
 	anno = get_anno(object[1]), anno_col = get_anno_col(object[1])) {
 
 	cl = get_classes(object, depth = depth)[, 1]
@@ -858,6 +998,10 @@ setMethod(f = "collect_classes",
 				annotation_name_side = "bottom", width = unit(ncol(anno)*5, "mm"))
 		}
 	}
+	if(show_row_names) {
+		ht_list = ht_list + rowAnnotation(rn = anno_text(colnames(object), gp = row_names_gp))
+	}
+
 	draw(ht_list)
 })
 
@@ -984,6 +1128,9 @@ setMethod(f = "test_to_known_factors",
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(golub_cola_rh)
+# dimension_reduction(golub_cola_rh)
 setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
 	definition = function(object,
@@ -1257,6 +1404,7 @@ setMethod(f = "suggest_best_k",
 
 	tb = data.frame(
 		node = names(object@list),
+		is_leaf = names(object@list) %in% all_leaves(object),
 		best_k = best_k,
 		"1-PAC" = stability,
 		mean_silhouette = mean_silhouette,
@@ -1276,8 +1424,55 @@ setMethod(f = "suggest_best_k",
 	# tb = cbind(tb, ifelse(l, "leaf", "node"), stringsAsFactors = FALSE)
 	# colnames(tb)[ncol(tb)] = ""
 
-	return(tb)
+	
+	stop_reason = lapply(object@list, function(obj) {
+		attr(obj, "stop_reason")
+	})
+	attr(tb, "stop_reason") = stop_reason
+
+	class(tb) = c("hc_table_suggest_best_k", class(tb))
+	tb
 })
+
+stop_reason_index = c(
+	"Rand indices for all k were too high." = "z",
+	"PAC score was too big." = "a",
+	"Subgroup had too few columns." = "b",
+	"There were too few signatures." = "c"
+)
+
+# == title
+# Print the hc_table_suggest_best_k object
+#
+# == param
+# -x A ``hc_table_suggest_best_k`` object from `suggest_best_k,HierarchicalPartition-method`.
+# -... Other arguments.
+#
+print.hc_table_suggest_best_k = function(x, ...) {
+	stop_reason = attr(x, "stop_reason")
+	stop_reason = sapply(stop_reason, function(x) {
+		if(is.null(x)) {
+			return(NA)
+		} else {
+			return(stop_reason_index[x])
+		}
+	})
+
+	x$is_leaf = ifelse(x$is_leaf, "\u2713", "")
+	x$is_leaf = ifelse(is.na(stop_reason), x$is_leaf, paste0(x$is_leaf, "(", stop_reason, ")"))
+	x$`1-PAC` = round(x$`1-PAC`, 3)
+	x$mean_silhouette = round(x$mean_silhouette, 3)
+	x$concordance = round(x$concordance, 3)
+	print.data.frame(x, digits = 3, row.names = FALSE)
+	cat(strrep("-", sum(sapply(colnames(x), nchar))+ ncol(x) - 4 + max(sapply(x$node, nchar))), "\n")
+
+	if(any(!is.na(stop_reason))) {
+		cat("Stop reason:\n")
+	}
+	for(a in sort(unique(stop_reason[!is.na(stop_reason)]))) {
+		cat("  ", a, ") ", names(which(stop_reason_index == a)), "\n", sep = "")
+	}
+}
 
 
 # == title
@@ -1314,6 +1509,12 @@ setMethod(f = "cola_report",
 
 	if(max_depth(object) <= 1) {
 		cat("No hierarchy is detected, no report is generated.\n")
+
+		dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+		output_dir = normalizePath(output_dir, mustWork = FALSE)
+
+		cat("<html><head><title>@{title}</title></head><body><p>No hierarchy is detected, no report is generated.</p></body></html>", file = qq("@{output_dir}/cola_hc.html"))
+	
 		return(invisible(NULL))
 	}
 

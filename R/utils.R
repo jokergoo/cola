@@ -427,3 +427,20 @@ check_pkg = function(pkg, bioc = FALSE) {
 		}
 	}
 }
+
+guess_best_km = function(mat) {
+	wss = (nrow(mat)-1)*sum(apply(mat,1,var))
+	max_km = min(c(nrow(mat) - 1, 15))
+	# if(verbose) qqcat("@{prefix}* apply k-means on rows with 2~@{max_km} clusters.\n")
+	for (i in 2:max_km) {
+		# if(verbose) qqcat("@{prefix}  - applying k-means with @{i} clusters.\n")
+		wss[i] = sum(kmeans(mat, centers = i, iter.max = 50)$withinss)
+	}
+	min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
+}
+
+
+
+
+
+

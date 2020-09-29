@@ -22,7 +22,7 @@ A data frame of classes IDs. The class IDs are the node IDs where the subgroup s
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-# There is no example
-NULL
-
+data(golub_cola_rh)
+get_classes(golub_cola_rh)
+get_classes(golub_cola_rh, depth = 2)
 }

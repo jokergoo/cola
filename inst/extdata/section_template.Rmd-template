@@ -2,9 +2,9 @@
 ---------------------------------------------------
 
 <% 
-if(is_hcp) {
+if(is_hc) {
     chunk_prefix = paste("node", node, sep = "-")
-    res = res_hcp[node]
+    res = res_hc[node]
 } else {
     if(single_report) {
         chunk_prefix = paste(top_value_method, partition_method, sep = "-")
@@ -19,10 +19,15 @@ if(is_hcp) {
 -%>
 
 <% if(!single_report) { %>
-<% if(is_hcp) { %>
-### Node<%=node%>
+<% if(is_hc) { %>
+### Node<%=paste0(node, ifelse(node %in% all_leaves(res_hc), "-leaf", ""))%>
 <% } else if(!single_report) { %>
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
+<% } %>
+
+<% if(node %in% all_leaves(res_hc)) { %>
+The subset of columns are treated as a leaf node in the hierarchical partitioning.
+The columns will not further split. The reason for stopping the partitioning is: <%attr(res_hc[[node]], "stop_reason")%>
 <% } %>
 
 <% if(mc.cores == 1) { -%>
@@ -33,7 +38,7 @@ message("-----------------------------------------------------------------")
 <% } -%>
 
 <% 
-if(is_hcp) { -%>
+if(is_hc) { -%>
 ```{r <%=chunk_prefix%>-message0, echo = FALSE, message = FALSE}
 section_t1 = Sys.time()
 message("* generating plots for node <%=node%> (<%=i_section%>/<%=n_section%>)")
@@ -50,8 +55,8 @@ The object with results only for a single top-value method and a single partitio
 can be extracted as:
 
 ```{r <%=chunk_prefix%>-rename}
-<% if(is_hcp) { -%>
-res = res_hcp["<%=node%>"]
+<% if(is_hc) { -%>
+res = res_hc["<%=node%>"]
 <% } else { -%>
 res = res_list["<%=top_value_method%>", "<%=partition_method%>"]
 # you can also extract it by
@@ -382,7 +387,7 @@ If matrix rows can be associated to genes, consider to use `functional_enrichmen
 
 
 <% 
-if(is_hcp) { -%>
+if(is_hc) { -%>
 ```{r <%=chunk_prefix%>-message10, echo = FALSE, message = FALSE}
 section_t2 = Sys.time()
 message(paste0("  - section node <%=node%> used in total ", gsub("^ +", "", format(section_t2 - section_t1))))

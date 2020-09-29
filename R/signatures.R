@@ -312,14 +312,7 @@ setMethod(f = "get_signatures",
 			if(do_kmeans) {
 				set.seed(seed)
 				if(is.null(row_km)) {
-					wss = (nrow(mat_for_km2)-1)*sum(apply(mat_for_km2,1,var))
-					max_km = min(c(nrow(mat_for_km) - 1, 15))
-					# if(verbose) qqcat("@{prefix}* apply k-means on rows with 2~@{max_km} clusters.\n")
-					for (i in 2:max_km) {
-						# if(verbose) qqcat("@{prefix}  - applying k-means with @{i} clusters.\n")
-						wss[i] = sum(kmeans(mat_for_km2, centers = i, iter.max = 50)$withinss)
-					}
-					row_km = min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
+					row_km = guess_best_km(mat_for_km2)
 					if(length(unique(class)) == 1) row_km = 1
 					if(length(unique(class)) == 2) row_km = min(row_km, 2)
 				}
@@ -351,7 +344,7 @@ setMethod(f = "get_signatures",
 			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
 			grid.text("no sigatures", gp = gpar(fontsize = fontsize))
 		}
-		return(invisible(NULL))
+		return(invisible(data.frame(which_row = integer(0))))
 	}
 
 	if(!plot) {
