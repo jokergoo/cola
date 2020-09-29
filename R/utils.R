@@ -428,12 +428,10 @@ check_pkg = function(pkg, bioc = FALSE) {
 	}
 }
 
-guess_best_km = function(mat) {
+guess_best_km = function(mat, max_km = 15) {
 	wss = NA
-	max_km = min(c(nrow(mat) - 1, 15))
-	# if(verbose) qqcat("@{prefix}* apply k-means on rows with 2~@{max_km} clusters.\n")
+	max_km = min(c(nrow(mat) - 1, max_km))
 	for (i in 2:max_km) {
-		# if(verbose) qqcat("@{prefix}  - applying k-means with @{i} clusters.\n")
 		fit = kmeans(mat, centers = i, iter.max = 50)
 		wss[i] = fit$tot.withinss
 	}

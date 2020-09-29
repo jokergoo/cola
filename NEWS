@@ -1,3 +1,6 @@
+Changes in version 1.5.6
++ function to find best km for kmeans is improved.
+
 Changes in version 1.5.5
 + add `enforce` argument in `get_signatures()`.
 + `subset` can be a vector of indices in `consensus_partition_by_down_sampling()`.
