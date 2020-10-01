@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -102,6 +102,9 @@
     </li>
     <li>
       <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
     </li>
     <li>
       <a href="../articles/predict.html">Predict Classes for New Samples</a>
@@ -145,7 +148,8 @@
     <span class='kw'>top_value_method</span> <span class='kw'>=</span> <span class='st'>"ATC"</span>,
     <span class='kw'>partition_method</span> <span class='kw'>=</span> <span class='st'>"skmeans"</span>,
     <span class='kw'>PAC_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>min_samples</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>subset</span> <span class='kw'>=</span> <span class='fl'>Inf</span>,
-    <span class='kw'>max_k</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='no'>...</span>)</pre>
+    <span class='kw'>min_n_signatures</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>min_p_signatures</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
+    <span class='kw'>max_k</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>help</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -175,6 +179,14 @@
       <td><p>Number of columns to randomly sample.</p></td>
     </tr>
     <tr>
+      <th>min_n_signatures</th>
+      <td><p>Minimal number of signatures under the best classification.</p></td>
+    </tr>
+    <tr>
+      <th>min_p_signatures</th>
+      <td><p>Minimal proportion of signatures under the best classification. If the corresponding values are smaller than both <code>min_n_signatures</code> and <code>min_p_signatures</code>, the hierarchical partitioning stops on that node.</p></td>
+    </tr>
+    <tr>
       <th>max_k</th>
       <td><p>maximal number of partitions to try. The function will try <code>2:max_k</code> partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, <code>max_k</code> should not be set to a large value.</p></td>
     </tr>
@@ -185,6 +197,10 @@
     <tr>
       <th>mc.cores</th>
       <td><p>multiple cores to use.</p></td>
+    </tr>
+    <tr>
+      <th>help</th>
+      <td><p>Whether to show the help message.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -204,9 +220,20 @@ node of the parent node. E.g. for the node <code>0011</code>, the depth is 4 and
 to see which functions can be applied on it.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># There is no example</span>
-<span class='kw'>NULL</span></div><div class='output co'>#&gt; NULL</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>123</span>)
+<span class='no'>m</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>)),
+          <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>)),
+          <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>))
+         ) + <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>60</span>*<span class='fl'>60</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.5</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>60</span>)
+<span class='no'>rh</span> <span class='kw'>=</span> <span class='fu'>hierarchical_partition</span>(<span class='no'>m</span>, <span class='kw'>top_value_method</span> <span class='kw'>=</span> <span class='st'>"SD"</span>, <span class='kw'>partition_method</span> <span class='kw'>=</span> <span class='st'>"kmeans"</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

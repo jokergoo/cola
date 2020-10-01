@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -61,6 +61,9 @@
     </li>
     <li>
       <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
     </li>
     <li>
       <a href="../articles/predict.html">Predict Classes for New Samples</a>
@@ -94,7 +97,7 @@
       <h1 data-toc-skip>Automatic Functional Enrichment on Signature Genes</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-09-22</h4>
+            <h4 class="date">2020-10-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/functional_enrichment.Rmd"><code>vignettes/functional_enrichment.Rmd</code></a></small>
       <div class="hidden name"><code>functional_enrichment.Rmd</code></div>
@@ -137,7 +140,7 @@
 <pre><code>## * 167/173 samples (in 4 classes) remain after filtering by silhouette (&gt;= 0.5).
 ## * cache hash: e7202d95261591c1a2b460b79f6eddf3 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
-## * split rows into 2 groups by k-means clustering.
+## * split rows into 4 groups by k-means clustering.
 ## * 10023 signatures (89.0%) under fdr &lt; 0.05, group_diff &gt; 0.
 ##   - randomly sample 2000 signatures.
 ## * making heatmaps for signatures.</code></pre>
@@ -208,7 +211,7 @@
 <pre><code>## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
 ## * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
-## * split rows into 2 groups by k-means clustering.
+## * split rows into 4 groups by k-means clustering.
 ## * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
 ##   - randomly sample 2000 signatures.
 ## * making heatmaps for signatures.</code></pre>
@@ -248,7 +251,7 @@
 ## 
 ## other attached packages:
 ##  [1] hu6800.db_3.2.3      org.Hs.eg.db_3.11.4  AnnotationDbi_1.50.3 IRanges_2.22.2      
-##  [5] S4Vectors_0.26.1     Biobase_2.48.0       BiocGenerics_0.34.0  cola_1.5.5          
+##  [5] S4Vectors_0.26.1     Biobase_2.48.0       BiocGenerics_0.34.0  cola_1.5.6          
 ##  [9] knitr_1.29           markdown_1.1        
 ## 
 ## loaded via a namespace (and not attached):
@@ -256,7 +259,7 @@
 ##  [5] png_0.1-7            assertthat_0.2.1     rprojroot_1.3-2      digest_0.6.25       
 ##  [9] slam_0.1-47          R6_2.4.1             backports_1.1.9      RSQLite_2.2.0       
 ## [13] evaluate_0.14        httr_1.4.2           GlobalOptions_0.1.2  rlang_0.4.7         
-## [17] annotate_1.66.0      blob_1.2.1           magick_2.4.0         GetoptLong_1.0.2    
+## [17] annotate_1.66.0      blob_1.2.1           magick_2.4.0         GetoptLong_1.0.3    
 ## [21] Matrix_1.2-18        rmarkdown_2.3        pkgdown_1.5.1        desc_1.2.0          
 ## [25] splines_4.0.2        stringr_1.4.0        RCurl_1.98-1.2       bit_4.0.4           
 ## [29] compiler_4.0.2       eulerr_6.1.0         xfun_0.16            pkgconfig_2.0.3     

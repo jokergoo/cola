@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -102,6 +102,9 @@
     </li>
     <li>
       <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
     </li>
     <li>
       <a href="../articles/predict.html">Predict Classes for New Samples</a>
@@ -158,9 +161,35 @@
     <p>No value is returned.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># There is no example</span>
-<span class='kw'>NULL</span></div><div class='output co'>#&gt; NULL</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola_rh</span>)
+<span class='no'>golub_cola_rh</span></div><div class='output co'>#&gt; A 'HierarchicalPartition' object with 'ATC:skmeans' method.
+#&gt;   On a matrix with 4116 rows and 72 columns.
+#&gt;   Performed in total 4950 partitions.
+#&gt;   There are 6 groups.
+#&gt; 
+#&gt; Hierarchy of the partition:
+#&gt;   0, 72 cols
+#&gt;   |-- 01, 32 cols
+#&gt;   |   |-- 011, 11 cols
+#&gt;   |   `-- 010, 21 cols
+#&gt;   |       |-- 0101, 10 cols
+#&gt;   |       `-- 0100, 11 cols
+#&gt;   `-- 00, 40 cols
+#&gt;       |-- 001, 17 cols
+#&gt;       `-- 000, 23 cols
+#&gt;           |-- 0001, 11 cols
+#&gt;           `-- 0000, 12 cols
+#&gt; 
+#&gt; Following methods can be applied to this 'HierarchicalPartition' object:
+#&gt;  [1] "all_leaves"            "all_nodes"             "cola_report"          
+#&gt;  [4] "collect_classes"       "colnames"              "compare_signatures"   
+#&gt;  [7] "dimension_reduction"   "get_anno_col"          "get_anno"             
+#&gt; [10] "get_classes"           "get_matrix"            "get_signatures"       
+#&gt; [13] "max_depth"             "ncol"                  "nrow"                 
+#&gt; [16] "rownames"              "show"                  "suggest_best_k"       
+#&gt; [19] "test_to_known_factors"
+#&gt; 
+#&gt; You can get result for a single node by e.g. object["01"]</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

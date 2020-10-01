@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -102,6 +102,9 @@
     </li>
     <li>
       <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
     </li>
     <li>
       <a href="../articles/predict.html">Predict Classes for New Samples</a>
@@ -298,7 +301,7 @@ and the predicted classes. The function should returns a vector of FDR from the 
 <span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
 #&gt; * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
-#&gt; * split rows into 2 groups by k-means clustering.
+#&gt; * split rows into 4 groups by k-means clustering.
 #&gt; * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
 #&gt;   - randomly sample 2000 signatures.
 #&gt; * making heatmaps for signatures.</div><div class='img'><img src='get_signatures-ConsensusPartition-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>tb</span>)</div><div class='output co'>#&gt;   which_row          fdr   mean_1   mean_2   mean_3 group_diff scaled_mean_1
@@ -309,12 +312,12 @@ and the predicted classes. The function should returns a vector of FDR from the 
 #&gt; 5        13 0.0231658067 2.760360 2.793240 3.391696  0.6313355    -0.2048139
 #&gt; 6        17 0.0385593480 2.173987 2.401406 2.310037  0.2274190    -0.3427458
 #&gt;   scaled_mean_2 scaled_mean_3 km
-#&gt; 1    0.52395127     0.3740407  1
+#&gt; 1    0.52395127     0.3740407  3
 #&gt; 2    0.06789322     0.7546084  1
-#&gt; 3    0.58853214    -0.2459700  1
-#&gt; 4    0.47963596    -0.4051056  1
-#&gt; 5   -0.15871813     0.6803041  1
-#&gt; 6    0.40763038     0.1061578  1</div><div class='input'><span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>top_signatures</span> <span class='kw'>=</span> <span class='fl'>100</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
+#&gt; 3    0.58853214    -0.2459700  4
+#&gt; 4    0.47963596    -0.4051056  4
+#&gt; 5   -0.15871813     0.6803041  3
+#&gt; 6    0.40763038     0.1061578  3</div><div class='input'><span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>top_signatures</span> <span class='kw'>=</span> <span class='fl'>100</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
 #&gt; * cache hash: b67910623ca6b0285a255b432cf9a022 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
 #&gt; * split rows into 3 groups by k-means clustering.

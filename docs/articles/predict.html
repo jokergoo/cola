@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -61,6 +61,9 @@
     </li>
     <li>
       <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
     </li>
     <li>
       <a href="../articles/predict.html">Predict Classes for New Samples</a>
@@ -94,7 +97,7 @@
       <h1 data-toc-skip>Predict Classes for New Samples</h1>
                         <h4 class="author">Zuguang Gu ( <a href="mailto:z.gu@dkfz.de" class="email">z.gu@dkfz.de</a> )</h4>
             
-            <h4 class="date">2020-09-22</h4>
+            <h4 class="date">2020-10-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jokergoo/cola/blob/master/vignettes/predict.Rmd"><code>vignettes/predict.Rmd</code></a></small>
       <div class="hidden name"><code>predict.Rmd</code></div>
@@ -157,7 +160,7 @@
 ## * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
 ## * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
 ## * calculating row difference between subgroups by Ftest.
-## * split rows into 2 groups by k-means clustering.
+## * split rows into 4 groups by k-means clustering.
 ## * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
 ## Predict classes based on 3-group classification (euclidean method) on a 72-column matrix.</code></pre>
 <p><img src="predict_files/figure-html/unnamed-chunk-5-1.png" width="600" style="display: block; margin: auto;"></p>
@@ -190,7 +193,7 @@
 ## sample_54     1 0.000
 ## sample_57     2 0.000
 ## sample_58     2 0.000
-## sample_60     2 0.203
+## sample_60     2 0.070
 ## sample_61     2 0.000
 ## sample_65     2 0.000
 ## sample_66     1 0.000
@@ -218,11 +221,11 @@
 ## sample_19     1 0.000
 ## sample_20     1 0.000
 ## sample_21     1 0.000
-## sample_22     2 0.044
+## sample_22     2 0.037
 ## sample_23     3 0.000
 ## sample_24     1 0.000
-## sample_25     3 0.804
-## sample_26     1 0.010
+## sample_25     2 0.834
+## sample_26     1 0.006
 ## sample_27     3 0.000
 ## sample_34     2 0.000
 ## sample_35     2 0.000
@@ -297,7 +300,7 @@
 ## 56          2         2
 ## 57          3         3
 ## 58          1         1
-## 59          3         3
+## 59          3         2
 ## 60          1         1
 ## 61          3         3
 ## 62          2         2
@@ -440,7 +443,7 @@
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] cola_1.5.5   knitr_1.29   markdown_1.1
+## [1] cola_1.5.6   knitr_1.29   markdown_1.1
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] mclust_5.4.6         Rcpp_1.0.5           lattice_0.20-41      circlize_0.4.11     
@@ -448,7 +451,7 @@
 ##  [9] slam_0.1-47          R6_2.4.1             backports_1.1.9      stats4_4.0.2        
 ## [13] RSQLite_2.2.0        evaluate_0.14        httr_1.4.2           GlobalOptions_0.1.2 
 ## [17] rlang_0.4.7          annotate_1.66.0      blob_1.2.1           magick_2.4.0        
-## [21] S4Vectors_0.26.1     GetoptLong_1.0.2     Matrix_1.2-18        rmarkdown_2.3       
+## [21] S4Vectors_0.26.1     GetoptLong_1.0.3     Matrix_1.2-18        rmarkdown_2.3       
 ## [25] pkgdown_1.5.1        desc_1.2.0           splines_4.0.2        stringr_1.4.0       
 ## [29] RCurl_1.98-1.2       bit_4.0.4            compiler_4.0.2       eulerr_6.1.0        
 ## [33] xfun_0.16            microbenchmark_1.4-7 BiocGenerics_0.34.0  shape_1.4.4         

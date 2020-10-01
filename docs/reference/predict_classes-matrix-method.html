@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -102,6 +102,9 @@
     </li>
     <li>
       <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
     </li>
     <li>
       <a href="../articles/predict.html">Predict Classes for New Samples</a>
@@ -217,7 +220,7 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 <span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
 #&gt; * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
-#&gt; * split rows into 2 groups by k-means clustering.
+#&gt; * split rows into 4 groups by k-means clustering.
 #&gt; * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.</div><div class='input'><span class='no'>sig_mat</span> <span class='kw'>=</span> <span class='no'>tb</span>[, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span>(<span class='st'>"scaled_mean"</span>, <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span>(<span class='no'>tb</span>))]
 <span class='no'>sig_mat</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>sig_mat</span>)
 <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span>(<span class='no'>sig_mat</span>) <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"class"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span>(<span class='fu'><a href='ncol-dispatch.html'>ncol</a></span>(<span class='no'>sig_mat</span>)))

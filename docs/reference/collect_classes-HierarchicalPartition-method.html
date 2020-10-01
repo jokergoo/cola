@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -102,6 +102,9 @@
     </li>
     <li>
       <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
     </li>
     <li>
       <a href="../articles/predict.html">Predict Classes for New Samples</a>
@@ -143,6 +146,7 @@
 
     <pre class="usage"><span class='co'># S4 method for HierarchicalPartition</span>
 <span class='fu'><a href='collect_classes-dispatch.html'>collect_classes</a></span>(<span class='no'>object</span>, <span class='kw'>depth</span> <span class='kw'>=</span> <span class='fu'><a href='max_depth-HierarchicalPartition-method.html'>max_depth</a></span>(<span class='no'>object</span>),
+    <span class='kw'>show_row_names</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>row_names_gp</span> <span class='kw'>=</span> <span class='fu'>gpar</span>(<span class='kw'>fontsize</span> <span class='kw'>=</span> <span class='fl'>8</span>),
     <span class='kw'>anno</span> <span class='kw'>=</span> <span class='fu'><a href='get_anno-dispatch.html'>get_anno</a></span>(<span class='no'>object</span>[<span class='fl'>1</span>]), <span class='kw'>anno_col</span> <span class='kw'>=</span> <span class='fu'><a href='get_anno_col-dispatch.html'>get_anno_col</a></span>(<span class='no'>object</span>[<span class='fl'>1</span>]))</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -155,6 +159,14 @@
     <tr>
       <th>depth</th>
       <td><p>Depth of the hierarchy.</p></td>
+    </tr>
+    <tr>
+      <th>show_row_names</th>
+      <td><p>Whether to show the row names.</p></td>
+    </tr>
+    <tr>
+      <th>row_names_gp</th>
+      <td><p>Graphic parameters for row names.</p></td>
     </tr>
     <tr>
       <th>anno</th>
