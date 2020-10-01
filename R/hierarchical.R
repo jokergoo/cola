@@ -1257,7 +1257,7 @@ setMethod(f = "all_nodes",
 	definition = function(object, depth = max_depth(object)) {
 
 	if(has_hierarchy(object)) {
-		all_nodes = unique(as.vector(t(res_hc@hierarchy)))
+		all_nodes = unique(as.vector(t(object@hierarchy)))
 		if(!is.null(depth)) {
 			all_nodes = all_nodes[nchar(all_nodes) <= depth]
 		}
@@ -1305,7 +1305,7 @@ setMethod(f = "all_leaves",
 # Test whether a node is a leaf node
 #
 # == param
-# -object A `HierarchicalPartition-class` object.
+# -x A `HierarchicalPartition-class` object.
 # -node A node ID.
 #
 is_leaf_node = function(x, node) {

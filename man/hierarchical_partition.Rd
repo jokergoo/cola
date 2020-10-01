@@ -12,7 +12,7 @@ hierarchical_partition(data,
     partition_method = "skmeans",
     PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
     min_n_signatures = 100, min_p_signatures = 0.05,
-    max_k = 4, verbose = TRUE, mc.cores = 1, ...)
+    max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...)
 }
 \arguments{
 
@@ -27,6 +27,7 @@ hierarchical_partition(data,
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}
   \item{verbose}{whether print message.}
   \item{mc.cores}{multiple cores to use. }
+  \item{help}{Whether to show the help message.}
   \item{...}{pass to \code{\link{consensus_partition}}}
 
 }
