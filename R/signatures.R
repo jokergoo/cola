@@ -459,7 +459,11 @@ setMethod(f = "get_signatures",
 					return(NULL)
 				} else {
 					if(anno@color_mapping@type == "discrete") {
-						anno@color_mapping@colors
+						if(anno@name %in% names(object@anno_col)) {
+							object@anno_col[[anno@name]]
+						} else {
+							anno@color_mapping@colors
+						}
 					} else {
 						anno@color_mapping@col_fun
 					}
@@ -952,7 +956,7 @@ setMethod(f = "compare_signatures",
 	}
 	sig_list = sig_list[l]
 
-	names(sig_list) = paste(k, "-group", sep = "")
+	names(sig_list) = paste(k[l], "-group", sep = "")
 
 	plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different k")
 

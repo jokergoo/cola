@@ -52,6 +52,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
 # -verbose whether print message.
 # -mc.cores multiple cores to use. 
+# -help Whether to show the help message.
 # -... pass to `consensus_partition`
 #
 # == details
@@ -88,7 +89,11 @@ hierarchical_partition = function(data,
 	partition_method = "skmeans",
 	PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
 	min_n_signatures = 100, min_p_signatures = 0.05,
-	max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
+	max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...) {
+
+	if(help) {
+		message_wrap("We suggest to try both 'ATC/skmeans' and 'SD/kmeans' for 'top_value_method' and 'partition_method' parameters. These two combinations of methods are correlation-based and Euclidean distance-based respectively and they generate different results that are all worth to look at. Set the argument 'help = FALSE' to turn off this message.")
+	}
 
 	cl = match.call()
 
@@ -1252,7 +1257,7 @@ setMethod(f = "all_nodes",
 	definition = function(object, depth = max_depth(object)) {
 
 	if(has_hierarchy(object)) {
-		all_nodes = unique(as.vector(object@hierarchy))
+		all_nodes = unique(as.vector(t(res_hc@hierarchy)))
 		if(!is.null(depth)) {
 			all_nodes = all_nodes[nchar(all_nodes) <= depth]
 		}
@@ -1295,6 +1300,17 @@ setMethod(f = "all_leaves",
 		"0"
 	}
 })
+
+# == title
+# Test whether a node is a leaf node
+#
+# == param
+# -object A `HierarchicalPartition-class` object.
+# -node A node ID.
+#
+is_leaf_node = function(x, node) {
+	node %in% all_leaves(x)
+}
 
 get_children = function(object, node = "0") {
 	hierarchy = unique(object@hierarchy)
@@ -1513,7 +1529,7 @@ setMethod(f = "cola_report",
 		dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 		output_dir = normalizePath(output_dir, mustWork = FALSE)
 
-		cat("<html><head><title>@{title}</title></head><body><p>No hierarchy is detected, no report is generated.</p></body></html>", file = qq("@{output_dir}/cola_hc.html"))
+		qqcat("<html><head><title>@{title}</title></head><body><p>No hierarchy is detected, no report is generated.</p></body></html>", file = qq("@{output_dir}/cola_hc.html"))
 	
 		return(invisible(NULL))
 	}
