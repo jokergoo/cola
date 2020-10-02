@@ -31,6 +31,9 @@ It calls \code{\link{functional_enrichment,ConsensusPartition-method}} on the co
 
 For how to control the parameters of functional enrichment, see help page of \code{\link{functional_enrichment,ANY-method}}.
 }
+\seealso{
+\url{http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html}
+}
 \value{
 A list where each element in the list corresponds to enrichment results from a single method.
 }

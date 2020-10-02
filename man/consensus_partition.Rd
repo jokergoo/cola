@@ -10,8 +10,8 @@ Consensus partition
 consensus_partition(data,
     top_value_method = "ATC",
     top_n = seq(min(1000, round(nrow(data)*0.1)),
-    min(5000, round(nrow(data)*0.5)),
-    length.out = 5),
+    min(3000, round(nrow(data)*0.3)),
+    length.out = 3),
     partition_method = "skmeans",
     max_k = 6,
     sample_by = "row",
@@ -23,6 +23,7 @@ consensus_partition(data,
     scale_rows = NULL,
     verbose = TRUE,
     mc.cores = 1,
+    prefix = "",
     .env = NULL)
 }
 \arguments{
@@ -41,6 +42,7 @@ consensus_partition(data,
   \item{scale_rows}{Whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
   \item{verbose}{Whether print messages.}
   \item{mc.cores}{Multiple cores to use.}
+  \item{prefix}{Internally used.}
   \item{.env}{An environment, internally used.}
 
 }
@@ -77,6 +79,6 @@ m = cbind(rbind(matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
                 matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
                 matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
          ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-cp = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
-cp
+res = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
+res
 }

@@ -42,6 +42,9 @@ by the two metrics.
 \value{
 No value is returned.
 }
+\seealso{
+\code{\link{correspond_between_rankings}} draws for more than 2 sets of rankings.
+}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }

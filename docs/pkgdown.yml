@@ -1,8 +1,12 @@
-pandoc: 1.19.2.1
-pkgdown: 1.4.1
+pandoc: 2.9.2.1
+pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
-  a_quick_start: a_quick_start.html
   cola: cola.html
+  cola_quick: cola_quick.html
   functional_enrichment: functional_enrichment.html
+  hierarchical: hierarchical.html
+  predict: predict.html
+  work_with_big_datasets: work_with_big_datasets.html
+last_built: 2020-10-01T11:00Z
 

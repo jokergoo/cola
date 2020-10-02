@@ -134,7 +134,8 @@ column_order_by_group = function(factor, mat) {
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# x = rnorm(10)
+# set.seed(123)
+# x = rnorm(40)
 # x[1] = 100
 # adjust_outlier(x)
 adjust_outlier = function(x, q = 0.05) {
@@ -164,12 +165,13 @@ adjust_outlier = function(x, q = 0.05) {
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# m = matrix(rnorm(200), 10)
-# rownames(m) = letters[1:10]
-# m[1, 1] = 1000
-# range(m)
+# set.seed(123)
+# m = matrix(rnorm(100), nrow = 10)
+# m[sample(length(m), 5)] = NA
+# m[1, ] = 0
+# m
 # m2 = adjust_matrix(m)
-# range(m2)
+# m2
 adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	if(is.data.frame(m)) {
 		m = as.matrix(m)
@@ -205,10 +207,10 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 		message_wrap(qq("@{sum(l)} rows have been removed with zero variance."))
 	}
 
-	qa = quantile(row_sd, sd_quantile, na.rm = TRUE)
-	l = row_sd >= qa
+	qa = quantile(unique(row_sd), sd_quantile, na.rm = TRUE)
+	l = row_sd > qa
 	if(sum(!l)) {
-		message_wrap(qq("@{sum(!l)} rows have been removed with too low variance (sd < @{sd_quantile} quantile)"))
+		message_wrap(qq("@{sum(!l)} rows have been removed with too low variance (sd <= @{sd_quantile} quantile)"))
 	}
 	m2[l, , drop = FALSE]
 }
@@ -302,7 +304,7 @@ setMethod(f = "nrow",
 setMethod(f = "ncol",
 	signature = "ConsensusPartition",
 	definition = function(x) {
-	ncol(x@.env$data)
+	length(x@column_index)
 })
 
 # == title
@@ -352,7 +354,7 @@ setMethod(f = "rownames",
 setMethod(f = "colnames",
 	signature = "ConsensusPartition",
 	definition = function(x) {
-	colnames(x@.env$data)
+	colnames(x@.env$data[, x@column_index, drop = FALSE])
 })
 
 
@@ -375,7 +377,7 @@ setMethod(f = "colnames",
 # -x A `ConsensusPartition-class` object.
 #
 dim.ConsensusPartition = function(x) {
-	dim(x@.env$data)
+	c(nrow(x), ncol(x))
 }
 
 # == title
@@ -387,3 +389,69 @@ dim.ConsensusPartition = function(x) {
 dim.ConsensusPartitionList = function(x) {
 	dim(x@.env$data)
 }
+
+check_pkg = function(pkg, bioc = FALSE) {
+	if(requireNamespace(pkg, quietly = TRUE)) {
+		return(NULL)
+	} else {
+
+		if(!interactive()) {
+			if(bioc) {
+				stop_wrap(qq("You need to manually install package '@{pkg}' from Bioconductor."))
+			} else {
+				stop_wrap(qq("You need to manually install package '@{pkg}' from CRAN."))
+			}
+		}
+
+		if(bioc) {
+			answer = readline(qq("Package '@{pkg}' is required but not installed. Do you want to install it from Bioconductor? [y|n] "))
+		} else {
+			answer = readline(qq("Package '@{pkg}' is required but not installed. Do you want to install it from CRAN? [y|n] "))
+		}
+
+		if(bioc) {
+			if(tolower(answer) %in% c("y", "yes")) {
+				if(!requireNamespace("BiocManager", quietly = TRUE)) {
+					install.packages("BiocManager")
+				}
+				BiocManager::install(pkg)
+			} else {
+				stop_wrap(qq("You need to manually install package '@{pkg}' from Bioconductor."))
+			}
+		} else {
+			if(tolower(answer) %in% c("y", "yes")) {
+				install.packages(pkg)
+			} else {
+				stop_wrap(qq("You need to manually install package '@{pkg}' from CRAN."))
+			}
+		}
+	}
+}
+
+guess_best_km = function(mat, max_km = 15) {
+	wss = NA
+	max_km = min(c(nrow(mat) - 1, max_km))
+	for (i in 2:max_km) {
+		oe = try(fit <- kmeans(mat, centers = i, iter.max = 50), silent = TRUE)
+		if(inherits(oe, "error")) {
+			break
+		}
+		wss[i] = fit$tot.withinss
+		if(is.na(wss[1])) wss[1] = fit$totss
+	}
+	k = 1:max_km
+	k = k[seq_along(wss)]
+	if(length(k) == 1) {
+		return(1)
+	} else if(length(k) == 2) {
+		return(2)
+	} else {
+		min(elbow_finder(k, wss)[1], knee_finder(k, wss)[1])
+	}
+}
+
+
+
+
+
+

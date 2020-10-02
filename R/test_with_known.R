@@ -12,7 +12,7 @@
 # == details
 # Pairwise test is applied to every two columns in the data frames. Methods are:
 # 
-# - two numeric variables: correlation test by `stats::cor.test` is applied;
+# - two numeric variables: correlation test by `stats::cor.test` is applied (Spearman method);
 # - two character or factor variables: `stats::chisq.test` is applied;
 # - one numeric variable and one character/factor variable: oneway ANOVA test by `stats::oneway.test` is applied.
 # 
@@ -56,7 +56,7 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 				for(j in (i+1):n) {
 					if(is.numeric(df[[i]]) && is.numeric(df[[j]])) {
 						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: correlation test\n")
-						p.value[i, j] = cor.test(df[[i]], df[[j]])$p.value
+						p.value[i, j] = cor.test(df[[i]], df[[j]], method = "spearman")$p.value
 					} else if(is.numeric(df[[i]]) && (is.character(df[[j]]) || is.factor(df[[j]]))) {
 						if(verbose) qqcat("@{nm[i]} ~ @{nm[j]}: oneway ANOVA test\n")
 						l = df[[j]] %in% df[[j]][duplicated(df[[j]])]
@@ -143,6 +143,9 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 # -silhouette_cutoff Cutoff for sihouette scores. Samples with value less than it are omit.
 # -verbose Whether to print messages.
 #
+# == details
+# The test is performed by `test_between_factors` between the predicted classes and user's annotation table.
+# 
 # == value
 # A data frame with the following columns:
 #
@@ -150,15 +153,17 @@ test_between_factors = function(x, y = NULL, all_factors = FALSE, verbose = FALS
 # - p-values from the tests,
 # - number of subgroups.
 #
-# == seealso
-# `test_between_factors`
-#
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# test_to_known_factors(cola_rl[1, 1], known = 1:40)
+# data(golub_cola)
+# res = golub_cola["ATC:skmeans"]
+# anno = get_anno(res)
+# anno
+# test_to_known_factors(res, k = 3)
+# # or explicitly specify known argument
+# test_to_known_factors(res, k = 3, known = anno)
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartition",
 	definition = function(object, k, known = get_anno(object), 
@@ -189,8 +194,8 @@ setMethod(f = "test_to_known_factors",
 
 	m = test_between_factors(class, known, verbose = verbose)
 	rownames(m) = paste(object@top_value_method, object@partition_method, sep = ":")
-	colnames(m) = paste0(colnames(m), "(p)")
-	m = cbind(n = sum(l), m, k = k)
+	colnames(m) = paste0(colnames(m), "(p-value)")
+	m = cbind(n_sample = sum(l), m, k = k)
 	return(m)
 })
 
@@ -215,6 +220,8 @@ setMethod(f = "test_to_known_factors",
 # - p-values from the tests,
 # - number of subgroups.
 #
+# If there are NA values, basically it means there are no efficient data points to perform the test.
+#
 # == seealso
 # `test_between_factors`, `test_to_known_factors,ConsensusPartition-method`
 #
@@ -222,8 +229,8 @@ setMethod(f = "test_to_known_factors",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# test_to_known_factors(cola_rl, known = 1:40)
+# data(golub_cola)
+# test_to_known_factors(golub_cola)
 setMethod(f = "test_to_known_factors",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, known = get_anno(object), 

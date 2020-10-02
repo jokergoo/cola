@@ -3,7 +3,6 @@
 
 <% 
 if(is_hc) {
-    mark = ifelse(tb[node, ncol(tb)] == "parent", "(p)", "")
     chunk_prefix = paste("node", node, sep = "-")
     res = res_hc[node]
 } else {
@@ -21,7 +20,24 @@ if(is_hc) {
 
 <% if(!single_report) { %>
 <% if(is_hc) { %>
-### Node<%=node%><%=mark%>
+### Node<%=paste0(node, ifelse(is_leaf_node(res_hc), "-leaf", ""))%>
+
+<% if(is_leaf_node(res_hc)) { %>
+Parent node: [<%substr(node, 1, nchar(node)-1)%>](#Node<%substr(node, 1, nchar(node)-1)%>).
+The subset of columns are treated as a leaf node in the hierarchical partitioning.
+The columns will not further split. The reason for stopping the partitioning is: <%attr(res_hc[[node]], "stop_reason")%>
+
+<% } else if(node == "0"){ %>
+
+Child nodes: [00](#Node00<%ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")%>), [01](#Node01<%ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>).
+
+<% } else { %>
+
+Parent node: [<%substr(node, 1, nchar(node)-1)%>](#Node<%substr(node, 1, nchar(node)-1)%>).
+Child nodes: [<%node%>0](#Node<%node%>0<%ifelse(is_leaf_node(res_hc, paste0(node, "0")), "-leaf", "")%>), [<%node%>1](#Node<%node%>1<%ifelse(is_leaf_node(res_hc, paste0(node, "1")), "-leaf", "")%>).
+
+<% } %>
+
 <% } else if(!single_report) { %>
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
 <% } %>
@@ -176,9 +192,13 @@ matrix and the silhouette score is calculated from the consensus matrix.
 
 
 ```{r <%=chunk_prefix%>-get-classes, results = "asis", echo = FALSE, include = TRUE}
-<% for(k in all_k) { -%>
+<% for(k in all_k) {
+if(inherits(res, "DownSamplingConsensusPartition")) {-%>
+knitr_add_tab_item('get_classes(res, k = <%=k%>)', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-get-classes', hide_and_show = TRUE)
+<%} else {-%>
 knitr_add_tab_item('cbind(get_classes(res, k = <%=k%>), get_membership(res, k = <%=k%>))', 'k = <%=k%>', prefix = '<%=chunk_prefix%>-get-classes', hide_and_show = TRUE)
-<%}-%>
+<%}
+}-%>
 knitr_insert_tabs('<%=chunk_prefix%>-get-classes')
 ```
 
@@ -286,6 +306,15 @@ The columns in `tb` are:
 3. `mean_x`: The mean value in group x.
 4. `scaled_mean_x`: The mean value in group x after rows are scaled.
 5. `km`: Row groups if k-means clustering is applied to rows (which is done by automatically selecting number of clusters).
+
+If there are too many signatures, `top_signatures = ...` can be set to only show the 
+signatures with the highest FDRs:
+
+```{r <%=chunk_prefix%>-signature-no-run2, eval = FALSE}
+# code only for demonstration
+# e.g. to show the top 500 most significant rows
+tb = get_signature(res, k = ..., top_signatures = 500)
+```
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}

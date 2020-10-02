@@ -27,7 +27,7 @@ A consensus matrix corresponding to the current k.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-obj = cola_rl["SD", "kmeans"]
+data(golub_cola)
+obj = golub_cola["ATC", "skmeans"]
 get_consensus(obj, k = 2)
 }

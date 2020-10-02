@@ -31,6 +31,9 @@ Perform functional enrichment on signature genes
 \details{
 For how to control the parameters of functional enrichment, see help page of \code{\link{functional_enrichment,ANY-method}}.
 }
+\seealso{
+\url{http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html}
+}
 \value{
 A list of data frames which correspond to results for the functional ontologies:
 }

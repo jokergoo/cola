@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="Get subgroup labels — get_classes-ConsensusPartition-method" />
 <meta property="og:description" content="Get subgroup labels" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -95,17 +98,26 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/a_quick_start.html">UNKNOWN TITLE</a>
+      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
     </li>
     <li>
-      <a href="../articles/functional_enrichment.html">UNKNOWN TITLE</a>
+      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
+    </li>
+    <li>
+      <a href="../articles/predict.html">Predict Classes for New Samples</a>
+    </li>
+    <li>
+      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/cola">
+  <a href="https://github.com/jokergoo/cola/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -155,140 +167,158 @@ and the silhouette scores which measure the stability of a sample to stay in its
 <p>If <code>k</code> is not specified, it returns a data frame with subgroup labels from all k.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>]
-<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;    class    entropy silhouette
-#&gt; 1      1 0.63430955  0.7715207
-#&gt; 2      1 0.63430955  0.7715207
-#&gt; 3      1 0.63430955  0.7715207
-#&gt; 4      1 0.44749926  0.7756645
-#&gt; 5      1 0.65002242  0.7664377
-#&gt; 6      1 0.58423881  0.7756748
-#&gt; 7      1 0.44749926  0.7753550
-#&gt; 8      1 0.63430955  0.7715207
-#&gt; 9      1 0.63430955  0.7715207
-#&gt; 10     1 0.63430955  0.7715207
-#&gt; 11     1 0.44749926  0.7756645
-#&gt; 12     1 0.56650951  0.7763642
-#&gt; 13     1 0.63430955  0.7715207
-#&gt; 14     1 0.63430955  0.7715207
-#&gt; 15     1 0.63430955  0.7715207
-#&gt; 16     1 0.63430955  0.7715207
-#&gt; 17     1 0.61811949  0.7734234
-#&gt; 18     1 0.60143539  0.7745092
-#&gt; 19     1 0.63430955  0.7715207
-#&gt; 20     1 0.63430955  0.7715207
-#&gt; 21     2 0.05777796  0.9867899
-#&gt; 22     2 0.05777796  0.9867899
-#&gt; 23     2 0.05777796  0.9836094
-#&gt; 24     2 0.05777796  0.9867899
-#&gt; 25     2 0.00000000  0.9880458
-#&gt; 26     2 0.00000000  0.9880458
-#&gt; 27     2 0.10215804  0.9790155
-#&gt; 28     2 0.00000000  0.9880458
-#&gt; 29     2 0.05777796  0.9867899
-#&gt; 30     2 0.05777796  0.9867899
-#&gt; 31     2 0.30039142  0.9235074
-#&gt; 32     2 0.05777796  0.9847722
-#&gt; 33     2 0.05777796  0.9867899
-#&gt; 34     2 0.00000000  0.9880458
-#&gt; 35     2 0.00000000  0.9880458
-#&gt; 36     2 0.05777796  0.9847722
-#&gt; 37     2 0.10215804  0.9776535
-#&gt; 38     2 0.05777796  0.9867899
-#&gt; 39     2 0.05777796  0.9847722
-#&gt; 40     2 0.05777796  0.9847722
-#&gt; 41     1 0.77215514  0.7543333
-#&gt; 42     1 0.78377695  0.7498975
-#&gt; 43     1 0.78377695  0.7498975
-#&gt; 44     1 0.74780616  0.7603918
-#&gt; 45     1 0.76016750  0.7583337
-#&gt; 46     1 0.74780616  0.7603918
-#&gt; 47     1 0.78377695  0.7498975
-#&gt; 48     1 0.83664074  0.7136809
-#&gt; 49     1 0.78377695  0.7498975
-#&gt; 50     1 0.77215514  0.7543333
-#&gt; 51     1 0.78377695  0.7498975
-#&gt; 52     1 0.58423881  0.7682275
-#&gt; 53     1 0.73506269  0.7618119
-#&gt; 54     1 0.98442690  0.4117493
-#&gt; 55     1 0.93700983  0.5805883
-#&gt; 56     1 0.76016750  0.7583337
-#&gt; 57     1 0.76016750  0.7578507
-#&gt; 58     1 0.76016750  0.7578507
-#&gt; 59     1 0.77215514  0.7543333
-#&gt; 60     1 0.78377695  0.7498975</div><div class='input'><span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>)</div><div class='output co'>#&gt;    k=2 k=3 k=4 k=5 k=6
-#&gt; 1    1   1   1   1   1
-#&gt; 2    1   1   1   1   1
-#&gt; 3    1   1   1   1   1
-#&gt; 4    1   1   1   1   6
-#&gt; 5    1   1   1   1   1
-#&gt; 6    1   1   1   1   1
-#&gt; 7    1   1   1   1   1
-#&gt; 8    1   1   1   1   1
-#&gt; 9    1   1   1   1   1
-#&gt; 10   1   1   1   1   1
-#&gt; 11   1   1   1   1   1
-#&gt; 12   1   1   1   1   6
-#&gt; 13   1   1   1   1   1
-#&gt; 14   1   1   1   1   1
-#&gt; 15   1   1   1   1   1
-#&gt; 16   1   1   1   1   1
-#&gt; 17   1   1   1   1   1
-#&gt; 18   1   1   1   1   1
-#&gt; 19   1   1   1   1   1
-#&gt; 20   1   1   1   1   1
-#&gt; 21   2   2   2   2   2
-#&gt; 22   2   2   2   2   2
-#&gt; 23   2   2   2   2   2
-#&gt; 24   2   2   2   2   2
-#&gt; 25   2   2   2   2   2
-#&gt; 26   2   2   2   2   2
-#&gt; 27   2   2   2   2   5
-#&gt; 28   2   2   2   2   2
-#&gt; 29   2   2   2   2   5
-#&gt; 30   2   2   2   2   2
-#&gt; 31   2   2   2   2   2
-#&gt; 32   2   2   2   2   2
-#&gt; 33   2   2   2   2   2
-#&gt; 34   2   2   2   2   5
-#&gt; 35   2   2   2   2   5
-#&gt; 36   2   2   2   2   2
-#&gt; 37   2   2   2   2   2
-#&gt; 38   2   2   2   2   2
-#&gt; 39   2   2   2   2   2
-#&gt; 40   2   2   2   2   2
-#&gt; 41   1   3   3   3   3
-#&gt; 42   1   3   3   3   3
-#&gt; 43   1   3   3   4   4
-#&gt; 44   1   3   3   3   3
-#&gt; 45   1   3   3   3   3
-#&gt; 46   1   3   3   3   3
-#&gt; 47   1   3   3   4   4
-#&gt; 48   1   3   3   3   3
-#&gt; 49   1   3   3   3   3
-#&gt; 50   1   3   3   3   3
-#&gt; 51   1   3   3   3   4
-#&gt; 52   1   3   3   3   3
-#&gt; 53   1   3   3   3   3
-#&gt; 54   1   3   3   3   3
-#&gt; 55   1   3   3   3   3
-#&gt; 56   1   3   3   4   4
-#&gt; 57   1   3   3   4   4
-#&gt; 58   1   3   3   3   3
-#&gt; 59   1   3   3   3   4
-#&gt; 60   1   3   3   3   4</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
+<span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span>]
+<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;           class    entropy  silhouette
+#&gt; sample_39     2 0.00000000 0.987257383
+#&gt; sample_40     2 0.00000000 0.987257383
+#&gt; sample_42     1 0.00000000 0.984506868
+#&gt; sample_47     1 0.00000000 0.984506868
+#&gt; sample_48     1 0.00000000 0.984506868
+#&gt; sample_49     2 0.00000000 0.987257383
+#&gt; sample_41     1 0.00000000 0.984506868
+#&gt; sample_43     1 0.00000000 0.984506868
+#&gt; sample_44     1 0.00000000 0.984506868
+#&gt; sample_45     1 0.00000000 0.984506868
+#&gt; sample_46     1 0.00000000 0.984506868
+#&gt; sample_70     1 0.00000000 0.984506868
+#&gt; sample_71     1 0.00000000 0.984506868
+#&gt; sample_72     1 0.00000000 0.984506868
+#&gt; sample_68     1 0.00000000 0.984506868
+#&gt; sample_69     1 0.00000000 0.984506868
+#&gt; sample_67     1 0.00000000 0.984506868
+#&gt; sample_55     2 0.00000000 0.987257383
+#&gt; sample_56     2 0.00000000 0.987257383
+#&gt; sample_59     1 0.00000000 0.984506868
+#&gt; sample_52     2 0.00000000 0.987257383
+#&gt; sample_53     2 0.00000000 0.987257383
+#&gt; sample_51     2 0.00000000 0.987257383
+#&gt; sample_50     2 0.00000000 0.987257383
+#&gt; sample_54     1 0.00000000 0.984506868
+#&gt; sample_57     2 0.00000000 0.987257383
+#&gt; sample_58     2 0.00000000 0.987257383
+#&gt; sample_60     1 0.99987176 0.001789621
+#&gt; sample_61     2 0.00000000 0.987257383
+#&gt; sample_65     2 0.00000000 0.987257383
+#&gt; sample_66     1 0.00000000 0.984506868
+#&gt; sample_63     2 0.00000000 0.987257383
+#&gt; sample_64     2 0.00000000 0.987257383
+#&gt; sample_62     2 0.00000000 0.987257383
+#&gt; sample_1      2 0.00000000 0.987257383
+#&gt; sample_2      1 0.00000000 0.984506868
+#&gt; sample_3      2 0.00000000 0.987257383
+#&gt; sample_4      2 0.00000000 0.987257383
+#&gt; sample_5      1 0.00000000 0.984506868
+#&gt; sample_6      2 0.00000000 0.987257383
+#&gt; sample_7      2 0.00000000 0.987257383
+#&gt; sample_8      2 0.00000000 0.987257383
+#&gt; sample_9      1 0.00000000 0.984506868
+#&gt; sample_10     1 0.05777796 0.978129400
+#&gt; sample_11     1 0.00000000 0.984506868
+#&gt; sample_12     2 0.00000000 0.987257383
+#&gt; sample_13     1 0.00000000 0.984506868
+#&gt; sample_14     1 0.00000000 0.984506868
+#&gt; sample_15     1 0.00000000 0.984506868
+#&gt; sample_16     1 0.00000000 0.984506868
+#&gt; sample_17     1 0.00000000 0.984506868
+#&gt; sample_18     2 0.99537844 0.123807706
+#&gt; sample_19     1 0.00000000 0.984506868
+#&gt; sample_20     1 0.00000000 0.984506868
+#&gt; sample_21     1 0.00000000 0.984506868
+#&gt; sample_22     2 0.00000000 0.987257383
+#&gt; sample_23     2 0.00000000 0.987257383
+#&gt; sample_24     1 0.00000000 0.984506868
+#&gt; sample_25     2 0.00000000 0.987257383
+#&gt; sample_26     1 0.00000000 0.984506868
+#&gt; sample_27     2 0.00000000 0.987257383
+#&gt; sample_34     2 0.00000000 0.987257383
+#&gt; sample_35     2 0.00000000 0.987257383
+#&gt; sample_36     2 0.00000000 0.987257383
+#&gt; sample_37     2 0.00000000 0.987257383
+#&gt; sample_38     2 0.00000000 0.987257383
+#&gt; sample_28     2 0.00000000 0.987257383
+#&gt; sample_29     1 0.00000000 0.984506868
+#&gt; sample_30     2 0.00000000 0.987257383
+#&gt; sample_31     2 0.00000000 0.987257383
+#&gt; sample_32     2 0.00000000 0.987257383
+#&gt; sample_33     2 0.00000000 0.987257383</div><div class='input'><span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>obj</span>)</div><div class='output co'>#&gt;           k=2 k=3 k=4 k=5 k=6
+#&gt; sample_39   2   3   3   3   3
+#&gt; sample_40   2   3   3   3   3
+#&gt; sample_42   1   1   4   4   6
+#&gt; sample_47   1   1   1   1   1
+#&gt; sample_48   1   1   1   1   1
+#&gt; sample_49   2   3   3   3   3
+#&gt; sample_41   1   1   1   1   1
+#&gt; sample_43   1   1   1   1   1
+#&gt; sample_44   1   1   1   1   1
+#&gt; sample_45   1   1   1   1   1
+#&gt; sample_46   1   1   1   1   1
+#&gt; sample_70   1   1   1   1   1
+#&gt; sample_71   1   1   4   4   6
+#&gt; sample_72   1   1   4   4   6
+#&gt; sample_68   1   1   1   1   1
+#&gt; sample_69   1   1   1   1   1
+#&gt; sample_67   1   1   4   4   6
+#&gt; sample_55   2   3   3   3   3
+#&gt; sample_56   2   3   3   3   3
+#&gt; sample_59   1   1   1   1   5
+#&gt; sample_52   2   2   2   2   2
+#&gt; sample_53   2   2   2   2   2
+#&gt; sample_51   2   2   2   2   2
+#&gt; sample_50   2   2   2   2   2
+#&gt; sample_54   1   1   1   5   5
+#&gt; sample_57   2   2   2   2   2
+#&gt; sample_58   2   2   2   2   3
+#&gt; sample_60   1   2   1   5   5
+#&gt; sample_61   2   2   2   2   2
+#&gt; sample_65   2   2   2   2   2
+#&gt; sample_66   1   1   1   1   1
+#&gt; sample_63   2   2   2   2   2
+#&gt; sample_64   2   2   2   2   3
+#&gt; sample_62   2   2   2   2   2
+#&gt; sample_1    2   3   3   3   3
+#&gt; sample_2    1   1   1   4   6
+#&gt; sample_3    2   3   3   3   4
+#&gt; sample_4    2   3   3   3   3
+#&gt; sample_5    1   1   1   1   1
+#&gt; sample_6    2   3   3   3   4
+#&gt; sample_7    2   3   3   3   3
+#&gt; sample_8    2   3   3   3   3
+#&gt; sample_9    1   1   1   1   1
+#&gt; sample_10   1   3   4   4   4
+#&gt; sample_11   1   1   4   4   6
+#&gt; sample_12   2   2   2   2   2
+#&gt; sample_13   1   1   1   1   1
+#&gt; sample_14   1   1   1   1   1
+#&gt; sample_15   1   1   1   1   1
+#&gt; sample_16   1   1   1   1   1
+#&gt; sample_17   1   1   1   1   1
+#&gt; sample_18   2   3   3   5   4
+#&gt; sample_19   1   1   1   1   1
+#&gt; sample_20   1   1   1   1   1
+#&gt; sample_21   1   1   1   1   1
+#&gt; sample_22   2   2   2   2   2
+#&gt; sample_23   2   3   3   3   4
+#&gt; sample_24   1   1   1   1   1
+#&gt; sample_25   2   3   2   2   2
+#&gt; sample_26   1   1   1   1   1
+#&gt; sample_27   2   3   3   3   3
+#&gt; sample_34   2   2   2   2   2
+#&gt; sample_35   2   2   2   2   3
+#&gt; sample_36   2   2   2   2   2
+#&gt; sample_37   2   2   2   2   2
+#&gt; sample_38   2   2   2   2   2
+#&gt; sample_28   2   2   2   2   2
+#&gt; sample_29   1   1   1   4   6
+#&gt; sample_30   2   2   2   2   2
+#&gt; sample_31   2   2   2   2   2
+#&gt; sample_32   2   2   2   2   2
+#&gt; sample_33   2   2   2   2   2</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -299,7 +329,7 @@ and the silhouette scores which measure the stability of a sample to stay in its
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

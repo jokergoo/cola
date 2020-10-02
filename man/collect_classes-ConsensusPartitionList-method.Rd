@@ -8,15 +8,17 @@ Collect classes from ConsensusPartitionList object
 }
 \usage{
 \S4method{collect_classes}{ConsensusPartitionList}(object, k, show_column_names = FALSE,
-    anno = get_anno(object), anno_col = get_anno_col(object), ...)
+    anno = get_anno(object), anno_col = get_anno_col(object),
+    simplify = FALSE, ...)
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object returned by \code{\link{run_all_consensus_partition_methods}}.}
   \item{k}{Number of subgroups.}
-  \item{show_column_names}{Whether show column names in the heatmap (which is the column name in the original matrix).}
+  \item{show_column_names}{Whether to show column names in the heatmap (which is the column name in the original matrix).}
   \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{run_all_consensus_partition_methods}}.}
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
+  \item{simplify}{Internally used.}
   \item{...}{Pass to \code{\link[ComplexHeatmap:draw-HeatmapList-method]{draw,HeatmapList-method}}.}
 
 }
@@ -39,6 +41,6 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-collect_classes(cola_rl, k = 3)
+data(golub_cola)
+collect_classes(golub_cola, k = 3)
 }

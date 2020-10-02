@@ -23,6 +23,6 @@ It draws heatmaps for statistics for multiple methods in parallel, so that users
 of methods gives the best results with given the number of subgroups.
 }
 \examples{
-data(cola_rl)
-collect_stats(cola_rl, k = 3)
+data(golub_cola)
+collect_stats(golub_cola, k = 3)
 }

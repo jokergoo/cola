@@ -1,6 +1,5 @@
 \name{compare_signatures-ConsensusPartition-method}
 \alias{compare_signatures,ConsensusPartition-method}
-\alias{compare_signatures}
 \title{
 Compare Signatures from Different k
 }
@@ -8,12 +7,13 @@ Compare Signatures from Different k
 Compare Signatures from Different k
 }
 \usage{
-\S4method{compare_signatures}{ConsensusPartition}(object, k = object@k, ...)
+\S4method{compare_signatures}{ConsensusPartition}(object, k = object@k, verbose = interactive(), ...)
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object. }
   \item{k}{Number of subgroups. Value should be a vector.}
+  \item{verbose}{Whether to print message.}
   \item{...}{Other arguments passed to \code{\link{get_signatures,ConsensusPartition-method}}.}
 
 }
@@ -21,7 +21,9 @@ Compare Signatures from Different k
 It plots an Euler diagram showing the overlap of signatures from different k.
 }
 \examples{
-# There is no example
-NULL
-
+\donttest{
+data(golub_cola)
+res = golub_cola["ATC", "skmeans"]
+compare_signatures(res)
+}
 }

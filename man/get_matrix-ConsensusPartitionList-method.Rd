@@ -21,6 +21,6 @@ A numeric matrix.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-get_matrix(cola_rl)
+data(golub_cola)
+get_matrix(golub_cola)
 }

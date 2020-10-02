@@ -40,13 +40,15 @@ Examples for *cola* analysis can be found at https://jokergoo.github.io/cola_exa
 
 Online documentation is at https://jokergoo.github.io/cola.
 
-Supplementary for the *cola* manuscript is at https://jokergoo.github.io/cola_supplementary and the scripts are at https://jokergoo.github.io/cola_manuscript.
+Supplementary for the *cola* manuscript is at https://github.com/jokergoo/cola_supplementary and the scripts are at https://github.com/jokergoo/cola_manuscript.
 
 ## Vignettes
 
 1. [A Quick Start of Using cola Package](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/a_quick_start.html)
 2. [A Framework for Consensus Partitioning](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html)
 3. [Automatic Functional Enrichment on Signature genes](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html)
+4. [Predict Classes for New Samples](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/predict.html)
+5. [Work with Big Datasets](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/work_with_big_datasets.html)
 
 ## Consensus Partitioning
 

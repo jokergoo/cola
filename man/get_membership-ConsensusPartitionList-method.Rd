@@ -31,6 +31,6 @@ A membership matrix where rows correspond to the columns in the original matrix.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-get_membership(cola_rl, k = 2)
+data(golub_cola)
+get_membership(golub_cola, k = 2)
 }

@@ -19,6 +19,9 @@ Test correspondance between predicted subgroups and known factors
   \item{verbose}{Whether to print messages.}
 
 }
+\details{
+The test is performed by \code{\link{test_between_factors}} between the predicted classes and user's annotation table.
+}
 \value{
 A data frame with the following columns:
 
@@ -28,13 +31,15 @@ A data frame with the following columns:
   \item number of subgroups.
 }
 }
-\seealso{
-\code{\link{test_between_factors}}
-}
 \author{
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-test_to_known_factors(cola_rl[1, 1], known = 1:40)
+data(golub_cola)
+res = golub_cola["ATC:skmeans"]
+anno = get_anno(res)
+anno
+test_to_known_factors(res, k = 3)
+# or explicitly specify known argument
+test_to_known_factors(res, k = 3, known = anno)
 }

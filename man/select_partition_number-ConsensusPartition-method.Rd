@@ -36,6 +36,6 @@ No value is returned.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-select_partition_number(cola_rl["SD", "hclust"])
+data(golub_cola)
+select_partition_number(golub_cola["ATC", "skmeans"])
 }

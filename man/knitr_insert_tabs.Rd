@@ -17,7 +17,7 @@ knitr_insert_tabs(uid)
 \details{
 The jQuery UI is used to generate html tabs (\url{https://jqueryui.com/tabs/} ).
 
-\code{\link{knitr_insert_tabs}} should be used after several callings of \code{\link{knitr_add_tab_item}}
+\code{\link{knitr_insert_tabs}} should be used after several calls of \code{\link{knitr_add_tab_item}}
 to generate a complete HTML fragment for all tabs with all necessary Javascript and css code.
 
 This function is only for internal use.

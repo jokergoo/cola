@@ -14,7 +14,7 @@ Get parameters
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
   \item{k}{Number of subgroups.}
-  \item{unique}{Whether apply \code{\link[base]{unique}} to rows of the returned data frame.}
+  \item{unique}{Whether to apply \code{\link[base]{unique}} to rows of the returned data frame.}
 
 }
 \details{
@@ -28,8 +28,8 @@ to a partition run.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-obj = cola_rl["SD", "kmeans"]
+data(golub_cola)
+obj = golub_cola["ATC", "skmeans"]
 get_param(obj)
 get_param(obj, k = 2)
 get_param(obj, unique = FALSE)

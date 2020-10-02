@@ -1,6 +1,6 @@
 
 
-KNITR_TAB_ENV = new.env()
+KNITR_TAB_ENV = new.env(parent = emptyenv())
 KNITR_TAB_ENV$current_tab_index = 0
 KNITR_TAB_ENV$header = NULL
 KNITR_TAB_ENV$current_html = ""
@@ -8,7 +8,7 @@ KNITR_TAB_ENV$prefix = NULL
 KNITR_TAB_ENV$css_added = FALSE
 
 # == title
-# Add one JavaScript tab in the report
+# Add JavaScript tab in the report
 #
 # == param
 # -code R code to execute.
@@ -106,7 +106,7 @@ $('#@{tab}-a').click(function(){
 # == details
 # The jQuery UI is used to generate html tabs (https://jqueryui.com/tabs/ ).
 #
-# `knitr_insert_tabs` should be used after several callings of `knitr_add_tab_item`
+# `knitr_insert_tabs` should be used after several calls of `knitr_add_tab_item`
 # to generate a complete HTML fragment for all tabs with all necessary Javascript and css code.
 #
 # This function is only for internal use.
@@ -162,9 +162,9 @@ $( function() {
 # -env Where the objects in the report are found, internally used.
 #
 # == details
-# The `ConsensusPartitionList-class` object contains results for all top-value methods and all partitioning methods.
+# The `ConsensusPartitionList-class` object contains results for all combinations of top-value methods and partitioning methods.
 # This function generates a HTML report which contains all plots and tables for every combination
-# of top-value method and partitioning method. 
+# of method. 
 #
 # The report generation may take a while because it generates A LOT of heatmaps.
 #
@@ -177,18 +177,17 @@ $( function() {
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# \dontrun{
-# data(cola_rl)
-# cola_report(cola_rl[c("SD", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
+# if(FALSE) {
+# # the following code is runnable
+# data(golub_cola)
+# cola_report(golub_cola[c("SD", "MAD"), c("hclust", "skmeans")], output_dir = "~/test_cola_cl_report")
 # }
 setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
 	definition = function(object, output_dir = getwd(), mc.cores = 1, 
 	title = "cola Report for Consensus Partitioning", env = parent.frame()) {
 
-	if(!requireNamespace("genefilter")) {
-		stop_wrap("You need to install genefilter package (from Bioconductor).")
-	}
+	check_pkg("genefilter", bioc = TRUE)
 	var_name = deparse(substitute(object, env = env))
 	make_report(var_name, object, output_dir, mc.cores = mc.cores, title = title, class = "ConsensusPartitionList")
 
@@ -222,9 +221,7 @@ setMethod(f = "cola_report",
 	title = qq("cola Report for Consensus Partitioning (@{object@top_value_method}:@{object@partition_method})"), 
 	env = parent.frame()) {
 
-	if(!requireNamespace("genefilter")) {
-		stop_wrap("You need to install genefilter package (from Bioconductor).")
-	}
+	check_pkg("genefilter", bioc = TRUE)
 	var_name = deparse(substitute(object, env = env))
 	make_report(var_name, object, output_dir, mc.cores = 1, title = title, class = "ConsensusPartition")
 })
@@ -232,11 +229,15 @@ setMethod(f = "cola_report",
 
 
 make_report = function(var_name, object, output_dir, title = "cola Report for Consensus Partitioning", 
-	mc.cores = 1, class = class(object)) {
+	mc.cores = 1, class = class(object), ask = FALSE) {
 
 	if(!multicore_supported()) {
 		if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
 		mc.cores = 1
+	}
+
+	if(identical(topenv(), .GlobalEnv)) {
+		stop_wrap("`cola_report()` cannot be run under test mode.")
 	}
 
 	KNITR_TAB_ENV$prefix = NULL
@@ -249,10 +250,9 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 		          "ConsensusPartitionList" = "cola_report.html",
 		          "ConsensusPartition" = "cola_single.html")
 
-	cola_opt$raster_resize = TRUE
-
 	od = getOption("digits")
 	wd = getwd()
+	nv = length(dev.list())
 	on.exit({
 		options(digits = od)
 		setwd(wd)
@@ -260,7 +260,11 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 			unlink(.ENV$TEMP_DIR, recursive = TRUE, force = TRUE)
 			.ENV$TEMP_DIR = NULL
 		}
-		cola_opt$raster_resize = FALSE
+		nv2 = length(dev.list())
+		while(nv2 > nv & nv2 > 1) {
+			dev.off2()
+			nv2 = length(dev.list())
+		}
 	})
 
 	options(digits = 3)
@@ -270,19 +274,20 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 	output_dir = normalizePath(output_dir, mustWork = FALSE)
 
-	if(file.exists(output_dir)) {
-		fileinfo = file.info(output_dir)
-		if(!fileinfo$isdir) {
-			output_dir = dirname(output_dir)
-		}
-	}
-
 	message(qq("* generating cola report for `@{var_name}` (a @{class} object)"))
 	message(qq("* the report is available at @{output_dir}/"))
 
 	if(dir.exists(file.path(output_dir, "figure_cola"))) {
 		fl = list.files(file.path(output_dir, "figure_cola"), pattern = "\\.png$", full.names = TRUE)
 		if(length(fl)) {
+			if(ask) {
+				answer = readline("Found a 'figure_cola/' folder in the report folder, overwrite it? [y|n]?")
+				if(tolower(answer) %in% c("y", "yes")) {
+					
+				} else {
+					stop_wrap("Folder 'figure_cola/' cannot be deleted. Maybe you should choose another location for saving the report or delete it manually.")
+				}
+			}
 			message(qq("* removing @{length(fl)} figures which were generated by previous report"))
 			file.remove(fl)
 		}

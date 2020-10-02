@@ -25,8 +25,8 @@ If \code{k} is not specified, it returns a data frame with subgroup labels from 
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-obj = cola_rl["SD", "kmeans"]
+data(golub_cola)
+obj = golub_cola["ATC", "skmeans"]
 get_classes(obj, k = 2)
 get_classes(obj)
 }

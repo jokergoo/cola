@@ -25,6 +25,7 @@ opts_chunk$set(
 )
 suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
+ht_opt$message = FALSE
 ```
 
 <% res = object -%>
@@ -65,8 +66,6 @@ Partitioning method used:
 res@partition_method
 ```
 
-### Density distribution
-
 The density distribution for each sample is visualized as in one column in the
 following heatmap. The clustering is based on the distance which is the
 Kolmogorov-Smirnov statistic between two distributions.
@@ -102,7 +101,7 @@ has_known_anno = TRUE -%>
 ```{r, results = "asis", echo = FALSE}
 fs = min(c(3*1, 14))/1
 
-is_hc = FALSE
+is_hcp = FALSE
 node = NULL
 single_report = TRUE
 
@@ -112,6 +111,7 @@ i_section = 1
 n_section = 1
 top_value_method = res@top_value_method
 partition_method = res@partition_method
+
 tmpfile = tempfile(tmpdir = cola:::.ENV$TEMP_DIR)
 
 brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)
@@ -120,6 +120,10 @@ invisible(file.remove(tmpfile))
 
 ComplexHeatmap:::dev.null()
 txt = knit(text = rmd, quiet = TRUE)
+devlt = dev.list()
+if(names(devlt)[1] == "quartz_off_screen") {
+	invisible(dev.off())
+}
 invisible(dev.off())
 cat(txt, "\n")
 ```

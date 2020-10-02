@@ -1,0 +1,172 @@
+---
+title: "Predict Classes for New Samples"
+author: "Zuguang Gu ( z.gu@dkfz.de )"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{4. Predict Classes for New Samples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, message = FALSE}
+library(markdown)
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    fig.align = "center")
+options(width = 100)
+options(rmarkdown.html_vignette.check_title = FALSE)
+library(cola)
+```
+
+`predict_classes()` function predicts sample classes based on cola
+classification. It is mainly used in the following two scenarios: 
+
+1. Predict sample classes in a new study.
+2. For a dataset with huge number of samples, users can apply *cola* on a randomly 
+   sampled subset of samples and predict classes for the remaining samples.
+
+To use a *cola* classification, users need to select the result from a specific
+top-value method and partitioning method, i.e., the input should be a
+`ConsensusPartition` object. In the following example, we use the analysis
+from [Golub dataset](https://jokergoo.github.io/cola_examples/Golub_leukemia/)
+and we take the result from the method `ATC:skmeans`.
+
+```{r}
+data(golub_cola)
+res = golub_cola["ATC:skmeans"]
+res
+```
+
+`predict_classes()` needs at least three arguments: a `ConsensusPartition`
+object, the number of subgroups and the new matrix. The first two are for
+extracting the classification as well as the signatures that best separate
+subgroups. The new matrix should have the same number of rows as the matrix
+used for *cola* analysis, also the row orders should be the same. **Be careful
+that the scaling of the new matrix should also be the same as the one applied
+in cola analysis.**
+
+The prediction is based on **the signature centroid matrix**. The processes
+are as follows:
+
+1. For the provided `ConsensusPartition` object and a selected k, the
+   signatures that discriminate classes are extracted by `get_signatures()`.
+   If number of signatures is more than 2000, only 2000 signatures are randomly
+   sampled.
+2. The signature centroid matrix is a k-column matrix where each column is the
+   centroid of samples in the corresponding class, i.e., the mean across
+   samples. If rows were scaled in *cola* analysis, the signature centroid
+   matrix is the mean of scaled values and vise versa. Please note the samples
+   with silhouette score less than `silhouette_cutoff` (0.5 as the default)
+   are removed for calculating the centroids.
+3. With the signature centroid matrix and the new matrix, it perform the
+   prediction.
+
+The class prediction is applied as follows. For each sample in the new matrix,
+the task is basically to test which signature centroid the current sample is
+the closest to. There are three methods: the Euclidean distance, cosine distance (it is `1-cos(x, y)`) and the
+correlation (Spearman) distance. 
+
+For the Euclidean distance and cosine distance method, for the vector denoted as $x$ which
+corresponds to sample $i$ in the new matrix, to test which class should be
+assigned to sample $i$, the distance between sample $i$ and all $k$ signature
+centroids are calculated and denoted as $d_1$, $d_2$, ..., $d_k$. The class
+with the smallest distance is assigned to sample $i$.
+
+To test whether the class assignment is statistically significant, or to test
+whether the class that is assigned is significantly closest to sample $i$, we
+design a statistic named "_difference ratio_", denoted as $r$ and calculated as
+follows. First, The distances for $k$ centroids are sorted increasingly, and we 
+calculate $r$ as: 
+
+$$r = \frac{|d_{(1)} - d_{(2)}|}{\bar{d}}$$
+
+which is the difference between the smallest distance and the second smallest
+distance, normalized by the mean distance. To test the statistical
+significance of $r$, we randomly permute rows of the signature centroid matrix
+and calculate $r_{rand}$. The random permutation is performed 1000 times and the p-value is calculated as the proportion of
+$r_{rand}$ being larger than $r$.
+
+For the correlation method, the distance is calculated as the Spearman
+correlation between sample $i$ and signature centroid $k$. The label for the
+class with the maximal correlation value is assigned to sample $i$. The
+p-value is simply calculated by `stats::cor.test()` between sample $i$ and
+centroid $k$.
+
+If a sample is tested with a p-value higher than 0.05, the
+corresponding class label is set to `NA`.
+
+To demonstrate the use of `predict_classes()`, we use the same matrix as for *cola*
+analysis.
+
+```{r}
+mat = get_matrix(res)
+```
+
+Note the matrix was row-scaled in *cola* analysis, thus, `mat` should also be scaled
+with the same method (z-score scaling).
+
+```{r}
+mat2 = t(scale(t(mat)))
+```
+
+And we predict the class of `mat2` with the 3-group classification from `res`.
+
+
+```{r, fig.width = 8, fig.height = 6, out.width = "600"}
+cl = predict_classes(res, k = 3, mat2)
+cl
+```
+
+We compare to the original classification:
+
+```{r}
+data.frame(cola_class = get_classes(res, k = 3)[, "class"],
+           predicted = cl[, "class"])
+```
+
+`predict_classes()` generates a plot which shows the process of the prediction. 
+The left heatmap corresponds to the new matrix and the right small heatmap corresponds
+to the signature centroid matrix. The purple annotation on top of the first heatmap
+illustrates the distance of each sample to the k signatures.
+
+
+And if we change to correlation method:
+
+```{r, fig.width = 8, fig.height = 6, out.width = "600"}
+cl = predict_classes(res, k = 3, mat2, dist_method = "correlation")
+cl
+```
+
+As we can see from the above two heatmaps, correlation method is less strict than
+the Euclidean method that the two samples that cannot be assigned to any class with
+Euclidean method are assigned with certain classes under correlation method.
+
+`predict_classes()` can also be directly applied to a signature centroid matrix.
+Following is how we manually generate the signature centroid matrix for 3-group
+classification from Golub dataset:
+
+```{r}
+tb = get_signatures(res, k = 3, plot = FALSE)
+# the centroids are already in `tb`, both scaled and unscaled, we just simply extract it
+sig_mat = tb[, grepl("scaled_mean", colnames(tb))]
+sig_mat = as.matrix(sig_mat)
+colnames(sig_mat) = paste0("class", seq_len(ncol(sig_mat)))
+head(sig_mat)
+```
+
+And `sig_mat` can be used in `predict_classes()`:
+
+```{r, eval = FALSE}
+cl = predict_classes(sig_mat, mat2)
+cl = predict_classes(sig_mat, mat2, dist_method = "correlation")
+```
+
+
+```{r}
+sessionInfo()
+```
+

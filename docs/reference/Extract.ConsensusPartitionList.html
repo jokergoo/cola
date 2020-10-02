@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="Subset a ConsensusPartitionList object — [.ConsensusPartitionList" />
 <meta property="og:description" content="Subset a ConsensusPartitionList object" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -95,17 +98,26 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/a_quick_start.html">UNKNOWN TITLE</a>
+      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
     </li>
     <li>
-      <a href="../articles/functional_enrichment.html">UNKNOWN TITLE</a>
+      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
+    </li>
+    <li>
+      <a href="../articles/predict.html">Predict Classes for New Samples</a>
+    </li>
+    <li>
+      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/cola">
+  <a href="https://github.com/jokergoo/cola/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -165,9 +177,9 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
     <p>A <code><a href='ConsensusPartitionList-class.html'>ConsensusPartitionList-class</a></code> object or a <code><a href='ConsensusPartition-class.html'>ConsensusPartition-class</a></code> object.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='no'>cola_rl</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SD"</span>, <span class='st'>"MAD"</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hclust"</span>, <span class='st'>"kmeans"</span>)]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
-#&gt;   On a matrix with 60 rows and 60 columns.
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
+<span class='no'>golub_cola</span>[<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SD"</span>, <span class='st'>"MAD"</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"hclust"</span>, <span class='st'>"kmeans"</span>)]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
+#&gt;   On a matrix with 4116 rows and 72 columns.
 #&gt;   Top rows are extracted by 'SD, MAD' methods.
 #&gt;   Subgroups are detected by 'hclust, kmeans' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
@@ -184,12 +196,12 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
 #&gt; You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
-#&gt; or a subset of methods by object[c("SD", "MAD")], c("hclust", "kmeans")]</div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
-#&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows (20, 30, 40) are extracted by 'SD' method.
+#&gt; or a subset of methods by object[c("SD", "MAD")], c("hclust", "kmeans")]</div><div class='input'><span class='no'>golub_cola</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
+#&gt;   On a matrix with 4116 rows and 72 columns.
+#&gt;   Top rows (412, 824, 1235) are extracted by 'SD' method.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Performed in total 750 partitions by row resampling.
-#&gt;   Best k for subgroups seems to be 3.
+#&gt;   Best k for subgroups seems to be 2.
 #&gt; 
 #&gt; Following methods can be applied to this 'ConsensusPartition' object:
 #&gt;  [1] "cola_report"             "collect_classes"        
@@ -204,14 +216,14 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 #&gt; [19] "is_best_k"               "is_stable_k"            
 #&gt; [21] "membership_heatmap"      "ncol"                   
 #&gt; [23] "nrow"                    "plot_ecdf"              
-#&gt; [25] "rownames"                "select_partition_number"
-#&gt; [27] "show"                    "suggest_best_k"         
-#&gt; [29] "test_to_known_factors"  </div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD:kmeans"</span>] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
-#&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows (20, 30, 40) are extracted by 'SD' method.
+#&gt; [25] "predict_classes"         "rownames"               
+#&gt; [27] "select_partition_number" "show"                   
+#&gt; [29] "suggest_best_k"          "test_to_known_factors"  </div><div class='input'><span class='no'>golub_cola</span>[<span class='st'>"SD:kmeans"</span>] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
+#&gt;   On a matrix with 4116 rows and 72 columns.
+#&gt;   Top rows (412, 824, 1235) are extracted by 'SD' method.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Performed in total 750 partitions by row resampling.
-#&gt;   Best k for subgroups seems to be 3.
+#&gt;   Best k for subgroups seems to be 2.
 #&gt; 
 #&gt; Following methods can be applied to this 'ConsensusPartition' object:
 #&gt;  [1] "cola_report"             "collect_classes"        
@@ -226,14 +238,14 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 #&gt; [19] "is_best_k"               "is_stable_k"            
 #&gt; [21] "membership_heatmap"      "ncol"                   
 #&gt; [23] "nrow"                    "plot_ecdf"              
-#&gt; [25] "rownames"                "select_partition_number"
-#&gt; [27] "show"                    "suggest_best_k"         
-#&gt; [29] "test_to_known_factors"  </div><div class='input'><span class='no'>cola_rl</span><span class='kw'>[[</span><span class='st'>"SD:kmeans"</span>]] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
-#&gt;   On a matrix with 60 rows and 60 columns.
-#&gt;   Top rows (20, 30, 40) are extracted by 'SD' method.
+#&gt; [25] "predict_classes"         "rownames"               
+#&gt; [27] "select_partition_number" "show"                   
+#&gt; [29] "suggest_best_k"          "test_to_known_factors"  </div><div class='input'><span class='no'>golub_cola</span><span class='kw'>[[</span><span class='st'>"SD:kmeans"</span>]] <span class='co'># a ConsensusPartition object</span></div><div class='output co'>#&gt; A 'ConsensusPartition' object with k = 2, 3, 4, 5, 6.
+#&gt;   On a matrix with 4116 rows and 72 columns.
+#&gt;   Top rows (412, 824, 1235) are extracted by 'SD' method.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Performed in total 750 partitions by row resampling.
-#&gt;   Best k for subgroups seems to be 3.
+#&gt;   Best k for subgroups seems to be 2.
 #&gt; 
 #&gt; Following methods can be applied to this 'ConsensusPartition' object:
 #&gt;  [1] "cola_report"             "collect_classes"        
@@ -248,10 +260,10 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 #&gt; [19] "is_best_k"               "is_stable_k"            
 #&gt; [21] "membership_heatmap"      "ncol"                   
 #&gt; [23] "nrow"                    "plot_ecdf"              
-#&gt; [25] "rownames"                "select_partition_number"
-#&gt; [27] "show"                    "suggest_best_k"         
-#&gt; [29] "test_to_known_factors"  </div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>] <span class='co'># still a ConsensusPartitionList object</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 1 methods.
-#&gt;   On a matrix with 60 rows and 60 columns.
+#&gt; [25] "predict_classes"         "rownames"               
+#&gt; [27] "select_partition_number" "show"                   
+#&gt; [29] "suggest_best_k"          "test_to_known_factors"  </div><div class='input'><span class='no'>golub_cola</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>] <span class='co'># still a ConsensusPartitionList object</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 1 methods.
+#&gt;   On a matrix with 4116 rows and 72 columns.
 #&gt;   Top rows are extracted by 'SD' methods.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
@@ -267,8 +279,8 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 #&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
-#&gt; You can get result for a single method by, e.g. object["SD", "kmeans"] or object["SD:kmeans"]</div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD:kmeans"</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>] <span class='co'># still a ConsensusPartitionList object</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 1 methods.
-#&gt;   On a matrix with 60 rows and 60 columns.
+#&gt; You can get result for a single method by, e.g. object["SD", "kmeans"] or object["SD:kmeans"]</div><div class='input'><span class='no'>golub_cola</span>[<span class='st'>"SD:kmeans"</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>] <span class='co'># still a ConsensusPartitionList object</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 1 methods.
+#&gt;   On a matrix with 4116 rows and 72 columns.
 #&gt;   Top rows are extracted by 'SD' methods.
 #&gt;   Subgroups are detected by 'kmeans' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
@@ -284,8 +296,8 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 #&gt; [19] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
-#&gt; You can get result for a single method by, e.g. object["SD", "kmeans"] or object["SD:kmeans"]</div><div class='input'><span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, ]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 5 methods.
-#&gt;   On a matrix with 60 rows and 60 columns.
+#&gt; You can get result for a single method by, e.g. object["SD", "kmeans"] or object["SD:kmeans"]</div><div class='input'><span class='no'>golub_cola</span>[<span class='st'>"SD"</span>, ]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 5 methods.
+#&gt;   On a matrix with 4116 rows and 72 columns.
 #&gt;   Top rows are extracted by 'SD' methods.
 #&gt;   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
@@ -302,8 +314,8 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
 #&gt; You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
-#&gt; or a subset of methods by object["SD"], c("hclust", "kmeans")]</div><div class='input'><span class='no'>cola_rl</span>[, <span class='st'>"hclust"</span>]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
-#&gt;   On a matrix with 60 rows and 60 columns.
+#&gt; or a subset of methods by object["SD"], c("hclust", "kmeans")]</div><div class='input'><span class='no'>golub_cola</span>[, <span class='st'>"hclust"</span>]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
+#&gt;   On a matrix with 4116 rows and 72 columns.
 #&gt;   Top rows are extracted by 'SD, CV, MAD, ATC' methods.
 #&gt;   Subgroups are detected by 'hclust' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
@@ -320,8 +332,8 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 #&gt; [22] "top_rows_overlap"     
 #&gt; 
 #&gt; You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
-#&gt; or a subset of methods by object[c("SD", "CV")], "hclust"]</div><div class='input'><span class='no'>cola_rl</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>:<span class='fl'>2</span>]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
-#&gt;   On a matrix with 60 rows and 60 columns.
+#&gt; or a subset of methods by object[c("SD", "CV")], "hclust"]</div><div class='input'><span class='no'>golub_cola</span>[<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>1</span>:<span class='fl'>2</span>]</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 4 methods.
+#&gt;   On a matrix with 4116 rows and 72 columns.
 #&gt;   Top rows are extracted by 'SD, CV' methods.
 #&gt;   Subgroups are detected by 'hclust, kmeans' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
@@ -340,17 +352,10 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 #&gt; You can get result for a single method by, e.g. object["SD", "hclust"] or object["SD:hclust"]
 #&gt; or a subset of methods by object[c("SD", "CV")], c("hclust", "kmeans")]</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -361,7 +366,7 @@ subset by e.g. <code>x['SD:hclust']</code>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

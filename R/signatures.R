@@ -9,6 +9,8 @@
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
 # -fdr_cutoff Cutoff for FDR of the difference test between subgroups.
+# -top_signatures Top signatures with most significant fdr. Note since fdr might be same for multiple rows,
+#          the final number of signatures might not be exactly the same as the one that has been set.
 # -group_diff Cutoff for the maximal difference between group means.
 # -scale_rows Whether apply row scaling when making the heatmap.
 # -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
@@ -20,6 +22,7 @@
 # -internal Used internally.
 # -show_row_dend Whether show row dendrogram.
 # -show_column_names Whether show column names in the heatmap.
+# -column_names_gp Graphics parameters for column names.
 # -use_raster Internally used.
 # -plot Whether to make the plot.
 # -verbose Whether to print messages.
@@ -29,7 +32,10 @@
 #              rows are automatically performed on the annotation object.
 # -right_annotation Annotation put on the right of the heatmap. Same format as ``left_annotation``.
 # -col Colors.
-# -simplify Only use internally.
+# -simplify Only used internally.
+# -prefix Only used internally.
+# -enforce The analysis is cached by default, so that the analysis with the same input will be automatically extracted
+#     without rerunning them. Set ``enforce`` to ``TRUE`` to enforce the funtion to re-perform the analysis.
 # -... Other arguments.
 # 
 # == details 
@@ -60,11 +66,18 @@
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
 #
+# == example
+# data(golub_cola)
+# res = golub_cola["ATC", "skmeans"]
+# tb = get_signatures(res, k = 3)
+# head(tb)
+# get_signatures(res, k = 3, top_signatures = 100)
 setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = cola_opt$fdr_cutoff, 
+	top_signatures = NULL,
 	group_diff = cola_opt$group_diff,
 	scale_rows = object@scale_rows,
 	row_km = NULL,
@@ -73,17 +86,17 @@ setMethod(f = "get_signatures",
 	anno_col = get_anno_col(object),
 	internal = FALSE,
 	show_row_dend = FALSE,
-	show_column_names = FALSE, use_raster = TRUE,
+	show_column_names = FALSE, 
+	column_names_gp = gpar(fontsize = 8),
+	use_raster = TRUE,
 	plot = TRUE, verbose = TRUE, seed = 888,
 	left_annotation = NULL, right_annotation = NULL,
 	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
-	simplify = FALSE,
+	simplify = FALSE, prefix = "", enforce = FALSE,
 	...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 	
-	raster_resize = cola_opt$raster_resize
-
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
 
@@ -103,7 +116,7 @@ setMethod(f = "get_signatures",
 	has_ambiguous = sum(!column_used_logical)
 	n_sample_used = length(class)
 
-	if(verbose) qqcat("* @{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
+	if(verbose) qqcat("@{prefix}* @{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
 
 	tb = table(class)
 	if(sum(tb > 1) <= 1) {
@@ -112,6 +125,7 @@ setMethod(f = "get_signatures",
 			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
 			grid.text("not enough samples", gp = gpar(fontsize = fontsize))
 		}
+		if(verbose) qqcat("@{prefix}* Not enough samples.\n")
 		return(invisible(data.frame(which_row = integer(0))))
 	}
 	if(length(unique(class)) <= 1) {
@@ -120,16 +134,23 @@ setMethod(f = "get_signatures",
 			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
 			grid.text("not enough classes", gp = gpar(fontsize = fontsize))
 		}
+		if(verbose) qqcat("@{prefix}* Not enough classes.\n")
 		return(invisible(data.frame(which_row = integer(0))))
 	}
 
 	do_row_clustering = TRUE
 	if(inherits(diff_method, "function")) {
-		if(verbose) qqcat("* calculate row difference between subgroups by user-defined function.\n")
+		if(verbose) qqcat("@{prefix}* calculate row difference between subgroups by user-defined function.\n")
 		diff_method_fun = diff_method
 		diff_method = digest(diff_method)
 	} else {
 		diff_method = match.arg(diff_method)
+	}
+
+	if(!is.null(top_signatures)) {
+		if(diff_method %in% c("samr", "pamr")) {
+			if(verbose) qqcat("`top_signatures` is ignored when `diff_method` is set to samr/pamr.\n")
+		}
 	}
 
 	hash = digest(list(used_samples = which(l), 
@@ -137,26 +158,30 @@ setMethod(f = "get_signatures",
 		               n_group = k, 
 		               diff_method = diff_method,
 		               column_index = object@column_index,
-		               fdr_cutoff = fdr_cutoff,
 		               group_diff = group_diff,
+		               fdr_cutoff = fdr_cutoff,
+		               top_signatures = top_signatures,
 		               seed = seed),
-				algo = "md5")
+					algo = "md5")
+	
 	nm = paste0("signature_fdr_", hash)
-	if(verbose) qqcat("* cache hash: @{hash} (seed @{seed}).\n")
+	if(verbose) qqcat("@{prefix}* cache hash: @{hash} (seed @{seed}).\n")
+
+	if(enforce) object@.env[[nm]] = NULL
 
 	find_signature = TRUE
 	if(!is.null(object@.env[[nm]])) {
 		if(diff_method == "samr") {
 			if(object@.env[[nm]]$diff_method == "samr" && 
 			   object@.env[[nm]]$n_sample_used == n_sample_used && 
-			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-10) {
 				fdr = object@.env[[nm]]$fdr
 				find_signature = FALSE
 			}
 		} else if(diff_method == "pamr") {
 			if(object@.env[[nm]]$diff_method == "pamr" && 
 			   object@.env[[nm]]$n_sample_used == n_sample_used && 
-			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-6) {
+			   abs(object@.env[[nm]]$fdr_cutoff - fdr_cutoff) < 1e-10) {
 				fdr = object@.env[[nm]]$fdr
 				find_signature = FALSE
 			}
@@ -169,8 +194,9 @@ setMethod(f = "get_signatures",
 		}
 	}
 
-	if(verbose) qqcat("* calculating row difference between subgroups by @{diff_method}.\n")
+	if(verbose) qqcat("@{prefix}* calculating row difference between subgroups by @{diff_method}.\n")
 	if(find_signature) {
+
 		if(diff_method == "ttest") {
 			fdr = ttest(data2, class)
 		} else if(diff_method == "samr") {
@@ -179,11 +205,27 @@ setMethod(f = "get_signatures",
 			fdr = Ftest(data2, class)
 		} else if(diff_method == "pamr") {
 			fdr = pamr(data2, class, fdr.ouput = fdr_cutoff)
+		} else if(diff_method == "one_vs_others") {
+			fdr = one_vs_others(data2, class)
 		} else {
 			fdr = diff_method_fun(data2, class)
 		}
 	} else {
-		if(verbose) qqcat("  - row difference is extracted from cache.\n")
+		if(verbose) qqcat("@{prefix}  - row difference is extracted from cache.\n")
+	}
+
+	if(!is.null(top_signatures)) {
+		fdr_cutoff = fdr[order(fdr)[min(length(fdr), top_signatures)]]
+	}
+
+	if(scale_rows && !is.null(object@.env[[nm]]$row_order_scaled)) {
+		row_order = object@.env[[nm]]$row_order_scaled
+		if(verbose) qqcat("@{prefix}  - row order for the scaled matrix is extracted from cache.\n")
+		do_row_clustering = FALSE
+	} else if(!scale_rows && !is.null(object@.env[[nm]]$row_order_unscaled)) {
+		row_order = object@.env[[nm]]$row_order_unscaled
+		if(verbose) qqcat("@{prefix}  - row order for the unscaled matrix is extracted from cache.\n")
+		do_row_clustering = FALSE
 	}
 
 	object@.env[[nm]]$diff_method = diff_method
@@ -192,20 +234,10 @@ setMethod(f = "get_signatures",
 	object@.env[[nm]]$n_sample_used = n_sample_used
 	object@.env[[nm]]$group_diff = group_diff
 
-	if(scale_rows && !is.null(object@.env[[nm]]$row_order_scaled)) {
-		row_order = object@.env[[nm]]$row_order_scaled
-		if(verbose) qqcat("  - row order for the scaled matrix is extracted from cache.\n")
-		do_row_clustering = FALSE
-	} else if(!scale_rows && !is.null(object@.env[[nm]]$row_order_unscaled)) {
-		row_order = object@.env[[nm]]$row_order_unscaled
-		if(verbose) qqcat("  - row order for the unscaled matrix is extracted from cache.\n")
-		do_row_clustering = FALSE
-	}
-
 	# filter by fdr
 	fdr[is.na(fdr)] = 1
 
-	l_fdr = fdr < fdr_cutoff
+	l_fdr = fdr <= fdr_cutoff
 	mat = data[l_fdr, , drop = FALSE]
 	fdr2 = fdr[l_fdr]
 	
@@ -251,6 +283,7 @@ setMethod(f = "get_signatures",
 	rownames(returned_obj) = NULL
 
 	attr(returned_obj, "sample_used") = column_used_logical
+	attr(returned_obj, "hash") = hash
 
 	## add k-means
 	row_km_fit = NULL
@@ -274,40 +307,39 @@ setMethod(f = "get_signatures",
 
 			if(!is.null(row_km_fit)) {
 				if(is.null(row_km) || identical(as.integer(row_km), length(row_km_fit$size))) {
-					returned_obj$km = apply(pdist(row_km_fit$centers, mat_for_km), 2, which.min)
+					returned_obj$km = apply(pdist(row_km_fit$centers, mat_for_km, as.integer(1)), 2, which.min)
 					do_kmeans = FALSE
-					if(verbose) qqcat("* use k-means partition that are already calculated in previous runs.\n")
+					if(verbose) qqcat("@{prefix}* use k-means partition that are already calculated in previous runs.\n")
 				}
 			}
 			if(do_kmeans) {
 				set.seed(seed)
 				if(is.null(row_km)) {
-					wss = (nrow(mat_for_km2)-1)*sum(apply(mat_for_km2,2,var))
-					max_km = min(c(nrow(mat_for_km) - 1, 15))
-					# if(verbose) qqcat("* apply k-means on rows with 2~@{max_km} clusters.\n")
-					for (i in 2:max_km) {
-						# if(verbose) qqcat("  - applying k-means with @{i} clusters.\n")
-						wss[i] = sum(kmeans(mat_for_km2, centers = i, iter.max = 50)$withinss)
-					}
-					row_km = min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
+					row_km = guess_best_km(mat_for_km2)
 					if(length(unique(class)) == 1) row_km = 1
 					if(length(unique(class)) == 2) row_km = min(row_km, 2)
 				}
 				if(row_km > 1) {
 					row_km_fit = kmeans(mat_for_km2, centers = row_km)
-					returned_obj$km = apply(pdist(row_km_fit$centers, mat_for_km), 2, which.min)
+					returned_obj$km = apply(pdist(row_km_fit$centers, mat_for_km, as.integer(1)), 2, which.min)
 					if(scale_rows) {
 						object@.env[[nm]]$row_km_fit_scaled = row_km_fit
 					} else {
 						object@.env[[nm]]$row_km_fit_unscaled = row_km_fit
 					}
 				}
-				if(verbose) qqcat("* split rows into @{row_km} groups by k-means clustering.\n")
+				if(verbose) qqcat("@{prefix}* split rows into @{row_km} groups by k-means clustering.\n")
 			}
 		}
 	}
 
-	if(verbose) qqcat("* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) under fdr < @{fdr_cutoff}, group_diff > @{group_diff}.\n")
+	if(verbose) {
+		if(is.null(top_signatures)) {
+			qqcat("@{prefix}* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) under fdr < @{fdr_cutoff}, group_diff > @{group_diff}.\n")
+		} else {
+			qqcat("@{prefix}* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with most significant fdr, group_diff > @{group_diff}.\n")
+		}
+	}
 
 	if(nrow(mat) == 0) {
 		if(plot) {
@@ -315,7 +347,7 @@ setMethod(f = "get_signatures",
 			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
 			grid.text("no sigatures", gp = gpar(fontsize = fontsize))
 		}
-		return(invisible(NULL))
+		return(invisible(data.frame(which_row = integer(0))))
 	}
 
 	if(!plot) {
@@ -323,17 +355,17 @@ setMethod(f = "get_signatures",
 	}
 
 	set.seed(seed)
-	more_than_5k = FALSE
+	more_than_2k = FALSE
 	if(!is.null(object@.env[[nm]]$row_index)) {
-		if(verbose) qqcat("  - use the 2000 signatures what are already generated in previous runs.\n")
+		if(verbose) qqcat("@{prefix}  - use the signatures that are already generated in previous runs.\n")
 		row_index = object@.env[[nm]]$row_index
 		mat1 = mat[row_index, column_used_logical, drop = FALSE]
 		mat2 = mat[row_index, !column_used_logical, drop = FALSE]
-		more_than_5k = TRUE
+		more_than_2k = TRUE
 		if(!is.null(left_annotation)) left_annotation = left_annotation[row_index, ]
 		if(!is.null(right_annotation)) right_annotation = right_annotation[row_index, ]
 	} else if(nrow(mat) > 2000) {
-		more_than_5k = TRUE
+		more_than_2k = TRUE
 		row_index = sample(1:nrow(mat), 2000)
 		object@.env[[nm]]$row_index = row_index
 		# mat1 = mat[order(fdr2)[1:top_k_genes], column_used_logical, drop = FALSE]
@@ -341,7 +373,7 @@ setMethod(f = "get_signatures",
 		mat1 = mat[row_index, column_used_logical, drop = FALSE]
 		mat2 = mat[row_index, !column_used_logical, drop = FALSE]
 		# group2 = group2[order(fdr2)[1:top_k_genes]]
-		if(verbose) cat(paste0("  - randomly sample 2000 signatures.\n"))
+		if(verbose) qqcat("@{prefix}  - randomly sample 2000 signatures.\n")
 		if(!is.null(left_annotation)) left_annotation = left_annotation[row_index, ]
 		if(!is.null(right_annotation)) right_annotation = right_annotation[row_index, ]
 	} else {
@@ -430,7 +462,11 @@ setMethod(f = "get_signatures",
 					return(NULL)
 				} else {
 					if(anno@color_mapping@type == "discrete") {
-						anno@color_mapping@colors
+						if(anno@name %in% names(object@anno_col)) {
+							object@anno_col[[anno@name]]
+						} else {
+							anno@color_mapping@colors
+						}
 					} else {
 						anno@color_mapping@col_fun
 					}
@@ -453,7 +489,7 @@ setMethod(f = "get_signatures",
 	silhouette_range = range(class_df$silhouette)
 	silhouette_range[2] = 1
 
-	if(verbose) qqcat("* making heatmaps for signatures.\n")
+	if(verbose) qqcat("@{prefix}* making heatmaps for signatures.\n")
 
 	row_split = NULL
 	if(!internal) {
@@ -482,17 +518,31 @@ setMethod(f = "get_signatures",
 				annotation_name_side = "right",
 				show_legend = TRUE)
 	} else {
-		ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
-			Class = class_df$class[column_used_logical],
-			silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
-				gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
-					      col = NA),
-				bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
-				height = unit(15, "mm")),
-			col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
-			show_annotation_name = !has_ambiguous & !internal,
-			annotation_name_side = "right",
-			show_legend = TRUE)
+		if(simplify) {
+			ha1 = HeatmapAnnotation(
+				Class = class_df$class[column_used_logical],
+				silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
+					gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
+						      col = NA),
+					bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+					height = unit(15, "mm")),
+				col = list(Class = cola_opt$color_set_2),
+				show_annotation_name = !has_ambiguous & !internal,
+				annotation_name_side = "right",
+				show_legend = TRUE)
+		} else {
+			ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
+				Class = class_df$class[column_used_logical],
+				silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
+					gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
+						      col = NA),
+					bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+					height = unit(15, "mm")),
+				col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
+				show_annotation_name = !has_ambiguous & !internal,
+				annotation_name_side = "right",
+				show_legend = TRUE)
+		}
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
 		top_annotation = ha1, row_split = row_split,
@@ -500,15 +550,15 @@ setMethod(f = "get_signatures",
 		column_split = factor(class_df$class[column_used_logical], levels = sort(unique(class_df$class[column_used_logical]))), 
 		show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = {if(internal) NULL else qq("@{ncol(use_mat1)} confident samples")},
-		use_raster = use_raster, raster_resize = raster_resize,
-		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
+		use_raster = use_raster, raster_by_magick = requireNamespace("magick", quietly = TRUE),
+		bottom_annotation = bottom_anno1, show_column_names = show_column_names, column_names_gp = column_names_gp,
 		left_annotation = left_annotation, right_annotation = {if(has_ambiguous) NULL else right_annotation})
  	
 	all_value_positive = !any(data < 0)
  	if(scale_rows && all_value_positive && !simplify) {
-		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"), show_column_names = !internal) +
+		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"), show_column_names = !internal, column_names_gp = column_names_gp) +
 			Heatmap(rel_diff, col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")), 
-				show_row_names = FALSE, show_column_names = !internal, name = "rel_diff", width = unit(5, "mm"))
+				show_row_names = FALSE, show_column_names = !internal, column_names_gp = column_names_gp, name = "rel_diff", width = unit(5, "mm"))
 	}
 
 	if(has_ambiguous) {
@@ -520,24 +570,39 @@ setMethod(f = "get_signatures",
 				annotation_name_side = "right",
 				show_legend = FALSE)
 		} else {
-			ha2 = HeatmapAnnotation(Prob = membership_mat[!column_used_logical, ,drop = FALSE],
-				Class = class_df$class[!column_used_logical],
-				silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
-					gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
-					      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
-					bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
-					height = unit(15, "mm")), 
-				col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
-				show_annotation_name = c(TRUE, TRUE, FALSE) & !internal,
-				annotation_name_side = "right",
-				show_legend = FALSE)
+			if(simplify) {
+				ha2 = HeatmapAnnotation(
+					Class = class_df$class[!column_used_logical],
+					silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
+						gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
+						      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
+						bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
+						height = unit(15, "mm")), 
+					col = list(Class = cola_opt$color_set_2),
+					show_annotation_name = c(TRUE, FALSE) & !internal,
+					annotation_name_side = "right",
+					show_legend = FALSE)
+			} else {
+				ha2 = HeatmapAnnotation(Prob = membership_mat[!column_used_logical, ,drop = FALSE],
+					Class = class_df$class[!column_used_logical],
+					silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
+						gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
+						      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
+						bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
+						height = unit(15, "mm")), 
+					col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
+					show_annotation_name = c(TRUE, TRUE, FALSE) & !internal,
+					annotation_name_side = "right",
+					show_legend = FALSE)
+			}
+			
 		}
 		ht_list = ht_list + Heatmap(use_mat2, name = paste0(heatmap_name, 2), col = col_fun,
 			top_annotation = ha2,
 			cluster_columns = TRUE, show_column_dend = FALSE,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
-			use_raster = use_raster, raster_resize = raster_resize,
-			bottom_annotation = bottom_anno2, show_column_names = show_column_names,
+			use_raster = use_raster, raster_by_magick = requireNamespace("magick", quietly = TRUE),
+			bottom_annotation = bottom_anno2, show_column_names = show_column_names, column_names_gp = column_names_gp,
 			right_annotation = right_annotation)
 	}
 
@@ -549,7 +614,12 @@ setMethod(f = "get_signatures",
 	}
 
 	if(do_row_clustering) {
-		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}")),
+		if(is.null(top_signatures)) {
+			column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}"))
+		} else {
+			column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with most significant fdr@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}"))
+		}
+		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = column_title,
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			heatmap_legend_list = heatmap_legend_list,
 			row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")}
@@ -564,8 +634,13 @@ setMethod(f = "get_signatures",
 		}
 		
 	} else {
-		if(verbose) cat("  - use row order from cache.\n")
-		draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}")),
+		if(verbose) qqcat("@{prefix}  - use row order from cache.\n")
+		if(is.null(top_signatures)) {
+			column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}"))
+		} else {
+			column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with most significant fdr@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}"))
+		}
+		draw(ht_list, main_heatmap = heatmap_name, column_title = column_title,
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = heatmap_legend_list,
 			row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")}
@@ -629,6 +704,8 @@ knee_finder = function(x, y) {
 
 compare_to_subgroup = function(mat, class, which = "highest") {
 
+	check_pkg("genefilter", bioc = TRUE)
+	
 	od = order(class)
 	class = class[od]
 	mat = mat[, od, drop = FALSE]
@@ -679,12 +756,14 @@ ttest = function(mat, class) {
 }
 
 one_vs_others = function(mat, class) {
+	check_pkg("genefilter", bioc = TRUE)
+	
 	le = unique(class)
 	dfl = list()
 	for(x in le) {
 		fa = as.vector(class)
-		fa[class == le] = "a"
-		fa[class != le] = "b"
+		fa[class == x] = "a"
+		fa[class != x] = "b"
 		fa = factor(fa, levels = c("a", "b"))
 		dfl[[x]] = genefilter::rowttests(mat, fa)[, "p.value"]
 	}
@@ -694,6 +773,7 @@ one_vs_others = function(mat, class) {
 }
 
 samr = function(mat, class, ...) {
+	check_pkg("samr", bioc = FALSE)
 	on.exit(if(sink.number()) sink(NULL))
 	class = as.numeric(factor(class))
 	n_class = length(unique(class))
@@ -727,6 +807,8 @@ samr = function(mat, class, ...) {
 }
 
 pamr = function(mat, class, fdr.cutoff = 0.1, ...) {
+	check_pkg("pamr", bioc = FALSE)
+
 	on.exit(if(sink.number()) sink(NULL))
 
 	class = as.numeric(factor(class))
@@ -750,14 +832,13 @@ pamr = function(mat, class, fdr.cutoff = 0.1, ...) {
 
 
 Ftest = function(mat, class) {
-	if(requireNamespace("genefilter")) {
-		p = getFromNamespace("rowFtests", "genefilter")(mat, factor(class))[, "p.value"]
-		fdr = p.adjust(p, "BH")
-		fdr[is.na(fdr)] = Inf
-		return(fdr)
-	} else {
-		stop_wrap("Cannot find 'genefilter' package.")
-	}
+
+	check_pkg("genefilter", bioc = TRUE)
+	p = genefilter::rowFtests(mat, factor(class))[, "p.value"]
+	fdr = p.adjust(p, "BH")
+	fdr[is.na(fdr)] = Inf
+	return(fdr)
+
 }
 
 # test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {
@@ -845,17 +926,26 @@ Ftest = function(mat, class) {
 # == param
 # -object A `ConsensusPartition-class` object. 
 # -k Number of subgroups. Value should be a vector.
+# -verbose Whether to print message.
 # -... Other arguments passed to `get_signatures,ConsensusPartition-method`.
 #
 # == details
 # It plots an Euler diagram showing the overlap of signatures from different k.
 #
+# == example
+# \donttest{
+# data(golub_cola)
+# res = golub_cola["ATC", "skmeans"]
+# compare_signatures(res)
+# }
 setMethod(f = "compare_signatures",
 	signature = "ConsensusPartition",
-	definition = function(object, k = object@k, ...) {
+	definition = function(object, k = object@k, verbose = interactive(), ...) {
 
+	check_pkg("eulerr", bioc = FALSE)
+	
 	sig_list = sapply(k, function(x) {
-		tb = get_signatures(object, k = x, ..., plot = FALSE)
+		tb = get_signatures(object, k = x, verbose = verbose, ..., plot = FALSE)
 		if(is.null(tb)) {
 			return(integer(0))
 		} else {
@@ -863,7 +953,13 @@ setMethod(f = "compare_signatures",
 		}
 	})
 
-	names(sig_list) = paste(k, "-group", sep = "")
+	l = sapply(sig_list, length) > 0
+	if(any(l) && verbose) {
+		qqcat("Following k have no signature found: \"@{paste(k[l], collapse=', ')}\"\n")
+	}
+	sig_list = sig_list[l]
+
+	names(sig_list) = paste(k[l], "-group", sep = "")
 
 	plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different k")
 

@@ -27,6 +27,6 @@ and the silhouette scores which measure the stability of a sample to stay in its
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-get_classes(cola_rl, k = 2)
+data(golub_cola)
+get_classes(golub_cola, k = 2)
 }

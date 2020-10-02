@@ -25,6 +25,7 @@ opts_chunk$set(
 )
 suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
+ht_opt$message = FALSE
 ```
 
 <% res_list = object -%>
@@ -345,7 +346,7 @@ knitr_insert_tabs('test-to-known-factors-from-consensus-partition-list')
 
 ```{r, results = "asis", echo = FALSE}
 fs = min(c(3*length(res_list@top_value_method), 14))/length(res_list@top_value_method)
-is_hc = FALSE
+is_hcp = FALSE
 single_report = FALSE
 node = NULL
 n_section = n_top_value_method * n_partition_method
@@ -357,6 +358,7 @@ md_list = mclapply(seq_len(nrow(comb)), function(ind) {
     i_section = ind
     top_value_method = comb[ind, 1]
     partition_method = comb[ind, 2]
+    
     tmpfile = tempfile(tmpdir = cola:::.ENV$TEMP_DIR)
     
     brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)
@@ -365,6 +367,10 @@ md_list = mclapply(seq_len(nrow(comb)), function(ind) {
 
     ComplexHeatmap:::dev.null()
     txt = knit(text = rmd, quiet = TRUE, envir = .e)
+    devlt = dev.list()
+    if(names(devlt)[1] == "quartz_off_screen") {
+        invisible(dev.off())
+    }
     dev.off()
     return(txt)
 }, mc.cores = mc.cores)

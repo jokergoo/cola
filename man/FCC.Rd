@@ -24,10 +24,10 @@ calculated as the maximum width that fits F(b) - F(a) <= diff
 A numeric value.
 }
 \examples{
-data(cola_rl)
-FCC(get_consensus(cola_rl[1, 1], k = 2))
-FCC(get_consensus(cola_rl[1, 1], k = 3))
-FCC(get_consensus(cola_rl[1, 1], k = 4))
-FCC(get_consensus(cola_rl[1, 1], k = 5))
-FCC(get_consensus(cola_rl[1, 1], k = 6))
+data(golub_cola)
+FCC(get_consensus(golub_cola[1, 1], k = 2))
+FCC(get_consensus(golub_cola[1, 1], k = 3))
+FCC(get_consensus(golub_cola[1, 1], k = 4))
+FCC(get_consensus(golub_cola[1, 1], k = 5))
+FCC(get_consensus(golub_cola[1, 1], k = 6))
 }

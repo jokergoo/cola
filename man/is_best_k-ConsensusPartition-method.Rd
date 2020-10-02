@@ -16,11 +16,15 @@ Test whether the current k is the best/optional k
   \item{...}{Pass to \code{\link{suggest_best_k,ConsensusPartition-method}}.}
 
 }
+\details{
+Optional best k is also assigned as \code{TRUE}.
+}
 \value{
 Logical scalar.
 }
 \examples{
-# There is no example
-NULL
-
+data(golub_cola)
+obj = golub_cola["ATC", "skmeans"]
+is_best_k(obj, k = 2)
+is_best_k(obj, k = 3)
 }

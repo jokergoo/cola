@@ -18,7 +18,7 @@ Suggest the best number of subgroups
 \details{
 It basically gives the best k for each combination of top-value method and partitioning method by calling \code{\link{suggest_best_k,ConsensusPartition-method}}.
 
-1-PAC score higher than 0.95 is treated as very stable partition and higher than 0.9 is treated as stable partition.
+1-PAC score higher than 0.95 is treated as very stable partition (marked by \code{**}) and higher than 0.9 is treated as stable partition (marked by \code{*}).
 }
 \value{
 A data frame with the best k and other statistics for each combination of methods.
@@ -27,6 +27,6 @@ A data frame with the best k and other statistics for each combination of method
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-suggest_best_k(cola_rl)
+data(golub_cola)
+suggest_best_k(golub_cola)
 }

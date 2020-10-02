@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -53,7 +57,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -67,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -93,17 +97,26 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/a_quick_start.html">UNKNOWN TITLE</a>
+      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
     </li>
     <li>
-      <a href="../articles/functional_enrichment.html">UNKNOWN TITLE</a>
+      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
+    </li>
+    <li>
+      <a href="../articles/predict.html">Predict Classes for New Samples</a>
+    </li>
+    <li>
+      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/cola">
+  <a href="https://github.com/jokergoo/cola/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -139,6 +152,11 @@
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -160,9 +178,21 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="DownSamplingConsensusPartition-class.html">DownSamplingConsensusPartition-class</a></code> </p>
+        </td>
+        <td><p>The DownSamplingConsensusPartition class</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="Extract.ConsensusPartitionList.html">`[`(<i>&lt;ConsensusPartitionList&gt;</i>)</a></code> </p>
         </td>
         <td><p>Subset a ConsensusPartitionList object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="Extract.HierarchicalPartition.html">`[`(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Subset the HierarchicalPartition object</p></td>
       </tr><tr>
         
         <td>
@@ -172,9 +202,21 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="ExtractExtract.HierarchicalPartition.html">`[[`(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Subset the HierarchicalPartition object</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="FCC.html">FCC()</a></code> </p>
         </td>
         <td><p>Flatness of the CDF curve</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="HierarchicalPartition-class.html">HierarchicalPartition-class</a></code> </p>
+        </td>
+        <td><p>The HierarchicalPartition class</p></td>
       </tr><tr>
         
         <td>
@@ -199,6 +241,18 @@
           <p><code><a href="adjust_outlier.html">adjust_outlier()</a></code> </p>
         </td>
         <td><p>Adjust outliers</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="all_leaves-HierarchicalPartition-method.html">all_leaves(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>All leaves in the hierarchy</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="all_nodes-HierarchicalPartition-method.html">all_nodes(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>All nodes in the hierarchy</p></td>
       </tr><tr>
         
         <td>
@@ -238,6 +292,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="cola_report-HierarchicalPartition-method.html">cola_report(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Make HTML report from the HierarchicalPartition object</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="cola_report-dispatch.html">cola_report-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for cola_report</p></td>
@@ -259,6 +319,12 @@
           <p><code><a href="collect_classes-ConsensusPartitionList-method.html">collect_classes(<i>&lt;ConsensusPartitionList&gt;</i>)</a></code> </p>
         </td>
         <td><p>Collect classes from ConsensusPartitionList object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="collect_classes-HierarchicalPartition-method.html">collect_classes(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Collect classes from HierarchicalPartition object</p></td>
       </tr><tr>
         
         <td>
@@ -316,6 +382,18 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="colnames-DownSamplingConsensusPartition-method.html">colnames(<i>&lt;DownSamplingConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Column names of the matrix</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="colnames-HierarchicalPartition-method.html">colnames(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Column names of the matrix</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="colnames-dispatch.html">colnames-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for colnames</p></td>
@@ -328,6 +406,18 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="compare_signatures-HierarchicalPartition-method.html">compare_signatures(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Compare Signatures from Different Nodes</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="compare_signatures-dispatch.html">compare_signatures-dispatch</a></code> </p>
+        </td>
+        <td><p>Method dispatch page for compare_signatures</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="concordance.html">concordance()</a></code> </p>
         </td>
         <td><p>Concordance to the consensus partition</p></td>
@@ -336,13 +426,19 @@
         <td>
           <p><code><a href="consensus_heatmap-ConsensusPartition-method.html">consensus_heatmap(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Heatmap for the consensus matrix</p></td>
+        <td><p>Heatmap of the consensus matrix</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="consensus_partition.html">consensus_partition()</a></code> </p>
         </td>
         <td><p>Consensus partition</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="consensus_partition_by_down_sampling.html">consensus_partition_by_down_sampling()</a></code> </p>
+        </td>
+        <td><p>Consensus partitioning only with a subset of columns</p></td>
       </tr><tr>
         
         <td>
@@ -358,6 +454,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="david_enrichment.html">david_enrichment()</a></code> </p>
+        </td>
+        <td><p>Perform DAVID enrichment analysis</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="dim.ConsensusPartition.html">dim(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Dimension of the matrix</p></td>
@@ -370,9 +472,33 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="dim.DownSamplingConsensusPartition.html">dim(<i>&lt;DownSamplingConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Dimension of the matrix</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="dim.HierarchicalPartition.html">dim(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Dimension of the matrix</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="dimension_reduction-ConsensusPartition-method.html">dimension_reduction(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Visualize column after dimension reduction</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="dimension_reduction-DownSamplingConsensusPartition-method.html">dimension_reduction(<i>&lt;DownSamplingConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Visualize column after dimension reduction</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="dimension_reduction-HierarchicalPartition-method.html">dimension_reduction(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Visualize columns after dimension reduction</p></td>
       </tr><tr>
         
         <td>
@@ -430,6 +556,18 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="get_anno-DownSamplingConsensusPartition-method.html">get_anno(<i>&lt;DownSamplingConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get annotations</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_anno-HierarchicalPartition-method.html">get_anno(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get annotations</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_anno-dispatch.html">get_anno-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for get_anno</p></td>
@@ -443,6 +581,12 @@
         
         <td>
           <p><code><a href="get_anno_col-ConsensusPartitionList-method.html">get_anno_col(<i>&lt;ConsensusPartitionList&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get annotation colors</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_anno_col-HierarchicalPartition-method.html">get_anno_col(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Get annotation colors</p></td>
       </tr><tr>
@@ -466,6 +610,18 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="get_classes-DownSamplingConsensusPartition-method.html">get_classes(<i>&lt;DownSamplingConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get subgroup labels</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_classes-HierarchicalPartition-method.html">get_classes(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get class IDs from the HierarchicalPartition object</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_classes-dispatch.html">get_classes-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for get_classes</p></td>
@@ -485,6 +641,12 @@
         
         <td>
           <p><code><a href="get_matrix-ConsensusPartitionList-method.html">get_matrix(<i>&lt;ConsensusPartitionList&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get the original matrix</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_matrix-HierarchicalPartition-method.html">get_matrix(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Get the original matrix</p></td>
       </tr><tr>
@@ -526,6 +688,24 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="get_signatures-DownSamplingConsensusPartition-method.html">get_signatures(<i>&lt;DownSamplingConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get signature rows</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_signatures-HierarchicalPartition-method.html">get_signatures(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get signatures rows</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_signatures-dispatch.html">get_signatures-dispatch</a></code> </p>
+        </td>
+        <td><p>Method dispatch page for get_signatures</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="get_stats-ConsensusPartition-method.html">get_stats(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Get statistics</p></td>
@@ -544,6 +724,30 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="golub_cola.html">golub_cola</a></code> </p>
+        </td>
+        <td><p>Example ConsensusPartitionList object from Golub dataset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="golub_cola_ds.html">golub_cola_ds</a></code> </p>
+        </td>
+        <td><p>Example DownSamplingConsensusPartition object from Golub dataset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="golub_cola_rh.html">golub_cola_rh</a></code> </p>
+        </td>
+        <td><p>Example HierarchicalPartition object from Golub dataset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="hierarchical_partition.html">hierarchical_partition()</a></code> </p>
+        </td>
+        <td><p>Hierarchical partition</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="is_best_k-ConsensusPartition-method.html">is_best_k(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Test whether the current k is the best/optional k</p></td>
@@ -559,6 +763,12 @@
           <p><code><a href="is_best_k-dispatch.html">is_best_k-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for is_best_k</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="is_leaf_node.html">is_leaf_node()</a></code> </p>
+        </td>
+        <td><p>Test whether a node is a leaf node</p></td>
       </tr><tr>
         
         <td>
@@ -582,7 +792,7 @@
         <td>
           <p><code><a href="knitr_add_tab_item.html">knitr_add_tab_item()</a></code> </p>
         </td>
-        <td><p>Add one JavaScript tab in the report</p></td>
+        <td><p>Add JavaScript tab in the report</p></td>
       </tr><tr>
         
         <td>
@@ -595,6 +805,12 @@
           <p><code><a href="map_to_entrez_id.html">map_to_entrez_id()</a></code> </p>
         </td>
         <td><p>Map to Entrez IDs</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="max_depth-HierarchicalPartition-method.html">max_depth(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Max depth of the hierarchy</p></td>
       </tr><tr>
         
         <td>
@@ -611,6 +827,18 @@
         
         <td>
           <p><code><a href="ncol-ConsensusPartitionList-method.html">ncol(<i>&lt;ConsensusPartitionList&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Number of columns in the matrix</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ncol-DownSamplingConsensusPartition-method.html">ncol(<i>&lt;DownSamplingConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Number of columns in the matrix</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ncol-HierarchicalPartition-method.html">ncol(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Number of columns in the matrix</p></td>
       </tr><tr>
@@ -634,6 +862,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="nrow-HierarchicalPartition-method.html">nrow(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Number of rows in the matrix</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="nrow-dispatch.html">nrow-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for nrow</p></td>
@@ -642,7 +876,31 @@
         <td>
           <p><code><a href="plot_ecdf-ConsensusPartition-method.html">plot_ecdf(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Plot the empirical cumulative distribution curve (eCDF) of the consensus matrix</p></td>
+        <td><p>Plot the empirical cumulative distribution (eCDF) curve of the consensus matrix</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="predict_classes-ConsensusPartition-method.html">predict_classes(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Predict classes for new samples based on cola classification</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="predict_classes-dispatch.html">predict_classes-dispatch</a></code> </p>
+        </td>
+        <td><p>Method dispatch page for predict_classes</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="predict_classes-matrix-method.html">predict_classes(<i>&lt;matrix&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Predict classes for new samples based on signature centroid matrix</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="print.hc_table_suggest_best_k.html">print(<i>&lt;hc_table_suggest_best_k&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Print the hc_table_suggest_best_k object</p></td>
       </tr><tr>
         
         <td>
@@ -706,6 +964,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="rownames-HierarchicalPartition-method.html">rownames(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Row names of the matrix</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="rownames-dispatch.html">rownames-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for rownames</p></td>
@@ -736,15 +1000,21 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="show-dispatch.html">show-dispatch</a></code> </p>
+          <p><code><a href="show-DownSamplingConsensusPartition-method.html">show(<i>&lt;DownSamplingConsensusPartition&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Method dispatch page for show</p></td>
+        <td><p>Print the DownSamplingConsensusPartition object</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="submit_to_david.html">submit_to_david()</a></code> </p>
+          <p><code><a href="show-HierarchicalPartition-method.html">show(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Perform DAVID analysis</p></td>
+        <td><p>Print the HierarchicalPartition object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="show-dispatch.html">show-dispatch</a></code> </p>
+        </td>
+        <td><p>Method dispatch page for show</p></td>
       </tr><tr>
         
         <td>
@@ -757,6 +1027,12 @@
           <p><code><a href="suggest_best_k-ConsensusPartitionList-method.html">suggest_best_k(<i>&lt;ConsensusPartitionList&gt;</i>)</a></code> </p>
         </td>
         <td><p>Suggest the best number of subgroups</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="suggest_best_k-HierarchicalPartition-method.html">suggest_best_k(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Guess the best number of partitions</p></td>
       </tr><tr>
         
         <td>
@@ -779,6 +1055,18 @@
         
         <td>
           <p><code><a href="test_to_known_factors-ConsensusPartitionList-method.html">test_to_known_factors(<i>&lt;ConsensusPartitionList&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Test correspondance between predicted classes and known factors</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="test_to_known_factors-DownSamplingConsensusPartition-method.html">test_to_known_factors(<i>&lt;DownSamplingConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Test correspondance between predicted subgroups and known factors</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="test_to_known_factors-HierarchicalPartition-method.html">test_to_known_factors(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Test correspondance between predicted classes and known factors</p></td>
       </tr><tr>
@@ -834,11 +1122,10 @@
     </table>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
-    </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -849,7 +1136,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

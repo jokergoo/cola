@@ -23,6 +23,7 @@
 # -scale_rows Whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
 # -verbose Whether print messages.
 # -mc.cores Multiple cores to use.
+# -prefix Internally used.
 # -.env An environment, internally used.
 #
 # == details
@@ -56,13 +57,13 @@
 #                 matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
 #                 matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
 #          ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-# cp = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
-# cp
+# res = consensus_partition(m, partition_repeat = 10, top_n = c(10, 20, 50))
+# res
 consensus_partition = function(data,
 	top_value_method = "ATC",
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
-		        min(5000, round(nrow(data)*0.5)), 
-		        length.out = 5),
+		        min(3000, round(nrow(data)*0.3)), 
+		        length.out = 3),
 	partition_method = "skmeans",
 	max_k = 6, 
 	sample_by = "row",
@@ -74,6 +75,7 @@ consensus_partition = function(data,
 	scale_rows = NULL,
 	verbose = TRUE,
 	mc.cores = 1,
+	prefix = "",
 	.env = NULL) {
 
 	if(missing(data)) {
@@ -99,6 +101,7 @@ consensus_partition = function(data,
 		scale_rows = scale_rows,
 		verbose = verbose,
 		mc.cores = mc.cores,
+		prefix = prefix,
 		.env = .env))
 	res@hash = digest(res)
 	res@running_time = t[["elapsed"]]
@@ -106,7 +109,7 @@ consensus_partition = function(data,
 	if(verbose) {
 		tc = Sys.time()
 		tf = format(tc + structure(t[["elapsed"]], units = "secs", class = "difftime") - tc)
-		qqcat("* @{top_value_method}:@{partition_method} used @{tf}.\n")
+		qqcat("@{prefix}* @{top_value_method}:@{partition_method} used @{tf}.\n")
 	}
 	return(res)
 }
@@ -114,8 +117,8 @@ consensus_partition = function(data,
 .consensus_partition = function(data,
 	top_value_method = "MAD",
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
-		        min(5000, round(nrow(data)*0.5)), 
-		        length.out = 5),
+		        min(3000, round(nrow(data)*0.3)), 
+		        length.out = 3),
 	partition_method = "kmeans",
 	k = 2:6, 
 	p_sampling = 0.8,
@@ -127,6 +130,7 @@ consensus_partition = function(data,
 	scale_rows = NULL,
 	verbose = TRUE,
 	mc.cores = 1,
+	prefix = "",
 	.env = NULL) {
 
 	# .env is used to store shared matrix because the matrix will be used multiple times in
@@ -156,14 +160,18 @@ consensus_partition = function(data,
 		data = .env$data
 	}
 
-	data = data[, .env$column_index, drop = FALSE]
+	if(is.null(.env$row_index)) {
+		.env$row_index = seq_len(nrow(data))
+	}
 
-	if(verbose) qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
+	data = data[.env$row_index, .env$column_index, drop = FALSE]
+
+	if(verbose) qqcat("@{prefix}* run @{top_value_method}:@{partition_method} on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 
 	k = sort(k)
 	l = k <= ncol(data)
 	if(sum(l) != length(k)) {
-		qqcat("* Following k (@{paste(k[!l], collapse=', ')}) are removed.\n")
+		qqcat("@{prefix}* Following k (@{paste(k[!l], collapse=', ')}) are removed.\n")
 	}
 	k = k[l]
 	if(length(k) == 0) {
@@ -173,7 +181,7 @@ consensus_partition = function(data,
 	top_n = round(top_n)
 	l = top_n <= nrow(data)
 	if(sum(l) != length(top_n)) {
-		qqcat("* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
+		qqcat("@{prefix}* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
 	}
 	top_n = top_n[l]
 	if(length(top_n) == 0) {
@@ -183,22 +191,26 @@ consensus_partition = function(data,
 	partition_fun = get_partition_method(partition_method, partition_param)
 
 	get_top_value_fun = get_top_value_method(top_value_method)
+	if(top_value_method == "ATC") {
+		get_top_value_fun = function(mat) ATC(mat, mc.cores = mc.cores)
+	}
 
 	# also since one top value metric will be used for different partition methods,
 	# we cache the top values for repetitive use
+	# they are only used when column_index and row_index are not changed
 	if(is.null(.env$all_top_value_list)) {
-		if(verbose) qqcat("* calculating @{top_value_method} values.\n")
+		if(verbose) qqcat("@{prefix}* calculating @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list = list()
 		.env$all_top_value_list[[top_value_method]] = all_top_value
 	} else if(is.null(.env$all_top_value_list[[top_value_method]])) {
-		if(verbose) qqcat("* calculating @{top_value_method} values.\n")
+		if(verbose) qqcat("@{prefix}* calculating @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
 		all_top_value[is.na(all_top_value)] = -Inf
 		.env$all_top_value_list[[top_value_method]] = all_top_value
 	} else {
-		if(verbose) qqcat("* @{top_value_method} values have already been calculated. Get from cache.\n")
+		if(verbose) qqcat("@{prefix}* @{top_value_method} values have already been calculated. Get from cache.\n")
 		all_top_value = .env$all_top_value_list[[top_value_method]]
 	}
 
@@ -208,10 +220,10 @@ consensus_partition = function(data,
 	if(scale_rows) {
 		scale_method = attr(partition_fun, "scale_method")
 		if("z-score" %in% scale_method) {
-			if(verbose) cat("* rows are scaled before sent to partition, method: 'z-score' (x - mean)/sd\n")
+			if(verbose) qqcat("@{prefix}* rows are scaled before sent to partition, method: 'z-score' (x - mean)/sd\n")
 			data = t(scale(t(data)))
 		} else if("min-max" %in% scale_method) {
-			if(verbose) cat("* rows are scaled before sent to partition, method: 'min-max' (x - min)/(max - min)\n")
+			if(verbose) qqcat("@{prefix}* rows are scaled before sent to partition, method: 'min-max' (x - min)/(max - min)\n")
 			row_min = rowMins(data)
 			row_max = rowMaxs(data)
 			row_range = row_max - row_min
@@ -219,19 +231,20 @@ consensus_partition = function(data,
 		} else {
 			scale_rows = FALSE
 		}
+		attr(scale_rows, "scale_method") = scale_method
 	}
 
 	# in case NA is produced in scaling
 	l = apply(data, 1, function(x) any(is.na(x)))
 	if(any(l)) {
-		if(verbose) qqcat("* remove @{sum(l)} rows with NA values.\n")
+		if(verbose) qqcat("@{prefix}* remove @{sum(l)} rows with NA values.\n")
 		data = data[!l, , drop = FALSE]
 		all_top_value = all_top_value[!l]
 		l = top_n <= nrow(data)
 		top_n = top_n[l]
 
 		if(sum(l) != length(top_n)) {
-			qqcat("* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
+			qqcat("@{prefix}* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
 		}
 		top_n = top_n[l]
 		if(length(top_n) == 0) {
@@ -249,12 +262,12 @@ consensus_partition = function(data,
 
 		if(length(ind) > 5000) {
 			ind = sample(ind, 5000)
-			if(verbose) qqcat("* get top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
+			if(verbose) qqcat("@{prefix}* get top @{top_n[i]} (randomly sampled 5000) rows by @{top_value_method} method\n")
 		} else {
-			if(verbose) qqcat("* get top @{top_n[i]} rows by @{top_value_method} method\n")
+			if(verbose) qqcat("@{prefix}* get top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
-		if(verbose && mc.cores > 1) qqcat("  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{mc.cores} cores).\n")
+		if(verbose && mc.cores > 1) qqcat("@{prefix}  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{mc.cores} cores).\n")
 
 		lt = mclapply(seq_len(partition_repeat), function(j) {
 
@@ -270,8 +283,11 @@ consensus_partition = function(data,
 				mat = data[ind, , drop = FALSE]
 			}
 			for(y in k) {
-				if(interactive() && verbose && mc.cores == 1) cat(strrep("\b", 100))
-				if(interactive() && verbose && mc.cores == 1) qqcat("  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
+				if(interactive() && verbose && mc.cores == 1) {
+					msg = qq("@{prefix}  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
+					cat(strrep("\r", nchar(msg)))
+					cat(msg)
+				}
 				partition_list = c(partition_list, list(list(partition_fun(mat, y, column_ind_sub))))
 				param = rbind(param, data.frame(top_n = top_n[i], k = y, n_row = nrow(mat), n_col = ncol(mat), stringsAsFactors = FALSE))
 			}
@@ -420,7 +436,7 @@ consensus_partition = function(data,
 		l = param$k == y
 		
 		top_n_level = unique(param[l, "top_n"])
-		if(verbose) qqcat("* wrap results for k = @{y}\n")
+		if(verbose) qqcat("@{prefix}* wrap results for k = @{y}\n")
 		construct_consensus_object(param[l, ], partition_list[l], y, verbose = FALSE)
 		
 	})
@@ -430,7 +446,7 @@ consensus_partition = function(data,
 	gc(verbose = FALSE, reset = TRUE)
 
 	## adjust class labels for different k should also be adjusted
-	if(verbose) qqcat("* adjust class labels between different k.\n")
+	if(verbose) qqcat("@{prefix}* adjust class labels between different k.\n")
 	reference_class = object_list[[1]]$class_df$class
 	for(i in seq_along(k)[-1]) {
 		class_df = object_list[[i]]$class_df
@@ -523,9 +539,9 @@ consensus_partition = function(data,
 	}
 
 	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n) * length(k),  
-		partition_method = partition_method, top_value_method = top_value_method, top_n = top_n,
+		partition_method = partition_method, top_value_method = top_value_method, top_n = top_n, top_value_list = all_top_value,
 		anno = anno, anno_col = anno_col, scale_rows = scale_rows, sample_by = sample_by,
-		column_index = .env$column_index, .env = .env)
+		column_index = .env$column_index, row_index = .env$row_index, .env = .env)
 
 	return(res)
 }
@@ -552,7 +568,7 @@ setMethod(f = "show",
 		object@sample_by = "row"
 	}
 	qqcat("A 'ConsensusPartition' object with k = @{paste(object@k, collapse = ', ')}.\n")
-	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{length(object@column_index)} columns.\n")
+	qqcat("  On a matrix with @{length(object@row_index)} rows and @{length(object@column_index)} columns.\n")
 	top_n_str = object@top_n
 	qqcat("  Top rows (@{paste(top_n_str, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
 	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")
@@ -572,7 +588,7 @@ setMethod(f = "show",
 })
 
 # == title
-# Plot the empirical cumulative distribution curve (eCDF) of the consensus matrix
+# Plot the empirical cumulative distribution (eCDF) curve of the consensus matrix
 #
 # == param
 # -object A `ConsensusPartition-class` object.
@@ -593,8 +609,8 @@ setMethod(f = "show",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# plot_ecdf(cola_rl["SD", "hclust"])
+# data(golub_cola)
+# plot_ecdf(golub_cola["ATC", "skmeans"])
 setMethod(f = "plot_ecdf",
 	signature = "ConsensusPartition",
 	definition = function(object, ...) {
@@ -640,8 +656,8 @@ setMethod(f = "plot_ecdf",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# select_partition_number(cola_rl["SD", "hclust"])
+# data(golub_cola)
+# select_partition_number(golub_cola["ATC", "skmeans"])
 setMethod(f = "select_partition_number",
 	signature = "ConsensusPartition",
 	definition = function(object, all_stats = FALSE) {
@@ -691,7 +707,7 @@ else take the k with higest votes of
 
 
 # == title
-# Heatmap for the consensus matrix
+# Heatmap of the consensus matrix
 #
 # == param
 # -object A `ConsensusPartition-class` object.
@@ -702,6 +718,8 @@ else take the k with higest votes of
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_row_names Whether plot row names on the consensus heatmap (which are the column names in the original matrix)
+# -row_names_gp Graphics parameters for row names.
+# -simplify Internally used.
 # -... other arguments
 #
 # == details
@@ -729,17 +747,22 @@ else take the k with higest votes of
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# consensus_heatmap(cola_rl["SD", "hclust"], k = 3)
+# data(golub_cola)
+# consensus_heatmap(golub_cola["ATC", "skmeans"], k = 3)
 setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
-	anno = get_anno(object), anno_col = get_anno_col(object), 
-	show_row_names = FALSE, ...) {
+	anno = object@anno, anno_col = get_anno_col(object), 
+	show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
+	simplify = FALSE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
-	class_df = get_classes(object, k)
+	if(inherits(object, "DownSamplingConsensusPartition")) {
+		class_df = get_classes(object, k, reduce = TRUE)
+	} else {
+		class_df = get_classes(object, k)
+	}
 	class_ids = class_df$class
 
 	consensus_mat = get_consensus(object, k)
@@ -748,13 +771,17 @@ setMethod(f = "consensus_heatmap",
 
 	membership_mat = get_membership(object, k)
 
-	ht_list = Heatmap(membership_mat, name = "Prob", cluster_columns = FALSE, show_row_names = FALSE,
-		width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red")),
-		show_column_names = !internal) + 
-	Heatmap(class_df$silhouette, name = "Silhouette", width = unit(5, "mm"),
-		show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple")),
-		show_column_names = !internal) +
-	Heatmap(class_ids, name = "Class", col = cola_opt$color_set_2,
+	if(simplify) {
+		ht_list = NULL
+	} else {
+		ht_list = Heatmap(membership_mat, name = "Prob", cluster_columns = FALSE, show_row_names = FALSE,
+				width = unit(5, "mm")*k, col = colorRamp2(c(0, 1), c("white", "red")),
+				show_column_names = !internal) + 
+			Heatmap(class_df$silhouette, name = "Silhouette", width = unit(5, "mm"),
+				show_row_names = FALSE, col = colorRamp2(c(0, 1), c("white", "purple")),
+				show_column_names = !internal)
+	}
+	ht_list = ht_list + Heatmap(class_ids, name = "Class", col = cola_opt$color_set_2,
 		show_row_names = FALSE, width = unit(5, "mm"),
 		show_column_names = !internal)
 	
@@ -785,8 +812,9 @@ setMethod(f = "consensus_heatmap",
 			ht_list = ht_list + rowAnnotation(df = anno, col = anno_col, show_annotation_name = !internal)
 		}
 	}
+
 	if(show_row_names && !is.null(rownames(consensus_mat))) {
-		ht_list = ht_list + rowAnnotation(rn = anno_text(rownames(consensus_mat)))
+		ht_list = ht_list + rowAnnotation(rn = anno_text(rownames(consensus_mat), gp = row_names_gp))
 	}
 	if(internal) {
 		column_title = NULL
@@ -809,6 +837,7 @@ setMethod(f = "consensus_heatmap",
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_column_names Whether show column names in the heatmap (which is the column name in the original matrix).
+# -column_names_gp Graphics parameters for column names.
 # -... Other arguments
 #
 # == details
@@ -823,17 +852,21 @@ setMethod(f = "consensus_heatmap",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# membership_heatmap(cola_rl["SD", "hclust"], k = 3)
+# data(golub_cola)
+# membership_heatmap(golub_cola["ATC", "skmeans"], k = 3)
 setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE, 
-	anno = get_anno(object), anno_col = get_anno_col(object),
-	show_column_names = FALSE, ...) {
+	anno = object@anno, anno_col = get_anno_col(object),
+	show_column_names = FALSE, column_names_gp = gpar(fontsize = 8), ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
-	class_df = get_classes(object, k)
+	if(inherits(object, "DownSamplingConsensusPartition")) {
+		class_df = get_classes(object, k, reduce = TRUE)
+	} else {
+		class_df = get_classes(object, k)
+	}
 	class_ids = class_df$class
 
 	membership_mat = get_membership(object, k)
@@ -891,7 +924,7 @@ setMethod(f = "membership_heatmap",
 			Class = class_ids, col = c(list(Class = cola_opt$color_set_2), Prob = col_fun),
 			show_annotation_name = !internal),
 		bottom_annotation = bottom_anno,
-		show_column_names = show_column_names,
+		show_column_names = show_column_names, column_names_gp = column_names_gp,
 		row_title = NULL
 	)
 	if(internal) {
@@ -931,7 +964,7 @@ setMethod(f = "membership_heatmap",
 #        than it will be mapped with cross symbols.
 # -remove Whether to remove columns which have less silhouette scores than
 #        the cutoff.
-# -scale_rows Whether perform scaling on matrix rows.
+# -scale_rows Whether to perform scaling on matrix rows.
 # -verbose Whether print messages.
 # -... Other arguments.
 #
@@ -942,8 +975,8 @@ setMethod(f = "membership_heatmap",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# dimension_reduction(cola_rl["SD", "kmeans"], k = 3)
+# data(golub_cola)
+# dimension_reduction(golub_cola["ATC", "skmeans"], k = 3)
 setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,
@@ -984,17 +1017,17 @@ setMethod(f = "dimension_reduction",
 	}
 
 	method = match.arg(method)
-	data = object@.env$data[, object@column_index, drop = FALSE]
+	data = object@.env$data[object@row_index, object@column_index, drop = FALSE]
 
 	if(!is.null(top_n)) {
 		top_n = min(c(top_n, nrow(data)))
-		all_value = object@.env$all_top_value_list[[object@top_value_method]]
+		all_value = object@top_value_list
 		ind = order(all_value)[1:top_n]
-		if(length(ind) > 5000) ind = sample(ind, 5000)
+		if(length(ind) > nr) ind = sample(ind, nr)
 		data = data[ind, , drop = FALSE]
 	} else {
 		top_n = nrow(data)
-		if(nrow(data) > 5000) data = data[sample(1:nrow(data), 5000), , drop = FALSE]
+		if(nrow(data) > nr) data = data[sample(1:nrow(data), nr), , drop = FALSE]
 	}
 
 	class_df = get_classes(object, k)
@@ -1147,6 +1180,8 @@ setMethod(f = "dimension_reduction",
 
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = qq("PC@{pc[1]} (@{round(prop[1]*100)}%)"), ylab = qq("PC@{pc[2]} (@{round(prop[2]*100)}%)"))
 	} else if(method == "t-SNE") {
+
+		check_pkg("Rtsne", bioc = FALSE)
 		fit = prcomp(t(data))
 		sm = summary(fit)
 		loc = fit$x[, pc]
@@ -1157,6 +1192,8 @@ setMethod(f = "dimension_reduction",
 		loc = fit$Y
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "t-SNE 1", ylab = "t-SNE 2")
 	} else if(method == "UMAP") {
+
+		check_pkg("umap", bioc = FALSE)
 
 		fit = prcomp(t(data))
 		sm = summary(fit)

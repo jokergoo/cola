@@ -8,7 +8,7 @@ Ability to correlate to other rows
 }
 \usage{
 ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
-    mc.cores = 1, n_sampling = 1000, q_sd = 0, group = NULL, ...)
+    mc.cores = 1, n_sampling = c(1000, 500), q_sd = 0, group = NULL, ...)
 }
 \arguments{
 
@@ -30,7 +30,7 @@ cumulative distribution function of \code{X} where \code{X} is the absolute corr
 \code{ATC_i = 1 - \\int_{min_cor}^1 F_i(X)}.
 
 By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
-the top-value method by:
+a new top-value method by:
 
   \preformatted{
     register_top_value_methods(

@@ -24,12 +24,14 @@ The best k is selected according to following rules:
   \item If it does not fit the second rule. The k with the maximal vote of the highest 1-PAC score, highest mean silhouette, and highest concordance is taken as the best k.
 }
 
-Additionally, if 1-PAC for the best k is larger than 0.9 (10% ambiguity for
+Additionally, if 1-PAC for the best k is larger than 0.9 (10\% ambiguity for
 the partition), cola marks it as a stable partition. It should be noted that
 it is difficult to find the best k deterministically, we encourage users to
 compare results for all k and determine a proper one which best explain
 their studies.
 }
+\section{See}{
+The selection of the best k can be visualized by \code{\link{select_partition_number}}.}
 \value{
 The best k.
 }
@@ -37,7 +39,7 @@ The best k.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-obj = cola_rl["SD", "kmeans"]
+data(golub_cola)
+obj = golub_cola["ATC", "skmeans"]
 suggest_best_k(obj)
 }

@@ -23,6 +23,6 @@ A \code{\link{ConsensusPartition-class}} object.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-cola_rl[["SD:kmeans"]]
+data(golub_cola)
+golub_cola[["SD:kmeans"]]
 }

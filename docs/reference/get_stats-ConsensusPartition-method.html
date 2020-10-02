@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="Get statistics — get_stats-ConsensusPartition-method" />
 <meta property="og:description" content="Get statistics" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -95,17 +98,26 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/a_quick_start.html">UNKNOWN TITLE</a>
+      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
     </li>
     <li>
-      <a href="../articles/functional_enrichment.html">UNKNOWN TITLE</a>
+      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
+    </li>
+    <li>
+      <a href="../articles/predict.html">Predict Classes for New Samples</a>
+    </li>
+    <li>
+      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/cola">
+  <a href="https://github.com/jokergoo/cola/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -155,12 +167,12 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The statistics are:</p>
-<dl class='dl-horizontal'>
+<dl'>
   <dt>1-PAC</dt><dd><p>1 - proportion of ambiguous clustering, calculated by <code><a href='PAC.html'>PAC</a></code>.</p></dd>
   <dt>mean_silhouette</dt><dd><p>The mean silhouette score. See <a href='https://en.wikipedia.org/wiki/Silhouette_(clustering)'>https://en.wikipedia.org/wiki/Silhouette_(clustering)</a> .</p></dd>
   <dt>concordance</dt><dd><p>The mean probability that each partition fits the consensus partition, calculated by <code><a href='concordance.html'>concordance</a></code>.</p></dd>
-  <dt>area_increased</dt><dd><p>The increased area under eCDF (the empirical cumulative distribution function curve) to the previous k.</p></dd>
-  <dt>Rand</dt><dd><p>the Rand index which is the percent of pairs of samples that are both in a same cluster or both are not  in a same cluster in the partition of <code>k</code> and <code>k-1</code>. See <a href='https://en.wikipedia.org/wiki/Rand_index'>https://en.wikipedia.org/wiki/Rand_index</a> .</p></dd>
+  <dt>area_increased</dt><dd><p>The increased area under eCDF (the empirical cumulative distribution function) curve to the previous k.</p></dd>
+  <dt>Rand</dt><dd><p>This is the percent of pairs of samples that are both in a same cluster or both are not  in a same cluster in the partition of <code>k</code> and <code>k-1</code>. See <a href='https://en.wikipedia.org/wiki/Rand_index'>https://en.wikipedia.org/wiki/Rand_index</a> .</p></dd>
   <dt>Jaccard</dt><dd><p>The ratio of pairs of samples are both in a same cluster in the partition of <code>k</code> and <code>k-1</code> and the pairs of samples are both in a same cluster in the partition <code>k</code> or <code>k-1</code>.</p></dd>
 
 </dl>
@@ -170,27 +182,20 @@
     <p>A matrix of partition statistics.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>cola_rl</span>[<span class='st'>"SD"</span>, <span class='st'>"kmeans"</span>]
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
+<span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span>]
 <span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>obj</span>)</div><div class='output co'>#&gt;   k     1-PAC mean_silhouette concordance area_increased      Rand   Jaccard
-#&gt; 2 2 0.3540100       0.8275595   0.8686667     0.46184150 0.5480226 0.5480226
-#&gt; 3 3 1.0000000       0.9842509   0.9786667     0.45750402 0.7740113 0.5876289
-#&gt; 4 4 0.7343358       0.9081489   0.8627778     0.08646858 1.0000000 1.0000000
-#&gt; 5 5 0.6791980       0.6387571   0.7048889     0.06287065 0.9638418 0.8877193
-#&gt; 6 6 0.6691729       0.3406871   0.6201111     0.04321192 0.9146893 0.7084942</div><div class='input'><span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>obj</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;   k   1-PAC mean_silhouette concordance area_increased      Rand   Jaccard
-#&gt; 2 2 0.35401       0.8275595   0.8686667      0.4618415 0.5480226 0.5480226</div></pre>
+#&gt; 2 2 1.0000000       0.9602287   0.9866667     0.50560380 0.4945227 0.4945227
+#&gt; 3 3 1.0000000       0.9486435   0.9801852     0.28098318 0.8247261 0.6559140
+#&gt; 4 4 0.8169447       0.7654815   0.8880556     0.10199548 0.9053208 0.7444562
+#&gt; 5 5 0.7067603       0.7039965   0.8382407     0.06150012 0.9503130 0.8359173
+#&gt; 6 6 0.7216857       0.5401841   0.7842593     0.04201287 0.9358372 0.7657143</div><div class='input'><span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>obj</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;   k 1-PAC mean_silhouette concordance area_increased      Rand   Jaccard
+#&gt; 2 2     1       0.9602287   0.9866667      0.5056038 0.4945227 0.4945227</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -201,7 +206,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

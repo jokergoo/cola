@@ -16,7 +16,7 @@ concordance(membership_each, class)
 
 }
 \details{
-Note subgroup labels in \code{membership_each} should already be adjusted to the consensus labels, e.g. by \code{\link{relabel_class}}.
+Note subgroup labels in \code{membership_each} should already be adjusted to the consensus labels, i.e. by \code{\link{relabel_class}}.
 
 The concordance score is the mean proportion of samples having the same subgroup labels as the consensus labels
 among individual partition runs.
@@ -28,8 +28,8 @@ A numeric value.
 Zuguang Gu <z.gu@dkfz.de>
 }
 \examples{
-data(cola_rl)
-membership_each = get_membership(cola_rl["SD", "kmeans"], each = TRUE, k = 3)
-consensus_classes = get_classes(cola_rl["SD", "kmeans"], k = 3)$class
+data(golub_cola)
+membership_each = get_membership(golub_cola["SD", "kmeans"], each = TRUE, k = 3)
+consensus_classes = get_classes(golub_cola["SD", "kmeans"], k = 3)$class
 concordance(membership_each, consensus_classes)
 }

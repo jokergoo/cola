@@ -20,7 +20,7 @@ merge_into_two_groups = function(object, verbose = TRUE) {
 	object2@cache = object@cache
 	object2@others = object@others
 	object2@hash = ""
-	object2@.env = new.env()
+	object2@.env = new.env(parent = emptyenv())
 	object2@.env$all_top_value_list = object@.env$all_top_value_list
 	object2@.env$column_index = object@.env$column_index
 	object2@.env$data = object@.env$data

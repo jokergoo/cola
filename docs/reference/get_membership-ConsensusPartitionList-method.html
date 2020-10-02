@@ -10,23 +10,27 @@
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -37,7 +41,6 @@
 
 <meta property="og:title" content="Get membership matrix — get_membership-ConsensusPartitionList-method" />
 <meta property="og:description" content="Get membership matrix" />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -55,7 +58,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
       </span>
     </div>
 
@@ -95,17 +98,26 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/a_quick_start.html">UNKNOWN TITLE</a>
+      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
     </li>
     <li>
-      <a href="../articles/functional_enrichment.html">UNKNOWN TITLE</a>
+      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
+    </li>
+    <li>
+      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
+    </li>
+    <li>
+      <a href="../articles/predict.html">Predict Classes for New Samples</a>
+    </li>
+    <li>
+      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jokergoo/cola">
+  <a href="https://github.com/jokergoo/cola/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -162,81 +174,85 @@ when summarizing membership matrix from all methods.</p>
     <div class='dont-index'><p><code><a href='get_membership-ConsensusPartition-method.html'>get_membership,ConsensusPartition-method</a></code> returns membership matrix for a single top-value method and partitioning method.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>cola_rl</span>)
-<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>cola_rl</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;               p1        p2
-#&gt;  [1,] 0.74415208 0.2558479
-#&gt;  [2,] 0.74592820 0.2540718
-#&gt;  [3,] 0.76294007 0.2370599
-#&gt;  [4,] 0.79742091 0.2025791
-#&gt;  [5,] 0.73662659 0.2633734
-#&gt;  [6,] 0.84303544 0.1569646
-#&gt;  [7,] 0.80433803 0.1956620
-#&gt;  [8,] 0.73057918 0.2694208
-#&gt;  [9,] 0.75214306 0.2478569
-#&gt; [10,] 0.75540155 0.2445984
-#&gt; [11,] 0.81809734 0.1819027
-#&gt; [12,] 0.75551505 0.2444850
-#&gt; [13,] 0.73581791 0.2641821
-#&gt; [14,] 0.76684885 0.2331511
-#&gt; [15,] 0.74613219 0.2538678
-#&gt; [16,] 0.73601526 0.2639847
-#&gt; [17,] 0.74965338 0.2503466
-#&gt; [18,] 0.74850178 0.2514982
-#&gt; [19,] 0.75934485 0.2406551
-#&gt; [20,] 0.72817674 0.2718233
-#&gt; [21,] 0.04315879 0.9568412
-#&gt; [22,] 0.05015033 0.9498497
-#&gt; [23,] 0.09464973 0.9053503
-#&gt; [24,] 0.04550283 0.9544972
-#&gt; [25,] 0.04999170 0.9500083
-#&gt; [26,] 0.04823444 0.9517656
-#&gt; [27,] 0.06986727 0.9301327
-#&gt; [28,] 0.04682383 0.9531762
-#&gt; [29,] 0.04375333 0.9562467
-#&gt; [30,] 0.07745671 0.9225433
-#&gt; [31,] 0.11626401 0.8837360
-#&gt; [32,] 0.06056634 0.9394337
-#&gt; [33,] 0.04460949 0.9553905
-#&gt; [34,] 0.04999963 0.9500004
-#&gt; [35,] 0.04428233 0.9557177
-#&gt; [36,] 0.08382322 0.9161768
-#&gt; [37,] 0.12180476 0.8781952
-#&gt; [38,] 0.05288527 0.9471147
-#&gt; [39,] 0.09231451 0.9076855
-#&gt; [40,] 0.06748861 0.9325114
-#&gt; [41,] 0.60838684 0.3916132
-#&gt; [42,] 0.60578767 0.3942123
-#&gt; [43,] 0.57035365 0.4296464
-#&gt; [44,] 0.79215081 0.2078492
-#&gt; [45,] 0.71684303 0.2831570
-#&gt; [46,] 0.70669598 0.2933040
-#&gt; [47,] 0.75842682 0.2415732
-#&gt; [48,] 0.53754164 0.4624584
-#&gt; [49,] 0.57024059 0.4297594
-#&gt; [50,] 0.79158144 0.2084186
-#&gt; [51,] 0.64562264 0.3543774
-#&gt; [52,] 0.86557260 0.1344274
-#&gt; [53,] 0.74202445 0.2579756
-#&gt; [54,] 0.48731946 0.5126805
-#&gt; [55,] 0.47026793 0.5297321
-#&gt; [56,] 0.80487983 0.1951202
-#&gt; [57,] 0.85132795 0.1486720
-#&gt; [58,] 0.71255977 0.2874402
-#&gt; [59,] 0.71180830 0.2881917
-#&gt; [60,] 0.77344226 0.2265577</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
+<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>golub_cola</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;                    p1          p2
+#&gt; sample_39 0.609172245 0.390827755
+#&gt; sample_40 0.537648393 0.462351607
+#&gt; sample_42 0.922572777 0.077427223
+#&gt; sample_47 0.984409251 0.015590749
+#&gt; sample_48 0.993833314 0.006166686
+#&gt; sample_49 0.534520587 0.465479413
+#&gt; sample_41 0.994297785 0.005702215
+#&gt; sample_43 0.964759319 0.035240681
+#&gt; sample_44 0.984037805 0.015962195
+#&gt; sample_45 0.983873960 0.016126040
+#&gt; sample_46 0.975266770 0.024733230
+#&gt; sample_70 0.887328930 0.112671070
+#&gt; sample_71 0.902868585 0.097131415
+#&gt; sample_72 0.931508876 0.068491124
+#&gt; sample_68 0.994297785 0.005702215
+#&gt; sample_69 0.994077046 0.005922954
+#&gt; sample_67 0.448313849 0.551686151
+#&gt; sample_55 0.571321802 0.428678198
+#&gt; sample_56 0.619610350 0.380389650
+#&gt; sample_59 0.908265546 0.091734454
+#&gt; sample_52 0.033282060 0.966717940
+#&gt; sample_53 0.006764933 0.993235067
+#&gt; sample_51 0.006323456 0.993676544
+#&gt; sample_50 0.006323456 0.993676544
+#&gt; sample_54 0.269030257 0.730969743
+#&gt; sample_57 0.042438995 0.957561005
+#&gt; sample_58 0.007927686 0.992072314
+#&gt; sample_60 0.152756493 0.847243507
+#&gt; sample_61 0.009736789 0.990263211
+#&gt; sample_65 0.008964959 0.991035041
+#&gt; sample_66 0.723777033 0.276222967
+#&gt; sample_63 0.033098801 0.966901199
+#&gt; sample_64 0.059536963 0.940463037
+#&gt; sample_62 0.035249392 0.964750608
+#&gt; sample_1  0.750844370 0.249155630
+#&gt; sample_2  0.614514264 0.385485736
+#&gt; sample_3  0.578693477 0.421306523
+#&gt; sample_4  0.708830713 0.291169287
+#&gt; sample_5  0.994297785 0.005702215
+#&gt; sample_6  0.569903487 0.430096513
+#&gt; sample_7  0.587186859 0.412813141
+#&gt; sample_8  0.580309001 0.419690999
+#&gt; sample_9  0.921582757 0.078417243
+#&gt; sample_10 0.664929555 0.335070445
+#&gt; sample_11 0.933002523 0.066997477
+#&gt; sample_12 0.096072008 0.903927992
+#&gt; sample_13 0.993833314 0.006166686
+#&gt; sample_14 0.964879226 0.035120774
+#&gt; sample_15 0.994297785 0.005702215
+#&gt; sample_16 0.966545036 0.033454964
+#&gt; sample_17 0.933362854 0.066637146
+#&gt; sample_18 0.789678351 0.210321649
+#&gt; sample_19 0.968070071 0.031929929
+#&gt; sample_20 0.994138012 0.005861988
+#&gt; sample_21 0.987976112 0.012023888
+#&gt; sample_22 0.554651567 0.445348433
+#&gt; sample_23 0.576633613 0.423366387
+#&gt; sample_24 0.990422248 0.009577752
+#&gt; sample_25 0.636590006 0.363409994
+#&gt; sample_26 0.934787077 0.065212923
+#&gt; sample_27 0.530491880 0.469508120
+#&gt; sample_34 0.014298323 0.985701677
+#&gt; sample_35 0.038570851 0.961429149
+#&gt; sample_36 0.007977615 0.992022385
+#&gt; sample_37 0.006323456 0.993676544
+#&gt; sample_38 0.013149038 0.986850962
+#&gt; sample_28 0.014668059 0.985331941
+#&gt; sample_29 0.280879764 0.719120236
+#&gt; sample_30 0.020287233 0.979712767
+#&gt; sample_31 0.012644394 0.987355606
+#&gt; sample_32 0.011780524 0.988219476
+#&gt; sample_33 0.006323456 0.993676544</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -247,7 +263,7 @@ when summarizing membership matrix from all methods.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

@@ -28,9 +28,9 @@
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
+# \donttest{
+# data(golub_cola)
 # collect_plots(cola_rl, k = 3)
-# \dontrun{
 # collect_plots(cola_rl, k = 3, fun = membership_heatmap)
 # collect_plots(cola_rl, k = 3, fun = get_signatures)
 # }
@@ -42,15 +42,12 @@ setMethod(f = "collect_plots",
 	verbose = TRUE, mc.cores = 1, ...) {
 
 	nv = length(dev.list())
-	op = cola_opt$raster_resize
-	cola_opt$raster_resize = TRUE
 	on.exit({
 		nv2 = length(dev.list())
 		while(nv2 > nv & nv2 > 1) {
 			dev.off2()
 			nv2 = length(dev.list())
 		}
-		cola_opt$raster_resize = op
 	})
 
 	
@@ -188,16 +185,14 @@ setMethod(f = "collect_plots",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# \dontrun{
-# data(cola_rl)
-# collect_plots(cola_rl["SD", "kmeans"])
+# \donttest{
+# data(golub_cola)
+# collect_plots(golub_cola["ATC", "skmeans"])
 # }
 setMethod(f = "collect_plots",
 	signature = "ConsensusPartition",
 	definition = function(object, verbose = TRUE) {
 
-	op = cola_opt$raster_resize
-	cola_opt$raster_resize = TRUE
 	nv = length(dev.list())
 	on.exit({
 		nv2 = length(dev.list())
@@ -205,7 +200,6 @@ setMethod(f = "collect_plots",
 			dev.off2()
 			nv2 = length(dev.list())
 		}
-		cola_opt$raster_resize = op
 	})
 
 	all_k = object@k
@@ -435,11 +429,13 @@ All individual plots can be made by following functions:
 # == param
 # -object A `ConsensusPartitionList-class` object returned by `run_all_consensus_partition_methods`.
 # -k Number of subgroups.
-# -show_column_names Whether show column names in the heatmap (which is the column name in the original matrix).
+# -show_column_names Whether to show column names in the heatmap (which is the column name in the original matrix).
+# -column_names_gp Graphics parameters for column names.
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
+# -simplify Internally used.
 # -... Pass to `ComplexHeatmap::draw,HeatmapList-method`.
 #
 # == details
@@ -461,12 +457,14 @@ All individual plots can be made by following functions:
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# collect_classes(cola_rl, k = 3)
+# data(golub_cola)
+# collect_classes(golub_cola, k = 3)
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, show_column_names = FALSE,
-	anno = get_anno(object), anno_col = get_anno_col(object), ...) {
+	column_names_gp = gpar(fontsize = 8),
+	anno = get_anno(object), anno_col = get_anno_col(object), 
+	simplify = FALSE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
@@ -539,7 +537,7 @@ setMethod(f = "collect_classes",
 	m_diss = cl_dissimilarity(clen, method = "comembership")
 
 	ht = Heatmap(m, name = "Class", col = cola_opt$color_set_2, column_order = column_order,
-		show_column_names = show_column_names,
+		show_column_names = show_column_names, column_names_gp = column_names_gp,
 		column_title = qq("classification from all @{nrow(m)} methods, k = @{k}"),
 		row_names_side = "left", cluster_rows = {if(nrow(m) == 1) FALSE else hclust(m_diss)}, 
 		cluster_columns = FALSE, row_title = NULL,
@@ -559,7 +557,9 @@ setMethod(f = "collect_classes",
 			           "Partition method" = structure(names = partition_method, cola_opt$color_set_2[seq_along(partition_method)])),
 			width = unit(10, "mm"),
 			show_annotation_name = FALSE))
-
+	if(simplify) {
+		ht@left_annotation = NULL
+	}
 	stat = get_stats(object, k = k)[colnames(class_mat), "1-PAC"]
 	is_stable_k = is_stable_k(object, k = k)[colnames(class_mat)]
 	ht = ht + rowAnnotation("1-PAC" = row_anno_barplot(stat, gp = gpar(fill = ifelse(is_stable_k, "red", "grey")), baseline = 0, axis = TRUE),
@@ -574,7 +574,8 @@ setMethod(f = "collect_classes",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -internal Used internally.
-# -show_row_names Whether show row names in the heatmap (which is the column name in the original matrix).
+# -show_row_names Whether to show row names in the heatmap (which is the column name in the original matrix).
+# -row_names_gp Graphics parameters for row names.
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
@@ -592,12 +593,13 @@ setMethod(f = "collect_classes",
 # Zuguang Gu <z.gu@dkfz.de>
 #
 # == example
-# data(cola_rl)
-# collect_classes(cola_rl["SD", "kmeans"])
+# data(golub_cola)
+# collect_classes(golub_cola["ATC", "skmeans"])
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",
-	definition = function(object, internal = FALSE, show_row_names = FALSE,
-	anno = get_anno(object), anno_col = get_anno_col(object)) {
+	definition = function(object, internal = FALSE, 
+	show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
+	anno = object@anno, anno_col = object@anno_col) {
 
 	all_k = object@k
 
@@ -650,7 +652,7 @@ setMethod(f = "collect_classes",
 
 	if(!internal & show_row_names) {
 		rn = rownames(membership)
-		ht_list = ht_list + rowAnnotation(nm = anno_text(rn))
+		ht_list = ht_list + rowAnnotation(nm = anno_text(rn, gp = row_names_gp))
 		gap[length(gap)] = 1
 	}
 
@@ -701,8 +703,8 @@ setMethod(f = "collect_stats",
 # of methods gives the best results with given the number of subgroups.
 #
 # == examples
-# data(cola_rl)
-# collect_stats(cola_rl, k = 3)
+# data(golub_cola)
+# collect_stats(golub_cola, k = 3)
 setMethod(f = "collect_stats",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, layout_nrow = 2, all_stats = FALSE, ...) {

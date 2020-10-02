@@ -1,5 +1,5 @@
 
-.ENV = new.env()
+.ENV = new.env(parent = emptyenv())
 .ENV$ALL_TOP_VALUE_METHODS = NULL
 .ENV$ALL_TOP_VALUE_FUN = list()
 .ENV$ALL_PARTITION_FUN = list()
@@ -342,9 +342,7 @@ register_NMF = function() {
 		# 	}, scale_method = "min-max"
 		# )
 	} else if(package == "NMF") {
-		if(!requireNamespace("NMF")) {
-			stop_wrap("You need to install NMF package to support NMF.")
-		}
+		check_pkg("NMF", bioc = FALSE)
 		register_partition_methods(
 			NMF = function(mat, k, ...) {
 				NMF::nmf.options(maxIter = 1000)
@@ -367,6 +365,7 @@ register_NMF = function() {
 # The SOM analysis is performed by `kohonen::som`.
 #
 register_SOM = function() {
+	check_pkg("kohonen", bioc = FALSE)	
 	register_partition_methods(
 	    SOM = function(mat, k, ...) {
 	        kr = floor(sqrt(ncol(mat)))
