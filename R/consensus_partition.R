@@ -221,7 +221,10 @@ consensus_partition = function(data,
 		scale_method = attr(partition_fun, "scale_method")
 		if("z-score" %in% scale_method) {
 			if(verbose) qqcat("@{prefix}* rows are scaled before sent to partition, method: 'z-score' (x - mean)/sd\n")
-			data = t(scale(t(data)))
+			# data = t(scale(t(data)))
+			row_mean = rowMeans(data)
+			row_sd = rowSds(data)
+			data = (data - row_mean)/row_sd
 		} else if("min-max" %in% scale_method) {
 			if(verbose) qqcat("@{prefix}* rows are scaled before sent to partition, method: 'min-max' (x - min)/(max - min)\n")
 			row_min = rowMins(data)

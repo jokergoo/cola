@@ -133,6 +133,8 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 	if(length(lt) == 1) {
 		stop_wrap("Expect at least two lists.")
 	}
+
+	if(is.null(names(lt))) names(lt) = paste0("set_", seq_along(lt))
     
     method = tolower(method)
     method = match.arg(method)

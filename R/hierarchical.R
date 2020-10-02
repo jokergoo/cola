@@ -89,7 +89,8 @@ hierarchical_partition = function(data,
 	partition_method = "skmeans",
 	combination_method =  expand.grid(top_value_method, partition_method),
 	PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
-	min_n_signatures = 100, min_p_signatures = 0.05,
+	min_n_signatures = round(nrow(data)*min_p_signatures), 
+	min_p_signatures = 0.01,
 	max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...) {
 
 	if(help) {
@@ -137,6 +138,7 @@ hierarchical_partition = function(data,
 		if(length(column_index) < 2*min_samples) {
 			if(verbose) qqcat("@{prefix}* number of samples is not enough to perform partitioning.\n")
 			part = "Not enough samples"
+			# we need the following two values for other functions
 			attr(part, "node_id") = node_id
 			attr(part, "column_index") = column_index
 			return(list(obj = part))
@@ -319,7 +321,13 @@ hierarchical_partition = function(data,
 	hp = new("HierarchicalPartition")
 	hp@hierarchy = .e$hierarchy
 	hp@list = .e$lt
-	hp@best_k = sapply(.e$lt, suggest_best_k)
+	hp@best_k = sapply(.e$lt, function(x) {
+		if(inherits(x, "ConsensusPartition")) {
+			suggest_best_k(x)
+		} else {
+			NA
+		}
+	})
 	leaves = all_leaves(hp)
 	subgroup = rep("0", ncol(data))
 	for(le in leaves) {
@@ -642,7 +650,12 @@ setMethod(f = "show",
 
 		lines = character(n)
 		for(i in seq_len(n)) {
-			lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{length(object@list[[nodes[i]]]@column_index)} cols"))
+			if(inherits(object@list[[nodes[i]]], "ConsensusPartition")) {
+				n_sample = length(object@list[[nodes[i]]]@column_index)
+			} else {
+				n_sample = length(attr(object@list[[nodes[i]]], "column_index"))
+			}
+			lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{n_sample} cols"))
 			p = nodes[i]
 			while(p != "0") {
 				p = parent[p]

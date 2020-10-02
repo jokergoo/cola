@@ -94,7 +94,7 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 	mat = t(mat)
 
 	col_sd = colSds(mat)
-	l = col_sd >= quantile(col_sd, q_sd)
+	l = col_sd >= quantile(unique(col_sd[col_sd > 1e-10]), q_sd)
 	v2 = numeric(length(col_sd))
 	v2[!l] = 0
 
