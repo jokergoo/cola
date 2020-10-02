@@ -630,6 +630,7 @@ setMethod(f = "get_matrix",
 #
 # == param
 # -object A `ConsensusPartition-class` object.
+# -full Whether to extract the complete original matrix.
 #
 # == value
 # A numeric matrix.
@@ -643,8 +644,12 @@ setMethod(f = "get_matrix",
 # get_matrix(obj)
 setMethod(f = "get_matrix",
 	signature = "ConsensusPartition",
-	definition = function(object) {
-	object@.env$data
+	definition = function(object, full = FALSE) {
+	if(!full) {
+		object@.env$data[, object@column_index, drop = FALSE]
+	} else {
+		object@.env$data
+	}
 })
 
 # == title
@@ -670,6 +675,7 @@ setMethod(f = "get_anno",
 #
 # == param
 # -object A `ConsensusPartition-class` object.
+# -full Whether to extract the complete original matrix.
 #
 # == value
 # A data frame if ``anno`` was specified in `run_all_consensus_partition_methods` or `consensus_partition`, or else ``NULL``.
@@ -679,8 +685,16 @@ setMethod(f = "get_anno",
 #
 setMethod(f = "get_anno",
 	signature = "ConsensusPartition",
-	definition = function(object) {
-	object@anno
+	definition = function(object, full = FALSE) {
+	if(!full) {
+		if(is.null(object@anno)) {
+			object@anno
+		} else {
+			object@anno[object@column_index, , drop = FALSE]
+		}
+	} else {
+		object@anno
+	}
 })
 
 # == title

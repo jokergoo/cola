@@ -22,6 +22,7 @@
 # -internal Used internally.
 # -show_row_dend Whether show row dendrogram.
 # -show_column_names Whether show column names in the heatmap.
+# -column_names_gp Graphics parameters for column names.
 # -use_raster Internally used.
 # -plot Whether to make the plot.
 # -verbose Whether to print messages.
@@ -85,7 +86,9 @@ setMethod(f = "get_signatures",
 	anno_col = get_anno_col(object),
 	internal = FALSE,
 	show_row_dend = FALSE,
-	show_column_names = FALSE, use_raster = TRUE,
+	show_column_names = FALSE, 
+	column_names_gp = gpar(fontsize = 8),
+	use_raster = TRUE,
 	plot = TRUE, verbose = TRUE, seed = 888,
 	left_annotation = NULL, right_annotation = NULL,
 	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
@@ -548,14 +551,14 @@ setMethod(f = "get_signatures",
 		show_column_dend = FALSE,
 		show_row_names = FALSE, show_row_dend = show_row_dend, column_title = {if(internal) NULL else qq("@{ncol(use_mat1)} confident samples")},
 		use_raster = use_raster, raster_by_magick = requireNamespace("magick", quietly = TRUE),
-		bottom_annotation = bottom_anno1, show_column_names = show_column_names, 
+		bottom_annotation = bottom_anno1, show_column_names = show_column_names, column_names_gp = column_names_gp,
 		left_annotation = left_annotation, right_annotation = {if(has_ambiguous) NULL else right_annotation})
  	
 	all_value_positive = !any(data < 0)
  	if(scale_rows && all_value_positive && !simplify) {
-		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"), show_column_names = !internal) +
+		ht_list = ht_list + Heatmap(base_mean, show_row_names = FALSE, name = "base_mean", width = unit(5, "mm"), show_column_names = !internal, column_names_gp = column_names_gp) +
 			Heatmap(rel_diff, col = colorRamp2(c(0, 0.5, 1), c("blue", "white", "red")), 
-				show_row_names = FALSE, show_column_names = !internal, name = "rel_diff", width = unit(5, "mm"))
+				show_row_names = FALSE, show_column_names = !internal, column_names_gp = column_names_gp, name = "rel_diff", width = unit(5, "mm"))
 	}
 
 	if(has_ambiguous) {
@@ -599,7 +602,7 @@ setMethod(f = "get_signatures",
 			cluster_columns = TRUE, show_column_dend = FALSE,
 			show_row_names = FALSE, show_row_dend = FALSE, show_heatmap_legend = FALSE,
 			use_raster = use_raster, raster_by_magick = requireNamespace("magick", quietly = TRUE),
-			bottom_annotation = bottom_anno2, show_column_names = show_column_names,
+			bottom_annotation = bottom_anno2, show_column_names = show_column_names, column_names_gp = column_names_gp,
 			right_annotation = right_annotation)
 	}
 

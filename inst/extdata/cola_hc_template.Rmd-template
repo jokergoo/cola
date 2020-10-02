@@ -310,8 +310,8 @@ knitr_insert_tabs('test-to-known-factors-from-hierarchical-partition')
 fs = 2
 is_hc = TRUE
 single_report = FALSE
-# all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
-all_parents = all_nodes(res_hc)
+all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
+# all_parents = all_nodes(res_hc)
 n_section = length(all_parents)
 i_section = 0
 .e = environment()

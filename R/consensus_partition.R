@@ -160,9 +160,13 @@ consensus_partition = function(data,
 		data = .env$data
 	}
 
-	data = data[, .env$column_index, drop = FALSE]
+	if(is.null(.env$row_index)) {
+		.env$row_index = seq_len(nrow(data))
+	}
 
-	if(verbose) qqcat("@{prefix}* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
+	data = data[.env$row_index, .env$column_index, drop = FALSE]
+
+	if(verbose) qqcat("@{prefix}* run @{top_value_method}:@{partition_method} on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 
 	k = sort(k)
 	l = k <= ncol(data)
@@ -187,9 +191,13 @@ consensus_partition = function(data,
 	partition_fun = get_partition_method(partition_method, partition_param)
 
 	get_top_value_fun = get_top_value_method(top_value_method)
+	if(top_value_method == "ATC") {
+		get_top_value_fun = function(mat) ATC(mat, mc.cores = mc.cores)
+	}
 
 	# also since one top value metric will be used for different partition methods,
 	# we cache the top values for repetitive use
+	# they are only used when column_index and row_index are not changed
 	if(is.null(.env$all_top_value_list)) {
 		if(verbose) qqcat("@{prefix}* calculating @{top_value_method} values.\n")
 		all_top_value = get_top_value_fun(data)
@@ -533,7 +541,7 @@ consensus_partition = function(data,
 	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n) * length(k),  
 		partition_method = partition_method, top_value_method = top_value_method, top_n = top_n, top_value_list = all_top_value,
 		anno = anno, anno_col = anno_col, scale_rows = scale_rows, sample_by = sample_by,
-		column_index = .env$column_index, .env = .env)
+		column_index = .env$column_index, row_index = .env$row_index, .env = .env)
 
 	return(res)
 }
@@ -560,7 +568,7 @@ setMethod(f = "show",
 		object@sample_by = "row"
 	}
 	qqcat("A 'ConsensusPartition' object with k = @{paste(object@k, collapse = ', ')}.\n")
-	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{length(object@column_index)} columns.\n")
+	qqcat("  On a matrix with @{length(object@row_index)} rows and @{length(object@column_index)} columns.\n")
 	top_n_str = object@top_n
 	qqcat("  Top rows (@{paste(top_n_str, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
 	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")
@@ -710,6 +718,7 @@ else take the k with higest votes of
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_row_names Whether plot row names on the consensus heatmap (which are the column names in the original matrix)
+# -row_names_gp Graphics parameters for row names.
 # -simplify Internally used.
 # -... other arguments
 #
@@ -744,7 +753,8 @@ setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
 	anno = object@anno, anno_col = get_anno_col(object), 
-	show_row_names = FALSE, simplify = FALSE, ...) {
+	show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
+	simplify = FALSE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
@@ -804,7 +814,7 @@ setMethod(f = "consensus_heatmap",
 	}
 
 	if(show_row_names && !is.null(rownames(consensus_mat))) {
-		ht_list = ht_list + rowAnnotation(rn = anno_text(rownames(consensus_mat)))
+		ht_list = ht_list + rowAnnotation(rn = anno_text(rownames(consensus_mat), gp = row_names_gp))
 	}
 	if(internal) {
 		column_title = NULL
@@ -827,6 +837,7 @@ setMethod(f = "consensus_heatmap",
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_column_names Whether show column names in the heatmap (which is the column name in the original matrix).
+# -column_names_gp Graphics parameters for column names.
 # -... Other arguments
 #
 # == details
@@ -847,7 +858,7 @@ setMethod(f = "membership_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE, 
 	anno = object@anno, anno_col = get_anno_col(object),
-	show_column_names = FALSE, ...) {
+	show_column_names = FALSE, column_names_gp = gpar(fontsize = 8), ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 
@@ -913,7 +924,7 @@ setMethod(f = "membership_heatmap",
 			Class = class_ids, col = c(list(Class = cola_opt$color_set_2), Prob = col_fun),
 			show_annotation_name = !internal),
 		bottom_annotation = bottom_anno,
-		show_column_names = show_column_names,
+		show_column_names = show_column_names, column_names_gp = column_names_gp,
 		row_title = NULL
 	)
 	if(internal) {
@@ -1006,7 +1017,7 @@ setMethod(f = "dimension_reduction",
 	}
 
 	method = match.arg(method)
-	data = object@.env$data[, object@column_index, drop = FALSE]
+	data = object@.env$data[object@row_index, object@column_index, drop = FALSE]
 
 	if(!is.null(top_n)) {
 		top_n = min(c(top_n, nrow(data)))

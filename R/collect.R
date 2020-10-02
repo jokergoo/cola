@@ -430,6 +430,7 @@ All individual plots can be made by following functions:
 # -object A `ConsensusPartitionList-class` object returned by `run_all_consensus_partition_methods`.
 # -k Number of subgroups.
 # -show_column_names Whether to show column names in the heatmap (which is the column name in the original matrix).
+# -column_names_gp Graphics parameters for column names.
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `run_all_consensus_partition_methods`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
@@ -461,6 +462,7 @@ All individual plots can be made by following functions:
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartitionList",
 	definition = function(object, k, show_column_names = FALSE,
+	column_names_gp = gpar(fontsize = 8),
 	anno = get_anno(object), anno_col = get_anno_col(object), 
 	simplify = FALSE, ...) {
 
@@ -535,7 +537,7 @@ setMethod(f = "collect_classes",
 	m_diss = cl_dissimilarity(clen, method = "comembership")
 
 	ht = Heatmap(m, name = "Class", col = cola_opt$color_set_2, column_order = column_order,
-		show_column_names = show_column_names,
+		show_column_names = show_column_names, column_names_gp = column_names_gp,
 		column_title = qq("classification from all @{nrow(m)} methods, k = @{k}"),
 		row_names_side = "left", cluster_rows = {if(nrow(m) == 1) FALSE else hclust(m_diss)}, 
 		cluster_columns = FALSE, row_title = NULL,
@@ -573,6 +575,7 @@ setMethod(f = "collect_classes",
 # -object A `ConsensusPartition-class` object.
 # -internal Used internally.
 # -show_row_names Whether to show row names in the heatmap (which is the column name in the original matrix).
+# -row_names_gp Graphics parameters for row names.
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `consensus_partition` or `run_all_consensus_partition_methods`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
@@ -594,7 +597,8 @@ setMethod(f = "collect_classes",
 # collect_classes(golub_cola["ATC", "skmeans"])
 setMethod(f = "collect_classes",
 	signature = "ConsensusPartition",
-	definition = function(object, internal = FALSE, show_row_names = FALSE,
+	definition = function(object, internal = FALSE, 
+	show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
 	anno = object@anno, anno_col = object@anno_col) {
 
 	all_k = object@k
@@ -648,7 +652,7 @@ setMethod(f = "collect_classes",
 
 	if(!internal & show_row_names) {
 		rn = rownames(membership)
-		ht_list = ht_list + rowAnnotation(nm = anno_text(rn))
+		ht_list = ht_list + rowAnnotation(nm = anno_text(rn, gp = row_names_gp))
 		gap[length(gap)] = 1
 	}
 

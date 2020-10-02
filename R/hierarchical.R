@@ -87,6 +87,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 hierarchical_partition = function(data, 
 	top_value_method = "ATC", 
 	partition_method = "skmeans",
+	combination_method =  expand.grid(top_value_method, partition_method),
 	PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
 	min_n_signatures = 100, min_p_signatures = 0.05,
 	max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...) {
@@ -108,6 +109,19 @@ hierarchical_partition = function(data,
 		qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 		qqcat("* hierarchical partition by @{top_value_method}:@{partition_method}.\n")
 	}
+
+	if(is.data.frame(combination_method)) combination_method = as.matrix(combination_method)
+	# convert combination_method to a list
+	if(is.matrix(combination_method)) {
+		combination_method = lapply(seq_len(nrow(combination_method)), function(i) combination_method[i, ])
+	} else if(is.atomic(combination_method)) {
+		if(!all(grepl(":+", combination_method))) {
+			stop_wrap("If `combination_method` is specified as a character vector, the individual values in it should be in the form: 'top_value_method:partition_method', e.g. 'SD:kmeans'.")
+		}
+		combination_method = strsplit(combination_method, ":+")
+	} else {
+		stop_wrap("Wrong format of `combination_method`.")
+	}
 	
 	.hierarchical_partition = function(.env, column_index, node_id = '0', 
 		min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
@@ -119,22 +133,61 @@ hierarchical_partition = function(data,
 
 		if(verbose) qqcat("@{prefix}=========================================================\n")
 		if(verbose) qqcat("@{prefix}* submatrix with @{length(column_index)} columns, node_id: @{node_id}.\n")
-		
+
+		if(length(column_index) < 2*min_samples) {
+			if(verbose) qqcat("@{prefix}* number of samples is not enough to perform partitioning.\n")
+			part = "Not enough samples"
+			attr(part, "node_id") = node_id
+			attr(part, "column_index") = column_index
+			return(list(obj = part))
+		}
+
 		## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
 	   	.env$all_top_value_list = NULL
 	   	.env$column_index = column_index  #note .env$column_index is only for passing to `consensus_partition()` function
 		
+		if(node_id != "0") {
+			row_sd = rowSds(data[, column_index, drop = FALSE])
+			qa = quantile(unique(row_sd[row_sd > 1e-10]), 0.05, na.rm = TRUE)
+			l = row_sd > qa
+			.env$row_index = which(l)
+			if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
+		}
 		if(mc.cores > 1 && verbose) {
 			qqcat("@{prefix}* running consensus partitioning with @{mc.cores} cores.\n")
 		}
 
+		part_list = list(length(combination_method))
 		if(length(column_index) <= subset) {
-			part = consensus_partition(verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
-				top_value_method = top_value_method, partition_method = partition_method, mc.cores = mc.cores, ...)
+			for(i in seq_along(combination_method)) {
+				if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
+				part_list[[i]] = consensus_partition(verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
+					top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
+					mc.cores = mc.cores, ...)
+			}
 		} else {
-			part = consensus_partition_by_down_sampling(subset = subset, verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
-				top_value_method = top_value_method, partition_method = partition_method, mc.cores = mc.cores, ...)
+			for(i in seq_along(combination_method)) {
+				if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
+				part_list[[i]] = consensus_partition_by_down_sampling(subset = subset, verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
+					top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
+					mc.cores = mc.cores, ...)
+			}
 		}
+		if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
+
+		ind = which.max(sapply(part_list, function(part) {
+			stat_df = get_stats(part)
+			best_k = suggest_best_k(part)
+			if(is.na(best_k)) {
+				0
+			} else {
+				stat_df[stat_df[, "k"] == best_k, "1-PAC"]
+			}
+		}))
+		part = part_list[[ind]]
+
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} with the highest 1-PAC among methods.\n")
+
 		attr(part, "node_id") = node_id
 
 		lt = list(obj = part)
@@ -146,12 +199,6 @@ hierarchical_partition = function(data,
 	    	return(lt)
 	    }
 	    cl = get_classes(part, k = best_k)
-
-	    mat = .env$data[, column_index, drop = FALSE]
-	    if(part@scale_rows) {
-	    	mat = t(scale(t(mat)))
-	    }
-	    mat = mat[order(.env$all_top_value_list[[1]], decreasing = TRUE), , drop = FALSE]
 
 	    # check PAC score
 	    PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
@@ -276,7 +323,11 @@ hierarchical_partition = function(data,
 	leaves = all_leaves(hp)
 	subgroup = rep("0", ncol(data))
 	for(le in leaves) {
-		subgroup[ .e$lt[[le]]@column_index ] = le
+		if(inherits(.e$lt[[le]], "ConsensusPartition")) {
+			subgroup[ .e$lt[[le]]@column_index ] = le
+		} else {
+			subgroup[ attr(.e$lt[[le]], "column_index") ] = le
+		}
 	}
 	hp@subgroup = subgroup
 	names(hp@subgroup) = colnames(data)

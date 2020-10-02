@@ -207,10 +207,10 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 		message_wrap(qq("@{sum(l)} rows have been removed with zero variance."))
 	}
 
-	qa = quantile(row_sd, sd_quantile, na.rm = TRUE)
-	l = row_sd >= qa
+	qa = quantile(unique(row_sd), sd_quantile, na.rm = TRUE)
+	l = row_sd > qa
 	if(sum(!l)) {
-		message_wrap(qq("@{sum(!l)} rows have been removed with too low variance (sd < @{sd_quantile} quantile)"))
+		message_wrap(qq("@{sum(!l)} rows have been removed with too low variance (sd <= @{sd_quantile} quantile)"))
 	}
 	m2[l, , drop = FALSE]
 }
@@ -432,11 +432,22 @@ guess_best_km = function(mat, max_km = 15) {
 	wss = NA
 	max_km = min(c(nrow(mat) - 1, max_km))
 	for (i in 2:max_km) {
-		fit = kmeans(mat, centers = i, iter.max = 50)
+		oe = try(fit <- kmeans(mat, centers = i, iter.max = 50), silent = TRUE)
+		if(inherits(oe, "error")) {
+			break
+		}
 		wss[i] = fit$tot.withinss
+		if(is.na(wss[1])) wss[1] = fit$totss
 	}
-	wss[1] = fit$totss
-	min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
+	k = 1:max_km
+	k = k[seq_along(wss)]
+	if(length(k) == 1) {
+		return(1)
+	} else if(length(k) == 2) {
+		return(2)
+	} else {
+		min(elbow_finder(k, wss)[1], knee_finder(k, wss)[1])
+	}
 }
 
 
