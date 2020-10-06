@@ -246,6 +246,10 @@ setMethod(f = "get_signatures",
 
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2)
 
+	if(simplify && !plot) {
+		return(returned_df)
+	}
+
 	# filter by group_diff
 	mat1 = mat[, column_used_logical, drop = FALSE]
 	if(nrow(mat) == 1) {

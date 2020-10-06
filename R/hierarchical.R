@@ -29,6 +29,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
         hierarchy = "matrix",
         subgroup = "character",
         subgroup_col = "character",
+        n_columns = "numeric",
+        n_signatures = "numeric",
         call = "ANY",
         .env = "environment"
     )
@@ -257,7 +259,7 @@ hierarchical_partition = function(data,
 
     	# check the numbers of signatures
     	if(verbose) qqcat("@{prefix}* checking number of signatures in the best classification.\n")
-    	sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE)
+    	sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE)
     	n_sig = nrow(sig_df)
     	p_sig = n_sig/nrow(part)
     	if(n_sig <= min_n_signatures && p_sig <= min_p_signatures) {
@@ -339,6 +341,26 @@ hierarchical_partition = function(data,
 	}
 	hp@subgroup = subgroup
 	names(hp@subgroup) = colnames(data)
+
+	n = length(hp@list)
+	n_columns = numeric(n); names(n_columns) = names(hp@list)
+	n_signatures = rep(NA, n); names(n_signatures) = names(hp@list)
+	for(i in seq_len(n)) {
+		if(inherits(hp@list[[i]], "ConsensusPartition")) {
+			n_columns[i] = length(hp@list[[i]]@column_index)
+		} else {
+			n_columns[i] = length(attr(hp@list[[i]], "column_index"))
+		}
+		if(nodes[i] %in% leaves) {
+			n_signatures[i] = NA
+		} else {
+			sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]]), verbose = FALSE, plot = FALSE, simplify = TRUE)
+			n_signatures[i] = nrow(sig_tb)
+		}
+	}
+
+	hp@n_columns = n_columns
+	hp@n_signatures = n_signatures
 
 	le = unique(as.vector(hp@hierarchy))
 	col_pal = Polychrome::kelly.colors(22)
@@ -647,15 +669,14 @@ setMethod(f = "show",
 		n = length(nc)
 
 		parent = structure(hierarchy[, 1], names = hierarchy[, 2])
+		all_leaves = all_leaves(object)
+		n_columns = object@n_columns
+		n_signatures = object@n_signatures
 
 		lines = character(n)
 		for(i in seq_len(n)) {
-			if(inherits(object@list[[nodes[i]]], "ConsensusPartition")) {
-				n_sample = length(object@list[[nodes[i]]]@column_index)
-			} else {
-				n_sample = length(attr(object@list[[nodes[i]]], "column_index"))
-			}
-			lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{n_sample} cols"))
+			
+			lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{n_columns[nodes[i]]} cols"), ifelse(is.na(n_signatures[nodes[i]]), "", qq(", @{n_signatures[nodes[i]]} signatures")))
 			p = nodes[i]
 			while(p != "0") {
 				p = parent[p]
@@ -747,10 +768,10 @@ setMethod(f = "get_signatures",
 	for(p in ap) {
 		best_k = suggest_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
-		sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, ...)
+		sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = TRUE, plot = FALSE, simplify = TRUE, ...)
 		
 		sig_lt[[p]] = sig_tb
-		if(verbose) qqcat("  - find @{nrow(sig_tb)} signatures at node @{p}\n")
+		# if(verbose) qqcat("  * find @{nrow(sig_tb)} signatures at node @{p}\n")
 	}
 
 	all_index = sort(unique(unlist(lapply(sig_lt, function(x) x[, 1]))))
