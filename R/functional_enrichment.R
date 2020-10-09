@@ -188,7 +188,7 @@ setMethod(f = "functional_enrichment",
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
 
     id_mapping = id_mapping
-    mc.cores = 1
+    mc.cores = 1 # not supported
 
     if(mc.cores == 1) {
         lt = list()

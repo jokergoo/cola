@@ -125,6 +125,11 @@ hierarchical_partition = function(data,
 	} else {
 		stop_wrap("Wrong format of `combination_method`.")
 	}
+
+	# if(!multicore_supported()) {
+	# 	if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
+	# 	mc.cores = 1
+	# }
 	
 	.hierarchical_partition = function(.env, column_index, node_id = '0', 
 		min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
@@ -143,6 +148,7 @@ hierarchical_partition = function(data,
 			# we need the following two values for other functions
 			attr(part, "node_id") = node_id
 			attr(part, "column_index") = column_index
+			attr(part, "stop_reason") = "Subgroup had too few columns."
 			return(list(obj = part))
 		}
 
@@ -344,7 +350,8 @@ hierarchical_partition = function(data,
 
 	n = length(hp@list)
 	n_columns = numeric(n); names(n_columns) = names(hp@list)
-	n_signatures = rep(NA, n); names(n_signatures) = names(hp@list)
+	n_signatures = rep(NA_real_, n); names(n_signatures) = names(hp@list)
+	nodes = names(hp@list)
 	for(i in seq_len(n)) {
 		if(inherits(hp@list[[i]], "ConsensusPartition")) {
 			n_columns[i] = length(hp@list[[i]]@column_index)
@@ -352,7 +359,7 @@ hierarchical_partition = function(data,
 			n_columns[i] = length(attr(hp@list[[i]], "column_index"))
 		}
 		if(nodes[i] %in% leaves) {
-			n_signatures[i] = NA
+			n_signatures[i] = NA_real_
 		} else {
 			sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]]), verbose = FALSE, plot = FALSE, simplify = TRUE)
 			n_signatures[i] = nrow(sig_tb)
@@ -674,9 +681,20 @@ setMethod(f = "show",
 		n_signatures = object@n_signatures
 
 		lines = character(n)
+
+		si = NULL
 		for(i in seq_len(n)) {
 			
-			lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{n_columns[nodes[i]]} cols"), ifelse(is.na(n_signatures[nodes[i]]), "", qq(", @{n_signatures[nodes[i]]} signatures")))
+			lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl("0$", nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{n_columns[nodes[i]]} cols"))
+			if(!is.na(n_signatures[nodes[i]])) {
+				lines[i] = paste0(lines[i], qq(", @{n_signatures[nodes[i]]} signatures"))
+			}
+			stop_reason = attr(object@list[[ nodes[i] ]], "stop_reason")
+			if(!is.null(stop_reason)) {
+				lines[i] = paste0(lines[i], qq(" (@{stop_reason_index[stop_reason]})"))
+				si = c(si, stop_reason_index[stop_reason])
+			}
+
 			p = nodes[i]
 			while(p != "0") {
 				p = parent[p]
@@ -688,6 +706,14 @@ setMethod(f = "show",
 		# substr(lines[1], 1, 1) = "+"
 		lines = c(qq("  0, @{ncol(object@list[['0']])} cols"), lines)
 		cat(lines, sep = "\n")
+
+		if(length(si)) {
+			si = sort(unique(si))
+			cat("Stop reason:\n")
+			for(s in si) {
+				cat("  ", s, ") ", names(which(stop_reason_index == s)), "\n", sep = "")
+			}
+		}
 	} else {
 		cat("No hierarchy found.\n")
 	}
@@ -757,6 +783,11 @@ setMethod(f = "get_signatures",
 	verbose = TRUE, plot = TRUE, seed = 888,
 	...) {
 
+	if(!has_hierarchy(object)) {
+		cat("No hierarchy found.")
+		return(invisible(NULL))
+	}
+
 	if(depth <= 1) {
 		stop_wrap("depth should be at least larger than 1.")
 	}
@@ -768,7 +799,7 @@ setMethod(f = "get_signatures",
 	for(p in ap) {
 		best_k = suggest_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
-		sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = TRUE, plot = FALSE, simplify = TRUE, ...)
+		sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = TRUE, plot = FALSE, simplify = TRUE, seed = seed, ...)
 		
 		sig_lt[[p]] = sig_tb
 		# if(verbose) qqcat("  * find @{nrow(sig_tb)} signatures at node @{p}\n")
@@ -981,6 +1012,11 @@ setMethod(f = "compare_signatures",
 	definition = function(object, depth = max_depth(object), 
 	method = c("euler", "upset"), verbose = interactive(), ...) {
 
+	if(!has_hierarchy(object)) {
+		cat("No hierarchy found.")
+		return(invisible(NULL))
+	}
+
 	lt = object@list
 	al = all_leaves(object)
 	lt = lt[! names(lt) %in% al]
@@ -1056,6 +1092,11 @@ setMethod(f = "collect_classes",
 	definition = function(object, depth = max_depth(object), 
 	show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
 	anno = get_anno(object[1]), anno_col = get_anno_col(object[1])) {
+
+	if(!has_hierarchy(object)) {
+		cat("No hierarchy found.")
+		return(invisible(NULL))
+	}
 
 	cl = get_classes(object, depth = depth)[, 1]
 	dend = calc_dend(object, depth = depth)
@@ -1177,6 +1218,11 @@ setMethod(f = "test_to_known_factors",
 	definition = function(object, known = get_anno(object[1]),
 	depth = 2:max_depth(object), verbose = FALSE) {
 
+	if(!has_hierarchy(object)) {
+		cat("No hierarchy found.")
+		return(invisible(NULL))
+	}
+
 	if(!is.null(known)) {
 		if(is.atomic(known)) {
 			df = data.frame(known)
@@ -1227,6 +1273,11 @@ setMethod(f = "dimension_reduction",
 	depth = max_depth(object), parent_node,
 	top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
 	scale_rows = TRUE, verbose = TRUE, ...) {
+
+	if(!has_hierarchy(object)) {
+		cat("No hierarchy found.")
+		return(invisible(NULL))
+	}
 
 	cl = as.list(match.call())
 	# default value
@@ -1486,8 +1537,9 @@ setMethod(f = "suggest_best_k",
 	stability = NULL
 	mean_silhouette = NULL
 	concordance = NULL
-	for(i in seq_along(object@list)) {
-		obj = object@list[[i]]
+	ind = which(sapply(object@list, function(x) inherits(x, "ConsensusPartition")))
+	for(i in seq_along(ind)) {
+		obj = object@list[[ ind[i] ]]
 		k = suggest_best_k(obj, jaccard_index_cutoff)
 		best_k[i] = k
 
@@ -1504,8 +1556,8 @@ setMethod(f = "suggest_best_k",
 	}
 
 	tb = data.frame(
-		node = names(object@list),
-		is_leaf = names(object@list) %in% all_leaves(object),
+		node = names(object@list)[ind],
+		is_leaf = names(object@list)[ind] %in% all_leaves(object),
 		best_k = best_k,
 		"1-PAC" = stability,
 		mean_silhouette = mean_silhouette,
@@ -1526,7 +1578,7 @@ setMethod(f = "suggest_best_k",
 	# colnames(tb)[ncol(tb)] = ""
 
 	
-	stop_reason = lapply(object@list, function(obj) {
+	stop_reason = lapply(object@list[ind], function(obj) {
 		attr(obj, "stop_reason")
 	})
 	attr(tb, "stop_reason") = stop_reason

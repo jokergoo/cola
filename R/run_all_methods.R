@@ -119,6 +119,11 @@ run_all_consensus_partition_methods = function(data,
 		anno_col = NULL
 	}
 
+	# if(!multicore_supported()) {
+	# 	if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
+	# 	mc.cores = 1
+	# }
+
 	comb = expand.grid(top_value_method, partition_method, stringsAsFactors = FALSE)
 	# comb = comb[sample(nrow(comb), nrow(comb)), ]
 	od = order(rep(sapply(partition_method, function(x) attr(get_partition_method(x), "execution_time")), each = length(top_value_method)), decreasing = TRUE)

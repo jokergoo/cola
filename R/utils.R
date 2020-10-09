@@ -267,6 +267,7 @@ os_type <- function() {
 
 multicore_supported = function() {
 	!(os_type() %in% c("osx", "windows"))
+	# !(os_type() %in% c("windows"))
 }
 
 

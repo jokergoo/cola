@@ -20,27 +20,27 @@ if(is_hc) {
 
 <% if(!single_report) { %>
 <% if(is_hc) { %>
-### Node<%=paste0(node, ifelse(is_leaf_node(res_hc), "-leaf", ""))%>
+### Node<%=paste0(node, ifelse(is_leaf_node(res_hc, node), "-leaf", ""))%>
 
-<% if(is_leaf_node(res_hc)) { %>
-Parent node: [<%substr(node, 1, nchar(node)-1)%>](#Node<%substr(node, 1, nchar(node)-1)%>).
+<% if(is_leaf_node(res_hc, node)) { %>
+Parent node: [Node<%=substr(node, 1, nchar(node)-1)%>](#Node<%=substr(node, 1, nchar(node)-1)%>).
 The subset of columns are treated as a leaf node in the hierarchical partitioning.
-The columns will not further split. The reason for stopping the partitioning is: <%attr(res_hc[[node]], "stop_reason")%>
+The columns will not further split. The reason for stopping the partitioning is: <%=attr(res_hc[[node]], "stop_reason")%>
 
-<% } else if(node == "0"){ %>
+<% } else if(node == "0"){ -%>
 
-Child nodes: [00](#Node00<%ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")%>), [01](#Node01<%ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>).
+Child nodes: [Node00<%=ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")](#Node00<%=ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")%>), [Node01<%=ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>](#Node01<%=ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>).
 
-<% } else { %>
+<% } else { -%>
 
-Parent node: [<%substr(node, 1, nchar(node)-1)%>](#Node<%substr(node, 1, nchar(node)-1)%>).
-Child nodes: [<%node%>0](#Node<%node%>0<%ifelse(is_leaf_node(res_hc, paste0(node, "0")), "-leaf", "")%>), [<%node%>1](#Node<%node%>1<%ifelse(is_leaf_node(res_hc, paste0(node, "1")), "-leaf", "")%>).
+Parent node: [Node<%=substr(node, 1, nchar(node)-1)%>](#Node<%=substr(node, 1, nchar(node)-1)%>).
+Child nodes: [Node<%=node%>0<%=ifelse(is_leaf_node(res_hc, paste0(node, "0")), "-leaf", "")%>](#Node<%=node%>0<%=ifelse(is_leaf_node(res_hc, paste0(node, "0")), "-leaf", "")%>), [Node<%=node%>1<%=ifelse(is_leaf_node(res_hc, paste0(node, "1")), "-leaf", "")%>](#Node<%=node%>1<%=ifelse(is_leaf_node(res_hc, paste0(node, "1")), "-leaf", "")%>).
 
-<% } %>
+<% } -%>
 
-<% } else if(!single_report) { %>
+<% } else if(!single_report) { -%>
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
-<% } %>
+<% } -%>
 
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message-blank, echo = FALSE, message = FALSE}

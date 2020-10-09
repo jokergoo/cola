@@ -86,6 +86,11 @@ consensus_partition = function(data,
 		stop_wrap("max_k should be no less than 2.")
 	}
 
+	# if(!multicore_supported()) {
+	# 	if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
+	# 	mc.cores = 1
+	# }
+
 	t = system.time(res <- .consensus_partition(
 		data = data,
 		top_value_method = top_value_method,
@@ -1190,7 +1195,11 @@ setMethod(f = "dimension_reduction",
 		loc = fit$x[, pc]
 
 		param = list(X = loc)
+		if(! "perplexity" %in% names(control)) {
+			control$perplexity = min(30, floor(ncol(data)-1)/3)
+		}
 		param = c(param, control)
+		param$pca = FALSE
 		fit = do.call(Rtsne::Rtsne, param)
 		loc = fit$Y
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "t-SNE 1", ylab = "t-SNE 2")

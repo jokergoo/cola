@@ -148,11 +148,12 @@ stop_reason = sapply(stop_reason, function(x) {
 
 tb = cbind(node_id = paste0("Node", rownames(tb)), tb, stringsAsFactors = FALSE)
 
-tb$node_id = qq("[Node@{tb$node}](#Node@{ifelse(tb$is_leaf, paste0(tb$node, '-leaf'), tb$node)})", collapse = FALSE)
+tb$node_id[!tb$is_leaf] = qq("[Node@{tb$node[!tb$is_leaf]}](#Node@{tb$node[!tb$is_leaf]})", collapse = FALSE)
+tb$node_id[tb$is_leaf] = qq("Node@{tb$node[tb$is_leaf]}-leaf", collapse = FALSE)
 tb$is_leaf = ifelse(tb$is_leaf, "\u2713", "")
 
 tb$is_leaf = ifelse(is.na(stop_reason), tb$is_leaf, paste0(tb$is_leaf, " (", stop_reason, ")"))
-
+tb$is_leaf = gsub("c", "&#99;", tb$is_leaf)
 colnames(tb) = c("Node", "Code", "Is leaf", "The best k", "1-PAC", "Mean silhouette", "Concordance", "Number of samples", "")
 kable(tb, row.names = FALSE)
 ```
@@ -160,7 +161,7 @@ kable(tb, row.names = FALSE)
 
 ```{r, echo = FALSE, results = "asis"}
 reasons = sort(unique(stop_reason[!is.na(stop_reason)]))
-if(length(reasons) > 0) cat("Stop reasons: ")
+if(length(reasons) > 0) cat("Stop reason: ")
 for(i in seq_along(reasons)) {
     cat(reasons[i], ") ", names(which(cola:::stop_reason_index == reasons[i])), " ", sep = "")
 }

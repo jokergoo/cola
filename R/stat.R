@@ -64,6 +64,11 @@
 ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 	mc.cores = 1, n_sampling = c(1000, 500), q_sd = 0, group = NULL, ...) {
 
+	# if(!multicore_supported()) {
+	# 	if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
+	# 	mc.cores = 1
+	# }
+
 	if(!is.null(group)) {
 		if(length(group) != nrow(mat)) {
 			stop_wrap("Length of `group` should be equal to nrow of the matrix.")
