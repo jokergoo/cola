@@ -87,8 +87,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # rh = hierarchical_partition(m, top_value_method = "SD", partition_method = "kmeans")
 # }
 hierarchical_partition = function(data, 
-	top_value_method = "ATC", 
-	partition_method = "skmeans",
+	top_value_method = c("SD", "ATC"), 
+	partition_method = c("kmeans", "skmeans"),
 	combination_method =  expand.grid(top_value_method, partition_method),
 	PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
 	min_n_signatures = round(nrow(data)*min_p_signatures), 
@@ -96,7 +96,10 @@ hierarchical_partition = function(data,
 	max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...) {
 
 	if(help) {
-		message_wrap("We suggest to try both 'ATC/skmeans' and 'SD/kmeans' for 'top_value_method' and 'partition_method' parameters. These two combinations of methods are correlation-based and Euclidean distance-based respectively and they generate different results that are all worth to look at. Set the argument 'help = FALSE' to turn off this message.")
+		# message_wrap("We suggest to try both 'ATC/skmeans' and 'SD/kmeans' for 'top_value_method' and 'partition_method' parameters. These two combinations of methods are correlation-based and Euclidean distance-based respectively and they generate different results that are all worth to look at. Set the argument 'help = FALSE' to turn off this message.")
+		if(identical(subset, Inf) && ncol(data) > 500) {
+			message_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can set `subset` argument to a number less than the total number of columns or a subset of column indices. The classification of unselected columns are inferred from the classes of the selected columns. Set the argument 'help = FALSE' to turn off this message.")
+		}
 	}
 
 	cl = match.call()
@@ -109,8 +112,7 @@ hierarchical_partition = function(data,
 	check_pkg("Polychrome", bioc = FALSE)
 
 	if(verbose) {
-		qqcat("* on a @{nrow(data)}x@{ncol(data)} matrix.\n")
-		qqcat("* hierarchical partition by @{top_value_method}:@{partition_method}.\n")
+		qqcat("* hierarchical partition on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 	}
 
 	if(is.data.frame(combination_method)) combination_method = as.matrix(combination_method)
@@ -124,6 +126,14 @@ hierarchical_partition = function(data,
 		combination_method = strsplit(combination_method, ":+")
 	} else {
 		stop_wrap("Wrong format of `combination_method`.")
+	}
+
+	if(verbose) {
+		if(length(combination_method) == 1) {
+			qqcat("* running @{combination_method[[1]][1]}:@{combination_method[[1]][2]}.\n")
+		} else {
+			qqcat("* running @{length(combination_method)} combinations of top-value methods and partitioning methods.\n")
+		}
 	}
 
 	# if(!multicore_supported()) {
@@ -506,13 +516,9 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 	})
 }
 
-get_hierarchy = function(object, depth = max_depth(object)) {
+get_hierarchy_dend = function(object, depth = max_depth(object), min_n_signatures = -Inf) {
 
-	hierarchy = object@hierarchy
-	if(!is.null(depth)) {
-		hierarchy = hierarchy[nchar(hierarchy[, 2]) <= depth , , drop = FALSE]
-	}
-
+	hierarchy = get_hierarchy_table(object, depth, min_n_signatures)
 	dend = subgroup_dend(object, hierarchy)
 	dend
 }
@@ -541,10 +547,10 @@ zero_height_dend = function(n) {
 	
 }
 
-calc_dend = function(object, depth = max_depth(object)) {
+calc_dend = function(object, depth = max_depth(object), min_n_signatures = -Inf) {
 
-	pd = get_hierarchy(object, depth = depth)
-	classes = get_classes(object, depth = depth)[, 1]
+	pd = get_hierarchy_dend(object, depth = depth, min_n_signatures)
+	classes = get_classes(object, depth = depth, min_n_signatures)[, 1]
 	if(is.null(names(classes))) names(classes) = seq_along(classes)
 	cd_list = lapply(tapply(names(classes), classes, function(x) x), function(x) {
 		d = random_dend(length(x))
@@ -625,10 +631,10 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 # get_classes(golub_cola_rh, depth = 2)
 setMethod(f = "get_classes",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object)) {
+	definition = function(object, depth = max_depth(object), min_n_signatures = -Inf) {
 
 	if(length(depth) > 1) {
-		df = do.call(cbind, lapply(depth, function(d) get_classes(object, d)))
+		df = do.call(cbind, lapply(depth, function(d) get_classes(object, d, min_n_signatures)))
 		colnames(df) = paste0("depth=", depth)
 		return(df)
 	}
@@ -637,6 +643,23 @@ setMethod(f = "get_classes",
 		l = nchar(subgroup) > depth
 		subgroup[l] = substr(subgroup[l], 1, depth)
 	}
+
+	if(min_n_signatures > 0) {
+		all_leaves = all_leaves(object, depth, min_n_signatures)
+		# all_leaves should be parent node of subgroup
+		map = rep(NA, length(unique(subgroup)))
+		names(map) = unique(subgroup)
+		for(nm in names(map)) {
+			for(leaf in all_leaves) {
+				if(grepl(qq("^@{leaf}"), nm)) {
+					map[nm] = leaf
+				}
+			}
+		}
+
+		subgroup = map[subgroup]
+	}
+
 	data.frame(class = subgroup, stringsAsFactors = FALSE)
 })
 
@@ -773,7 +796,7 @@ setMethod(f = "show",
 # }
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object),
+	definition = function(object, depth = max_depth(object), min_n_signatures = -Inf,
 	group_diff = cola_opt$group_diff,
 	row_km = NULL,
 	scale_rows = object[1]@scale_rows, 
@@ -792,8 +815,8 @@ setMethod(f = "get_signatures",
 		stop_wrap("depth should be at least larger than 1.")
 	}
 
-	alf = all_leaves(object, depth = depth)
-	ap = setdiff(all_nodes(object, depth = depth), all_leaves(object, depth = depth))
+	alf = all_leaves(object, depth = depth, min_n_signatures)
+	ap = setdiff(all_nodes(object, depth = depth, min_n_signatures), alf)
 
 	sig_lt = list()
 	for(p in ap) {
@@ -811,7 +834,7 @@ setMethod(f = "get_signatures",
 
 	# filter by group_diff
 	mat = object@.env$data[all_index, , drop = FALSE]
-	class = get_classes(object, depth = depth)[, 1]
+	class = get_classes(object, depth = depth, min_n_signatures)[, 1]
 
 	mat1 = mat
 	if(nrow(mat) == 1) {
@@ -966,8 +989,9 @@ setMethod(f = "get_signatures",
 		Class = class,
 		col = list(Class = object@subgroup_col))
 
-	dend = cluster_within_group(use_mat1, class)
-	
+	# dend = cluster_within_group(use_mat1, class)
+	dend = calc_dend(object, depth = depth, min_n_signatures)
+
 	ht_list = Heatmap(use_mat1, top_annotation = ha1,
 		name = heatmap_name, show_row_names = FALSE, 
 		show_column_names = show_column_names, column_names_gp = column_names_gp,
@@ -997,6 +1021,7 @@ setMethod(f = "get_signatures",
 # -object A `HierarchicalPartition-class` object. 
 # -depth Depth of the hierarchy.
 # -method Method to visualize.
+# -upset_max_comb_sets Maximal number of combination sets to show.
 # -verbose Whether to print message.
 # -... Other arguments passed to `get_signatures,HierarchicalPartition-method`.
 #
@@ -1009,18 +1034,17 @@ setMethod(f = "get_signatures",
 # compare_signatures(golub_cola_rh)
 setMethod(f = "compare_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object), 
-	method = c("euler", "upset"), verbose = interactive(), ...) {
+	definition = function(object, depth = max_depth(object), min_n_signatures = -Inf,
+	method = c("euler", "upset"), upset_max_comb_sets = 20,
+	verbose = interactive(), ...) {
 
 	if(!has_hierarchy(object)) {
 		cat("No hierarchy found.")
 		return(invisible(NULL))
 	}
 
-	lt = object@list
-	al = all_leaves(object)
-	lt = lt[! names(lt) %in% al]
-	lt = lt[nchar(names(lt)) <= depth]
+	nodes = setdiff(all_nodes(object, depth, min_n_signatures), all_leaves(object, depth, min_n_signatures))
+	lt = object@lt[nodes]
 
 	sig_list = lapply(lt, function(x) {
 		tb = get_signatures(x, k = suggest_best_k(x), verbose = verbose, ..., plot = FALSE)
@@ -1032,13 +1056,13 @@ setMethod(f = "compare_signatures",
 	})
 
 	l = sapply(sig_list, length) > 0
-	if(any(l) && verbose) {
-		qqcat("Following nodes have no signature found: \"@{paste(names(sig_list)[l], collapse=', ')}\"\n")
+	if(any(!l) && verbose) {
+		qqcat("Following nodes have no signature found: \"@{paste(names(sig_list)[!l], collapse=', ')}\"\n")
 	}
 	sig_list = sig_list[l]
 
 	if(missing(method)) {
-		if(length(sig_list) <= 3) {
+		if(length(sig_list) <= 6) {
 			method = "euler"
 		} else {
 			method = "upset"
@@ -1051,8 +1075,8 @@ setMethod(f = "compare_signatures",
 		plot(eulerr::euler(sig_list), legend = TRUE, quantities = TRUE, main = "Signatures from different nodes")
 	} else {
 		m = make_comb_mat(sig_list)
-		if(length(comb_size(m)) > 40) {
-			m = m[order(comb_size(m), decreasing = TRUE)[1:40]]
+		if(length(comb_size(m)) > upset_max_comb_sets) {
+			m = m[order(comb_size(m), decreasing = TRUE)[1:upset_max_comb_sets]]
 		} else {
 			m = m[order(comb_size(m), decreasing = TRUE)]
 		}
@@ -1089,7 +1113,7 @@ setMethod(f = "compare_signatures",
 # collect_classes(golub_cola_rh, depth = 2)
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object), 
+	definition = function(object, depth = max_depth(object), min_n_signatures = -Inf,
 	show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
 	anno = get_anno(object[1]), anno_col = get_anno_col(object[1])) {
 
@@ -1098,8 +1122,8 @@ setMethod(f = "collect_classes",
 		return(invisible(NULL))
 	}
 
-	cl = get_classes(object, depth = depth)[, 1]
-	dend = calc_dend(object, depth = depth)
+	cl = get_classes(object, depth = depth, min_n_signatures)[, 1]
+	dend = calc_dend(object, depth = depth, min_n_signatures)
 
 	ht_list = Heatmap(cl, name = "Class", col = object@subgroup_col, width = unit(5, "mm"),
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
@@ -1216,7 +1240,7 @@ setMethod(f = "collect_classes",
 setMethod(f = "test_to_known_factors",
 	signature = "HierarchicalPartition",
 	definition = function(object, known = get_anno(object[1]),
-	depth = 2:max_depth(object), verbose = FALSE) {
+	depth = 2:max_depth(object), min_n_signatures = -Inf, verbose = FALSE) {
 
 	if(!has_hierarchy(object)) {
 		cat("No hierarchy found.")
@@ -1233,7 +1257,7 @@ setMethod(f = "test_to_known_factors",
 		stop_wrap("Known factors should be provided.")
 	}
 
-	class = get_classes(object, depth)
+	class = get_classes(object, depth, min_n_signatures)
 	m = test_between_factors(class, known, verbose = verbose)
 	colnames(m) = paste0(colnames(m), "(p)")
 	df = cbind(n = nrow(class), m, n_class = apply(class, 2, function(x) length(unique(x))))
@@ -1270,8 +1294,8 @@ setMethod(f = "test_to_known_factors",
 setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
 	definition = function(object,
-	depth = max_depth(object), parent_node,
-	top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
+	depth = max_depth(object), min_n_signatures = -Inf,
+	parent_node, top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
 	scale_rows = TRUE, verbose = TRUE, ...) {
 
 	if(!has_hierarchy(object)) {
@@ -1322,7 +1346,7 @@ setMethod(f = "dimension_reduction",
 		} else {
 			top_n = nrow(data)
 		}
-		class = get_classes(object, depth = depth)[, 1]
+		class = get_classes(object, depth = depth, min_n_signatures)[, 1]
 		n_class = length(unique(class))
 		dimension_reduction(data, pch = 16, col = object@subgroup_col[class],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@list[[1]]@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{ncol(data)} samples at depth @{depth} with @{n_class} classes"),
@@ -1390,18 +1414,27 @@ setMethod(f = "max_depth",
 # all_nodes(golub_cola_rh)
 setMethod(f = "all_nodes",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object)) {
+	definition = function(object, depth = max_depth(object), min_n_signatures = -Inf) {
 
 	if(has_hierarchy(object)) {
-		all_nodes = unique(as.vector(t(object@hierarchy)))
-		if(!is.null(depth)) {
-			all_nodes = all_nodes[nchar(all_nodes) <= depth]
-		}
-		return(all_nodes)
+		hierarchy = get_hierarchy_table(object, depth, min_n_signatures)
+		return(unique(as.vector(t(hierarchy))))
 	} else {
 		return(character(0))
 	}
 })
+
+get_hierarchy_table = function(object, depth = max_depth(object), min_n_signatures = -Inf) {
+	hierarchy = object@hierarchy
+	if(min_n_signatures > 0) {
+		n_signatures = object@n_signatures
+		hierarchy = hierarchy[ n_signatures[hierarchy[, 1]] >= min_n_signatures, , drop = FALSE ]
+	}
+	if(!is.null(depth)) {
+		hierarchy = hierarchy[nchar(hierarchy[, 2]) <= depth, , drop = FALSE]
+	}
+	hierarchy
+}
 
 # == title
 # All leaves in the hierarchy
@@ -1421,17 +1454,12 @@ setMethod(f = "all_nodes",
 # all_leaves(golub_cola_rh)
 setMethod(f = "all_leaves",
 	signature = "HierarchicalPartition",
-	definition = function(object, depth = max_depth(object)) {
+	definition = function(object, depth = max_depth(object), min_n_signatures = -Inf) {
 
 	if(has_hierarchy(object)) {
-		hierarchy = unique(object@hierarchy)
-		if(!is.null(depth)) {
-			hierarchy = hierarchy[nchar(hierarchy[, 2]) <= depth, , drop = FALSE]
-		}
-		
+		hierarchy = get_hierarchy_table(object, depth, min_n_signatures)
 		tb = table(hierarchy)
-		tb = tb[tb <= 1]
-		names(tb)	
+		names(tb[tb <= 1])
 	} else {
 		"0"
 	}
@@ -1441,12 +1469,20 @@ setMethod(f = "all_leaves",
 # Test whether a node is a leaf node
 #
 # == param
-# -x A `HierarchicalPartition-class` object.
-# -node A node ID.
+# -object A `HierarchicalPartition-class` object.
+# -node A vector of node IDs.
 #
-is_leaf_node = function(x, node) {
-	node %in% all_leaves(x)
-}
+setMethod(f = "is_leaf_node",
+	signature = "HierarchicalPartition",
+	definition = function(object, node, depth = max_depth(object), min_n_signatures = -Inf) {
+
+	all_nodes = all_nodes(object, depth, min_n_signatures)
+	all_leaves = all_leaves(object, depth, min_n_signatures)
+
+	l = node %in% all_leaves
+	l[!node %in% all_nodes] = NA
+	l
+})
 
 get_children = function(object, node = "0") {
 	hierarchy = unique(object@hierarchy)
