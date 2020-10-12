@@ -16,7 +16,7 @@ run_all_consensus_partition_methods(data,
     length.out = 3),
     mc.cores = 1, anno = NULL, anno_col = NULL,
     sample_by = "row", p_sampling = 0.8, partition_repeat = 50,
-    scale_rows = NULL, verbose = TRUE)
+    scale_rows = NULL, verbose = TRUE, help = cola_opt$help)
 }
 \arguments{
 
@@ -33,6 +33,7 @@ run_all_consensus_partition_methods(data,
   \item{partition_repeat}{Number of repeats for the random sampling.}
   \item{scale_rows}{Whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
   \item{verbose}{Whether to print messages.}
+  \item{help}{Whether to print help messages.}
 
 }
 \details{

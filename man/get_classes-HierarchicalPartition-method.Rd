@@ -7,12 +7,13 @@ Get class IDs from the HierarchicalPartition object
 Get class IDs from the HierarchicalPartition object
 }
 \usage{
-\S4method{get_classes}{HierarchicalPartition}(object, depth = max_depth(object))
+\S4method{get_classes}{HierarchicalPartition}(object, depth = max_depth(object), min_n_signatures = -Inf)
 }
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{Depth of the hierarchy.}
+  \item{min_n_signatures}{Minimal number of signatures on the node.}
 
 }
 \value{

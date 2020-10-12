@@ -8,12 +8,13 @@ Test correspondance between predicted classes and known factors
 }
 \usage{
 \S4method{test_to_known_factors}{HierarchicalPartition}(object, known = get_anno(object[1]),
-    depth = 2:max_depth(object), verbose = FALSE)
+    depth = 2:max_depth(object), min_n_signatures = -Inf, verbose = FALSE)
 }
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{Depth of the hierarchy.}
+  \item{min_n_signatures}{Minimal number of signatures on the node.}
   \item{known}{A vector or a data frame with known factors. By default it is the annotation table set in \code{\link{hierarchical_partition}}.}
   \item{verbose}{Whether to print messages.}
 

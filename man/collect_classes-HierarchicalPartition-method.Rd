@@ -7,7 +7,7 @@ Collect classes from HierarchicalPartition object
 Collect classes from HierarchicalPartition object
 }
 \usage{
-\S4method{collect_classes}{HierarchicalPartition}(object, depth = max_depth(object),
+\S4method{collect_classes}{HierarchicalPartition}(object, depth = max_depth(object), min_n_signatures = -Inf,
     show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
     anno = get_anno(object[1]), anno_col = get_anno_col(object[1]))
 }
@@ -15,6 +15,7 @@ Collect classes from HierarchicalPartition object
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{Depth of the hierarchy.}
+  \item{min_n_signatures}{Minimal number of signatures on the node.}
   \item{show_row_names}{Whether to show the row names.}
   \item{row_names_gp}{Graphic parameters for row names.}
   \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{hierarchical_partition}}.}

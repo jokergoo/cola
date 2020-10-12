@@ -10,8 +10,8 @@ Method dispatch page for \code{is_best_k}.
 \code{is_best_k} can be dispatched on following classes:
 
 \itemize{
-\item \code{\link{is_best_k,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{is_best_k,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
+\item \code{\link{is_best_k,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 }
 }
 \examples{

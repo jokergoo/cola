@@ -22,6 +22,7 @@
 # -partition_repeat Number of repeats for the random sampling.
 # -scale_rows Whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
 # -verbose Whether to print messages.
+# -help Whether to print help messages.
 #
 # == details
 # The function performs consensus partitioning by `consensus_partition` for all combinations of top-value methods and partitioning methods.
@@ -54,7 +55,13 @@ run_all_consensus_partition_methods = function(data,
 		        length.out = 3),
 	mc.cores = 1, anno = NULL, anno_col = NULL,
 	sample_by = "row", p_sampling = 0.8, partition_repeat = 50, 
-	scale_rows = NULL, verbose = TRUE) {
+	scale_rows = NULL, verbose = TRUE, help = cola_opt$help) {
+
+	if(max_k >= 10) {
+		if(help) {
+			message_wrap("It is not recommended to set `max_k` larger than 10. Users are suggested to use `hierarchical_partition()` function to obtain more subgroups. Set the argument `help` to FALSE to turn off this")
+		}
+	}
 	
 	cl = match.call()
 
@@ -133,10 +140,11 @@ run_all_consensus_partition_methods = function(data,
 		pm = comb[i, 2]
 		if(verbose) qqcat("------------------------------------------------------------\n")
 		if(verbose) qqcat("* running partition by @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
+
 		try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k,
-			anno = anno, anno_col = anno_col, .env = .env, verbose = verbose,
-			top_n = top_n, sample_by = sample_by, p_sampling = p_sampling, partition_repeat = partition_repeat, scale_rows = scale_rows,
-			mc.cores = mc.cores), qq("You have an error when doing partition for @{tm}:@{pm}."))
+				anno = anno, anno_col = anno_col, .env = .env, verbose = verbose,
+				top_n = top_n, sample_by = sample_by, p_sampling = p_sampling, partition_repeat = partition_repeat, scale_rows = scale_rows,
+				mc.cores = mc.cores), qq("You have an error when doing partition for @{tm}:@{pm}."))
 		return(res)
 	})
 	names(lt) = paste(comb[, 1], comb[, 2], sep = ":")

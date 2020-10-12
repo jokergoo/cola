@@ -43,6 +43,10 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -data a numeric matrix where subgroups are found by columns.
 # -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
 # -partition_method a single partition method. Available methods are in `all_partition_methods`.
+# -combination_method A list of combinations of top-value methods and partitioning methods. The value
+#     can be a two-column data frame where the first column is the top-value methods and the second
+#     column is the partitioning methods. Or it can be a vector of combination names in a form of
+#     "top_value_method:partitioning_method".
 # -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
 # -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
 # -subset Number of columns to randomly sample.
@@ -90,7 +94,7 @@ hierarchical_partition = function(data,
 	top_value_method = c("SD", "ATC"), 
 	partition_method = c("kmeans", "skmeans"),
 	combination_method =  expand.grid(top_value_method, partition_method),
-	PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
+	PAC_cutoff = 0.2, min_samples = 6, subset = 500,
 	min_n_signatures = round(nrow(data)*min_p_signatures), 
 	min_p_signatures = 0.01,
 	max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...) {
@@ -98,7 +102,7 @@ hierarchical_partition = function(data,
 	if(help) {
 		# message_wrap("We suggest to try both 'ATC/skmeans' and 'SD/kmeans' for 'top_value_method' and 'partition_method' parameters. These two combinations of methods are correlation-based and Euclidean distance-based respectively and they generate different results that are all worth to look at. Set the argument 'help = FALSE' to turn off this message.")
 		if(identical(subset, Inf) && ncol(data) > 500) {
-			message_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can set `subset` argument to a number less than the total number of columns or a subset of column indices. The classification of unselected columns are inferred from the classes of the selected columns. Set the argument 'help = FALSE' to turn off this message.")
+			qqcat_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can set `subset` argument to a number less than the total number of columns or a subset of column indices. The classification of unselected columns are inferred from the classes of the selected columns. Set the argument 'help = FALSE' to turn off this message.")
 		}
 	}
 
@@ -276,6 +280,11 @@ hierarchical_partition = function(data,
     	# check the numbers of signatures
     	if(verbose) qqcat("@{prefix}* checking number of signatures in the best classification.\n")
     	sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE)
+    	if(is.null(part@.env$signature_hash)) {
+    		part@.env$signature_hash = list()
+    	}
+    	part@.env$signature_hash[[node_id]] = attr(sig_df, "hash")
+    	
     	n_sig = nrow(sig_df)
     	p_sig = n_sig/nrow(part)
     	if(n_sig <= min_n_signatures && p_sig <= min_p_signatures) {
@@ -450,51 +459,6 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 		d
 	})
 
-	# od = structure(1:length(order.dendrogram(dend)), names = labels(dend))
-	# dend_env = new.env(parent = emptyenv())
-	# dend_env$dend = dend
-
-	# update_midpoint = function(index = NULL) {
-	# 	if(is.null(index)) {
-	# 		if(is.leaf(dend_env$dend)) {
-	# 			pos = od[attr(dend_env$dend, "label")]
-	# 			midpoint = 0
-	# 		} else {
-	# 			x = NULL
-	# 			for(i in seq_len(length(dend_env$dend))) {
-	# 				if(is.null(attr(dend_env$dend[[i]], "x"))) {
-	# 					update_midpoint(i)
-	# 				}
-	# 				x[i] = attr(dend_env$dend[[i]], "x")
-	# 			}
-	# 			pos = (max(x) + min(x))/2
-	# 			midpoint = (max(x) - min(x))/2
-	# 		}
-	# 	} else {
-	# 		if(is.leaf(dend_env$dend[[index]])) {
-	# 			pos = od[attr(dend_env$dend[[index]], "label")]
-	# 			midpoint = 0
-	# 		} else {
-	# 			x = NULL
-	# 			for(i in seq_len(length(dend_env$dend[[index]]))) {
-	# 				if(is.null(attr(dend_env$dend[[c(index, i)]], "x"))) {
-	# 					update_midpoint(c(index, i))
-	# 				}
-	# 				x[i] = attr(dend_env$dend[[c(index, i)]], "x")
-	# 			}
-	# 			pos = (max(x) + min(x))/2
-	# 			midpoint = (max(x) - min(x))/2
-	# 		}
-	# 	}
-	# 	if(is.null(index)) {
-	# 		attr(dend_env$dend, "x") = pos
-	# 	} else {
-	# 		attr(dend_env$dend[[index]], "x") = pos
-	# 		attr(dend_env$dend[[index]], "midpoint") = midpoint
-	# 	}
-	# }
-	# update_midpoint()
-
 	oe = try(dend_tmp <- as.dendrogram(as.hclust(dend)), silent = TRUE)
 
 	if(!inherits(oe, "try-error")) {
@@ -507,10 +471,55 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 			d
 		})
 	}
+	
+	tb = table(hierarchy)
+	ap = names(tb[tb > 1])
 
-	dendrapply(dend, function(d) {
+	sig_lt = list()
+	for(p in ap) {
+		if(p %in% names(object@.env$signature_hash)) {
+			sig_hash = object@.env$signature_hash[[p]]
+			# qqcat("use a cached hash: @{sig_hash}\n")
+			best_k = suggest_best_k(object[[p]])
+			sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, hash = sig_hash)
+		} else {
+			best_k = suggest_best_k(object[[p]])
+			sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE)
+		}
+		sig_lt[[p]] = sig_tb
+	}
+
+	all_index = unique(unlist(lapply(sig_lt, function(x) x[, 1])))
+
+	data = get_matrix(object)[all_index, , drop = FALSE]
+	if(object@list[[1]]@scale_rows) data = t(scale(t(data)))
+	l = apply(data, 1, function(x) any(is.na(x)))
+	data = data[!l, ]
+
+	fit = prcomp(t(data))
+	loc = fit$x[, 1:2]
+	dist = as.matrix(dist(loc))
+
+	edit_node(dend, function(d, index) {
 		if(is.leaf(d)) {
 			attr(d, "height") = 0
+		} else {
+			if(inherits(d[[1]], "ConsensusPartition")) {
+				node1 = attr(d[[1]], "node_id")
+				ind1 = object[[node1]]@column_index
+			} else {
+				node1 = attr(d[[1]], "node_id")
+				ind1 = attr(object[[node1]], "column_index")
+			}
+			
+			if(inherits(d[[2]], "ConsensusPartition")) {
+				node2 = attr(d[[2]], "node_id")
+				ind2 = object[[node2]]@column_index
+			} else {
+				node2 = attr(d[[2]], "node_id")
+				ind2 = attr(object[[node2]], "column_index")
+			}
+			attr(d, "height") = max(dist[c(ind1, ind2), c(ind1, ind2)])
 		}
 		d
 	})
@@ -618,6 +627,7 @@ mean_dist_decrease = function(mat, subset1, subset2) {
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -depth Depth of the hierarchy.
+# -min_n_signatures Minimal number of signatures on the node.
 #
 # == return
 # A data frame of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
@@ -760,6 +770,7 @@ setMethod(f = "show",
 # == param
 # -object a `HierarchicalPartition-class` object.
 # -depth depth of the hierarchy.
+# -min_n_signatures Minimal number of signatures on the node.
 # -group_diff Cutoff for the maximal difference between group means.
 # -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
 # -scale_rows whether apply row scaling when making the heatmap.
@@ -819,11 +830,16 @@ setMethod(f = "get_signatures",
 	ap = setdiff(all_nodes(object, depth = depth, min_n_signatures), alf)
 
 	sig_lt = list()
+	.env = object@list[[1]]@.env
 	for(p in ap) {
 		best_k = suggest_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
 		sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = TRUE, plot = FALSE, simplify = TRUE, seed = seed, ...)
-		
+		if(is.null(.env$signature_hash)) {
+    		.env$signature_hash = list()
+    	}
+    	.env$signature_hash[[p]] = attr(sig_tb, "hash")
+    	
 		sig_lt[[p]] = sig_tb
 		# if(verbose) qqcat("  * find @{nrow(sig_tb)} signatures at node @{p}\n")
 	}
@@ -1020,6 +1036,7 @@ setMethod(f = "get_signatures",
 # == param
 # -object A `HierarchicalPartition-class` object. 
 # -depth Depth of the hierarchy.
+# -min_n_signatures Minimal number of signatures on the node.
 # -method Method to visualize.
 # -upset_max_comb_sets Maximal number of combination sets to show.
 # -verbose Whether to print message.
@@ -1044,7 +1061,7 @@ setMethod(f = "compare_signatures",
 	}
 
 	nodes = setdiff(all_nodes(object, depth, min_n_signatures), all_leaves(object, depth, min_n_signatures))
-	lt = object@lt[nodes]
+	lt = object@list[nodes]
 
 	sig_list = lapply(lt, function(x) {
 		tb = get_signatures(x, k = suggest_best_k(x), verbose = verbose, ..., plot = FALSE)
@@ -1091,6 +1108,7 @@ setMethod(f = "compare_signatures",
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -depth Depth of the hierarchy.
+# -min_n_signatures Minimal number of signatures on the node.
 # -show_row_names Whether to show the row names.
 # -row_names_gp Graphic parameters for row names.
 # -anno A data frame of annotations for the original matrix columns. 
@@ -1217,6 +1235,7 @@ setMethod(f = "collect_classes",
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -depth Depth of the hierarchy.
+# -min_n_signatures Minimal number of signatures on the node.
 # -known A vector or a data frame with known factors. By default it is the annotation table set in `hierarchical_partition`.
 # -verbose Whether to print messages.
 #
@@ -1270,6 +1289,7 @@ setMethod(f = "test_to_known_factors",
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -depth Depth of the hierarchy.
+# -min_n_signatures Minimal number of signatures on the node.
 # -top_n Top n rows to use. By default it uses all rows in the original matrix.
 # -parent_node Parent node. If it is set, the function call is identical to ``dimension_reduction(object[parent_node])``
 # -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
@@ -1402,6 +1422,7 @@ setMethod(f = "max_depth",
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -depth Depth in the hierarchy.
+# -min_n_signatures Minimal number of signatures on the node.
 #
 # == value
 # A vector of node ID.
@@ -1442,6 +1463,7 @@ get_hierarchy_table = function(object, depth = max_depth(object), min_n_signatur
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -depth Depth in the hierarchy.
+# -min_n_signatures Minimal number of signatures on the node.
 #
 # == value
 # A vector of node ID.
@@ -1471,7 +1493,12 @@ setMethod(f = "all_leaves",
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -node A vector of node IDs.
+# -depth Depth in the hierarchy.
+# -min_n_signatures Minimal number of signatures on the node.
 #
+# == example
+# data(golub_cola_rh)
+# is_leaf_node(golub_cola_rh, all_leaves(golub_cola_rh))
 setMethod(f = "is_leaf_node",
 	signature = "HierarchicalPartition",
 	definition = function(object, node, depth = max_depth(object), min_n_signatures = -Inf) {

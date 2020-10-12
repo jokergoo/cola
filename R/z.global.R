@@ -22,6 +22,7 @@ names(brewer_pal_set2_col) = 1:16
 # -``group_diff`` Used in `get_signatures,ConsensusPartition-method` to globally control the minimal difference between subgroups.
 # -``fdr_cutoff`` Used in `get_signatures,ConsensusPartition-method` to globally control the cutoff of FDR for the differential signature tests.
 # -``color_set_2`` Colors for the predicted subgroups.
+# -``help`` Whether to print help messages.
 #
 # == example
 # cola_opt
@@ -33,6 +34,7 @@ cola_opt = function(..., RESET = FALSE, READ.ONLY = NULL, LOCAL = FALSE, ADD = F
 cola_opt = setGlobalOptions(
 	group_diff = 0,
 	fdr_cutoff = 0.05,
+	help = TRUE,
 	color_set_1 = brewer_pal_set1_col,
 	color_set_2 = brewer_pal_set2_col,
 	message = TRUE

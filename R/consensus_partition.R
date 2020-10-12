@@ -25,6 +25,7 @@
 # -mc.cores Multiple cores to use.
 # -prefix Internally used.
 # -.env An environment, internally used.
+# -help Whether to print help messages.
 #
 # == details
 # The function performs analysis in following steps:
@@ -76,7 +77,8 @@ consensus_partition = function(data,
 	verbose = TRUE,
 	mc.cores = 1,
 	prefix = "",
-	.env = NULL) {
+	.env = NULL,
+	help = cola_opt$help) {
 
 	if(missing(data)) {
 		data = .env$data
@@ -84,6 +86,12 @@ consensus_partition = function(data,
 
 	if(max_k < 2) {
 		stop_wrap("max_k should be no less than 2.")
+	}
+
+	if(max_k >= 10) {
+		if(help) {
+			qqcat_wrap("It is not recommended to set `max_k` larger than 10. Users are suggested to use `hierarchical_partition()` function to obtain more subgroups. Set the argument `help` to FALSE to turn off this message.")
+		}
 	}
 
 	# if(!multicore_supported()) {
@@ -551,6 +559,7 @@ consensus_partition = function(data,
 		anno = anno, anno_col = anno_col, scale_rows = scale_rows, sample_by = sample_by,
 		column_index = .env$column_index, row_index = .env$row_index, .env = .env)
 
+	.env$column_index = NULL
 	return(res)
 }
 
@@ -992,7 +1001,7 @@ setMethod(f = "dimension_reduction",
 	control = list(),
 	internal = FALSE, nr = 5000,
 	silhouette_cutoff = 0.5, remove = FALSE,
-	scale_rows = TRUE, verbose = TRUE, ...) {
+	scale_rows = object@scale_rows, verbose = TRUE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
 

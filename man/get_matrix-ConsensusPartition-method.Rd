@@ -7,11 +7,12 @@ Get the original matrix
 Get the original matrix
 }
 \usage{
-\S4method{get_matrix}{ConsensusPartition}(object)
+\S4method{get_matrix}{ConsensusPartition}(object, full = FALSE)
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{full}{Whether to extract the complete original matrix.}
 
 }
 \value{

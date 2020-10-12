@@ -7,11 +7,12 @@ Get annotations
 Get annotations
 }
 \usage{
-\S4method{get_anno}{ConsensusPartition}(object)
+\S4method{get_anno}{ConsensusPartition}(object, full = FALSE)
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{full}{Whether to extract the complete original matrix.}
 
 }
 \value{

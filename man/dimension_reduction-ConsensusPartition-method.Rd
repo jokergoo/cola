@@ -12,7 +12,7 @@ Visualize samples (the matrix columns) after dimension reduction
     control = list(),
     internal = FALSE, nr = 5000,
     silhouette_cutoff = 0.5, remove = FALSE,
-    scale_rows = TRUE, verbose = TRUE, ...)
+    scale_rows = object@scale_rows, verbose = TRUE, ...)
 }
 \arguments{
 

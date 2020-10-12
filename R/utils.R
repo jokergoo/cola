@@ -248,6 +248,12 @@ message_wrap = function (...) {
     message(x)
 }
 
+qqcat_wrap = function (...) {
+    x = paste0(qq(...))
+    x = paste(strwrap(x), collapse = "\n")
+    cat(x, "\n")
+}
+
 # http://conjugateprior.org/2015/06/identifying-the-os-from-r/
 os_type <- function() {
   sysinf <- Sys.info()

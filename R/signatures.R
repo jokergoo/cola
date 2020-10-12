@@ -36,6 +36,7 @@
 # -prefix Only used internally.
 # -enforce The analysis is cached by default, so that the analysis with the same input will be automatically extracted
 #     without rerunning them. Set ``enforce`` to ``TRUE`` to enforce the funtion to re-perform the analysis.
+# -hash Userd internally.
 # -... Other arguments.
 # 
 # == details 
@@ -92,7 +93,7 @@ setMethod(f = "get_signatures",
 	plot = TRUE, verbose = TRUE, seed = 888,
 	left_annotation = NULL, right_annotation = NULL,
 	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
-	simplify = FALSE, prefix = "", enforce = FALSE,
+	simplify = FALSE, prefix = "", enforce = FALSE, hash = NULL,
 	...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
@@ -153,7 +154,21 @@ setMethod(f = "get_signatures",
 		}
 	}
 
-	hash = digest(list(used_samples = which(l), 
+	if(is.null(hash)) {
+		hash = digest(list(used_samples = which(l), 
+			               class = class,
+			               n_group = k, 
+			               diff_method = diff_method,
+			               column_index = object@column_index,
+			               group_diff = group_diff,
+			               fdr_cutoff = fdr_cutoff,
+			               top_signatures = top_signatures,
+			               seed = seed),
+						algo = "md5")
+	} else {
+		if(is.null(object@.env[[paste0("signature_fdr_", hash)]])) {
+			if(verbose) qqcat("@{prefix} Warning: cannot find cache with hash: @{hash}, generate a new hash.")
+			hash = digest(list(used_samples = which(l), 
 		               class = class,
 		               n_group = k, 
 		               diff_method = diff_method,
@@ -163,6 +178,8 @@ setMethod(f = "get_signatures",
 		               top_signatures = top_signatures,
 		               seed = seed),
 					algo = "md5")
+		}
+	}
 	
 	nm = paste0("signature_fdr_", hash)
 	if(verbose) qqcat("@{prefix}* cache hash: @{hash} (seed @{seed}).\n")
@@ -245,6 +262,8 @@ setMethod(f = "get_signatures",
 	if(!is.null(right_annotation)) right_annotation = right_annotation[l_fdr, ]
 
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2)
+	attr(returned_df, "sample_used") = column_used_logical
+	attr(returned_df, "hash") = hash
 
 	if(simplify && !plot) {
 		return(returned_df)

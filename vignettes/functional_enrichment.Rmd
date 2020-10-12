@@ -47,6 +47,12 @@ rl = readRDS("TCGA_GBM_subgroup.rds")
 file.remove("TCGA_GBM_subgroup.rds")
 ```
 
+```{r, echo = FALSE}
+for(i in seq_along(rl@list)) {
+    rl@list[[i]]@row_index = 1:nrow(rl)
+}
+```
+
 We select result from a single method `ATC:skmeans`:
 
 ```{r}

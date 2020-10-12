@@ -8,12 +8,13 @@ All leaves in the hierarchy
 All leaves in the hierarchy
 }
 \usage{
-\S4method{all_leaves}{HierarchicalPartition}(object, depth = max_depth(object))
+\S4method{all_leaves}{HierarchicalPartition}(object, depth = max_depth(object), min_n_signatures = -Inf)
 }
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
   \item{depth}{Depth in the hierarchy.}
+  \item{min_n_signatures}{Minimal number of signatures on the node.}
 
 }
 \value{

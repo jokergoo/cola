@@ -24,7 +24,8 @@ consensus_partition(data,
     verbose = TRUE,
     mc.cores = 1,
     prefix = "",
-    .env = NULL)
+    .env = NULL,
+    help = cola_opt$help)
 }
 \arguments{
 
@@ -44,6 +45,7 @@ consensus_partition(data,
   \item{mc.cores}{Multiple cores to use.}
   \item{prefix}{Internally used.}
   \item{.env}{An environment, internally used.}
+  \item{help}{Whether to print help messages.}
 
 }
 \details{

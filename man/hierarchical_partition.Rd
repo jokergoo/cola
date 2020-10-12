@@ -8,10 +8,12 @@ Hierarchical partition
 }
 \usage{
 hierarchical_partition(data,
-    top_value_method = "ATC",
-    partition_method = "skmeans",
-    PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
-    min_n_signatures = 100, min_p_signatures = 0.05,
+    top_value_method = c("SD", "ATC"),
+    partition_method = c("kmeans", "skmeans"),
+    combination_method =  expand.grid(top_value_method, partition_method),
+    PAC_cutoff = 0.2, min_samples = 6, subset = 500,
+    min_n_signatures = round(nrow(data)*min_p_signatures),
+    min_p_signatures = 0.01,
     max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...)
 }
 \arguments{
@@ -19,6 +21,7 @@ hierarchical_partition(data,
   \item{data}{a numeric matrix where subgroups are found by columns.}
   \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}.}
   \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}.}
+  \item{combination_method}{A list of combinations of top-value methods and partitioning methods. The value can be a two-column data frame where the first column is the top-value methods and the second column is the partitioning methods. Or it can be a vector of combination names in a form of "top_value_method:partitioning_method".}
   \item{PAC_cutoff}{the cutoff of PAC scores to determine whether to continue looking for subgroups.}
   \item{min_samples}{the cutoff of number of samples to determine whether to continue looking for subgroups.}
   \item{subset}{Number of columns to randomly sample.}

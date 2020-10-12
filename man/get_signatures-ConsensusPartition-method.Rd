@@ -19,11 +19,13 @@ Get signature rows
     anno_col = get_anno_col(object),
     internal = FALSE,
     show_row_dend = FALSE,
-    show_column_names = FALSE, use_raster = TRUE,
+    show_column_names = FALSE,
+    column_names_gp = gpar(fontsize = 8),
+    use_raster = TRUE,
     plot = TRUE, verbose = TRUE, seed = 888,
     left_annotation = NULL, right_annotation = NULL,
     col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
-    simplify = FALSE, prefix = "", enforce = FALSE,
+    simplify = FALSE, prefix = "", enforce = FALSE, hash = NULL,
     ...)
 }
 \arguments{
@@ -42,6 +44,7 @@ Get signature rows
   \item{internal}{Used internally.}
   \item{show_row_dend}{Whether show row dendrogram.}
   \item{show_column_names}{Whether show column names in the heatmap.}
+  \item{column_names_gp}{Graphics parameters for column names.}
   \item{use_raster}{Internally used.}
   \item{plot}{Whether to make the plot.}
   \item{verbose}{Whether to print messages.}
@@ -52,6 +55,7 @@ Get signature rows
   \item{simplify}{Only used internally.}
   \item{prefix}{Only used internally.}
   \item{enforce}{The analysis is cached by default, so that the analysis with the same input will be automatically extracted without rerunning them. Set \code{enforce} to \code{TRUE} to enforce the funtion to re-perform the analysis.}
+  \item{hash}{Userd internally.}
   \item{...}{Other arguments.}
 
 }

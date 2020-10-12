@@ -1,4 +1,3 @@
-library(cola)
 
 ############# cola_rl ##############
 set.seed(123)
@@ -43,7 +42,6 @@ golub_cola = run_all_consensus_partition_methods(
 
 
 ############# golub_cola_rh ##############
-data(golub_cola)
 m = get_matrix(golub_cola)
 set.seed(123)
 golub_cola_rh = hierarchical_partition(
@@ -54,7 +52,6 @@ golub_cola_rh = hierarchical_partition(
 
 
 ############# golub_cola_ds ##############
-data(golub_cola)
 m = get_matrix(golub_cola)
 set.seed(123)
 golub_cola_ds = consensus_partition_by_down_sampling(
@@ -69,4 +66,18 @@ save(golub_cola, file = "~/project/cola/data/golub_cola.rda", compress = "xz")
 save(golub_cola_ds, file = "~/project/cola/data/golub_cola_ds.rda", compress = "xz")
 save(golub_cola_rh, file = "~/project/cola/data/golub_cola_rh.rda", compress = "xz")
 
+
+############################
+set.seed(123)
+m = cbind(rbind(matrix(rnorm(20*20, mean = 2, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20)),
+          rbind(matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 1, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20)),
+          rbind(matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
+                matrix(rnorm(20*20, mean = 1, sd = 0.3), nr = 20))
+         ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
+cola_rh = hierarchical_partition(m, top_n = c(20, 30, 40), PAC_cutoff = 0.3)
 
