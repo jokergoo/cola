@@ -67,7 +67,8 @@ Description: Subgroup classification is a basic task in
   3. It allows running multiple methods at the same time and provides
   functionalities to straightforward compare results. 4. It provides a new
   method to extract features which are more efficient to separate subgroups. 5.
-  It automatically generates detailed reports for the complete analysis.
+  It automatically generates detailed reports for the complete analysis. 6. It allows
+  applying consensus partitioning in a hierarchical manner.
 URL: https://github.com/jokergoo/cola, 
      https://jokergoo.github.io/cola_collection/
 VignetteBuilder: knitr

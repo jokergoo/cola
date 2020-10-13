@@ -117,12 +117,14 @@ setMethod(f = "predict_classes",
 			if(is.null(hash)) {
 				ind = order(apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(1000, nrow(data))]
 				sig_mat = sig_mat[ind, , drop = FALSE]
+				if(verbose) qqcat("@{prefix}* simply take top @{min(1000, nrow(data))} rows with the highest row range.\n")
 			} else {
 				# if there is hash attached, adjust fdr_cutoff
 				hash_nm = paste0("signature_fdr_", hash)
 				fdr = object@.env[[hash_nm]]$fdr
 				ind = order(-fdr, apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(1000, nrow(data))]
 				sig_mat = sig_mat[ind, , drop = FALSE]
+				if(verbose) qqcat("@{prefix}* simply take top @{min(1000, nrow(data))} rows with the most significant FDRs.\n")
 			}
 
 		} else {
@@ -228,7 +230,7 @@ setMethod(f = "predict_classes",
 	dist_method = match.arg(dist_method)[1]
 	n_sig = ncol(sig_mat)
 
-	if(verbose) qqcat("@{prefix}Predict classes based on @{ncol(sig_mat)}-group classification (@{dist_method} method) on a @{ncol(mat)}-column matrix.\n")
+	if(verbose) qqcat("@{prefix}* Predict classes based on @{ncol(sig_mat)}-group classification (@{dist_method} method) on a @{ncol(mat)}-column matrix.\n")
 
 	if(dist_method %in% c("euclidean", "cosine")) {
 

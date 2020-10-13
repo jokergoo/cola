@@ -59,7 +59,13 @@ run_all_consensus_partition_methods = function(data,
 
 	if(max_k >= 10) {
 		if(help) {
-			message_wrap("It is not recommended to set `max_k` larger than 10. Users are suggested to use `hierarchical_partition()` function to obtain more subgroups. Set the argument `help` to FALSE to turn off this")
+			qqcat_wrap("It is not recommended to set `max_k` larger than 10. Users are suggested to use the function `hierarchical_partition()` to obtain more subgroups. Set the argument `help` to FALSE to turn off this message.\n")
+		}
+	}
+
+	if(ncol(data) > 500) {
+		if(help) {
+			qqcat_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can use the function `consensus_partition_by_down_sampling()` to apply to a subset of column and the predicts the classes of unselected columns from the selected columns. Or you can use the function `hierarchical_partition()` to apply consensu partitioning in a hierarchical way. Set the argument 'help = FALSE' to turn off this message.\n")
 		}
 	}
 	

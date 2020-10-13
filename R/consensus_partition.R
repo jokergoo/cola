@@ -90,7 +90,13 @@ consensus_partition = function(data,
 
 	if(max_k >= 10) {
 		if(help) {
-			qqcat_wrap("It is not recommended to set `max_k` larger than 10. Users are suggested to use `hierarchical_partition()` function to obtain more subgroups. Set the argument `help` to FALSE to turn off this message.")
+			qqcat_wrap("It is not recommended to set `max_k` larger than 10. Users are suggested to use `hierarchical_partition()` function to obtain more subgroups. Set the argument `help` to FALSE to turn off this message.\n")
+		}
+	}
+
+	if(help && !missing(data)) {
+		if(identical(subset, Inf) && ncol(data) > 500) {
+			qqcat_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can use the function `consensus_partition_by_down_sampling()` to apply to a subset of column. The classification of unselected columns are inferred from the classes of the selected columns. Set the argument 'help = FALSE' to turn off this message.\n")
 		}
 	}
 

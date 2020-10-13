@@ -94,15 +94,14 @@ hierarchical_partition = function(data,
 	top_value_method = c("SD", "ATC"), 
 	partition_method = c("kmeans", "skmeans"),
 	combination_method =  expand.grid(top_value_method, partition_method),
-	PAC_cutoff = 0.2, min_samples = 6, subset = 500,
+	PAC_cutoff = 0.2, min_samples = 6, subset = Inf,
 	min_n_signatures = round(nrow(data)*min_p_signatures), 
 	min_p_signatures = 0.01,
 	max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...) {
 
 	if(help) {
-		# message_wrap("We suggest to try both 'ATC/skmeans' and 'SD/kmeans' for 'top_value_method' and 'partition_method' parameters. These two combinations of methods are correlation-based and Euclidean distance-based respectively and they generate different results that are all worth to look at. Set the argument 'help = FALSE' to turn off this message.")
 		if(identical(subset, Inf) && ncol(data) > 500) {
-			qqcat_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can set `subset` argument to a number less than the total number of columns or a subset of column indices. The classification of unselected columns are inferred from the classes of the selected columns. Set the argument 'help = FALSE' to turn off this message.")
+			qqcat_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can set `subset` argument to a number less than the total number of columns or a subset of column indices. The classification of unselected columns are inferred from the classes of the selected columns. Set the argument 'help = FALSE' to turn off this message.\n")
 		}
 	}
 
