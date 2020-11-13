@@ -275,7 +275,7 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	output_dir = normalizePath(output_dir, mustWork = FALSE)
 
 	message(qq("* generating cola report for `@{var_name}` (a @{class} object)"))
-	message(qq("* the report is available at @{output_dir}/"))
+	message(qq("* the report is available at @{output_dir}/@{html_file[class]}"))
 
 	if(dir.exists(file.path(output_dir, "figure_cola"))) {
 		fl = list.files(file.path(output_dir, "figure_cola"), pattern = "\\.png$", full.names = TRUE)

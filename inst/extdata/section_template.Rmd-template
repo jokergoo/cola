@@ -29,7 +29,7 @@ The columns will not further split. The reason for stopping the partitioning is:
 
 <% } else if(node == "0"){ -%>
 
-Child nodes: [Node00<%=ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")](#Node00<%=ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")%>), [Node01<%=ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>](#Node01<%=ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>).
+Child nodes: [Node00<%=ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")%>](#Node00<%=ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")%>), [Node01<%=ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>](#Node01<%=ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>).
 
 <% } else { -%>
 

@@ -7,7 +7,7 @@ Get class IDs from the HierarchicalPartition object
 Get class IDs from the HierarchicalPartition object
 }
 \usage{
-\S4method{get_classes}{HierarchicalPartition}(object, depth = max_depth(object), min_n_signatures = -Inf)
+\S4method{get_classes}{HierarchicalPartition}(object, filter_node = filter_node_param())
 }
 \arguments{
 
@@ -25,5 +25,4 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 data(golub_cola_rh)
 get_classes(golub_cola_rh)
-get_classes(golub_cola_rh, depth = 2)
 }

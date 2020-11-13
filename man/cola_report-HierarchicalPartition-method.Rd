@@ -8,7 +8,7 @@ Make HTML report from the HierarchicalPartition object
 }
 \usage{
 \S4method{cola_report}{HierarchicalPartition}(object, output_dir = getwd(), mc.cores = 1,
-    title = qq("cola Report for Hierarchical Partitioning (@{object[1]@top_value_method}:@{object[1]@partition_method})"),
+    title = qq("cola Report for Hierarchical Partitioning"),
     env = parent.frame())
 }
 \arguments{

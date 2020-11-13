@@ -66,6 +66,12 @@ mat = get_matrix(res_hc)
 dim(mat)
 ```
 
+All the methods that were tried:
+
+```{r}
+res_hc@.env$combination_methods
+```
+
 ### Density distribution
 
 The density distribution for each sample is visualized as one column in the following heatmap.
@@ -95,26 +101,30 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))))
 Some values about the hierarchy:
 
 ```{r}
-max_depth(res_hc)
 all_nodes(res_hc)
 all_leaves(res_hc)
+node_info(res_hc)
 ```
+
+In the output from `node_info()`, there are the following columns:
+
+- `id`: The node id.
+- `best_method`: The best method selected, i.e. with the highest 1-PAC value.
+- `depth`: Depth of the node in the hierarchy.
+- `best_k`: Best number of groups of the partition on that node.
+- `n_columns`: Number of columns used.
+- `n_signatures`: Number of signatures with the `best_k`.
+- `p_signatures`: Proportion of hte signatures in total number of rows in the matrix.
+- `node_height`: Height of the node in the hierarchy dendrogram.
+- `is_leaf`: Whether the node is a leaf.
 
 **cola** uses a special way to encode the nodes in the hierarchy. The length of
 the node name is the depth of the node in the hierarchy and the substring
 excluding the last digit is the node name of the parent node. E.g. for the
 node 0011, the depth is 4 and the parent node is 001. For each node, the last
-digit represents the index of the subgroup detected in parent node. and 0
-represents all other subgroups. E.g. 02 means this node contains samples which
-belong to subgroup 2 when doing consensus partition at node 0 (subgroup 2 is
-selected as a node because the intra-group distance is smallest compared to
-other subgroups), and 00 contains samples which do not belong to subgroup 2 at
-node 0.
-
-```{r, echo = FALSE, message = FALSE}
-message(qq("* top rows are extracted by '@{res_hc[1]@top_value_method}' method"))
-message(qq("* subgroups are detected by '@{res_hc[1]@partition_method}' method"))
-```
+digit represents the index of the subgroup detected in parent node. The digit is always
+0 or 1. In the consensus partition on every node, the group with the smallest within-distance
+is always encoded as 1 and the merged group of all other columns is encoded as 0.
 
 ### Suggest the best k
 
@@ -142,7 +152,7 @@ stop_reason = sapply(stop_reason, function(x) {
     if(is.null(x)) {
         return(NA)
     } else {
-        return(cola:::stop_reason_index[x])
+        return(cola:::STOP_REASON_INDEX[x])
     }
 })
 
@@ -154,8 +164,16 @@ tb$is_leaf = ifelse(tb$is_leaf, "\u2713", "")
 
 tb$is_leaf = ifelse(is.na(stop_reason), tb$is_leaf, paste0(tb$is_leaf, " (", stop_reason, ")"))
 tb$is_leaf = gsub("c", "&#99;", tb$is_leaf)
-colnames(tb) = c("Node", "Code", "Is leaf", "The best k", "1-PAC", "Mean silhouette", "Concordance", "Number of samples", "")
-kable(tb, row.names = FALSE)
+colnames(tb) = c("Node", "Code", "Best method", "Is leaf", "Best k", "1-PAC", "Mean silhouette", "Concordance", "#samples", "")
+tb[, "1-PAC"] = sprintf("%.2f", tb[, "1-PAC"])
+tb[, "Mean silhouette"] = sprintf("%.2f", tb[, "Mean silhouette"])
+tb[, "Concordance"] = sprintf("%.2f", tb[, "Concordance"])
+tb[is.na(tb[, "Best k"]), "Best k"] = ""
+tb[tb[, "1-PAC"] == "NA", "1-PAC"] = ""
+tb[tb[, "Mean silhouette"] == "NA", "Mean silhouette"] = ""
+tb[tb[, "Concordance"] == "NA", "Concordance"] = ""
+tb[tb[, 3] == "not applied", 3] = "<span style='color:grey;'><i>not applied</i></span>"
+kable(tb[, -2], row.names = FALSE)
 ```
 
 
@@ -163,7 +181,7 @@ kable(tb, row.names = FALSE)
 reasons = sort(unique(stop_reason[!is.na(stop_reason)]))
 if(length(reasons) > 0) cat("Stop reason: ")
 for(i in seq_along(reasons)) {
-    cat(reasons[i], ") ", names(which(cola:::stop_reason_index == reasons[i])), " ", sep = "")
+    cat(reasons[i], ") ", names(which(cola:::STOP_REASON_INDEX == reasons[i])), " ", sep = "")
 }
 cat("\n\n\\*\\*: 1-PAC > 0.95, \\*: 1-PAC > 0.9")
 ```
@@ -171,16 +189,25 @@ cat("\n\n\\*\\*: 1-PAC > 0.95, \\*: 1-PAC > 0.9")
 
 ### Partition hierarchy
 
-<% max_depth = max_depth(res_hc) -%>
+<% node_heights = node_info(res_hc)$node_height
+node_heights = sort(node_heights[node_heights > 0])
+for(digit in 1:7) {
+    if(length(node_heights) == length(unique(floor(node_heights*10^digit)))) {
+        node_heights = floor(node_heights*10^digit)/10^digit
+        break
+    }
+}
+max_depth = max_depth(res_hc)
+-%>
 
 ```{r, echo = FALSE, message = FALSE}
 t1 = Sys.time()
-message(qq("* collecting classifications for each depth (@{max_depth}..2)"), appendLF = FALSE)
+message(qq("* collecting classifications for each ndoe height"), appendLF = FALSE)
 ```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-<% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('collect_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'collect-classes-from-hierarchical-partition')
+<% for(nh in node_heights) { -%>
+knitr_add_tab_item('collect_classes(res_hc, filter_node = filter_node_param(node_height = <%=nh%>))', 'node_height \u2265 <%=nh%>', prefix = 'collect-classes-from-hierarchical-partition')
 <% } -%>
 knitr_insert_tabs('collect-classes-from-hierarchical-partition')
 ```
@@ -189,8 +216,8 @@ Following shows the table of the partitions (You need to click the **show/hide
 code output** link to see it).
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-<% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('get_classes(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'get-classes-from-hierarchical-partition', hide_and_show = TRUE)
+<% for(nh in node_heights) { -%>
+knitr_add_tab_item('get_classes(res_hc, filter_node = filter_node_param(node_height = <%=nh%>))', 'node_height \u2265 <%=nh%>', prefix = 'get-classes-from-hierarchical-partition', hide_and_show = TRUE)
 <% } -%>
 knitr_insert_tabs('get-classes-from-hierarchical-partition')
 ```
@@ -212,7 +239,35 @@ if(is.null(dr_method)) {
 if(is.null(dr_method)) {
     dr_method = "PCA"
 }
+top_n = pretty(c(0, nrow(res_hc)*0.1))
+top_n = top_n[length(top_n)]
 -%>
+
+
+### Top rows heatmap
+
+Heatmaps of the top rows:
+
+<% 
+all_top_value_methods = unique(sapply(res_hc@.env$combination_methods, function(x) x[1]))
+n_top_value_method = length(all_top_value_methods)
+if(n_top_value_method <= 4) {
+    fig_width = 14/4 * n_top_value_method
+    fig_height = 14/4
+} else {
+    fig_width = 14
+    fig_height = 14/n_top_value_method
+}
+-%>
+
+```{r, echo = FALSE, message = FALSE}
+t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
+message(qq("* making top row heatmaps"), appendLF = FALSE)
+```
+
+```{r top-rows-heatmap, fig.width = <%=fig_width%>, fig.height = <%=fig_height%>}
+top_rows_heatmap(res_hc, top_n = <%=top_n%>)
+```
 
 ### <%=dr_method%> plot
 
@@ -224,21 +279,16 @@ message(qq("* making dimension reduction plots"), appendLF = FALSE)
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('dimension_reduction(res_hc, depth = <%=depth%>, method = "<%=dr_method%>")', 'depth = <%=depth%>', prefix = 'dimension-reduction-by-depth')
+<% for(nh in node_heights) { -%>
+knitr_add_tab_item('par(mfrow = c(1, 2))
+dimension_reduction(res_hc, filter_node = filter_node_param(node_height = <%=nh%>),
+    method = "<%=dr_method%>", top_value_method = "SD", top_n = <%=top_n%>)
+dimension_reduction(res_hc, filter_node = filter_node_param(node_height = <%=nh%>),
+    method = "<%=dr_method%>", top_value_method = "ATC", top_n = <%=top_n%>)', 'node_height \u2265 <%=nh%>', prefix = 'dimension-reduction-by-depth', opt = "fig.width = 14, fig.height = 7, out.width = '100%'")
 <%}-%>
 knitr_insert_tabs('dimension-reduction-by-depth')
 ```
 
-Or you can also do it on each parent node:
-
-```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
-for(p in all_parents) { -%>
-knitr_add_tab_item('dimension_reduction(res_hc, parent_node = "<%=p%>", method = "<%=dr_method%>")', 'node = "<%=p%>"', prefix = 'dimension-reduction-by-node')
-<%}-%>
-knitr_insert_tabs('dimension-reduction-by-node')
-```
 
 <% if(max_depth >= 2) { %>
 
@@ -253,8 +303,8 @@ message(qq("* making signature heatmaps"), appendLF = FALSE)
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('get_signatures(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', opt = 'results="hide"', prefix = 'get-signatures-from-hierarchical-partition')
+<% for(nh in node_heights) { -%>
+knitr_add_tab_item('get_signatures(res_hc, filter_node = filter_node_param(node_height = <%=nh%>))', 'node_height \u2265 <%=nh%>', opt = 'results="hide"', prefix = 'get-signatures-from-hierarchical-partition')
 <%}-%>
 knitr_insert_tabs('get-signatures-from-hierarchical-partition')
 ```
@@ -296,8 +346,8 @@ message(qq("* testing correlation of subgroups to known annotations"))
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% for(depth in max_depth:2) { -%>
-knitr_add_tab_item('test_to_known_factors(res_hc, depth = <%=depth%>)', 'depth = <%=depth%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
+<% for(nh in node_heights) { -%>
+knitr_add_tab_item('test_to_known_factors(res_hc, filter_node = filter_node_param(node_height = <%=nh%>))', 'node_height \u2265 <%=nh%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
 <%}-%>
 knitr_insert_tabs('test-to-known-factors-from-hierarchical-partition')
 ```

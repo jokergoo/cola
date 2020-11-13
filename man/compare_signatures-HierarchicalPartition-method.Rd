@@ -7,7 +7,7 @@ Compare Signatures from Different Nodes
 Compare Signatures from Different Nodes
 }
 \usage{
-\S4method{compare_signatures}{HierarchicalPartition}(object, depth = max_depth(object), min_n_signatures = -Inf,
+\S4method{compare_signatures}{HierarchicalPartition}(object, filter_node = filter_node_param(),
     method = c("euler", "upset"), upset_max_comb_sets = 20,
     verbose = interactive(), ...)
 }

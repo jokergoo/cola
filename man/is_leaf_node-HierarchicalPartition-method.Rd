@@ -8,7 +8,7 @@ Test whether a node is a leaf node
 Test whether a node is a leaf node
 }
 \usage{
-\S4method{is_leaf_node}{HierarchicalPartition}(object, node, depth = max_depth(object), min_n_signatures = -Inf)
+\S4method{is_leaf_node}{HierarchicalPartition}(object, node, filter_node = filter_node_param())
 }
 \arguments{
 

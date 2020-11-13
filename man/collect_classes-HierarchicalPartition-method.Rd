@@ -7,7 +7,7 @@ Collect classes from HierarchicalPartition object
 Collect classes from HierarchicalPartition object
 }
 \usage{
-\S4method{collect_classes}{HierarchicalPartition}(object, depth = max_depth(object), min_n_signatures = -Inf,
+\S4method{collect_classes}{HierarchicalPartition}(object, filter_node = filter_node_param(),
     show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
     anno = get_anno(object[1]), anno_col = get_anno_col(object[1]))
 }

@@ -8,7 +8,7 @@ All nodes in the hierarchy
 All nodes in the hierarchy
 }
 \usage{
-\S4method{all_nodes}{HierarchicalPartition}(object, depth = max_depth(object), min_n_signatures = -Inf)
+\S4method{all_nodes}{HierarchicalPartition}(object, filter_node = filter_node_param())
 }
 \arguments{
 

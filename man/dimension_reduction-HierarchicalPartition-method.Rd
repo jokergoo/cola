@@ -7,9 +7,9 @@ Visualize columns after dimension reduction
 Visualize columns after dimension reduction
 }
 \usage{
-\S4method{dimension_reduction}{HierarchicalPartition}(object,
-    depth = max_depth(object), min_n_signatures = -Inf,
-    parent_node, top_n = NULL, method = c("PCA", "MDS", "t-SNE", "UMAP"),
+\S4method{dimension_reduction}{HierarchicalPartition}(object, filter_node = filter_node_param(),
+    parent_node, top_n = NULL, top_value_method = object@list[[1]]@top_value_method,
+    method = c("PCA", "MDS", "t-SNE", "UMAP"),
     scale_rows = TRUE, verbose = TRUE, ...)
 }
 \arguments{
