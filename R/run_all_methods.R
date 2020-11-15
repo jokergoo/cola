@@ -107,6 +107,9 @@ run_all_consensus_partition_methods = function(data,
 				names(anno_col) = known_nm
 			}
 		}
+		if(nrow(anno) != ncol(data)) {
+			stop_wrap("nrow of `anno` should be the same as ncol of the matrix.")
+		}
 	}
 
 	if(is.null(anno_col)) {

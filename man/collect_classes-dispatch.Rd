@@ -11,8 +11,8 @@ Method dispatch page for \code{collect_classes}.
 
 \itemize{
 \item \code{\link{collect_classes,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
-\item \code{\link{collect_classes,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 \item \code{\link{collect_classes,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
+\item \code{\link{collect_classes,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 }
 }
 \examples{

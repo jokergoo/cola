@@ -101,19 +101,22 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 		if(is.leaf(d)) {
 			attr(d, "height") = 0
 		} else {
-			if(inherits(d[[1]], "ConsensusPartition")) {
-				node1 = attr(d[[1]], "node_id")
+			node1 = attr(d[[1]], "node_id")
+			if(inherits(object[[node1]], "DownSamplingConsensusPartition")) {
+				
+				ind1 = object[[node1]]@full_column_index
+			} else if(inherits(object[[node1]], "ConsensusPartition")) {
 				ind1 = object[[node1]]@column_index
 			} else {
-				node1 = attr(d[[1]], "node_id")
 				ind1 = attr(object[[node1]], "column_index")
 			}
 			
-			if(inherits(d[[2]], "ConsensusPartition")) {
-				node2 = attr(d[[2]], "node_id")
+			node2 = attr(d[[2]], "node_id")
+			if(inherits(object[[node2]], "DownSamplingConsensusPartition")) {
+				ind2 = object[[node2]]@full_column_index
+			} else if(inherits(object[[node2]], "ConsensusPartition")) {
 				ind2 = object[[node2]]@column_index
 			} else {
-				node2 = attr(d[[2]], "node_id")
 				ind2 = attr(object[[node2]], "column_index")
 			}
 			attr(d, "height") = max(dist[c(ind1, ind2), c(ind1, ind2)])

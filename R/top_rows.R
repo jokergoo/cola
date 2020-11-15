@@ -194,7 +194,7 @@ setMethod(f = "top_rows_heatmap",
 
 	all_top_value_list = object@.env$all_top_value_list[object@top_value_method]
     
-    mat = object@.env$data
+    mat = get_matrix(object)
 
     if(is.null(anno)) {
 		bottom_anno = NULL

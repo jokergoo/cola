@@ -15,7 +15,7 @@ Predict classes for new samples based on cola classification
     diff_method = "Ftest",
     dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
     p_cutoff = 0.05, plot = TRUE, force = FALSE,
-    verbose = TRUE, help = TRUE, prefix = "")
+    verbose = TRUE, help = TRUE, prefix = "", mc.cores = 1)
 }
 \arguments{
 

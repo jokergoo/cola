@@ -69,7 +69,7 @@ setMethod(f = "predict_classes",
 	diff_method = "Ftest",
 	dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
 	p_cutoff = 0.05, plot = TRUE, force = FALSE, 
-	verbose = TRUE, help = TRUE, prefix = "") {
+	verbose = TRUE, help = TRUE, prefix = "", mc.cores = 1) {
 
 	if(help) {
 		if(object@scale_rows) {
@@ -103,7 +103,7 @@ setMethod(f = "predict_classes",
 	if(nrow(tb) < 20) {
 		if(force) {
 			hash = attr(tb, "hash")
-			data = object@.env$data
+			data = get_matrix(object)
 			if(object@scale_rows) {
 				data = t(scale(t(data)))
 			}
@@ -117,6 +117,7 @@ setMethod(f = "predict_classes",
 			if(is.null(hash)) {
 				ind = order(apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(1000, nrow(data))]
 				sig_mat = sig_mat[ind, , drop = FALSE]
+				mat = mat[ind, , drop = FALSE]
 				if(verbose) qqcat("@{prefix}* simply take top @{min(1000, nrow(data))} rows with the highest row range.\n")
 			} else {
 				# if there is hash attached, adjust fdr_cutoff
@@ -124,24 +125,30 @@ setMethod(f = "predict_classes",
 				fdr = object@.env[[hash_nm]]$fdr
 				ind = order(-fdr, apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(1000, nrow(data))]
 				sig_mat = sig_mat[ind, , drop = FALSE]
+				mat = mat[ind, , drop = FALSE]
 				if(verbose) qqcat("@{prefix}* simply take top @{min(1000, nrow(data))} rows with the most significant FDRs.\n")
 			}
+
+			l = apply(sig_mat, 1, function(x) any(is.na(x)))
+			sig_mat = sig_mat[!l, , drop = FALSE]
+			mat = mat[!l, , drop = FALSE]
 
 		} else {
 			stop_wrap("Number of signatures is too small.")
 		}
-	}
-	
-	if(object@scale_rows) {
-		sig_mat = tb[, grepl("^scaled_mean_\\d+$", colnames(tb))]
 	} else {
-		sig_mat = tb[, grepl("^mean_\\d+$", colnames(tb))]
+	
+		if(object@scale_rows) {
+			sig_mat = tb[, grepl("^scaled_mean_\\d+$", colnames(tb))]
+		} else {
+			sig_mat = tb[, grepl("^mean_\\d+$", colnames(tb))]
+		}
+
+		sig_mat = as.matrix(sig_mat)
+		colnames(sig_mat) = NULL
+
+		mat = mat[tb$which_row, , drop = FALSE]
 	}
-
-	sig_mat = as.matrix(sig_mat)
-	colnames(sig_mat) = NULL
-
-	mat = mat[tb$which_row, , drop = FALSE]
 
 	if(nrow(mat) > 1000) {
 		ind = sample(nrow(mat), 1000)
@@ -150,7 +157,7 @@ setMethod(f = "predict_classes",
 	}
 	
 	predict_classes(sig_mat, mat, nperm = nperm, dist_method = dist_method, p_cutoff = p_cutoff, 
-		plot = plot, verbose = verbose, prefix = prefix)
+		plot = plot, verbose = verbose, prefix = prefix, mc.cores = mc.cores)
 })
 
 
@@ -219,7 +226,7 @@ setMethod(f = "predict_classes",
 setMethod(f = "predict_classes",
 	signature = "matrix",
 	definition = function(object, mat, dist_method = c("euclidean", "correlation", "cosine"), 
-	nperm = 1000, p_cutoff = 0.05, plot = TRUE, verbose = TRUE, prefix = "") {
+	nperm = 1000, p_cutoff = 0.05, plot = TRUE, verbose = TRUE, prefix = "", mc.cores = 1) {
 
 	sig_mat = object
 
@@ -257,7 +264,16 @@ setMethod(f = "predict_classes",
 # 			if(verbose) counter()
 # 		}
 
-		diff_ratio_r = cal_diff_ratio_r(t(mat), t(sig_mat), nperm, dm)
+		if(mc.cores > 1) {
+			interval = seq(1, nperm, length = mc.cores + 1)
+			len = floor(diff(interval))
+			len[1] = nperm - sum(len) + len[1]
+			diff_ratio_r = do.call(cbind, mclapply(len, function(x) {
+				cal_diff_ratio_r(t(mat), t(sig_mat), x, dm)
+			}))
+		} else {
+			diff_ratio_r = cal_diff_ratio_r(t(mat), t(sig_mat), nperm, dm)
+		}
 
 		p = rowSums(diff_ratio_r - diff_ratio > 0)/nperm
 

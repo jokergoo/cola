@@ -27,6 +27,14 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 #
 # == param
 # -data A numeric matrix where subgroups are found by columns.
+# -top_value_method A single top-value method. Available methods are in `all_top_value_methods`.
+#                   Use `register_top_value_methods` to add a new top-value method.
+# -top_n Number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
+#        the function only randomly sample 5000 rows from top n rows. If ``top_n`` is a vector, paritition
+#        will be applied to every values in ``top_n`` and consensus partition is summarized from all partitions.
+# -partition_method A single partitioning method. Available methods are in `all_partition_methods`.
+#                   Use `register_partition_methods` to add a new partition method.
+# -max_k Maximal number of subgroups to try. The function will try for ``2:max_k`` subgroups
 # -subset Number of columns to randomly sample, or a vector of selected indices.
 # -verbose Whether to print messages.
 # -prefix Internally used.
@@ -34,6 +42,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # -anno_col Annotation colors.
 # -dist_method Method for predict the class for other columns.
 # -.env An environment, internally used.
+# -.predict Internally used.
 # -... All pass to `consensus_partition`.
 #
 # == details
@@ -50,10 +59,17 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # 	anno = get_anno(golub_cola), anno_col = get_anno_col(golub_cola),
 # 	top_value_method = "SD", partition_method = "kmeans")
 # }
-consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(data)*0.2), 250),
+consensus_partition_by_down_sampling = function(data, 
+	top_value_method = "ATC",
+	top_n = seq(min(1000, round(nrow(data)*0.1)), 
+		        min(3000, round(nrow(data)*0.3)), 
+		        length.out = 3),
+	partition_method = "skmeans",
+	max_k = 6, 
+	subset = min(round(ncol(data)*0.2), 250),
 	verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
 	dist_method = c("euclidean", "correlation", "cosine"),
-	.env = NULL, ...) {
+	.env = NULL, .predict = TRUE, mc.cores = 1, ...) {
 
 	if(is.null(.env)) {
 		if(is.data.frame(data)) data = as.matrix(data)
@@ -73,35 +89,63 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 		data = .env$data
 	}
 
-	data = data[, .env$column_index, drop = FALSE]
-
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
-			anno_nm = deparse(substitute(anno))
+			known_nm = deparse(substitute(anno))
 			anno = data.frame(anno)
-			colnames(anno) = anno_nm
+			colnames(anno) = known_nm
 			if(!is.null(anno_col)) {
 				anno_col = list(anno_col)
-				names(anno_col) = anno_nm
-			}
-		} else if(ncol(anno) == 1) {
-			if(!is.null(anno_col)) {
-				if(is.atomic(anno_col)) {
-					anno_col = list(anno_col)
-					names(anno_col) = colnames(anno)
-				}
+				names(anno_col) = known_nm
 			}
 		}
-		anno2 = anno[.env$column_index, , drop = FALSE]
-	} else {
-		anno2 = NULL
+
+		if(nrow(anno) != length(.env$column_index)) {
+			stop_wrap("nrow of `anno` should be the same as ncol of the matrix.")
+		}
 	}
 
-	qqcat("@{prefix}* @{ifelse(length(subset) == 1, subset, length(subset))} columns are randomly sampled from @{ncol(data)} columns.\n")
-		
+	if(is.null(anno_col)) {
+		anno_col = lapply(anno, ComplexHeatmap:::default_col)
+	} else {
+		if(ncol(anno) == 1 && is.atomic(anno_col)) {
+			anno_col = list(anno_col)
+			names(anno_col) = colnames(anno)
+		} else if(is.null(names(anno_col))) {
+			if(length(anno_col) == ncol(anno)) {
+				names(anno_col) = colnames(anno)
+			} else {
+				anno_col = lapply(anno, ComplexHeatmap:::default_col)
+			}
+		}
+		for(nm in names(anno)) {
+			if(is.null(anno_col[[nm]])) {
+				anno_col[[nm]] = ComplexHeatmap:::default_col(anno[[nm]])
+			}
+		}
+	}
+	if(is.null(anno)) {
+		anno_col = NULL
+	}
+
+	qqcat("@{prefix}* @{ifelse(length(subset) == 1, subset, length(subset))} columns are randomly sampled from @{length(.env$column_index)} columns.\n")
+
 	column_index = .env$column_index
 	if(length(subset) == 1) {
-		subset_index = sample(column_index, subset)
+		if(is.null(.env$node_0_top_value_list)) {
+			subset = sample(length(column_index), subset)
+		} else {
+			if(is.null(.env$node_0_top_value_list[[top_value_method]])) {
+				subset = sample(length(column_index), subset)
+			} else {
+				qqcat("@{prefix}* assign sampling probability to columns by a pre-partitioning.\n")
+				km = kmeans(t(.env$data[order(.env$node_0_top_value_list[[top_value_method]], decreasing = TRUE)[1:top_n[1]], .env$column_index, drop = FALSE]), centers = max_k)$cluster
+				tb = table(km)
+				p = km/tb[as.character(km)]
+				subset = unique(sample(seq_along(column_index), subset, prob = p))
+			}
+		}
+		subset_index = column_index[subset]
 	} else {
 		if(!is.numeric(subset)) {
 			stop_wrap("If `subset` is specified as an indices vector, it should be in numeric.")
@@ -109,15 +153,39 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 		subset_index = column_index[subset]
 	}
 	.env$column_index = subset_index
+
+	if(is.null(anno)) {
+		anno2 = NULL
+	} else {
+		anno2 = anno[subset, , drop = FALSE]
+	}
 	
 	# top_value_list cannot be repetitively used here
 	.env$all_top_value_list = NULL
-	cp = consensus_partition(.env = .env, prefix = prefix, anno = anno2, anno_col = anno_col, ...)
+	cp = consensus_partition(.env = .env, top_value_method = top_value_method, partition_method = partition_method, 
+		top_n = top_n, max_k = max_k, prefix = prefix, anno = anno2, anno_col = anno_col, mc.cores = mc.cores, ...)
+
+	attr(cp, "full_anno") = anno
 	
+	if(.predict) {
+		obj = convert_to_DownSamplingConsensusPartition(cp, column_index, dist_method, verbose, prefix, mc.cores)
+		return(obj)
+	} else {
+		return(cp)
+	}
+}
+
+convert_to_DownSamplingConsensusPartition = function(cp, column_index, dist_method, verbose, prefix, mc.cores) {
+
+	data = cp@.env$data[, column_index, drop = FALSE]
+
 	obj = new("DownSamplingConsensusPartition")
 	for(nm in slotNames(cp)) {
 		slot(obj, nm) = slot(cp, nm)
 	}
+
+	obj@full_anno = anno
+	obj@full_column_index = column_index
 
 	cl = list()
 	if(cp@scale_rows) {
@@ -134,19 +202,20 @@ consensus_partition_by_down_sampling = function(data, subset = min(round(ncol(da
 	for(k in cp@k) {
 		qqcat("@{prefix}* predict class for @{ncol(data)} samples with k = @{k}\n")
 		if(cp@scale_rows) {
-			cl[[as.character(k)]] = predict_classes(cp, k = k, data2, p_cutoff = 1, dist_method = dist_method, 
-				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "))
+			cl[[as.character(k)]] = predict_classes(cp, k = k, data2, p_cutoff = Inf, dist_method = dist_method, 
+				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "), mc.cores = mc.cores)
 		} else {
-			cl[[as.character(k)]] = predict_classes(cp, k = k, data, p_cutoff = 1, dist_method = dist_method, 
-				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "))
+			cl[[as.character(k)]] = predict_classes(cp, k = k, data, p_cutoff = Inf, dist_method = dist_method, 
+				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "), mc.cores = mc.cores)
 		}
 	}
 
-	obj@predict$class = cl
-	obj@full_anno = anno
+	obj@full_anno = attr(cp, "full_anno")
 	obj@full_column_index = column_index
+	obj@predict$class = cl
 
 	return(obj)
+
 }
 
 # == title

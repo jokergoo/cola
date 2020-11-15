@@ -8,7 +8,7 @@ Predict classes for new samples based on signature centroid matrix
 }
 \usage{
 \S4method{predict_classes}{matrix}(object, mat, dist_method = c("euclidean", "correlation", "cosine"),
-    nperm = 1000, p_cutoff = 0.05, plot = TRUE, verbose = TRUE, prefix = "")
+    nperm = 1000, p_cutoff = 0.05, plot = TRUE, verbose = TRUE, prefix = "", mc.cores = 1)
 }
 \arguments{
 

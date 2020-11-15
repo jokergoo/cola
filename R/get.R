@@ -675,7 +675,7 @@ setMethod(f = "get_anno",
 #
 # == param
 # -object A `ConsensusPartition-class` object.
-# -full Whether to extract the complete original matrix.
+# -full Whether to extract the complete original annotation table.
 #
 # == value
 # A data frame if ``anno`` was specified in `run_all_consensus_partition_methods` or `consensus_partition`, or else ``NULL``.
@@ -685,16 +685,8 @@ setMethod(f = "get_anno",
 #
 setMethod(f = "get_anno",
 	signature = "ConsensusPartition",
-	definition = function(object, full = FALSE) {
-	if(!full) {
-		if(is.null(object@anno)) {
-			object@anno
-		} else {
-			object@anno[object@column_index, , drop = FALSE]
-		}
-	} else {
-		object@anno
-	}
+	definition = function(object) {
+	object@anno
 })
 
 # == title

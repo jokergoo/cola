@@ -282,9 +282,9 @@ message(qq("* making dimension reduction plots"), appendLF = FALSE)
 <% for(nh in node_heights) { -%>
 knitr_add_tab_item('par(mfrow = c(1, 2))
 dimension_reduction(res_hc, filter_node = filter_node_param(node_height = <%=nh%>),
-    method = "<%=dr_method%>", top_value_method = "SD", top_n = <%=top_n%>)
+    method = "<%=dr_method%>", top_value_method = "SD", top_n = <%=top_n%>, scale_rows = FALSE)
 dimension_reduction(res_hc, filter_node = filter_node_param(node_height = <%=nh%>),
-    method = "<%=dr_method%>", top_value_method = "ATC", top_n = <%=top_n%>)', 'node_height \u2265 <%=nh%>', prefix = 'dimension-reduction-by-depth', opt = "fig.width = 14, fig.height = 7, out.width = '100%'")
+    method = "<%=dr_method%>", top_value_method = "ATC", top_n = <%=top_n%>, scale_rows = TRUE)', 'node_height \u2265 <%=nh%>', prefix = 'dimension-reduction-by-depth', opt = "fig.width = 14, fig.height = 7, out.width = '100%'")
 <%}-%>
 knitr_insert_tabs('dimension-reduction-by-depth')
 ```

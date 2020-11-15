@@ -14,6 +14,7 @@ hierarchical_partition(data,
     top_value_method = c("SD", "ATC"),
     partition_method = c("kmeans", "skmeans"),
     combination_method =  expand.grid(top_value_method, partition_method),
+    anno = NULL, anno_col = NULL,
     PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.02)), subset = Inf,
     min_n_signatures = round(nrow(data)*min_p_signatures),
     min_p_signatures = 0.01,
@@ -22,9 +23,12 @@ hierarchical_partition(data,
 \arguments{
 
   \item{data}{a numeric matrix where subgroups are found by columns.}
+  \item{top_n}{Number of rows with top values. Since the number of rows of sub-matrieces might be different, here \code{\link{top_n}} can be set as a vector of values less than 1 which are treated as the fraction of the rows from the input matrix.}
   \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}.}
   \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}.}
   \item{combination_method}{A list of combinations of top-value methods and partitioning methods. The value can be a two-column data frame where the first column is the top-value methods and the second column is the partitioning methods. Or it can be a vector of combination names in a form of "top_value_method:partitioning_method".}
+  \item{anno}{A data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation to predicted subgroups will be tested.}
+  \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{PAC_cutoff}{the cutoff of PAC scores to determine whether to continue looking for subgroups.}
   \item{min_samples}{the cutoff of number of samples to determine whether to continue looking for subgroups.}
   \item{subset}{Number of columns to randomly sample.}

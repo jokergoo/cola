@@ -101,7 +101,7 @@ setMethod(f = "get_signatures",
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
 
-	data = object@.env$data[, object@column_index, drop = FALSE]
+	data = get_matrix(object)
 
 	l = class_df$silhouette >= silhouette_cutoff
 	data2 = data[, l, drop = FALSE]

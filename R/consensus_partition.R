@@ -185,6 +185,47 @@ consensus_partition = function(data,
 
 	data = data[.env$row_index, .env$column_index, drop = FALSE]
 
+	# process the annotation
+	if(!is.null(anno)) {
+		if(is.atomic(anno)) {
+			known_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = known_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = known_nm
+			}
+		}
+
+		if(nrow(anno) != length(.env$column_index)) {
+			stop_wrap("nrow of `anno` should be the same as ncol of the matrix.")
+		}
+	}
+
+	
+	if(is.null(anno_col)) {
+		anno_col = lapply(anno, ComplexHeatmap:::default_col)
+	} else {
+		if(ncol(anno) == 1 && is.atomic(anno_col)) {
+			anno_col = list(anno_col)
+			names(anno_col) = colnames(anno)
+		} else if(is.null(names(anno_col))) {
+			if(length(anno_col) == ncol(anno)) {
+				names(anno_col) = colnames(anno)
+			} else {
+				anno_col = lapply(anno, ComplexHeatmap:::default_col)
+			}
+		}
+		for(nm in names(anno)) {
+			if(is.null(anno_col[[nm]])) {
+				anno_col[[nm]] = ComplexHeatmap:::default_col(anno[[nm]])
+			}
+		}
+	}
+	if(is.null(anno)) {
+		anno_col = NULL
+	}
+
 	if(verbose) qqcat("@{prefix}* run @{top_value_method}:@{partition_method} on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 
 	k = sort(k)
@@ -524,41 +565,6 @@ consensus_partition = function(data,
 	}
 	
 	# process the annotations so it can be shared in `run_all_consensus_partition_methods()` and `hierarchical_partitions()`
-	if(!is.null(anno)) {
-		if(is.atomic(anno)) {
-			known_nm = deparse(substitute(anno))
-			anno = data.frame(anno)
-			colnames(anno) = known_nm
-			if(!is.null(anno_col)) {
-				anno_col = list(anno_col)
-				names(anno_col) = known_nm
-			}
-		}
-		anno = anno[.env$column_index, , drop = FALSE]
-	}
-
-	if(is.null(anno_col)) {
-		anno_col = lapply(anno, ComplexHeatmap:::default_col)
-	} else {
-		if(ncol(anno) == 1 && is.atomic(anno_col)) {
-			anno_col = list(anno_col)
-			names(anno_col) = colnames(anno)
-		} else if(is.null(names(anno_col))) {
-			if(length(anno_col) == ncol(anno)) {
-				names(anno_col) = colnames(anno)
-			} else {
-				anno_col = lapply(anno, ComplexHeatmap:::default_col)
-			}
-		}
-		for(nm in names(anno)) {
-			if(is.null(anno_col[[nm]])) {
-				anno_col[[nm]] = ComplexHeatmap:::default_col(anno[[nm]])
-			}
-		}
-	}
-	if(is.null(anno)) {
-		anno_col = NULL
-	}
 
 	res = ConsensusPartition(object_list = object_list, k = k, n_partition = partition_repeat * length(top_n) * length(k),  
 		partition_method = partition_method, top_value_method = top_value_method, top_n = top_n, top_value_list = all_top_value,
