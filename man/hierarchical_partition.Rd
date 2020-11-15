@@ -23,7 +23,7 @@ hierarchical_partition(data,
 \arguments{
 
   \item{data}{a numeric matrix where subgroups are found by columns.}
-  \item{top_n}{Number of rows with top values. Since the number of rows of sub-matrieces might be different, here \code{\link{top_n}} can be set as a vector of values less than 1 which are treated as the fraction of the rows from the input matrix.}
+  \item{top_n}{Number of rows with top values. Since the number of rows of sub-matrieces might be different, here \code{top_n} can be set as a vector of values less than 1 which are treated as the fraction of the rows from the input matrix.}
   \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}.}
   \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}.}
   \item{combination_method}{A list of combinations of top-value methods and partitioning methods. The value can be a two-column data frame where the first column is the top-value methods and the second column is the partitioning methods. Or it can be a vector of combination names in a form of "top_value_method:partitioning_method".}

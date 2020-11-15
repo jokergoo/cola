@@ -41,7 +41,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # == param
 # -data a numeric matrix where subgroups are found by columns.
 # -top_n Number of rows with top values. Since the number of rows of sub-matrieces might be different,
-#       here `top_n` can be set as a vector of values less than 1 which are treated as the fraction
+#       here ``top_n`` can be set as a vector of values less than 1 which are treated as the fraction
 #       of the rows from the input matrix.
 # -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
 # -partition_method a single partition method. Available methods are in `all_partition_methods`.

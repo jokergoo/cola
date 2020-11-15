@@ -22,6 +22,7 @@
 # -verbose Whether to print messages. Send to `predict_classes,matrix-method`.
 # -help Whether to print help messages.
 # -prefix Used internally.
+# -mc.cores Number of cores.
 #
 # == details
 # The prediction is based on the signature centroid matrix from cola classification. The processes are as follows:
@@ -175,6 +176,7 @@ setMethod(f = "predict_classes",
 # -plot Whether to draw the plot that visualizes the process of prediction.
 # -verbose Whether to print messages.
 # -prefix Used internally.
+# -mc.cores Number of cores.
 #
 # == details
 # The signature centroid matrix is a k-column matrix where each column is the centroid of samples 

@@ -34,6 +34,7 @@ consensus_partition_by_down_sampling(data,
   \item{dist_method}{Method for predict the class for other columns.}
   \item{.env}{An environment, internally used.}
   \item{.predict}{Internally used.}
+  \item{mc.cores}{Number of cores.}
   \item{...}{All pass to \code{\link{consensus_partition}}.}
 
 }

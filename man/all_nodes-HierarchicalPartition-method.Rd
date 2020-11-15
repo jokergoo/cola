@@ -13,8 +13,7 @@ All nodes in the hierarchy
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{Depth in the hierarchy.}
-  \item{min_n_signatures}{Minimal number of signatures on the node.}
+  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
 
 }
 \value{

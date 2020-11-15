@@ -13,8 +13,7 @@ Test correspondance between predicted classes and known factors
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{Depth of the hierarchy.}
-  \item{min_n_signatures}{Minimal number of signatures on the node.}
+  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
   \item{known}{A vector or a data frame with known factors. By default it is the annotation table set in \code{\link{hierarchical_partition}}.}
   \item{verbose}{Whether to print messages.}
 

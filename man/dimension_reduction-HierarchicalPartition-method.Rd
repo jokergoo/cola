@@ -15,9 +15,9 @@ Visualize columns after dimension reduction
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{Depth of the hierarchy.}
-  \item{min_n_signatures}{Minimal number of signatures on the node.}
+  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
   \item{top_n}{Top n rows to use. By default it uses all rows in the original matrix.}
+  \item{top_value_method}{Which top-value method to use.}
   \item{parent_node}{Parent node. If it is set, the function call is identical to \code{dimension_reduction(object[parent_node])}}
   \item{method}{Which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}. \code{t-SNE} uses \code{\link[Rtsne]{Rtsne}}. \code{UMAP} uses \code{\link[umap]{umap}}.}
   \item{scale_rows}{Whether to perform scaling on matrix rows.}

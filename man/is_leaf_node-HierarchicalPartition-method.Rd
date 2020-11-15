@@ -14,8 +14,7 @@ Test whether a node is a leaf node
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
   \item{node}{A vector of node IDs.}
-  \item{depth}{Depth in the hierarchy.}
-  \item{min_n_signatures}{Minimal number of signatures on the node.}
+  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
 
 }
 \examples{

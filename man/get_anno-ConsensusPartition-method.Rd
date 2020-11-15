@@ -12,7 +12,6 @@ Get annotations
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
-  \item{full}{Whether to extract the complete original annotation table.}
 
 }
 \value{

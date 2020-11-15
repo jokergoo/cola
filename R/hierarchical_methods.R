@@ -4,8 +4,7 @@
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -depth Depth of the hierarchy.
-# -min_n_signatures Minimal number of signatures on the node.
+# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
 #
 # == return
 # A data frame of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
@@ -44,8 +43,7 @@ setMethod(f = "get_classes",
 #
 # == param
 # -object a `HierarchicalPartition-class` object.
-# -depth depth of the hierarchy.
-# -min_n_signatures Minimal number of signatures on the node.
+# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
 # -group_diff Cutoff for the maximal difference between group means.
 # -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
 # -scale_rows whether apply row scaling when making the heatmap.
@@ -306,8 +304,7 @@ setMethod(f = "get_signatures",
 #
 # == param
 # -object A `HierarchicalPartition-class` object. 
-# -depth Depth of the hierarchy.
-# -min_n_signatures Minimal number of signatures on the node.
+# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
 # -method Method to visualize.
 # -upset_max_comb_sets Maximal number of combination sets to show.
 # -verbose Whether to print message.
@@ -378,8 +375,7 @@ setMethod(f = "compare_signatures",
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -depth Depth of the hierarchy.
-# -min_n_signatures Minimal number of signatures on the node.
+# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
 # -show_row_names Whether to show the row names.
 # -row_names_gp Graphic parameters for row names.
 # -anno A data frame of annotations for the original matrix columns. 
@@ -399,7 +395,7 @@ setMethod(f = "compare_signatures",
 # == example
 # data(golub_cola_rh)
 # collect_classes(golub_cola_rh)
-# collect_classes(golub_cola_rh, depth = 2)
+# collect_classes(golub_cola_rh, filter_node = filter_node_param(depth = 2))
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
 	definition = function(object, filter_node = filter_node_param(),
@@ -455,8 +451,7 @@ setMethod(f = "collect_classes",
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -depth Depth of the hierarchy.
-# -min_n_signatures Minimal number of signatures on the node.
+# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
 # -known A vector or a data frame with known factors. By default it is the annotation table set in `hierarchical_partition`.
 # -verbose Whether to print messages.
 #
@@ -507,9 +502,9 @@ setMethod(f = "test_to_known_factors",
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -depth Depth of the hierarchy.
-# -min_n_signatures Minimal number of signatures on the node.
+# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
 # -top_n Top n rows to use. By default it uses all rows in the original matrix.
+# -top_value_method Which top-value method to use.
 # -parent_node Parent node. If it is set, the function call is identical to ``dimension_reduction(object[parent_node])``
 # -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses

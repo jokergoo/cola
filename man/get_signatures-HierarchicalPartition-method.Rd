@@ -20,8 +20,7 @@ Get signatures rows
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{depth of the hierarchy.}
-  \item{min_n_signatures}{Minimal number of signatures on the node.}
+  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
   \item{group_diff}{Cutoff for the maximal difference between group means.}
   \item{row_km}{Number of groups for performing k-means clustering on rows. By default it is automatically selected.}
   \item{scale_rows}{whether apply row scaling when making the heatmap.}

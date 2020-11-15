@@ -35,6 +35,7 @@ Predict classes for new samples based on cola classification
   \item{verbose}{Whether to print messages. Send to \code{\link{predict_classes,matrix-method}}.}
   \item{help}{Whether to print help messages.}
   \item{prefix}{Used internally.}
+  \item{mc.cores}{Number of cores.}
 
 }
 \details{

@@ -14,8 +14,7 @@ Collect classes from HierarchicalPartition object
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
-  \item{depth}{Depth of the hierarchy.}
-  \item{min_n_signatures}{Minimal number of signatures on the node.}
+  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
   \item{show_row_names}{Whether to show the row names.}
   \item{row_names_gp}{Graphic parameters for row names.}
   \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{hierarchical_partition}}.}
@@ -34,5 +33,5 @@ Zuguang Gu <z.gu@dkfz.de>
 \examples{
 data(golub_cola_rh)
 collect_classes(golub_cola_rh)
-collect_classes(golub_cola_rh, depth = 2)
+collect_classes(golub_cola_rh, filter_node = filter_node_param(depth = 2))
 }

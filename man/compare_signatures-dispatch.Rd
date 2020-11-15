@@ -10,8 +10,8 @@ Method dispatch page for \code{compare_signatures}.
 \code{compare_signatures} can be dispatched on following classes:
 
 \itemize{
-\item \code{\link{compare_signatures,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 \item \code{\link{compare_signatures,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
+\item \code{\link{compare_signatures,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 }
 }
 \examples{

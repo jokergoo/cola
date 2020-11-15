@@ -20,6 +20,7 @@ Predict classes for new samples based on signature centroid matrix
   \item{plot}{Whether to draw the plot that visualizes the process of prediction.}
   \item{verbose}{Whether to print messages.}
   \item{prefix}{Used internally.}
+  \item{mc.cores}{Number of cores.}
 
 }
 \details{

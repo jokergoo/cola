@@ -14,8 +14,7 @@ Compare Signatures from Different Nodes
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object. }
-  \item{depth}{Depth of the hierarchy.}
-  \item{min_n_signatures}{Minimal number of signatures on the node.}
+  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
   \item{method}{Method to visualize.}
   \item{upset_max_comb_sets}{Maximal number of combination sets to show.}
   \item{verbose}{Whether to print message.}

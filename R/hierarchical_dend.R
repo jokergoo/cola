@@ -215,6 +215,15 @@ setMethod(f = "max_depth",
 })
 
 
+# == title
+# Parameters to merge subgroup dendrogram.
+#
+# == param
+# -depth Depth of the dendrogram.
+# -min_n_signatures Minimal number of signatures for the partitioning on each node.
+# -min_p_signatures Minimal fraction of sigatures compared to the total number of rows on each node.
+# -node_height The height of the sub-dendrogram to cut
+#
 filter_node_param = function(depth = Inf, min_n_signatures = -Inf, 
 	min_p_signatures = -Inf, node_height = -Inf) {
 	
@@ -227,8 +236,7 @@ filter_node_param = function(depth = Inf, min_n_signatures = -Inf,
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -depth Depth in the hierarchy.
-# -min_n_signatures Minimal number of signatures on the node.
+# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
 #
 # == value
 # A vector of node ID.
@@ -273,8 +281,7 @@ get_hierarchy_table = function(object, filter_node = filter_node_param()) {
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -depth Depth in the hierarchy.
-# -min_n_signatures Minimal number of signatures on the node.
+# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
 #
 # == value
 # A vector of node ID.
@@ -304,8 +311,7 @@ setMethod(f = "all_leaves",
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -node A vector of node IDs.
-# -depth Depth in the hierarchy.
-# -min_n_signatures Minimal number of signatures on the node.
+# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
 #
 # == example
 # data(golub_cola_rh)

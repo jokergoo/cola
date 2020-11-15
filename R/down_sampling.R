@@ -43,6 +43,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # -dist_method Method for predict the class for other columns.
 # -.env An environment, internally used.
 # -.predict Internally used.
+# -mc.cores Number of cores.
 # -... All pass to `consensus_partition`.
 #
 # == details
@@ -183,9 +184,6 @@ convert_to_DownSamplingConsensusPartition = function(cp, column_index, dist_meth
 	for(nm in slotNames(cp)) {
 		slot(obj, nm) = slot(cp, nm)
 	}
-
-	obj@full_anno = anno
-	obj@full_column_index = column_index
 
 	cl = list()
 	if(cp@scale_rows) {
