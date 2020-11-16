@@ -346,7 +346,7 @@ knitr_insert_tabs('test-to-known-factors-from-consensus-partition-list')
 
 ```{r, results = "asis", echo = FALSE}
 fs = min(c(3*length(res_list@top_value_method), 14))/length(res_list@top_value_method)
-is_hcp = FALSE
+is_hc = FALSE
 single_report = FALSE
 node = NULL
 n_section = n_top_value_method * n_partition_method
