@@ -4,7 +4,7 @@
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 #
 # == return
 # A data frame of classes IDs. The class IDs are the node IDs where the subgroup sits in the hierarchy.
@@ -17,10 +17,10 @@
 # get_classes(golub_cola_rh)
 setMethod(f = "get_classes",
 	signature = "HierarchicalPartition",
-	definition = function(object, filter_node = filter_node_param()) {
+	definition = function(object, merge_node = merge_node_param()) {
 
 	subgroup = object@subgroup
-	all_leaves = all_leaves(object, filter_node = filter_node)
+	all_leaves = all_leaves(object, merge_node = merge_node)
 	# all_leaves should be parent node of subgroup
 	map = rep(NA, length(unique(subgroup)))
 	names(map) = unique(subgroup)
@@ -43,7 +43,7 @@ setMethod(f = "get_classes",
 #
 # == param
 # -object a `HierarchicalPartition-class` object.
-# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 # -group_diff Cutoff for the maximal difference between group means.
 # -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
 # -scale_rows whether apply row scaling when making the heatmap.
@@ -80,7 +80,7 @@ setMethod(f = "get_classes",
 # }
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, filter_node = filter_node_param(),
+	definition = function(object, merge_node = merge_node_param(),
 	group_diff = cola_opt$group_diff,
 	row_km = NULL,
 	scale_rows = object[1]@scale_rows, 
@@ -95,15 +95,15 @@ setMethod(f = "get_signatures",
 		return(invisible(NULL))
 	}
 
-	alf = all_leaves(object, filter_node)
-	ap = setdiff(all_nodes(object, filter_node), alf)
+	alf = all_leaves(object, merge_node)
+	ap = setdiff(all_nodes(object, merge_node), alf)
 
 	sig_lt = list()
 	.env = object@list[[1]]@.env
 	for(p in ap) {
 		best_k = suggest_best_k(object[[p]])
 		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
-		sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = TRUE, plot = FALSE, simplify = TRUE, seed = seed, ...)
+		sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = verbose, plot = FALSE, simplify = TRUE, seed = seed, ...)
 		if(is.null(.env$signature_hash)) {
     		.env$signature_hash = list()
     	}
@@ -119,7 +119,7 @@ setMethod(f = "get_signatures",
 
 	# filter by group_diff
 	mat = object@.env$data[all_index, , drop = FALSE]
-	class = get_classes(object, filter_node)
+	class = get_classes(object, merge_node)
 
 	mat1 = mat
 	if(nrow(mat) == 1) {
@@ -275,7 +275,7 @@ setMethod(f = "get_signatures",
 		col = list(Class = object@subgroup_col))
 
 	# dend = cluster_within_group(use_mat1, class)
-	dend = calc_dend(object, filter_node, use_mat1)
+	dend = calc_dend(object, merge_node, use_mat1)
 
 	ht_list = Heatmap(use_mat1, top_annotation = ha1,
 		name = heatmap_name, show_row_names = FALSE, 
@@ -304,7 +304,7 @@ setMethod(f = "get_signatures",
 #
 # == param
 # -object A `HierarchicalPartition-class` object. 
-# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 # -method Method to visualize.
 # -upset_max_comb_sets Maximal number of combination sets to show.
 # -verbose Whether to print message.
@@ -319,7 +319,7 @@ setMethod(f = "get_signatures",
 # compare_signatures(golub_cola_rh)
 setMethod(f = "compare_signatures",
 	signature = "HierarchicalPartition",
-	definition = function(object, filter_node = filter_node_param(),
+	definition = function(object, merge_node = merge_node_param(),
 	method = c("euler", "upset"), upset_max_comb_sets = 20,
 	verbose = interactive(), ...) {
 
@@ -328,7 +328,7 @@ setMethod(f = "compare_signatures",
 		return(invisible(NULL))
 	}
 
-	nodes = setdiff(all_nodes(object, filter_node), all_leaves(object, filter_node))
+	nodes = setdiff(all_nodes(object, merge_node), all_leaves(object, merge_node))
 	lt = object@list[nodes]
 
 	sig_list = lapply(lt, function(x) {
@@ -375,13 +375,14 @@ setMethod(f = "compare_signatures",
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 # -show_row_names Whether to show the row names.
 # -row_names_gp Graphic parameters for row names.
 # -anno A data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `hierarchical_partition`.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
+# -... Other arguments.
 #
 # == details
 # The function plots the hierarchy of the classes.
@@ -395,20 +396,20 @@ setMethod(f = "compare_signatures",
 # == example
 # data(golub_cola_rh)
 # collect_classes(golub_cola_rh)
-# collect_classes(golub_cola_rh, filter_node = filter_node_param(depth = 2))
+# collect_classes(golub_cola_rh, merge_node = merge_node_param(depth = 2))
 setMethod(f = "collect_classes",
 	signature = "HierarchicalPartition",
-	definition = function(object, filter_node = filter_node_param(),
+	definition = function(object, merge_node = merge_node_param(),
 	show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
-	anno = get_anno(object[1]), anno_col = get_anno_col(object[1])) {
+	anno = get_anno(object[1]), anno_col = get_anno_col(object[1]), ...) {
 
 	if(!has_hierarchy(object)) {
 		cat("No hierarchy found.")
 		return(invisible(NULL))
 	}
 
-	cl = get_classes(object, filter_node)
-	dend = calc_dend(object, filter_node)
+	cl = get_classes(object, merge_node)
+	dend = calc_dend(object, merge_node)
 
 	ht_list = Heatmap(cl, name = "Class", col = object@subgroup_col, width = unit(5, "mm"),
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
@@ -442,7 +443,7 @@ setMethod(f = "collect_classes",
 		ht_list = ht_list + rowAnnotation(rn = anno_text(colnames(object), gp = row_names_gp))
 	}
 
-	draw(ht_list)
+	draw(ht_list, ...)
 })
 
 
@@ -451,7 +452,7 @@ setMethod(f = "collect_classes",
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 # -known A vector or a data frame with known factors. By default it is the annotation table set in `hierarchical_partition`.
 # -verbose Whether to print messages.
 #
@@ -475,7 +476,7 @@ setMethod(f = "collect_classes",
 setMethod(f = "test_to_known_factors",
 	signature = "HierarchicalPartition",
 	definition = function(object, known = get_anno(object[1]),
-	filter_node = filter_node_param(), verbose = FALSE) {
+	merge_node = merge_node_param(), verbose = FALSE) {
 
 	if(!has_hierarchy(object)) {
 		cat("No hierarchy found.")
@@ -492,7 +493,7 @@ setMethod(f = "test_to_known_factors",
 		stop_wrap("Known factors should be provided.")
 	}
 
-	class = get_classes(object, filter_node)
+	class = get_classes(object, merge_node)
 	m = test_between_factors(class, known, verbose = verbose)
 	return(m)
 })
@@ -502,7 +503,7 @@ setMethod(f = "test_to_known_factors",
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 # -top_n Top n rows to use. By default it uses all rows in the original matrix.
 # -top_value_method Which top-value method to use.
 # -parent_node Parent node. If it is set, the function call is identical to ``dimension_reduction(object[parent_node])``
@@ -527,7 +528,7 @@ setMethod(f = "test_to_known_factors",
 # dimension_reduction(golub_cola_rh)
 setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
-	definition = function(object, filter_node = filter_node_param(),
+	definition = function(object, merge_node = merge_node_param(),
 	parent_node, top_n = NULL, top_value_method = object@list[[1]]@top_value_method,
 	method = c("PCA", "MDS", "t-SNE", "UMAP"),
 	scale_rows = TRUE, verbose = TRUE, ...) {
@@ -585,7 +586,7 @@ setMethod(f = "dimension_reduction",
 		} else {
 			top_n = nrow(data)
 		}
-		class = get_classes(object, filter_node)
+		class = get_classes(object, merge_node)
 		n_class = length(unique(class))
 		dimension_reduction(data, pch = 16, col = object@subgroup_col[class],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{ncol(data)} samples with @{n_class} classes"),
@@ -834,5 +835,88 @@ setMethod(f = "top_rows_heatmap",
 
     top_rows_heatmap(mat, all_top_value_list = all_top_value_list, top_n = top_n, 
     	scale_rows = scale_rows, bottom_annotation = bottom_anno, ...)
+})
+
+
+
+
+# == title
+# Perform functional enrichment on signature genes
+#
+# == param
+# -object a `HierarchicalPartition-class` object from `hierarchical_partition`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
+# -gene_fdr_cutoff Cutoff of FDR to define significant signature genes.
+# -row_km Number of row clusterings by k-means to separate the matrix that only contains signatures.
+# -id_mapping If the gene IDs which are row names of the original matrix are not Entrez IDs, a
+#       named vector should be provided where the names are the gene IDs in the matrix and values
+#       are correspoinding Entrez IDs. The value can also be a function that converts gene IDs.
+# -org_db Annotation database.
+# -ontology See corresponding argumnet in `functional_enrichment,ANY-method`.
+# -min_set_size The minimal size of the gene sets.
+# -max_set_size The maximal size of the gene sets.
+# -verbose Whether to print messages.
+# -... Pass to `functional_enrichment,ANY-method`.
+#
+# == details
+# For how to control the parameters of functional enrichment, see help page of `functional_enrichment,ANY-method`.
+#
+# == value
+# A list of data frames which correspond to results for the functional ontologies:
+#
+setMethod(f = "functional_enrichment",
+    signature = "HierarchicalPartition",
+    definition = function(object, merge_node = merge_node_param(),
+    gene_fdr_cutoff = cola_opt$fdr_cutoff,
+    row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db, verbose), 
+    org_db = "org.Hs.eg.db", ontology = "BP",
+    min_set_size = 10, max_set_size = 1000, 
+    verbose = TRUE, ...) {
+
+    if(!has_hierarchy(object)) {
+		cat("No hierarchy found.")
+		return(list(BP = NULL, MF = NULL, CC = NULL))
+	}
+
+    if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
+	arg_lt = list(...)
+	if("prefix" %in% names(arg_lt)) {
+		prefix = arg_lt$prefix
+	} else {
+		prefix = ""
+	}
+
+    id_mapping = id_mapping
+    
+    sig_df = get_signatures(object, merge_node = merge_node, fdr_cutoff = gene_fdr_cutoff, 
+    	plot = FALSE, verbose = FALSE, row_km = row_km)
+    m = get_matrix(object)
+    if(is.null(sig_df)) {
+        sig_gene = NULL
+    } else {
+        sig_gene = rownames(m)[ sig_df[, "which_row"]]
+    }
+    if(verbose) qqcat("@{prefix}- @{length(sig_gene)}/@{nrow(m)} significant genes found\n")
+    
+    if(length(sig_gene) == 0) {
+        if(verbose) qqcat("@{prefix}- no significant genes (fdr < @{gene_fdr_cutoff}) found.\n")
+        return(list(BP = NULL, MF = NULL, CC = NULL))
+    }
+
+    if("km" %in% colnames(sig_df)) {
+        lt = list()
+        for(km in sort(unique(sig_df$km))) {
+            l = sig_df$km == km
+            if(verbose) qqcat("@{prefix}- on k-means group @{km}/@{max(sig_df$km)}, @{sum(l)} genes\n")
+            lt2 = functional_enrichment(sig_gene[l], id_mapping = id_mapping, org_db = org_db, ontology = ontology,
+                min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = paste0(prefix, "  "), ...)
+            names(lt2) = paste0(names(lt2), "_km", km)
+            lt = c(lt, lt2)
+        }
+    } else {
+        lt = functional_enrichment(sig_gene, id_mapping = id_mapping, org_db = org_db, ontology = ontology,
+            min_set_size = min_set_size, max_set_size = max_set_size, verbose = verbose, prefix = prefix, ...)
+    }
+    return(lt)
 })
 

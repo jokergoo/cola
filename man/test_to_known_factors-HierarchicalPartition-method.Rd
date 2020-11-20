@@ -8,12 +8,12 @@ Test correspondance between predicted classes and known factors
 }
 \usage{
 \S4method{test_to_known_factors}{HierarchicalPartition}(object, known = get_anno(object[1]),
-    filter_node = filter_node_param(), verbose = FALSE)
+    merge_node = merge_node_param(), verbose = FALSE)
 }
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
-  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
+  \item{merge_node}{Parameters to merge sub-dendrograms, see \code{\link{merge_node_param}}.}
   \item{known}{A vector or a data frame with known factors. By default it is the annotation table set in \code{\link{hierarchical_partition}}.}
   \item{verbose}{Whether to print messages.}
 

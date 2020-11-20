@@ -1,5 +1,5 @@
-\name{filter_node_param}
-\alias{filter_node_param}
+\name{merge_node_param}
+\alias{merge_node_param}
 \title{
 Parameters to merge subgroup dendrogram.
 }
@@ -7,7 +7,7 @@ Parameters to merge subgroup dendrogram.
 Parameters to merge subgroup dendrogram.
 }
 \usage{
-filter_node_param(depth = Inf, min_n_signatures = -Inf,
+merge_node_param(depth = Inf, min_n_signatures = -Inf,
     min_p_signatures = -Inf, node_height = -Inf)
 }
 \arguments{

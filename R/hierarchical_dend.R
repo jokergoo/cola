@@ -130,9 +130,9 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 	})
 }
 
-get_hierarchy_dend = function(object, filter_node = filter_node_param()) {
+get_hierarchy_dend = function(object, merge_node = merge_node_param()) {
 
-	hierarchy = get_hierarchy_table(object, filter_node)
+	hierarchy = get_hierarchy_table(object, merge_node)
 	dend = subgroup_dend(object, hierarchy)
 	dend
 }
@@ -161,10 +161,10 @@ zero_height_dend = function(n) {
 	
 }
 
-calc_dend = function(object, filter_node = filter_node_param(), mat = NULL) {
+calc_dend = function(object, merge_node = merge_node_param(), mat = NULL) {
 
-	pd = get_hierarchy_dend(object, filter_node)
-	classes = get_classes(object, filter_node)
+	pd = get_hierarchy_dend(object, merge_node)
+	classes = get_classes(object, merge_node)
 	if(is.null(names(classes))) names(classes) = seq_along(classes)
 
 	if(is.null(mat)) {
@@ -224,7 +224,7 @@ setMethod(f = "max_depth",
 # -min_p_signatures Minimal fraction of sigatures compared to the total number of rows on each node.
 # -node_height The height of the sub-dendrogram to cut
 #
-filter_node_param = function(depth = Inf, min_n_signatures = -Inf, 
+merge_node_param = function(depth = Inf, min_n_signatures = -Inf, 
 	min_p_signatures = -Inf, node_height = -Inf) {
 	
 	list(depth = depth, min_n_signatures = min_n_signatures, 
@@ -236,7 +236,7 @@ filter_node_param = function(depth = Inf, min_n_signatures = -Inf,
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 #
 # == value
 # A vector of node ID.
@@ -249,17 +249,17 @@ filter_node_param = function(depth = Inf, min_n_signatures = -Inf,
 # all_nodes(golub_cola_rh)
 setMethod(f = "all_nodes",
 	signature = "HierarchicalPartition",
-	definition = function(object, filter_node = filter_node_param()) {
+	definition = function(object, merge_node = merge_node_param()) {
 
 	if(has_hierarchy(object)) {
-		hierarchy = get_hierarchy_table(object, filter_node)
+		hierarchy = get_hierarchy_table(object, merge_node)
 		return(unique(as.vector(t(hierarchy))))
 	} else {
 		return(character(0))
 	}
 })
 
-get_hierarchy_table = function(object, filter_node = filter_node_param()) {
+get_hierarchy_table = function(object, merge_node = merge_node_param()) {
 
 	hierarchy = object@hierarchy
 
@@ -267,11 +267,11 @@ get_hierarchy_table = function(object, filter_node = filter_node_param()) {
 	p_signatures = n_signatures/nrow(object)
 	node_height = object@node_level$node_height
 
-	hierarchy = hierarchy[ n_signatures[hierarchy[, 1]] >= filter_node$min_n_signatures &
-	                       p_signatures[hierarchy[, 1]] >= filter_node$min_p_signatures &
-	                       node_height[hierarchy[, 1]] >= filter_node$node_height, , drop = FALSE ]
+	hierarchy = hierarchy[ n_signatures[hierarchy[, 1]] >= merge_node$min_n_signatures &
+	                       p_signatures[hierarchy[, 1]] >= merge_node$min_p_signatures &
+	                       node_height[hierarchy[, 1]] >= merge_node$node_height, , drop = FALSE ]
 	
-	hierarchy = hierarchy[nchar(hierarchy[, 2]) <= filter_node$depth, , drop = FALSE]
+	hierarchy = hierarchy[nchar(hierarchy[, 2]) <= merge_node$depth, , drop = FALSE]
 	
 	hierarchy
 }
@@ -281,7 +281,7 @@ get_hierarchy_table = function(object, filter_node = filter_node_param()) {
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 #
 # == value
 # A vector of node ID.
@@ -294,10 +294,10 @@ get_hierarchy_table = function(object, filter_node = filter_node_param()) {
 # all_leaves(golub_cola_rh)
 setMethod(f = "all_leaves",
 	signature = "HierarchicalPartition",
-	definition = function(object, filter_node = filter_node_param()) {
+	definition = function(object, merge_node = merge_node_param()) {
 
 	if(has_hierarchy(object)) {
-		hierarchy = get_hierarchy_table(object, filter_node)
+		hierarchy = get_hierarchy_table(object, merge_node)
 		tb = table(hierarchy)
 		names(tb[tb <= 1])
 	} else {
@@ -311,17 +311,17 @@ setMethod(f = "all_leaves",
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -node A vector of node IDs.
-# -filter_node Parameters to merge sub-dendrograms, see `filter_node_param`.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 #
 # == example
 # data(golub_cola_rh)
 # is_leaf_node(golub_cola_rh, all_leaves(golub_cola_rh))
 setMethod(f = "is_leaf_node",
 	signature = "HierarchicalPartition",
-	definition = function(object, node, filter_node = filter_node_param()) {
+	definition = function(object, node, merge_node = merge_node_param()) {
 
-	all_nodes = all_nodes(object, filter_node)
-	all_leaves = all_leaves(object, filter_node)
+	all_nodes = all_nodes(object, merge_node)
+	all_leaves = all_leaves(object, merge_node)
 
 	l = node %in% all_leaves
 	l[!node %in% all_nodes] = NA

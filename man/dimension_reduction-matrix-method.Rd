@@ -8,10 +8,10 @@ Visualize columns after dimension reduction
 }
 \usage{
 \S4method{dimension_reduction}{matrix}(object,
-    pch = 16, col = "black", cex = 1, main = "",
+    pch = 16, col = "black", cex = 1, main = NULL,
     method = c("PCA", "MDS", "t-SNE", "UMAP"),
     pc = NULL, control = list(),
-    scale_rows = TRUE, nr = 5000,
+    scale_rows = FALSE, nr = 5000,
     internal = FALSE, verbose = TRUE)
 }
 \arguments{
@@ -31,7 +31,7 @@ Visualize columns after dimension reduction
 
 }
 \value{
-No value is returned.
+Locations of the points.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

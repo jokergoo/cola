@@ -7,7 +7,7 @@ Visualize columns after dimension reduction
 Visualize columns after dimension reduction
 }
 \usage{
-\S4method{dimension_reduction}{HierarchicalPartition}(object, filter_node = filter_node_param(),
+\S4method{dimension_reduction}{HierarchicalPartition}(object, merge_node = merge_node_param(),
     parent_node, top_n = NULL, top_value_method = object@list[[1]]@top_value_method,
     method = c("PCA", "MDS", "t-SNE", "UMAP"),
     scale_rows = TRUE, verbose = TRUE, ...)
@@ -15,7 +15,7 @@ Visualize columns after dimension reduction
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
-  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
+  \item{merge_node}{Parameters to merge sub-dendrograms, see \code{\link{merge_node_param}}.}
   \item{top_n}{Top n rows to use. By default it uses all rows in the original matrix.}
   \item{top_value_method}{Which top-value method to use.}
   \item{parent_node}{Parent node. If it is set, the function call is identical to \code{dimension_reduction(object[parent_node])}}

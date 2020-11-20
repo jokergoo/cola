@@ -8,12 +8,12 @@ All leaves in the hierarchy
 All leaves in the hierarchy
 }
 \usage{
-\S4method{all_leaves}{HierarchicalPartition}(object, filter_node = filter_node_param())
+\S4method{all_leaves}{HierarchicalPartition}(object, merge_node = merge_node_param())
 }
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
-  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
+  \item{merge_node}{Parameters to merge sub-dendrograms, see \code{\link{merge_node_param}}.}
 
 }
 \value{

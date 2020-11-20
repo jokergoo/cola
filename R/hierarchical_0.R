@@ -281,18 +281,20 @@ hierarchical_partition = function(data,
 	   
 		if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
 
-		ind = which.max(sapply(part_list, function(part) {
-			stat_df = get_stats(part)
+		stat_tb = sapply(part_list, function(part) {
+			stat_df = get_stats(part, all_stats = TRUE)
 			best_k = suggest_best_k(part)
 			if(is.na(best_k)) {
 				0
 			} else {
-				stat_df[stat_df[, "k"] == best_k, "1-PAC"]
+				stat_df[stat_df[, "k"] == best_k, c("1-PAC", "mean_silhouette", "concordance", "area_increased")]
 			}
-		}))
+		})
+		stat_tb = as.data.frame(t(stat_tb))
+		ind = do.call(order, -stat_tb)[1]
 		part = part_list[[ind]]
 
-		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} with the highest 1-PAC among methods.\n")
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} with the most stability among methods.\n")
 
 		dist_method = list(...)$dist_method
 		if(is.null(dist_method)) dist_method = "euclidean"
@@ -321,20 +323,27 @@ hierarchical_partition = function(data,
 	    	return(lt)
 	    }
 
-	    .env$all_top_value_list = NULL
+	    dd = data[.env$row_index, column_index, drop = FALSE]
+	    ri = order(.env$all_top_value_list[[part@top_value_method]], decreasing = TRUE)[1:max(get_param(part)[, "top_n"])]
+		if(length(ri) > 5000) ri = sample(ri, 5000)
+		mean_dist = tapply(seq_len(ncol(dd)), cl$class, function(ind) {
+			n = length(ind)
+			if(n == 1) {
+				return(Inf)
+			}
+			sum(dist(t(dd[ri, ind, drop = FALSE]))^2)/(n*(n-1)/2)
+		})
 
-	    set1 = which(cl$class == 1)
-    	set2 = which(cl$class != 1)
+	    kg1 = as.numeric(names(which.min(mean_dist)))
 
 	    ## test the number of samples
 	    sample_too_small = FALSE
 	    if(best_k == 2) {
 
-	    	kg1 = 1
-	    	kg2 = 2
+	    	kg2 = setdiff(1:2, kg1)
 
-	    	set1 = which(cl$class == 1)
-	    	set2 = which(cl$class != 1)
+	    	set1 = which(cl$class %in% kg1)
+	    	set2 = which(cl$class %in% kg2)
 
 	    	if(length(set1) < min_samples || length(set2) < min_samples) {
 	    		sample_too_small = TRUE
@@ -351,7 +360,7 @@ hierarchical_partition = function(data,
 	    	# method2: take the group with minimal within-group mean distance as group 1
 	    	#   the class labels were already sorted by that
 	    	sample_too_small = TRUE
-	    	for(ik in sort(as.numeric(names(tb)))) {
+	    	for(ik in c(kg1, setdiff(sort(as.numeric(names(tb))), kg1))) {
 	    		kg1 = ik
 	    		kg2 = sort(setdiff(cl$class, kg1))
 
@@ -364,6 +373,8 @@ hierarchical_partition = function(data,
 		    	}
 	    	}
 	    }
+
+	    .env$all_top_value_list = NULL
 
     	# if(sample_too_small) {
     	# 	if(verbose) qqcat("@{prefix}* some of the subgroups have too few columns (< @{min_samples}), won't split.\n")

@@ -31,7 +31,7 @@ Visualize samples (the matrix columns) after dimension reduction
 
 }
 \value{
-No value is returned.
+Locations of the points.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

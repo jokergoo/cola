@@ -7,7 +7,7 @@ Get signatures rows
 Get signatures rows
 }
 \usage{
-\S4method{get_signatures}{HierarchicalPartition}(object, filter_node = filter_node_param(),
+\S4method{get_signatures}{HierarchicalPartition}(object, merge_node = merge_node_param(),
     group_diff = cola_opt$group_diff,
     row_km = NULL,
     scale_rows = object[1]@scale_rows,
@@ -20,7 +20,7 @@ Get signatures rows
 \arguments{
 
   \item{object}{a \code{\link{HierarchicalPartition-class}} object.}
-  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
+  \item{merge_node}{Parameters to merge sub-dendrograms, see \code{\link{merge_node_param}}.}
   \item{group_diff}{Cutoff for the maximal difference between group means.}
   \item{row_km}{Number of groups for performing k-means clustering on rows. By default it is automatically selected.}
   \item{scale_rows}{whether apply row scaling when making the heatmap.}

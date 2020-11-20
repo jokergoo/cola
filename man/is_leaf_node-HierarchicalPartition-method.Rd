@@ -8,13 +8,13 @@ Test whether a node is a leaf node
 Test whether a node is a leaf node
 }
 \usage{
-\S4method{is_leaf_node}{HierarchicalPartition}(object, node, filter_node = filter_node_param())
+\S4method{is_leaf_node}{HierarchicalPartition}(object, node, merge_node = merge_node_param())
 }
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
   \item{node}{A vector of node IDs.}
-  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
+  \item{merge_node}{Parameters to merge sub-dendrograms, see \code{\link{merge_node_param}}.}
 
 }
 \examples{

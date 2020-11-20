@@ -7,14 +7,14 @@ Compare Signatures from Different Nodes
 Compare Signatures from Different Nodes
 }
 \usage{
-\S4method{compare_signatures}{HierarchicalPartition}(object, filter_node = filter_node_param(),
+\S4method{compare_signatures}{HierarchicalPartition}(object, merge_node = merge_node_param(),
     method = c("euler", "upset"), upset_max_comb_sets = 20,
     verbose = interactive(), ...)
 }
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object. }
-  \item{filter_node}{Parameters to merge sub-dendrograms, see \code{\link{filter_node_param}}.}
+  \item{merge_node}{Parameters to merge sub-dendrograms, see \code{\link{merge_node_param}}.}
   \item{method}{Method to visualize.}
   \item{upset_max_comb_sets}{Maximal number of combination sets to show.}
   \item{verbose}{Whether to print message.}
