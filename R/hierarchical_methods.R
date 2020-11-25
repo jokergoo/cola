@@ -510,6 +510,7 @@ setMethod(f = "test_to_known_factors",
 # -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
 #         `umap::umap`.
+# -color_by If annotation table is set, an annotation name can be set here.
 # -scale_rows Whether to perform scaling on matrix rows.
 # -verbose Whether print messages.
 # -... Other arguments passed to `dimension_reduction,ConsensusPartition-method`.
@@ -530,7 +531,7 @@ setMethod(f = "dimension_reduction",
 	signature = "HierarchicalPartition",
 	definition = function(object, merge_node = merge_node_param(),
 	parent_node, top_n = NULL, top_value_method = object@list[[1]]@top_value_method,
-	method = c("PCA", "MDS", "t-SNE", "UMAP"),
+	method = c("PCA", "MDS", "t-SNE", "UMAP"), color_by = NULL,
 	scale_rows = TRUE, verbose = TRUE, ...) {
 
 	if(!has_hierarchy(object)) {
@@ -576,7 +577,7 @@ setMethod(f = "dimension_reduction",
 		if(!is.null(top_n)) {
 			top_n = min(c(top_n, nrow(data)))
 			if(top_value_method %in% names(object@.env$node_0_top_value_list)) {
-				all_top_value = object@.env$node_0_top_value_list[top_value_method]
+				all_top_value = object@.env$node_0_top_value_list[[top_value_method]]
 			} else {
 				if(verbose) qqcat("calculating @{top_value_method} values.\n")
 				all_top_value = get_top_value_method(top_value_method)(data)
@@ -588,7 +589,16 @@ setMethod(f = "dimension_reduction",
 		}
 		class = get_classes(object, merge_node)
 		n_class = length(unique(class))
-		dimension_reduction(data, pch = 16, col = object@subgroup_col[class],
+
+		if(is.null(color_by)) {
+			col = object@subgroup_col[class]
+		} else {
+			if(!color_by %in% colnames(object@list[[1]]@anno)) {
+				stop_wrap("`color_by` should only contain the annotation names.")
+			}
+			col = object@list[[1]]@anno_col[[color_by]][ object@list[[1]]@anno[, color_by] ]
+		}
+		dimension_reduction(data, pch = 16, col = col,
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{ncol(data)} samples with @{n_class} classes"),
 			method = method, scale_rows = scale_rows, ...)
 		class_level = sort(unique(class))
@@ -603,7 +613,7 @@ setMethod(f = "dimension_reduction",
 		}
 		obj = object[parent_node]
 		dimension_reduction(obj, k = suggest_best_k(obj), top_n = top_n, method = method,
-			scale_rows = scale_rows, ...)
+			scale_rows = scale_rows, color_by = color_by, ...)
 		legend(x = par("usr")[2], y = par("usr")[4], legend = qq("node @{parent_node}"))
 	}
 

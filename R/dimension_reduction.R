@@ -12,6 +12,7 @@
 # -method Which method to reduce the dimension of the data. ``MDS`` uses `stats::cmdscale`,
 #         ``PCA`` uses `stats::prcomp`. ``t-SNE`` uses `Rtsne::Rtsne`. ``UMAP`` uses
 #         `umap::umap`.
+# -color_by If annotation table is set, an annotation name can be set here.
 # -control A list of parameters for `Rtsne::Rtsne` or `umap::umap`.
 # -internal Internally used.
 # -nr If number of matrix rows is larger than this value, random ``nr`` rows are used.
@@ -36,7 +37,7 @@ setMethod(f = "dimension_reduction",
 	signature = "ConsensusPartition",
 	definition = function(object, k, top_n = NULL,
 	method = c("PCA", "MDS", "t-SNE", "UMAP"), 
-	control = list(),
+	control = list(), color_by = NULL,
 	internal = FALSE, nr = 5000,
 	silhouette_cutoff = 0.5, remove = FALSE,
 	scale_rows = object@scale_rows, verbose = TRUE, ...) {
@@ -95,9 +96,17 @@ setMethod(f = "dimension_reduction",
 
 	class_level = sort(as.character(unique(class_df$class)))
 	n_class = length(class_level)
-		
+	
+	if(is.null(color_by)) {
+		col = cola_opt$color_set_2[as.character(class_df$class)]
+	} else {
+		if(!color_by %in% colnames(object@anno)) {
+			stop_wrap("`color_by` should only contain the annotation names.")
+		}
+		col = object@anno_col[[color_by]][ object@anno[, color_by] ]
+	}
 	if(remove) {
-		loc = dimension_reduction(data[, l], pch = 16, col = cola_opt$color_set_2[as.character(class_df$class[l])],
+		loc = dimension_reduction(data[, l], pch = 16, col = col[l],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
 			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
 		if(!internal) {
@@ -108,7 +117,7 @@ setMethod(f = "dimension_reduction",
 				text.col = c(rep("black", n_class), "white"))
 		}
 	} else {
-		loc = dimension_reduction(data, pch = ifelse(l, 16, 4), col = cola_opt$color_set_2[as.character(class_df$class)],
+		loc = dimension_reduction(data, pch = ifelse(l, 16, 4), col = col[l],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
 			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
 		if(!internal) {

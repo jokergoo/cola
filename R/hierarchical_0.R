@@ -269,13 +269,19 @@ hierarchical_partition = function(data,
 			}
 		} else {
 			.env$all_top_value_list = NULL
-		
+
+			# in consensus_partition_by_down_sampling(), .env$all_top_value_list is always reset to NULL
+			# because the columns are randomly sampled and top_value changes. However, here we cache
+			# the recent top_value for a top_value_method for downstream process
+			all_top_value_list_ds = list()
+
 			for(i in seq_along(combination_method)) {
 				if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
 				.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
 				part_list[[i]] = consensus_partition_by_down_sampling(subset = subset, verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
 					top_n = top_n, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
 					mc.cores = mc.cores, .predict = FALSE, anno = anno2, anno_col = anno_col, ...)
+				all_top_value_list_ds[[part_list[[i]]@top_value_method]] = .env$all_top_value_list[[part_list[[i]]@top_value_method]]
 			}
 		}
 	   
@@ -285,7 +291,7 @@ hierarchical_partition = function(data,
 			stat_df = get_stats(part, all_stats = TRUE)
 			best_k = suggest_best_k(part)
 			if(is.na(best_k)) {
-				0
+				c(0, 0, 0, 0)
 			} else {
 				stat_df[stat_df[, "k"] == best_k, c("1-PAC", "mean_silhouette", "concordance", "area_increased")]
 			}
@@ -324,7 +330,11 @@ hierarchical_partition = function(data,
 	    }
 
 	    dd = data[.env$row_index, column_index, drop = FALSE]
-	    ri = order(.env$all_top_value_list[[part@top_value_method]], decreasing = TRUE)[1:max(get_param(part)[, "top_n"])]
+	    if(length(column_index) <= subset) {
+	    	ri = order(.env$all_top_value_list[[part@top_value_method]], decreasing = TRUE)[1:max(get_param(part)[, "top_n"])]
+	    } else {
+	    	ri = order(all_top_value_list_ds[[part@top_value_method]], decreasing = TRUE)[1:max(get_param(part)[, "top_n"])]
+		}
 		if(length(ri) > 5000) ri = sample(ri, 5000)
 		mean_dist = tapply(seq_len(ncol(dd)), cl$class, function(ind) {
 			n = length(ind)
