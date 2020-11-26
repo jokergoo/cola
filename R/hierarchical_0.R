@@ -577,7 +577,7 @@ STOP_REASON = c(
 	"a" = "PAC score was too big.",
 	"b" = "Subgroup had too few columns.",
 	"c" = "There were too few signatures.",
-	"d" = "Matrix has too few rows (less than 'top_n')."
+	"d" = "Matrix has too few rows (less than 'top_n').",
 	"e" = "There were too few conficent columns to detect signatures."
 )
 
