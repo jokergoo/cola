@@ -332,18 +332,18 @@ hierarchical_partition = function(data,
 	    }
 
 	    # check number of confident samples
-	    if(length(column_index) <= subset) {
-	    	class_df = get_classes(part, k = best_k)
-	    	p_confident_samples = sum(class_df[, "silhouette"] > 0.5)/nrow(class_df)
-	    } else {
-	    	class_df = get_classes(part, k = best_k)
-	    	p_confident_samples = sum(class_df[, "p"] < 0.05)/nrow(class_df)
-	    }
-	    if(p_confident_samples < 0.8) {
-	    	if(verbose) qqcat("@{prefix}* Proportion of confident columns is too small (@{sprintf('%.2f', p_confident_samples)}), stop.\n")
-	    	attr(lt$obj, "stop_reason") = STOP_REASON["e"]
-	    	return(lt)
-	    }
+	    # if(length(column_index) <= subset) {
+	    # 	class_df = get_classes(part, k = best_k)
+	    # 	p_confident_samples = sum(class_df[, "silhouette"] > 0.5)/nrow(class_df)
+	    # } else {
+	    # 	class_df = get_classes(part, k = best_k)
+	    # 	p_confident_samples = sum(class_df[, "p"] < 0.05)/nrow(class_df)
+	    # }
+	    # if(p_confident_samples < 0.8) {
+	    # 	if(verbose) qqcat("@{prefix}* Proportion of confident columns is too small (@{sprintf('%.2f', p_confident_samples)}), stop.\n")
+	    # 	attr(lt$obj, "stop_reason") = STOP_REASON["e"]
+	    # 	return(lt)
+	    # }
 
 	    dd = data[.env$row_index, column_index, drop = FALSE]
 	    if(length(column_index) <= subset) {
@@ -410,7 +410,7 @@ hierarchical_partition = function(data,
 
     	# check the numbers of signatures
     	if(verbose) qqcat("@{prefix}* checking number of signatures in the best classification.\n")
-    	sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE)
+    	sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, silhouette_cutoff = -Inf)
     	if(is.null(part@.env$signature_hash)) {
     		part@.env$signature_hash = list()
     	}
