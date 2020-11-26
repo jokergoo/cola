@@ -79,7 +79,7 @@ consensus_partition_by_down_sampling = function(data,
 		.env$data = data
 		.env$column_index = seq_len(ncol(data))
 	} else if(is.null(.env$data)) {
-		if(is.data.frame(data)) data = as.matrix(data)
+		data = as.matrix(data)
 
 		.env$data = data
 		.env$column_index = seq_len(ncol(data))

@@ -173,20 +173,16 @@ adjust_outlier = function(x, q = 0.05) {
 # m2 = adjust_matrix(m)
 # m2
 adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
-	if(is.data.frame(m)) {
-		m = as.matrix(m)
-	}
 
-	l = apply(m, 1, function(x) sum(is.na(x))/length(x)) < max_na
+	md = typeof(m)
+
+	l = rowSums(is.na(m))/ncol(m) < max_na
 	if(sum(!l)) {
 		message_wrap(qq("removed @{sum(!l)} rows where more than @{round(max_na*100)}% of samples have NA values."))
 	}
 	m = m[l, , drop = FALSE]
 
-	
-
-	n_na = sum(is.na(m))
-	if(n_na > 0) {
+	if(anyNA(m)) {
 		message_wrap(qq("There are NA values in the data, now impute missing data."))
 		
 		on.exit(if(sink.number()) sink(NULL))	
@@ -198,21 +194,32 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 		sink(NULL)
 		file.remove(tempf)
 	}
-	m = t(apply(m, 1, adjust_outlier))
-	row_sd = rowSds(m, na.rm = TRUE)
+
+	qm = rowQuantiles(m, probs = c(0.05, 0.95))
+	if(md == "integer") {
+		qm = as.integer(qm)
+		dim(qm) = c(nrow(m), 2)
+	}
+	for(i in 1:ncol(m)) {
+		m[, i] = ifelse(m[, i] < qm[, 1], qm[, 1], m[, i])
+		m[, i] = ifelse(m[, i] > qm[, 2], qm[, 2], m[, i])
+	}
+
+	row_sd = rowSds(m)
 	l = abs(row_sd) <= 1e-10
 	m2 = m[!l, , drop = FALSE]
 	row_sd = row_sd[!l]
 	if(sum(l)) {
 		message_wrap(qq("@{sum(l)} rows have been removed with zero variance."))
 	}
-
 	qa = quantile(unique(row_sd), sd_quantile, na.rm = TRUE)
 	l = row_sd > qa
 	if(sum(!l)) {
 		message_wrap(qq("@{sum(!l)} rows have been removed with too low variance (sd <= @{sd_quantile} quantile)"))
 	}
-	m2[l, , drop = FALSE]
+	m2 = m2[l, , drop = FALSE]
+
+	return(m2)
 }
 
 dev.off2 = ComplexHeatmap:::dev.off2

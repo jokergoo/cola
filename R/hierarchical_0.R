@@ -104,12 +104,14 @@ hierarchical_partition = function(data,
 	partition_method = c("kmeans", "skmeans"),
 	combination_method =  expand.grid(top_value_method, partition_method),
 	anno = NULL, anno_col = NULL,
-	PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.02)), subset = Inf,
+	PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
 	min_n_signatures = round(nrow(data)*min_p_signatures), 
 	min_p_signatures = 0.01,
 	max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...) {
 
 	t1 = Sys.time()
+
+	data = as.matrix(data)
 
 	if(help) {
 		if(identical(subset, Inf) && ncol(data) > 500) {
@@ -326,6 +328,20 @@ hierarchical_partition = function(data,
 	    if(PAC_score > PAC_cutoff) {
 	    	if(verbose) qqcat("@{prefix}* PAC score is too big (@{sprintf('%.2f', PAC_score)}), stop.\n")
 	    	attr(lt$obj, "stop_reason") = STOP_REASON["a"]
+	    	return(lt)
+	    }
+
+	    # check number of confident samples
+	    if(length(column_index) <= subset) {
+	    	class_df = get_classes(part, k = best_k)
+	    	p_confident_samples = sum(class_df[, "silhouette"] > 0.5)/nrow(class_df)
+	    } else {
+	    	class_df = get_classes(part, k = best_k)
+	    	p_confident_samples = sum(class_df[, "p"] < 0.05)/nrow(class_df)
+	    }
+	    if(p_confident_samples < 0.8) {
+	    	if(verbose) qqcat("@{prefix}* Proportion of confident columns is too small (@{sprintf('%.2f', p_confident_samples)}), stop.\n")
+	    	attr(lt$obj, "stop_reason") = STOP_REASON["e"]
 	    	return(lt)
 	    }
 
@@ -561,7 +577,8 @@ STOP_REASON = c(
 	"a" = "PAC score was too big.",
 	"b" = "Subgroup had too few columns.",
 	"c" = "There were too few signatures.",
-	"d" = "Matrix has too few rows."
+	"d" = "Matrix has too few rows (less than 'top_n')."
+	"e" = "There were too few conficent columns to detect signatures."
 )
 
 STOP_REASON_INDEX = structure(names(STOP_REASON), names = unname(STOP_REASON))

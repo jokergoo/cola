@@ -63,6 +63,7 @@ run_all_consensus_partition_methods = function(data,
 		}
 	}
 
+	data = as.matrix(data)
 	if(ncol(data) > 500) {
 		if(help) {
 			qqcat_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can use the function `consensus_partition_by_down_sampling()` to apply to a subset of column and the predicts the classes of unselected columns from the selected columns. Or you can use the function `hierarchical_partition()` to apply consensu partitioning in a hierarchical way. Set the argument 'help = FALSE' to turn off this message.\n")

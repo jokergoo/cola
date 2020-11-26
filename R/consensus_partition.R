@@ -82,6 +82,8 @@ consensus_partition = function(data,
 
 	if(missing(data)) {
 		data = .env$data
+	} else {
+		data = as.matrix(data)
 	}
 
 	if(max_k < 2) {
@@ -357,6 +359,7 @@ consensus_partition = function(data,
 
 			return(list(param = param, partition_list = partition_list))
 		}, mc.cores = mc.cores)
+	
 		for(i in seq_along(lt)) {
 			param = rbind(param, lt[[i]]$param)
 			partition_list = c(partition_list, lt[[i]]$partition_list)

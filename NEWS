@@ -1,3 +1,7 @@
+Changes in version 1.9.0
++ use row/column* family functions in `adjust_matrix()` to reduce the memory
+  usage as well as improve the speed.
+
 Changes in version 1.5.6
 + function to find best km for kmeans is improved.
 
