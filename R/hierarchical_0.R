@@ -410,7 +410,11 @@ hierarchical_partition = function(data,
 
     	# check the numbers of signatures
     	if(verbose) qqcat("@{prefix}* checking number of signatures in the best classification.\n")
-    	sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, silhouette_cutoff = -Inf)
+    	if(length(column_index) <= subset) {
+    		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, silhouette_cutoff = -Inf)
+    	} else {
+    		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, p_cutoff = Inf)
+    	}
     	if(is.null(part@.env$signature_hash)) {
     		part@.env$signature_hash = list()
     	}
