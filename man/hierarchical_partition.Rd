@@ -15,7 +15,7 @@ hierarchical_partition(data,
     partition_method = c("kmeans", "skmeans"),
     combination_method =  expand.grid(top_value_method, partition_method),
     anno = NULL, anno_col = NULL,
-    PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.02)), subset = Inf,
+    PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
     min_n_signatures = round(nrow(data)*min_p_signatures),
     min_p_signatures = 0.01,
     max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...)

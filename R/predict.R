@@ -16,6 +16,7 @@
 # -nperm Number of permutatinos. It is used when ``dist_method`` is set to "euclidean" or "cosine". Send to `predict_classes,matrix-method`.
 # -p_cutoff Cutoff for the p-values for determining class assignment. Send to `predict_classes,matrix-method`.
 # -plot Whether to draw the plot that visualizes the process of prediction. Send to `predict_classes,matrix-method`.
+# -col_fun A color mapping function generated from `colorRamp2`. It is set to both heatmaps.
 # -force If the value is ``TRUE`` and when `get_signatures,ConsensusPartition-method` internally failed, top 1000 rows
 #        with the highest between-group mean difference are used for constructing the signature centroid matrix.
 #        It is basically used internally.
@@ -69,7 +70,7 @@ setMethod(f = "predict_classes",
 	scale_rows = object@scale_rows, 
 	diff_method = "Ftest",
 	dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
-	p_cutoff = 0.05, plot = TRUE, force = FALSE, 
+	p_cutoff = 0.05, plot = TRUE, col_fun = NULL, force = FALSE, 
 	verbose = TRUE, help = TRUE, prefix = "", mc.cores = 1) {
 
 	if(help) {
@@ -158,7 +159,7 @@ setMethod(f = "predict_classes",
 	}
 	
 	predict_classes(sig_mat, mat, nperm = nperm, dist_method = dist_method, p_cutoff = p_cutoff, 
-		plot = plot, verbose = verbose, prefix = prefix, mc.cores = mc.cores)
+		plot = plot, col_fun = col_fun, verbose = verbose, prefix = prefix, mc.cores = mc.cores)
 })
 
 
@@ -174,6 +175,7 @@ setMethod(f = "predict_classes",
 # -nperm Number of permutatinos. It is used when ``dist_method`` is set to "euclidean" or "cosine".
 # -p_cutoff Cutoff for the p-values for determining class assignment.
 # -plot Whether to draw the plot that visualizes the process of prediction.
+# -col_fun A color mapping function generated from `colorRamp2`. It is set to both heatmaps.
 # -verbose Whether to print messages.
 # -prefix Used internally.
 # -mc.cores Number of cores.
@@ -228,7 +230,8 @@ setMethod(f = "predict_classes",
 setMethod(f = "predict_classes",
 	signature = "matrix",
 	definition = function(object, mat, dist_method = c("euclidean", "correlation", "cosine"), 
-	nperm = 1000, p_cutoff = 0.05, plot = TRUE, verbose = TRUE, prefix = "", mc.cores = 1) {
+	nperm = 1000, p_cutoff = 0.05, plot = TRUE, col_fun = NULL, 
+	verbose = TRUE, prefix = "", mc.cores = 1) {
 
 	sig_mat = object
 
@@ -335,18 +338,30 @@ setMethod(f = "predict_classes",
 			wss[i] = sum(kmeans(mat, centers = i, iter.max = 50)$withinss)
 		}
 		row_km = min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
-			
-		ht_list = Heatmap(mat, name = "New matrix",
-			top_annotation = ha, row_km = row_km,
-			# row_split = row_split, cluster_row_slices = FALSE,
-			show_column_names = FALSE, row_title = NULL,
-			cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
-			column_split = predicted_class2,
-			show_row_dend = FALSE,
-			column_title = qq("Based on @{nrow(sig_mat)} signatures")
-		) + Heatmap(sig_mat, cluster_columns = FALSE, width = unit(4*ncol(sig_mat), "mm"),
-			heatmap_legend_param = list(title = "Signature centroid"))
-
+		
+		if(is.null(col_fun)) {
+			ht_list = Heatmap(mat, name = "New matrix",
+				top_annotation = ha, row_km = row_km,
+				# row_split = row_split, cluster_row_slices = FALSE,
+				show_column_names = FALSE, row_title = NULL,
+				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
+				column_split = predicted_class2,
+				show_row_dend = FALSE,
+				column_title = qq("Based on @{nrow(sig_mat)} signatures")
+			) + Heatmap(sig_mat, cluster_columns = FALSE, width = unit(4*ncol(sig_mat), "mm"),
+				heatmap_legend_param = list(title = "Signature centroid"))
+		} else {
+			ht_list = Heatmap(mat, name = "New matrix", col = col_fun,
+				top_annotation = ha, row_km = row_km,
+				# row_split = row_split, cluster_row_slices = FALSE,
+				show_column_names = FALSE, row_title = NULL,
+				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
+				column_split = predicted_class2,
+				show_row_dend = FALSE,
+				column_title = qq("Based on @{nrow(sig_mat)} signatures")
+			) + Heatmap(sig_mat, col = col_fun, cluster_columns = FALSE, width = unit(4*ncol(sig_mat), "mm"),
+				heatmap_legend_param = list(title = "Signature centroid"))
+		}
 		draw(ht_list, merge_legend = TRUE)
 	}
 

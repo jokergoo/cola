@@ -8,7 +8,8 @@ Predict classes for new samples based on signature centroid matrix
 }
 \usage{
 \S4method{predict_classes}{matrix}(object, mat, dist_method = c("euclidean", "correlation", "cosine"),
-    nperm = 1000, p_cutoff = 0.05, plot = TRUE, verbose = TRUE, prefix = "", mc.cores = 1)
+    nperm = 1000, p_cutoff = 0.05, plot = TRUE, col_fun = NULL,
+    verbose = TRUE, prefix = "", mc.cores = 1)
 }
 \arguments{
 
@@ -18,6 +19,7 @@ Predict classes for new samples based on signature centroid matrix
   \item{nperm}{Number of permutatinos. It is used when \code{dist_method} is set to "euclidean" or "cosine".}
   \item{p_cutoff}{Cutoff for the p-values for determining class assignment.}
   \item{plot}{Whether to draw the plot that visualizes the process of prediction.}
+  \item{col_fun}{A color mapping function generated from \code{\link{colorRamp2}}. It is set to both heatmaps.}
   \item{verbose}{Whether to print messages.}
   \item{prefix}{Used internally.}
   \item{mc.cores}{Number of cores.}

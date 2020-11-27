@@ -9,7 +9,7 @@ Visualize samples (the matrix columns) after dimension reduction
 \usage{
 \S4method{dimension_reduction}{DownSamplingConsensusPartition}(object, k, top_n = NULL,
     method = c("PCA", "MDS", "t-SNE", "UMAP"),
-    control = list(),
+    control = list(), color_by = NULL,
     internal = FALSE, nr = 5000,
     p_cutoff = 0.05, remove = FALSE,
     scale_rows = TRUE, verbose = TRUE, ...)
@@ -20,6 +20,7 @@ Visualize samples (the matrix columns) after dimension reduction
   \item{k}{Number of subgroups.}
   \item{top_n}{Top n rows to use. By default it uses all rows in the original matrix.}
   \item{method}{Which method to reduce the dimension of the data. \code{MDS} uses \code{\link[stats]{cmdscale}}, \code{PCA} uses \code{\link[stats]{prcomp}}. \code{t-SNE} uses \code{\link[Rtsne]{Rtsne}}. \code{UMAP} uses \code{\link[umap]{umap}}.}
+  \item{color_by}{If annotation table is set, an annotation name can be set here.}
   \item{control}{A list of parameters for \code{\link[Rtsne]{Rtsne}} or \code{\link[umap]{umap}}.}
   \item{internal}{Internally used.}
   \item{nr}{If number of matrix rows is larger than this value, random \code{nr} rows are used.}
