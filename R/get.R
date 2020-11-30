@@ -292,7 +292,9 @@ setMethod(f = "get_classes",
 	definition = function(object, k) {
 	if(missing(k)) stop_wrap("k needs to be provided.")
 	lt = object@consensus_class[[as.character(k)]]
-	lt$class_df
+	df = lt$class_df
+	rownames(df) = colnames(object)
+	df
 })
 
 # == title

@@ -17,6 +17,7 @@
 # -p_cutoff Cutoff for the p-values for determining class assignment. Send to `predict_classes,matrix-method`.
 # -plot Whether to draw the plot that visualizes the process of prediction. Send to `predict_classes,matrix-method`.
 # -col_fun A color mapping function generated from `colorRamp2`. It is set to both heatmaps.
+# -split_by_sigatures Should the heatmaps be split based on k-means on the main heatmap, or on the patterns of the signature heatmap.
 # -force If the value is ``TRUE`` and when `get_signatures,ConsensusPartition-method` internally failed, top 1000 rows
 #        with the highest between-group mean difference are used for constructing the signature centroid matrix.
 #        It is basically used internally.
@@ -70,7 +71,8 @@ setMethod(f = "predict_classes",
 	scale_rows = object@scale_rows, 
 	diff_method = "Ftest",
 	dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
-	p_cutoff = 0.05, plot = TRUE, col_fun = NULL, force = FALSE, 
+	p_cutoff = 0.05, plot = TRUE, col_fun = NULL, 
+	split_by_sigatures = FALSE, force = FALSE, 
 	verbose = TRUE, help = TRUE, prefix = "", mc.cores = 1) {
 
 	if(help) {
@@ -159,7 +161,8 @@ setMethod(f = "predict_classes",
 	}
 	
 	predict_classes(sig_mat, mat, nperm = nperm, dist_method = dist_method, p_cutoff = p_cutoff, 
-		plot = plot, col_fun = col_fun, verbose = verbose, prefix = prefix, mc.cores = mc.cores)
+		plot = plot, col_fun = col_fun, split_by_sigatures = split_by_sigatures, 
+		verbose = verbose, prefix = prefix, mc.cores = mc.cores)
 })
 
 
@@ -177,6 +180,7 @@ setMethod(f = "predict_classes",
 # -plot Whether to draw the plot that visualizes the process of prediction.
 # -col_fun A color mapping function generated from `colorRamp2`. It is set to both heatmaps.
 # -verbose Whether to print messages.
+# -split_by_sigatures Should the heatmaps be split based on k-means on the main heatmap, or on the patterns of the signature heatmap.
 # -prefix Used internally.
 # -mc.cores Number of cores.
 #
@@ -230,7 +234,7 @@ setMethod(f = "predict_classes",
 setMethod(f = "predict_classes",
 	signature = "matrix",
 	definition = function(object, mat, dist_method = c("euclidean", "correlation", "cosine"), 
-	nperm = 1000, p_cutoff = 0.05, plot = TRUE, col_fun = NULL, 
+	nperm = 1000, p_cutoff = 0.05, plot = TRUE, col_fun = NULL, split_by_sigatures = FALSE,
 	verbose = TRUE, prefix = "", mc.cores = 1) {
 
 	sig_mat = object
@@ -339,10 +343,16 @@ setMethod(f = "predict_classes",
 		}
 		row_km = min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
 		
+		if(split_by_sigatures) {
+			row_km = NULL
+		} else {
+			row_split = NULL
+		}
 		if(is.null(col_fun)) {
 			ht_list = Heatmap(mat, name = "New matrix",
-				top_annotation = ha, row_km = row_km,
-				# row_split = row_split, cluster_row_slices = FALSE,
+				top_annotation = ha, 
+				row_km = row_km,
+				row_split = row_split,
 				show_column_names = FALSE, row_title = NULL,
 				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
 				column_split = predicted_class2,
@@ -352,8 +362,9 @@ setMethod(f = "predict_classes",
 				heatmap_legend_param = list(title = "Signature centroid"))
 		} else {
 			ht_list = Heatmap(mat, name = "New matrix", col = col_fun,
-				top_annotation = ha, row_km = row_km,
-				# row_split = row_split, cluster_row_slices = FALSE,
+				top_annotation = ha, 
+				row_km = row_km,
+				row_split = row_split,
 				show_column_names = FALSE, row_title = NULL,
 				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
 				column_split = predicted_class2,
