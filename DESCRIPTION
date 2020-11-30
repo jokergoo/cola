@@ -1,7 +1,7 @@
 Package: cola
 Type: Package
 Title: A Framework for Consensus Partitioning
-Version: 1.9.0.1010
+Version: 1.9.0.1011
 Date: 2020-11-30
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
