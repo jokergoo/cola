@@ -239,6 +239,21 @@ setMethod(f = "dimension_reduction",
 		main = NULL
 	}
 
+	if(length(col) == 1) col = rep(col, ncol(data))
+
+	## format pch
+	n_col = length(unique(col))
+	if(length(pch) == 1) {
+		pch = rep(pch, ncol(data))
+	} else if(length(pch) == n_col) {
+		col2index = split(1:ncol(data), col)
+		pch2 = numeric(ncol(data))
+		for(i in seq_along(col2index)) {
+			pch2[col2index[[i]]] = pch[i]
+		}
+		pch = pch2
+	}
+
 	if(method == "MDS") {
 		loc = cmdscale(dist(t(data)))
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "Coordinate 1", ylab = "Coordinate 2")

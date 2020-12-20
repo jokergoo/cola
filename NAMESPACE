@@ -105,7 +105,6 @@ import(graphics)
 import(grid)
 import(matrixStats)
 import(methods)
-import(stats)
 import(utils)
 importFrom(BiocGenerics, rownames, colnames, nrow, ncol)
 importFrom(RColorBrewer, brewer.pal)
@@ -125,5 +124,11 @@ importFrom(parallel, mclapply)
 importFrom(png, readPNG)
 importFrom(skmeans, skmeans)
 importFrom(xml2, read_xml, xml_children, xml_attr, xml_text, xml_name)
+importFrom("stats", "as.dendrogram", "as.dist", "as.hclust",
+             "chisq.test", "cmdscale", "coef", "cophenetic", "cor",
+             "cor.test", "cutree", "dendrapply", "dist", "ecdf",
+             "hclust", "is.leaf", "kmeans", "lm", "nobs", "oneway.test",
+             "p.adjust", "prcomp", "quantile", "reorder", "rnorm",
+             "runif", "var")
 useDynLib(cola, .registration=TRUE)
 

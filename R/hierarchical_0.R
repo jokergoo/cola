@@ -121,6 +121,17 @@ hierarchical_partition = function(data,
 	}
 
 	cl = match.call()
+	rg = range(data)
+	if(rg[1] >= 0 && rg[2] <= 1) {
+		if( (!"top_value_method" %in% names(cl)) && (!"partition_method" %in% names(cl)) ) {
+			top_value_method = "SD"
+			partition_method = "kmeans"
+			if(help) {
+				qqcat_wrap("The range of the matrix is inside c(0, 1), thus, `top_value_method` is set to 'SD' and `partition_method` is set to 'kmeans'. You can stop this default behaviour by explictly setting values for these two arguments.")
+				cat("\n")
+			}
+		}
+	}
 
 	if(min_samples < 3) {
 		if(verbose) qqcat("! 'min_samples' was reset to 3.\n")
@@ -258,7 +269,8 @@ hierarchical_partition = function(data,
 			anno2 = anno[column_index, , drop = FALSE]
 		}
 
-		part_list = list(length(combination_method))
+		part_list = vector("list", length(combination_method))
+		names(part_list) = sapply(combination_method, function(x) paste0(x[1], ":", x[2]))
 		if(length(column_index) <= subset) {
 			if(node_id != "0") .env$all_top_value_list = NULL
 		
@@ -293,13 +305,21 @@ hierarchical_partition = function(data,
 			stat_df = get_stats(part, all_stats = TRUE)
 			best_k = suggest_best_k(part)
 			if(is.na(best_k)) {
-				c(0, 0, 0, 0)
+				c(0, 0, 0, 0, 0)
 			} else {
-				stat_df[stat_df[, "k"] == best_k, c("1-PAC", "mean_silhouette", "concordance", "area_increased")]
+				stat_df[stat_df[, "k"] == best_k, c("k", "1-PAC", "mean_silhouette", "concordance", "area_increased")]
 			}
 		})
 		stat_tb = as.data.frame(t(stat_tb))
-		ind = do.call(order, -stat_tb)[1]
+		stat_tb2 = stat_tb
+		stat_tb = stat_tb[stat_tb$`1-PAC` > 0.9, , drop = FALSE]
+		if(nrow(stat_tb)) {
+			ind = do.call(order, -stat_tb)[1]
+			ind = rownames(stat_tb)[ind]
+		} else {
+			ind = do.call(order, -stat_tb2)[1]
+			ind = rownames(stat_tb2)[ind]
+		}
 		part = part_list[[ind]]
 
 		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} with the most stability among methods.\n")
