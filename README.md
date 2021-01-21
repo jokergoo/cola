@@ -17,6 +17,10 @@
    separate subgroups.
 5. It generates detailed HTML reports for the complete analysis.
 
+## Citation
+
+Zuguang Gu, et al., cola: an R/Bioconductor package for consensus partitioning through a general framework, Nucleic Acids Research, 2020. https://doi.org/10.1093/nar/gkaa1146
+
 ## Install
 
 *cola* is available on [Bioconductor](http://bioconductor.org/packages/devel/bioc/html/cola.html), you can install it by:
