@@ -178,7 +178,7 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 
 	l = rowSums(is.na(m))/ncol(m) < max_na
 	if(sum(!l)) {
-		message_wrap(qq("removed @{sum(!l)} rows (@{sprintf('%.1f', sum(!l)/length(l)*100}%) where more than @{round(max_na*100)}% of samples have NA values."))
+		message_wrap(qq("removed @{sum(!l)} rows (@{sprintf('%.1f', sum(!l)/length(l)*100)}%) where more than @{round(max_na*100)}% of samples have NA values."))
 	}
 	m = m[l, , drop = FALSE]
 

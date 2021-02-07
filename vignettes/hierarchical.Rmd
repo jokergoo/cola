@@ -54,7 +54,7 @@ and the value of k with the extremal values will be less distinct.
 The following four figures illustrate the eCDF curves of a consensus matrix,
 1-PAC, mean silhouette and concordance scores for different k where k ranges
 from 2 to 10 (from the analysis [here](
-https://jokergoo.github.io/cola_examples/GBM_450K/GBM_450K_cgi_all_subgroup_cola_report/cola_report.html#mad:pam*)).
+https://jokergoo.github.io/cola_examples/GBM_450K/GBM_450K_cgi_all_subgroup_cola_report/cola_report.html#MAD-pam)).
 Basically, when k >= 5, the eCDF curves have a long plateau with less and less
 curvature, _i.e._ they lose their step-like shape, which results in 1-PAC
 getting almost stable for k >= 5. Also for the curves of mean silhouette and
@@ -275,7 +275,7 @@ collect_classes(golub_cola_rh, merge_node = merge_node_param(node_height = 0.6))
 collect_classes(golub_cola_rh, merge_node = merge_node_param(node_height = 0.8))
 ```
 
-```{r, echo = FALSE, fig.width = 6}
+```{r, echo = FALSE, fig.width = 7}
 p1 = grid.grabExpr(collect_classes(golub_cola_rh, merge_node = merge_node_param(node_height = 0.6),
 	row_title = "node_height >= 0.52"))
 p2 = grid.grabExpr(collect_classes(golub_cola_rh, merge_node = merge_node_param(node_height = 0.6),
