@@ -31,7 +31,7 @@
 #              The number of items should be the same as the number of the original matrix rows. The subsetting to the significant 
 #              rows are automatically performed on the annotation object.
 # -right_annotation Annotation put on the right of the heatmap. Same format as ``left_annotation``.
-# -col Colors.
+# -col Colors for the main heatmap.
 # -simplify Only used internally.
 # -prefix Only used internally.
 # -enforce The analysis is cached by default, so that the analysis with the same input will be automatically extracted
@@ -52,6 +52,9 @@
 # -Ftest use F-test to find significantly different rows between subgroups.
 # -one_vs_others For each subgroup i in each row, it uses t-test to compare samples in current 
 #        subgroup to all other samples, denoted as p_i. The p-value for current row is selected as min(p_i).
+# -uniquely_high_in_one_group The signatures are defined as, if they are uniquely up-regulated in subgroup A, then it must fit following criterions:
+#          1. in a two-group t-test of A ~ other_merged_groups, the statistic must be > 0 (high in group A) and p-value must be significant, 
+#          and 2. for other groups (excluding A), t-test in every pair of groups should not be significant.
 #
 # ``diff_method`` can also be a self-defined function. The function needs two arguments which are the matrix for the analysis
 # and the predicted classes. The function should returns a vector of FDR from the difference test.
@@ -82,7 +85,7 @@ setMethod(f = "get_signatures",
 	group_diff = cola_opt$group_diff,
 	scale_rows = object@scale_rows,
 	row_km = NULL,
-	diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
+	diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others", "uniquely_high_in_one_group"),
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
 	internal = FALSE,
@@ -253,15 +256,22 @@ setMethod(f = "get_signatures",
 
 	# filter by fdr
 	fdr[is.na(fdr)] = 1
+	p_value = attr(fdr, "p_value")
 
 	l_fdr = fdr <= fdr_cutoff
 	mat = data[l_fdr, , drop = FALSE]
 	fdr2 = fdr[l_fdr]
+	if(!is.null(p_value)) {
+		p_value = p_value[l_fdr]
+	}
 	
 	if(!is.null(left_annotation)) left_annotation = left_annotation[l_fdr, ]
 	if(!is.null(right_annotation)) right_annotation = right_annotation[l_fdr, ]
 
 	returned_df = data.frame(which_row = which(l_fdr), fdr = fdr2)
+	if(!is.null(p_value)) {
+		returned_df$p_value = p_value
+	}
 	attr(returned_df, "sample_used") = column_used_logical
 	attr(returned_df, "hash") = hash
 
@@ -775,6 +785,7 @@ ttest = function(mat, class) {
 	fdr = p.adjust(p, method = "BH")
 	fdr[is.na(fdr)] = Inf
 	fdr[is.infinite(fdr)] = Inf
+	attr(fdr, "p_value") = p
 	fdr
 }
 
@@ -792,7 +803,9 @@ one_vs_others = function(mat, class) {
 	}
 	df = do.call("cbind", dfl)
 	p = rowMins(df)
-	p.adjust(p, "BH")
+	fdr = p.adjust(p, "BH")
+	attr(fdr, "p_value") = p
+	fdr
 }
 
 samr = function(mat, class, ...) {
@@ -860,8 +873,42 @@ Ftest = function(mat, class) {
 	p = genefilter::rowFtests(mat, factor(class))[, "p.value"]
 	fdr = p.adjust(p, "BH")
 	fdr[is.na(fdr)] = Inf
+	attr(fdr, "p_value") = p
 	return(fdr)
 
+}
+
+uniquely_high_in_one_group = function (mat, class) {
+
+    le = unique(class)
+    dfl = list()
+    for (x in le) {
+        fa = as.vector(class)
+        fa[class == x] = "a"
+        fa[class != x] = "b"
+        fa = factor(fa, levels = c("a", "b"))
+        df = genefilter::rowttests(mat, fa)
+        l = df[, "statistic"] < 0; l[is.na(l)] = FALSE
+        df[l, "p.value"] = NA
+        
+        # then for the remaining subgroups, they show no difference
+        if(length(le) > 2) {
+        	l = class != x
+        	p1 = compare_to_subgroup(mat[, l, drop = FALSE], class[l], "highest")
+		    p2 = compare_to_subgroup(mat[, l, drop = FALSE], class[l], "lowest")
+		    p = pmin(p1, p2, na.rm = TRUE)
+
+		    df[p < 0.05, "p.value"] = NA
+        }
+
+        dfl[[x]] = df[, "p.value"]
+
+    }
+    df = do.call("cbind", dfl)
+    p = rowMins(df, na.rm = TRUE)
+    fdr = p.adjust(p, "BH")
+    attr(fdr, "p_value") = p
+    fdr
 }
 
 # test_row_diff_fun = function(fun, fdr_cutoff = 0.1) {

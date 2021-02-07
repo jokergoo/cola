@@ -316,6 +316,14 @@ signatures with the highest FDRs:
 tb = get_signature(res, k = ..., top_signatures = 500)
 ```
 
+If the signatures are defined as these which are uniquely high in current group, `diff_method` argument
+can be set to `"uniquely_high_in_one_group"`:
+
+```{r <%=chunk_prefix%>-signature-no-run3, eval = FALSE}
+# code only for demonstration
+tb = get_signature(res, k = ..., diff_method = "uniquely_high_in_one_group")
+```
+
 <% if(mc.cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()

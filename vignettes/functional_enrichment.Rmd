@@ -65,7 +65,7 @@ We check how the signature genes looks like under 4-group classification:
 
 ```{r, fig.width = 8, fig.height = 7, out.width = "500"}
 set.seed(123)
-get_signatures(res, k = 4)
+get_signatures(res, k = 4, row_km = 4)
 ```
 
 Rows are split into four groups with different expression patterns among

@@ -843,6 +843,11 @@ provides the following methods:
   method to find significantly different rows between subgroups.
 - `one_vs_others` For each subgroup $i$ in each row, it uses t-test to compare samples in current 
        subgroup to all other samples, denoted as $p_i$. The p-value for current row is selected as $min(p_i)$.
+- `uniquely_high_in_one_group` The signatures are defined as, if they are uniquely 
+    up-regulated in subgroup A, then it must fit followingcriterions: 1. in a two-group t-test of A ~ other_merged_groups, 
+    the statistic must be > 0 (high in group A) and p-value must be significant, 
+    and 2. for other groups (excluding A), t-test in every pair of groups should not be significant.
+
 
 Users can also provide their own method by providing a function with the
 matrix and subgroup labels as inputs and a vector of FDR as output.

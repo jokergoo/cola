@@ -1,0 +1,290 @@
+---
+title: "Compare two consensus partitioning results"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    fig_caption: true
+---
+
+<!-- 
+three objects are imported from outside: res1, res2 and k
+-->
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    echo = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.align = "center",
+    dev = "jpeg",
+    fig.width = 6,
+    fig.height = 6,
+    results = "hide"
+)
+```
+
+```{r, echo = FALSE}
+suppressPackageStartupMessages(library(ComplexHeatmap))
+suppressPackageStartupMessages(library(circlize))
+suppressPackageStartupMessages(library(GetoptLong))
+suppressPackageStartupMessages(library(eulerr))
+suppressPackageStartupMessages(library(cowplot))
+suppressPackageStartupMessages(library(cola))
+k = 2
+```
+
+
+```{r, echo = FALSE}
+method1 = paste0(res1@top_value_method, ":", res1@partition_method)
+method2 = paste0(res2@top_value_method, ":", res2@partition_method)
+anno = res1@anno
+anno_col = res1@anno_col
+
+class_col = cola:::brewer_pal_set2_col
+```
+
+## Top genes under different methods
+
+```{r, eval = res1@top_value_method != res2@top_value_method, fig.width = 6, fig.height = 3, fig.cap = qq("Figure 0.1. Top 1000 genes with the highest @{res1@top_value_method} and @{res2@top_value_method} values.")}
+mat = get_matrix(res1)
+top_rows_heatmap(mat, top_value_method = c(res1@top_value_method, res2@top_value_method), top_n = 1000)
+```
+
+```{r, eval = res1@top_value_method != res2@top_value_method, fig.width = 6, fig.height = 4}
+top_rows_overlap(mat, top_value_method = c(res1@top_value_method, res2@top_value_method), top_n = 1000)
+```
+
+### Compare classifications
+
+```{r, fig.height = 3, fig.width = 7, out.width = "600px", fig.cap = qq("Figure 1. Conseusus partitions from @{method1} and @{method2} methods.")}
+cl1 = get_classes(res1, k = k)[, 1]
+cl2 = get_classes(res2, k = k)[, 1]
+cl_mat = rbind(cl1, cl2)
+rownames(cl_mat) = c(method1, method2)
+cl_mat2 = cl_mat
+ht = Heatmap(cl_mat, 
+	name = "Class", col = class_col,
+	show_row_dend = FALSE, show_column_dend = FALSE,
+	column_order = order(cl1, cl2),
+	top_annotation = HeatmapAnnotation(df = anno, col = anno_col))
+draw(ht, heatmap_legend_side = "bottom", merge_legends = TRUE)
+```
+
+### PCA
+
+PCA plots with 2-group classification:
+
+```{r, fig.width = 14, fig.height = 7, fig.cap = qq("Figure 2. PCA plots for visualizing the two-group classification. Classification on the left plot is from @{method1} and on the right is from @{method2}.")}
+p1 = ~dimension_reduction(res1, method = "PCA", k = k)
+p2 = ~dimension_reduction(res2, method = "PCA", k = k)
+plot_grid(p1, p2, nrow = 1, labels = c("A", "B"))
+```
+
+### Signature genes (FDR < 0..05)
+
+Signature genes from 2-group classification:
+
+### {.tabset}
+
+#### `r method1`
+
+```{r, fig.width = 8, fig.height = 8, out.width = "600px", fig.cap = qq("Figure 3A. Signature genes from @{method1}.")}
+tb1 = get_signatures(res1, k = k, anno = anno, anno_col = anno_col)
+```
+
+#### `r method2`
+
+```{r, fig.width = 8, fig.height = 8, out.width = "600px", fig.cap = qq("Figure 3B. Signature genes from @{method2}.")}
+tb2 = get_signatures(res2, k = k, anno = anno, anno_col = anno_col)
+```
+
+###
+
+Overlap of the two signature gene lists:
+
+
+```{r, fig.width = 8, fig.height = 4, out.width = "600px", fig.cap = qq("Figure 4. Overlap of signature genes in @{method1} and @{method2}.")}
+lt = list(tb1$which, tb2$which); names(lt) = c(method1, method2)
+plot(euler(lt), quantities = TRUE)
+```
+
+The signature genes are put into three groups, termed as:
+
+- A: `r length(setdiff(tb1$which_row, tb2$which_row))` genes specific in `r method1`.
+- B: `r length(intersect(tb1$which_row, tb2$which_row))` genes common in `r method1` and `r method2`.
+- C: `r length(setdiff(tb2$which_row, tb1$which_row))` genes specific in `r method2`.
+
+```{r, fig.width = 15, fig.height = 6, fig.cap = qq("Figure 5. Heatmaps of @{method1} specific signatures, @{method2} specific signatures and common signatures in the two classifcations.")}
+mat = get_matrix(res1)
+col_fun = colorRamp2(c(-2, 0, 2), c("green", "white", "red"))
+anno_col$class = class_col
+anno_col[[method1]] = anno_col[[method2]] = anno_col$class
+set.seed(123)
+set1 = setdiff(tb1$which_row, tb2$which_row)
+mat1 = mat[set1, ]
+mat1_scaled = t(scale(t(mat[set1, ])))
+ht1 = Heatmap(mat1_scaled, name = "z-score", 
+	show_row_names = FALSE, col = col_fun, 
+	column_split = factor(paste(cl1, cl2, sep = ""), levels = c("11", "12", "21", "22")),
+	show_column_names = FALSE, show_row_dend = FALSE, show_column_dend = FALSE, cluster_column_slices = FALSE,
+	top_annotation = HeatmapAnnotation(df = cbind(t(cl_mat), anno), 
+		col = anno_col, show_legend = FALSE),
+	row_km = 2,
+	column_title = qq("@{method1} specific, @{length(set1)} genes"))
+p1 = grid.grabExpr(ht1 <- draw(ht1, merge_legends = TRUE))
+od1 = row_order(ht1)
+set1 = intersect(tb1$which_row, tb2$which_row)
+mat2 = mat[set1, ]
+mat2_scaled = t(scale(t(mat[set1, ])))
+ht2 = Heatmap(mat2_scaled, name = "z-score", 
+	show_row_names = FALSE, col = col_fun, 
+	column_split = factor(paste(cl1, cl2, sep = ""), levels = c("11", "12", "21", "22")),
+	show_column_names = FALSE, show_row_dend = FALSE, show_column_dend = FALSE, cluster_column_slices = FALSE,
+	top_annotation = HeatmapAnnotation(df = cbind(t(cl_mat), anno), 
+		col = anno_col, show_legend = FALSE),
+	row_km = 2,
+	column_title = qq("common, @{length(set1)} genes"))
+p2 = grid.grabExpr(ht2 <- draw(ht2, merge_legends = TRUE))
+od2 = row_order(ht2)
+set1 = setdiff(tb2$which_row, tb1$which_row)
+mat3 = mat[set1, ]
+mat3_scaled = t(scale(t(mat[set1, ])))
+ht3 = Heatmap(mat3_scaled, name = "z-score", 
+	show_row_names = FALSE, col = col_fun, 
+	column_split = factor(paste(cl1, cl2, sep = ""), levels = c("11", "21", "12", "22")),
+	show_column_names = FALSE, show_row_dend = FALSE, show_column_dend = FALSE, cluster_column_slices = FALSE,
+	top_annotation = HeatmapAnnotation(df = cbind(t(cl_mat), anno), 
+		col = anno_col, show_legend = FALSE),
+	row_km = 2,
+	column_title = qq("@{method2} specific, @{length(set1)} genes"))
+p3 = grid.grabExpr(ht3 <- draw(ht3, merge_legends = TRUE))
+od3 = row_order(ht3)
+plot_grid(p1, p2, p3, nrow = 1, labels = c("A", "B", "C"))
+```
+
+Gene Ontology enrichment to the three set of genes are performed by hypergenometric test
+(with the **clusterProfiler** package). I only use BP ontologies (Biological
+Process) and the significant GO terms are filtered by FDR < 0.01. The
+enriched GO terms are visualized as a heatmap in Figure 6 by their
+similarities between GO terms (with **GOSemSim** package). GO terms are split and
+clustered with the **simplifyEnrichment** package. The keywords of the summaries
+of GO functions in each cluster are visualized by word clouds.
+
+```{r}
+tb11 = functional_enrichment(rownames(mat1)[od1[["1"]]], ontology = "BP")[[1]]
+tb12 = functional_enrichment(rownames(mat1)[od1[["2"]]], ontology = "BP")[[1]]
+tb21 = functional_enrichment(rownames(mat2)[od2[["1"]]], ontology = "BP")[[1]]
+tb22 = functional_enrichment(rownames(mat2)[od2[["2"]]], ontology = "BP")[[1]]
+tb31 = functional_enrichment(rownames(mat3)[od3[["1"]]], ontology = "BP")[[1]]
+tb32 = functional_enrichment(rownames(mat3)[od3[["2"]]], ontology = "BP")[[1]]
+```    
+
+The most left heatmap illustrates the FDR of GO terms for each gene list. Red
+basically means significant.
+
+```{r, fig.width = 12, fig.height = 7, fig.cap = "Figure 6. Gene ontology enrichment on the three sets of genes illustrated in Figure 5."}
+ago = c(rownames(tb11), rownames(tb12), rownames(tb21), rownames(tb22), rownames(tb31), rownames(tb32))
+ago = unique(ago)
+pm = matrix(1, nrow = length(ago), ncol = 6)
+rownames(pm) = ago
+colnames(pm) = c(paste0("A1_", length(od1[["1"]]), "_genes"),
+	             paste0("A2_", length(od1[["2"]]), "_genes"),
+	             paste0("B1_", length(od2[["1"]]), "_genes"),
+	             paste0("B2_", length(od2[["2"]]), "_genes"),
+	             paste0("C1_", length(od3[["1"]]), "_genes"),
+	             paste0("C2_", length(od3[["1"]]), "_genes"))
+	              
+pm[tb11$ID, 1] = tb11$p.adjust
+pm[tb12$ID, 2] = tb12$p.adjust
+pm[tb21$ID, 3] = tb21$p.adjust
+pm[tb22$ID, 4] = tb22$p.adjust
+pm[tb31$ID, 5] = tb31$p.adjust
+pm[tb32$ID, 6] = tb32$p.adjust
+fdr_cutoff = 0.01
+pm = pm[apply(pm, 1, function(x) any(x < fdr_cutoff)), ]
+all_go_id = rownames(pm)
+
+library(simplifyEnrichment)
+sim_mat = GO_similarity(all_go_id)
+col_fun_p = colorRamp2(c(0, -log10(fdr_cutoff), 4), c("green", "white", "red"))
+ht_fdr = Heatmap(-log10(pm), col = col_fun_p, name = "FDR",
+	show_row_names = FALSE, cluster_columns = FALSE,
+	border = "black", column_title = "FDR",
+	heatmap_legend_param = list(at = c(0, -log10(fdr_cutoff), 4), 
+		labels = c("1", fdr_cutoff, "<0.0001")),
+	width = unit(3, "cm"))
+invisible(simplifyGO(sim_mat, ht_list = ht_fdr, word_cloud_grob_param = list(max_width = 120), verbose = FALSE))
+```
+
+
+
+### Gene Ontology enrichment (fdr < `r fdr_cutoff`) {.tabset}
+
+#### A (km_1, `r sum(tb11$p.adjust <= fdr_cutoff)` terms)
+
+```{r, results = "markup"}
+tb11$qvalue = NULL
+tb11$geneID = NULL
+knitr::kable(tb11[tb11$p.adjust <= fdr_cutoff, , drop = FALSE], digits = 4, row.names = FALSE)
+```
+
+#### A (km_2, `r sum(tb12$p.adjust <= fdr_cutoff)` terms)
+
+```{r, results = "markup"}
+tb12$qvalue = NULL
+tb12$geneID = NULL
+knitr::kable(tb12[tb12$p.adjust <= fdr_cutoff, , drop = FALSE], digits = 4, row.names = FALSE)
+```
+
+#### B (km_1, `r sum(tb21$p.adjust <= fdr_cutoff)` terms)
+
+```{r, results = "markup"}
+tb21$qvalue = NULL
+tb21$geneID = NULL
+knitr::kable(tb21[tb21$p.adjust <= fdr_cutoff, , drop = FALSE], digits = 4, row.names = FALSE)
+```
+
+#### B (km_2, `r sum(tb22$p.adjust <= fdr_cutoff)` terms)
+
+```{r, results = "markup"}
+tb22$qvalue = NULL
+tb22$geneID = NULL
+knitr::kable(tb22[tb22$p.adjust <= fdr_cutoff, , drop = FALSE], digits = 4, row.names = FALSE)
+```
+
+#### C (km_1, `r sum(tb31$p.adjust <= fdr_cutoff)` terms)
+
+```{r, results = "markup"}
+tb31$qvalue = NULL
+tb31$geneID = NULL
+knitr::kable(tb31[tb31$p.adjust <= fdr_cutoff, , drop = FALSE], digits = 4, row.names = FALSE)
+```
+
+#### C (km_2, `r sum(tb32$p.adjust <= fdr_cutoff)` terms)
+
+```{r, results = "markup"}
+tb32$qvalue = NULL
+tb32$geneID = NULL
+knitr::kable(tb32[tb32$p.adjust <= fdr_cutoff, , drop = FALSE], digits = 4, row.names = FALSE)
+```
+
+###
+
+<br>
+<br>
+<br>
+<br>
+
+<style>
+#gene-ontology-enrichment div {
+	max-height: 400px;
+	overflow-y: auto;
+}
+#gene-ontology-enrichment table td {
+	padding: 2px 4px;
+}
+#gene-ontology-enrichment table th {
+	padding: 2px 4px;
+}
+</style>
