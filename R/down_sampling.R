@@ -43,7 +43,8 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # -dist_method Method for predict the class for other columns.
 # -.env An environment, internally used.
 # -.predict Internally used.
-# -mc.cores Number of cores.
+# -mc.cores Number of cores. This argument will be removed in future versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 # -... All pass to `consensus_partition`.
 #
 # == details
@@ -70,7 +71,7 @@ consensus_partition_by_down_sampling = function(data,
 	subset = min(round(ncol(data)*0.2), 250),
 	verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
 	dist_method = c("euclidean", "correlation", "cosine"),
-	.env = NULL, .predict = TRUE, mc.cores = 1, ...) {
+	.env = NULL, .predict = TRUE, mc.cores = 1, cores = mc.cores, ...) {
 
 	if(is.null(.env)) {
 		if(is.data.frame(data)) data = as.matrix(data)
@@ -164,19 +165,19 @@ consensus_partition_by_down_sampling = function(data,
 	# top_value_list cannot be repetitively used here
 	.env$all_top_value_list = NULL
 	cp = consensus_partition(.env = .env, top_value_method = top_value_method, partition_method = partition_method, 
-		top_n = top_n, max_k = max_k, prefix = prefix, anno = anno2, anno_col = anno_col, mc.cores = mc.cores, ...)
+		top_n = top_n, max_k = max_k, prefix = prefix, anno = anno2, anno_col = anno_col, cores = cores, ...)
 
 	attr(cp, "full_anno") = anno
 	
 	if(.predict) {
-		obj = convert_to_DownSamplingConsensusPartition(cp, column_index, dist_method, verbose, prefix, mc.cores)
+		obj = convert_to_DownSamplingConsensusPartition(cp, column_index, dist_method, verbose, prefix, cores)
 		return(obj)
 	} else {
 		return(cp)
 	}
 }
 
-convert_to_DownSamplingConsensusPartition = function(cp, column_index, dist_method, verbose, prefix, mc.cores) {
+convert_to_DownSamplingConsensusPartition = function(cp, column_index, dist_method, verbose, prefix, cores) {
 
 	data = cp@.env$data[, column_index, drop = FALSE]
 
@@ -201,10 +202,10 @@ convert_to_DownSamplingConsensusPartition = function(cp, column_index, dist_meth
 		qqcat("@{prefix}* predict class for @{ncol(data)} samples with k = @{k}\n")
 		if(cp@scale_rows) {
 			cl[[as.character(k)]] = predict_classes(cp, k = k, data2, p_cutoff = Inf, dist_method = dist_method, 
-				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "), mc.cores = mc.cores)
+				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "), cores = cores)
 		} else {
 			cl[[as.character(k)]] = predict_classes(cp, k = k, data, p_cutoff = Inf, dist_method = dist_method, 
-				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "), mc.cores = mc.cores)
+				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "), cores = cores)
 		}
 	}
 

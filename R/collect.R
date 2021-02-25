@@ -10,7 +10,8 @@
 # -top_value_method A vector of top-value methods.
 # -partition_method A vector of partitioning methods.
 # -verbose Whether to print message.
-# -mc.cores Number of cores. On OSX it is enforced to be 1.
+# -mc.cores Number of cores. This argument will be removed in figure versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 # -... other Arguments passed to corresponding ``fun``.
 #
 # == details
@@ -39,7 +40,7 @@ setMethod(f = "collect_plots",
 	definition = function(object, k = 2, fun = consensus_heatmap,
 	top_value_method = object@top_value_method, 
 	partition_method = object@partition_method, 
-	verbose = TRUE, mc.cores = 1, ...) {
+	verbose = TRUE, mc.cores = 1, cores = mc.cores, ...) {
 
 	nv = length(dev.list())
 	on.exit({
@@ -50,16 +51,10 @@ setMethod(f = "collect_plots",
 		}
 	})
 
-	
 	fun_name = deparse(substitute(fun))
 	
 	comb = expand.grid(seq_along(top_value_method), seq_along(partition_method))
 	comb = comb[order(comb[, 1], comb[, 2]), , drop = FALSE]
-
-	if(!multicore_supported()) {
-		if(mc.cores > 1 && verbose) qqcat("* mc.cores is reset to 1 because mclapply() is not supported on this OS.\n")
-		mc.cores = 1
-	}
 
 	if(identical(fun, plot_ecdf) || fun_name %in% c("plot_ecdf", "dimension_reduction")) {
 		image_width = 500
@@ -70,9 +65,16 @@ setMethod(f = "collect_plots",
 		image_height = 800
 		resolution = NA
 	}
+
+	if(!multicore_supported()) {
+		if(get_nc(cores) > 1 && verbose) qqcat("* `cores` is reset to 1 because multi-core is not supported on this OS.\n")
+		cores = 1
+	}
 	
+	registerDoParallel(cores)
+
 	dev.null()
-	image = mclapply(seq_len(nrow(comb)), function(ind, ...) {
+	image <- foreach(ind = seq_len(nrow(comb))) %dopar% {
 		i = comb[ind, 1]
 		j = comb[ind, 2]
 
@@ -109,7 +111,8 @@ setMethod(f = "collect_plots",
 			    }
 			}
 		}
-	}, mc.cores = mc.cores, ...)
+	}
+	stopImplicitCluster()
 	dev.off2()
 
 	if(any(sapply(image, inherits, "try-error"))) {

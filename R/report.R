@@ -157,7 +157,8 @@ $( function() {
 # == param
 # -object A `ConsensusPartitionList-class` object.
 # -output_dir The output directory where the report is saved.
-# -mc.cores Multiple cores to use.
+# -mc.cores Multiple cores to use. This argument will be removed in future versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 # -title Title of the report.
 # -env Where the objects in the report are found, internally used.
 #
@@ -184,12 +185,12 @@ $( function() {
 # }
 setMethod(f = "cola_report",
 	signature = "ConsensusPartitionList",
-	definition = function(object, output_dir = getwd(), mc.cores = 1, 
+	definition = function(object, output_dir = getwd(), mc.cores = 1, cores = mc.cores,
 	title = "cola Report for Consensus Partitioning", env = parent.frame()) {
 
 	check_pkg("genefilter", bioc = TRUE)
 	var_name = deparse(substitute(object, env = env))
-	make_report(var_name, object, output_dir, mc.cores = mc.cores, title = title, class = "ConsensusPartitionList")
+	make_report(var_name, object, output_dir, cores = cores, title = title, class = "ConsensusPartitionList")
 
 })
 
@@ -223,18 +224,13 @@ setMethod(f = "cola_report",
 
 	check_pkg("genefilter", bioc = TRUE)
 	var_name = deparse(substitute(object, env = env))
-	make_report(var_name, object, output_dir, mc.cores = 1, title = title, class = "ConsensusPartition")
+	make_report(var_name, object, output_dir, cores = 1, title = title, class = "ConsensusPartition")
 })
 
 
 
 make_report = function(var_name, object, output_dir, title = "cola Report for Consensus Partitioning", 
-	mc.cores = 1, class = class(object), ask = FALSE) {
-
-	if(!multicore_supported()) {
-		if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
-		mc.cores = 1
-	}
+	cores = 1, class = class(object), ask = FALSE) {
 
 	if(identical(topenv(), .GlobalEnv)) {
 		stop_wrap("`cola_report()` cannot be run under test mode.")
@@ -268,7 +264,12 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	})
 
 	options(digits = 3)
-	
+
+	if(!multicore_supported()) {
+		if(cores > 1 && verbose) qqcat("* `cores` is reset to 1 because multi-core is not supported on this OS.\n")
+		cores = 1
+	}
+
 	report_template = file.path(TEMPLATE_DIR, template_file[class])
 
 	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)

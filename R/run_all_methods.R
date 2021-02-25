@@ -13,7 +13,8 @@
 # -top_n Number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
 #        the function only randomly sample 5000 rows from top n rows. If ``top_n`` is a vector, paritition
 #        will be applied to every values in ``top_n`` and consensus partition is summarized from all partitions.
-# -mc.cores Number of cores to use.
+# -mc.cores Number of cores to use. This argument will be removed in future versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 # -anno A data frame with known annotation of columns.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
@@ -53,7 +54,7 @@ run_all_consensus_partition_methods = function(data,
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
 		        min(3000, round(nrow(data)*0.3)), 
 		        length.out = 3),
-	mc.cores = 1, anno = NULL, anno_col = NULL,
+	mc.cores = 1, cores = mc.cores, anno = NULL, anno_col = NULL,
 	sample_by = "row", p_sampling = 0.8, partition_repeat = 50, 
 	scale_rows = NULL, verbose = TRUE, help = cola_opt$help) {
 
@@ -136,11 +137,6 @@ run_all_consensus_partition_methods = function(data,
 		anno_col = NULL
 	}
 
-	# if(!multicore_supported()) {
-	# 	if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
-	# 	mc.cores = 1
-	# }
-
 	comb = expand.grid(top_value_method, partition_method, stringsAsFactors = FALSE)
 	# comb = comb[sample(nrow(comb), nrow(comb)), ]
 	od = order(rep(sapply(partition_method, function(x) attr(get_partition_method(x), "execution_time")), each = length(top_value_method)), decreasing = TRUE)
@@ -154,7 +150,7 @@ run_all_consensus_partition_methods = function(data,
 		try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k,
 				anno = anno, anno_col = anno_col, .env = .env, verbose = verbose,
 				top_n = top_n, sample_by = sample_by, p_sampling = p_sampling, partition_repeat = partition_repeat, scale_rows = scale_rows,
-				mc.cores = mc.cores), qq("You have an error when doing partition for @{tm}:@{pm}."))
+				cores = cores), qq("You have an error when doing partition for @{tm}:@{pm}."))
 		return(res)
 	})
 	names(lt) = paste(comb[, 1], comb[, 2], sep = ":")

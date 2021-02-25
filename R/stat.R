@@ -8,7 +8,8 @@
 # -cor_fun A function which calculates correlations.
 # -min_cor Cutoff for the minimal absolute correlation.
 # -power Power on the correlation values.
-# -mc.cores Number of cores.
+# -mc.cores Number of cores. This argument will be removed in future versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 # -n_sampling When there are too many rows in the matrix, to get the curmulative
 #           distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000
 #           rows can already give a very nice estimation.
@@ -62,12 +63,8 @@
 # ATC_score = ATC(mat)
 # plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
 ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
-	mc.cores = 1, n_sampling = c(1000, 500), q_sd = 0, group = NULL, ...) {
-
-	# if(!multicore_supported()) {
-	# 	if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
-	# 	mc.cores = 1
-	# }
+	mc.cores = 1, cores = mc.cores, n_sampling = c(1000, 500), 
+	q_sd = 0, group = NULL, ...) {
 
 	if(!is.null(group)) {
 		if(length(group) != nrow(mat)) {
@@ -80,7 +77,7 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 				return(0)
 			} else {
 				ATC(mat[ind, , drop = FALSE], cor_fun = cor_fun, min_cor = min_cor, power = power,
-					mc.cores = mc.cores, n_sampling = n_sampling, q_sd = q_sd, group = NULL, ...)
+					cores = cores, n_sampling = n_sampling, q_sd = q_sd, group = NULL, ...)
 			}
 		})
 		v = numeric(nrow(mat))
@@ -105,15 +102,18 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 
 	mat = mat[, l, drop = FALSE]
 	
+	n_cores = get_nc(cores)
+
 	n = ncol(mat)
-	if(mc.cores > 1) {
-		le = cut(1:n, mc.cores)
+	if(n_cores > 1) {
+		le = cut(1:n, n_cores)
 		ind_list = split(1:n, le)
 	} else {
 		ind_list = list(1:n)
 	}
 
-	v_list = mclapply(ind_list, function(ind) {
+	registerDoParallel(cores)
+	v_list <- foreach(ind = ind_list) %dopar% {
 		v = numeric(length(ind))
 		for(i in seq_along(ind)) {
 			ind2 = seq_len(ncol(mat))[-ind[i]]
@@ -133,7 +133,8 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 			}
 		}
 		return(v)
-	}, mc.cores = mc.cores)
+	}
+	stopImplicitCluster()
 
 	v = do.call("c", v_list)
 	v = (1 - min_cor) - v

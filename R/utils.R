@@ -279,8 +279,7 @@ os_type <- function() {
 }
 
 multicore_supported = function() {
-	!(os_type() %in% c("osx", "windows"))
-	# !(os_type() %in% c("windows"))
+	!(os_type() %in% c("osx"))
 }
 
 
@@ -464,8 +463,13 @@ guess_best_km = function(mat, max_km = 15) {
 	}
 }
 
-
-
+get_nc = function(cl) {
+	if(is.numeric(cl)) {
+		cl
+	} else {
+		length(cl)
+	}
+}
 
 
 

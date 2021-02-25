@@ -203,7 +203,7 @@ Some important arguments in `hierarchical_partition()` are listed as follows:
 - `max_k`: Maximal number of groups to try for consensus partitioning.
   Normally this value should be set to a small value, because more subgroups
   will be found during the hierarchical consensus partitioning process.
-- `mc.cores`: `hierarchical_partition()` supports parallel computing. This is
+- `cores`: `hierarchical_partition()` supports parallel computing. This is
   the number of cores to use.
 
 The object `golub_cola_rh` is already generated and shipped in **cola** package, so we directly load it.

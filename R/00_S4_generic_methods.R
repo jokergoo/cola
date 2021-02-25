@@ -4,6 +4,7 @@ setGeneric('collect_classes', function(object, ...) standardGeneric('collect_cla
 setGeneric('top_rows_heatmap', function(object, ...) standardGeneric('top_rows_heatmap'))
 setGeneric('all_leaves', function(object, ...) standardGeneric('all_leaves'))
 setGeneric('get_membership', function(object, ...) standardGeneric('get_membership'))
+setGeneric('compare_partitions', function(object, ...) standardGeneric('compare_partitions'))
 setGeneric('is_leaf_node', function(object, ...) standardGeneric('is_leaf_node'))
 setGeneric('get_stats', function(object, ...) standardGeneric('get_stats'))
 setGeneric('plot_ecdf', function(object, ...) standardGeneric('plot_ecdf'))

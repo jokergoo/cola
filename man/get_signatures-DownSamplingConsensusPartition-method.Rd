@@ -13,7 +13,7 @@ Get signature rows
     group_diff = cola_opt$group_diff,
     scale_rows = object@scale_rows,
     row_km = NULL,
-    diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
+    diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others", "uniquely_high_in_one_group"),
     anno = get_anno(object),
     anno_col = get_anno_col(object),
     internal = FALSE,

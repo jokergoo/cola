@@ -82,7 +82,7 @@ setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
 	definition = function(object, merge_node = merge_node_param(),
 	group_diff = cola_opt$group_diff,
-	row_km = NULL,
+	row_km = NULL, diff_method = "Ftest", fdr_cutoff = cola_opt$fdr_cutoff,
 	scale_rows = object[1]@scale_rows, 
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
@@ -98,22 +98,31 @@ setMethod(f = "get_signatures",
 	alf = all_leaves(object, merge_node)
 	ap = setdiff(all_nodes(object, merge_node), alf)
 
-	sig_lt = list()
-	.env = object@list[[1]]@.env
-	for(p in ap) {
-		best_k = suggest_best_k(object[[p]])
-		if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
-		sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = verbose, plot = FALSE, simplify = TRUE, seed = seed, ...)
-		if(is.null(.env$signature_hash)) {
-    		.env$signature_hash = list()
-    	}
-    	.env$signature_hash[[p]] = attr(sig_tb, "hash")
-    	
-		sig_lt[[p]] = sig_tb
-		# if(verbose) qqcat("  * find @{nrow(sig_tb)} signatures at node @{p}\n")
-	}
+	if(diff_method == "uniquely_high_in_one_group") {
+		mat = object@.env$data
+		if(scale_rows) {
+			mat = t(scale(t(mat)))
+		}
+		fdr = uniquely_high_in_one_group(mat, get_classes(object, merge_node))
+		all_index = which(fdr < cutoff)
+	} else {
+		sig_lt = list()
+		.env = object@list[[1]]@.env
+		for(p in ap) {
+			best_k = suggest_best_k(object[[p]])
+			if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
+			sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = verbose, plot = FALSE, simplify = TRUE, seed = seed, diff_method = diff_method, fdr_cutoff = fdr_cutoff, ...)
+			if(is.null(.env$signature_hash)) {
+	    		.env$signature_hash = list()
+	    	}
+	    	.env$signature_hash[[p]] = attr(sig_tb, "hash")
+	    	
+			sig_lt[[p]] = sig_tb
+			# if(verbose) qqcat("  * find @{nrow(sig_tb)} signatures at node @{p}\n")
+		}
 
-	all_index = sort(unique(unlist(lapply(sig_lt, function(x) x[, 1]))))
+		all_index = sort(unique(unlist(lapply(sig_lt, function(x) x[, 1]))))
+	}
 
 	returned_df = data.frame(which_row = all_index)
 
@@ -409,7 +418,7 @@ setMethod(f = "collect_classes",
 	}
 
 	cl = get_classes(object, merge_node)
-	dend = calc_dend(object, merge_node)
+	dend = object@subgroup_dend
 
 	ht_list = Heatmap(cl, name = "Class", col = object@subgroup_col, width = unit(5, "mm"),
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
@@ -745,7 +754,8 @@ print.hc_table_suggest_best_k = function(x, ...) {
 # == param
 # -object A `HierarchicalPartition-class` object.
 # -output_dir The output directory where the report is put.
-# -mc.cores Multiple cores to use.
+# -mc.cores Multiple cores to use. This argument will be removed in future versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 # -title Title of the report.
 # -env Where the objects in the report are found, internally used.
 #
@@ -767,7 +777,7 @@ print.hc_table_suggest_best_k = function(x, ...) {
 # }
 setMethod(f = "cola_report",
 	signature = "HierarchicalPartition",
-	definition = function(object, output_dir = getwd(), mc.cores = 1,
+	definition = function(object, output_dir = getwd(), mc.cores = 1, cores = mc.cores,
 	title = qq("cola Report for Hierarchical Partitioning"), 
 	env = parent.frame()) {
 
@@ -785,7 +795,7 @@ setMethod(f = "cola_report",
 	check_pkg("genefilter", bioc = TRUE)
 
 	var_name = deparse(substitute(object, env = env))
-	make_report(var_name, object, output_dir, mc.cores = mc.cores, title = title, class = "HierarchicalPartition")
+	make_report(var_name, object, output_dir, cores = cores, title = title, class = "HierarchicalPartition")
 })
 
 

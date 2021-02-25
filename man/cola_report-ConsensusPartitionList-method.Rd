@@ -7,14 +7,15 @@ Make HTML report from the ConsensusPartitionList object
 Make HTML report from the ConsensusPartitionList object
 }
 \usage{
-\S4method{cola_report}{ConsensusPartitionList}(object, output_dir = getwd(), mc.cores = 1,
+\S4method{cola_report}{ConsensusPartitionList}(object, output_dir = getwd(), mc.cores = 1, cores = mc.cores,
     title = "cola Report for Consensus Partitioning", env = parent.frame())
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartitionList-class}} object.}
   \item{output_dir}{The output directory where the report is saved.}
-  \item{mc.cores}{Multiple cores to use.}
+  \item{mc.cores}{Multiple cores to use. This argument will be removed in future versions.}
+  \item{cores}{Multiple cores to use.}
   \item{title}{Title of the report.}
   \item{env}{Where the objects in the report are found, internally used.}
 

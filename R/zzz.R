@@ -8,6 +8,10 @@ Github page: https://github.com/jokergoo/cola
 Documentation: https://jokergoo.github.io/cola/
 Examples: https://jokergoo.github.io/cola_collection/
 
+If you use it in published research, please cite:
+Gu, Z. cola: an R/Bioconductor package for consensus partitioning 
+  through a general framework. Nucleic Acids Research 2020.
+
 This message can be suppressed by:
   suppressPackageStartupMessages(library(cola))
 ========================================
@@ -15,3 +19,5 @@ This message can be suppressed by:
 
     packageStartupMessage(msg)
 }
+
+utils::globalVariables(c("ind", "x"))

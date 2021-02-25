@@ -10,7 +10,7 @@ Collect plots from ConsensusPartitionList object
 \S4method{collect_plots}{ConsensusPartitionList}(object, k = 2, fun = consensus_heatmap,
     top_value_method = object@top_value_method,
     partition_method = object@partition_method,
-    verbose = TRUE, mc.cores = 1, ...)
+    verbose = TRUE, mc.cores = 1, cores = mc.cores, ...)
 }
 \arguments{
 
@@ -20,7 +20,8 @@ Collect plots from ConsensusPartitionList object
   \item{top_value_method}{A vector of top-value methods.}
   \item{partition_method}{A vector of partitioning methods.}
   \item{verbose}{Whether to print message.}
-  \item{mc.cores}{Number of cores. On OSX it is enforced to be 1.}
+  \item{mc.cores}{Number of cores. This argument will be removed in figure versions.}
+  \item{cores}{Number of cores.}
   \item{...}{other Arguments passed to corresponding \code{fun}.}
 
 }

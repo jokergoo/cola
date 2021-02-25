@@ -26,6 +26,8 @@ opts_chunk$set(
 suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
 ht_opt$message = FALSE
+
+n_cores = get_nc(cores)
 ```
 
 <% res = object -%>
@@ -79,11 +81,11 @@ message(qq("* making density heatmap of global distribution for each sample (@{n
 library(ComplexHeatmap)
 <% if(is.null(get_anno(res))) { -%>
 densityHeatmap(mat, ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
-    mc.cores = <%=mc.cores%>)
+    mc.cores = <%=n_cores%>)
 <% } else { -%>
 densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res), 
     col = get_anno_col(res)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
-    mc.cores = <%=mc.cores%>)
+    mc.cores = <%=n_cores%>)
 <% } -%>
 ```
 

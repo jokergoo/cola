@@ -11,7 +11,7 @@ m = cbind(rbind(matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
               matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
               matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
        ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-cola_rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40))
+cola_rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40), cores = 2)
 
 
 ############# golub_cola ##############
@@ -35,7 +35,7 @@ rownames(m) = rn
 
 set.seed(123)
 golub_cola = run_all_consensus_partition_methods(
-    m, mc.cores = 2, 
+    m, cores = 2, 
     anno = anno[, c("ALL.AML"), drop = FALSE],
     anno_col = c("ALL" = "red", "AML" = "blue")
 )
@@ -45,7 +45,7 @@ golub_cola = run_all_consensus_partition_methods(
 m = get_matrix(golub_cola)
 set.seed(123)
 golub_cola_rh = hierarchical_partition(
-    m, mc.cores = 2, 
+    m, cores = 2, 
     anno = anno[, c("ALL.AML"), drop = FALSE],
     anno_col = c("ALL" = "red", "AML" = "blue")
 )
@@ -79,5 +79,5 @@ m = cbind(rbind(matrix(rnorm(20*20, mean = 2, sd = 0.3), nr = 20),
                 matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
                 matrix(rnorm(20*20, mean = 1, sd = 0.3), nr = 20))
          ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-cola_rh = hierarchical_partition(m, top_n = c(20, 30, 40), PAC_cutoff = 0.3)
+cola_rh = hierarchical_partition(m, top_n = c(20, 30, 40), PAC_cutoff = 0.3, cores = 2)
 

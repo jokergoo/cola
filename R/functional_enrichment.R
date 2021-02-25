@@ -188,29 +188,16 @@ setMethod(f = "functional_enrichment",
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
 
     id_mapping = id_mapping
-    mc.cores = 1 # not supported
+    
+    lt = list()
+    for(i in seq_along(object@list)) {
+        nm = names(object@list)[i]
 
-    if(mc.cores == 1) {
-        lt = list()
-        for(i in seq_along(object@list)) {
-            nm = names(object@list)[i]
-
-            best_k = suggest_best_k(object@list[[i]])
-            cat("-----------------------------------------------------------\n")
-            qqcat("* enrich signature genes (k = @{best_k}) to @{ontology} terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
-            lt[[nm]] = functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
-                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", ontology = ontology, ...)
-        }
-    } else {
-        lt = mclapply(seq_along(object@list), function(i) {
-            nm = names(object@list)[i]
-
-            best_k = suggest_best_k(object@list[[i]])
-            qqcat("* enrich signature genes (k = @{best_k}) to @{ontology} terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
-            functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
-                min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", verbose = FALSE, ontology = ontology, ...)
-        }, mc.cores = mc.cores)
-        names(lt) = names(object@list)
+        best_k = suggest_best_k(object@list[[i]])
+        cat("-----------------------------------------------------------\n")
+        qqcat("* enrich signature genes (k = @{best_k}) to @{ontology} terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
+        lt[[nm]] = functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
+            min_set_size = min_set_size, max_set_size = max_set_size, prefix = "  ", ontology = ontology, ...)
     }
 
     return(lt)

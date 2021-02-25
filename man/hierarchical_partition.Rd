@@ -18,7 +18,7 @@ hierarchical_partition(data,
     PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
     min_n_signatures = round(nrow(data)*min_p_signatures),
     min_p_signatures = 0.01,
-    max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...)
+    max_k = 4, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...)
 }
 \arguments{
 
@@ -36,7 +36,8 @@ hierarchical_partition(data,
   \item{min_p_signatures}{Minimal proportion of signatures under the best classification. If the corresponding values are smaller than both \code{min_n_signatures} and \code{min_p_signatures}, the hierarchical partitioning stops on that node.}
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}
   \item{verbose}{whether print message.}
-  \item{mc.cores}{multiple cores to use. }
+  \item{mc.cores}{multiple cores to use. This argument will be removed in future versions.}
+  \item{cores}{multiple cores to use. }
   \item{help}{Whether to show the help message.}
   \item{...}{pass to \code{\link{consensus_partition}}}
 

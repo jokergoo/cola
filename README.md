@@ -92,7 +92,7 @@ rl = run_all_consensus_partition_methods(
     mat, 
     top_value_method = c("SD", "MAD", ...),
     partition_method = c("hclust", "kmeans", ...),
-    mc.cores = ...)
+    cores = ...)
 cola_report(rl, output_dir = ...)
 ```
 

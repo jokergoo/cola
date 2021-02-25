@@ -22,7 +22,8 @@
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -scale_rows Whether to scale rows. If it is ``TRUE``, scaling method defined in `register_partition_methods` is used.
 # -verbose Whether print messages.
-# -mc.cores Multiple cores to use.
+# -mc.cores Multiple cores to use. This argument will be removed in future versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 # -prefix Internally used.
 # -.env An environment, internally used.
 # -help Whether to print help messages.
@@ -75,7 +76,7 @@ consensus_partition = function(data,
 	anno_col = NULL,
 	scale_rows = NULL,
 	verbose = TRUE,
-	mc.cores = 1,
+	mc.cores = 1, cores = mc.cores,
 	prefix = "",
 	.env = NULL,
 	help = cola_opt$help) {
@@ -102,11 +103,6 @@ consensus_partition = function(data,
 		}
 	}
 
-	# if(!multicore_supported()) {
-	# 	if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
-	# 	mc.cores = 1
-	# }
-
 	t = system.time(res <- .consensus_partition(
 		data = data,
 		top_value_method = top_value_method,
@@ -121,7 +117,7 @@ consensus_partition = function(data,
 		anno_col = anno_col,
 		scale_rows = scale_rows,
 		verbose = verbose,
-		mc.cores = mc.cores,
+		cores = cores,
 		prefix = prefix,
 		.env = .env))
 	res@hash = digest(res)
@@ -150,7 +146,7 @@ consensus_partition = function(data,
 	anno_col = NULL,
 	scale_rows = NULL,
 	verbose = TRUE,
-	mc.cores = 1,
+	cores = 1,
 	prefix = "",
 	.env = NULL) {
 
@@ -254,7 +250,7 @@ consensus_partition = function(data,
 
 	get_top_value_fun = get_top_value_method(top_value_method)
 	if(top_value_method == "ATC") {
-		get_top_value_fun = function(mat) ATC(mat, mc.cores = mc.cores)
+		get_top_value_fun = function(mat) ATC(mat, cores = cores)
 	}
 
 	# also since one top value metric will be used for different partition methods,
@@ -320,6 +316,7 @@ consensus_partition = function(data,
 	# now we do repetitive clustering
 	param = data.frame(top_n = numeric(0), k = numeric(0), n_row = numeric(0))
 	partition_list = list()
+	n_cores = get_nc(cores)
 
 	sample_by = match.arg(sample_by)[1]
 	for(i in seq_len(length(top_n))) {
@@ -332,9 +329,10 @@ consensus_partition = function(data,
 			if(verbose) qqcat("@{prefix}* get top @{top_n[i]} rows by @{top_value_method} method\n")
 		}
 
-		if(verbose && mc.cores > 1) qqcat("@{prefix}  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{mc.cores} cores).\n")
+		if(verbose && n_cores > 1) qqcat("@{prefix}  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{n_cores} cores).\n")
 
-		lt = mclapply(seq_len(partition_repeat), function(j) {
+		registerDoParallel(cores)
+		lt <- foreach(j = seq_len(partition_repeat)) %dopar% {
 
 			param = data.frame(top_n = numeric(0), k = numeric(0), n_row = numeric(0))
 			partition_list = list()
@@ -348,7 +346,7 @@ consensus_partition = function(data,
 				mat = data[ind, , drop = FALSE]
 			}
 			for(y in k) {
-				if(interactive() && verbose && mc.cores == 1) {
+				if(interactive() && verbose && n_cores == 1) {
 					msg = qq("@{prefix}  [k = @{y}] @{partition_method} repeated for @{j}@{ifelse(j %% 10 == 1, 'st', ifelse(j %% 10 == 2, 'nd', ifelse(j %% 10 == 3, 'rd', 'th')))} @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows.")
 					cat(strrep("\r", nchar(msg)))
 					cat(msg)
@@ -358,13 +356,14 @@ consensus_partition = function(data,
 			}
 
 			return(list(param = param, partition_list = partition_list))
-		}, mc.cores = mc.cores)
-	
+		}
+		stopImplicitCluster()
+
 		for(i in seq_along(lt)) {
 			param = rbind(param, lt[[i]]$param)
 			partition_list = c(partition_list, lt[[i]]$partition_list)
 		}
-		if(interactive() && verbose && mc.cores == 1) cat("\n")
+		if(interactive() && verbose && n_cores == 1) cat("\n")
 	}
 
 	construct_consensus_object = function(param, partition_list, k, prefix = "  - ", verbose = TRUE) {

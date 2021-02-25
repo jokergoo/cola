@@ -28,8 +28,8 @@ partitioning with *cola*, you only need to run following code:
 ```{r, eval = FALSE}
 # code only for demonstration
 mat = adjust_matrix(mat)  # optional
-rl = run_all_consensus_partition_methods(mat, mc.cores = ...)
-cola_report(rl, output_dir = ..., mc.cores = ...)
+rl = run_all_consensus_partition_methods(mat, cores = ...)
+cola_report(rl, output_dir = ..., cores = ...)
 ```
 
 In above code, there are three steps:
@@ -55,7 +55,7 @@ a specific top-value methods (e.g. SD) and partitioning methods (e.g. skmeans) b
 
 ```{r, eval = FALSE}
 res = consensus_partition(mat, top_value_method = ..., partition_method = ...)
-cola_report(res, output_dir = ..., mc.cores = ...)
+cola_report(res, output_dir = ..., cores = ...)
 ```
 
 For extremely large datasets, users can run `consensus_partition_by_down_sampling()` by randomly 
@@ -66,7 +66,7 @@ can be found in the vignette ["Work with Big Datasets"](working_with_big_dataset
 ```{r, eval = FALSE}
 res = consensus_partition_by_down_sampling(mat, subset = ...,
     top_value_method = ..., partition_method = ...)
-cola_report(res, output_dir = ..., mc.cores = ...)
+cola_report(res, output_dir = ..., cores = ...)
 ```
 
 There are examples on real datasets for _cola_ analysis that can be found at https://jokergoo.github.io/cola_collection/.

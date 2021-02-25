@@ -1,8 +1,8 @@
 Package: cola
 Type: Package
 Title: A Framework for Consensus Partitioning
-Version: 1.9.0.1015
-Date: 2021-2-7
+Version: 1.9.0.1016
+Date: 2021-2-25
 Author: Zuguang Gu
 Maintainer: Zuguang Gu <z.gu@dkfz.de>
 Depends: R (>= 3.6.0)
@@ -35,7 +35,9 @@ Imports: grDevices,
          brew,
          Rcpp (>= 0.11.0),
          BiocGenerics,
-         eulerr
+         eulerr,
+         foreach,
+         doParallel
 Suggests: genefilter,
           mvtnorm,
           testthat (>= 0.3),
@@ -55,7 +57,10 @@ Suggests: genefilter,
           BiocManager,
           data.tree,
           dendextend,
-          Polychrome
+          Polychrome,
+          rmarkdown,
+          simplifyEnrichment,
+          cowplot
 Description: Subgroup classification is a basic task in
   genomic data analysis, especially for gene expression and DNA methylation data
   analysis. It can also be used to test the agreement to known clinical

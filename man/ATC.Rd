@@ -8,7 +8,8 @@ Ability to correlate to other rows
 }
 \usage{
 ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
-    mc.cores = 1, n_sampling = c(1000, 500), q_sd = 0, group = NULL, ...)
+    mc.cores = 1, cores = mc.cores, n_sampling = c(1000, 500),
+    q_sd = 0, group = NULL, ...)
 }
 \arguments{
 
@@ -16,7 +17,8 @@ ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
   \item{cor_fun}{A function which calculates correlations.}
   \item{min_cor}{Cutoff for the minimal absolute correlation.}
   \item{power}{Power on the correlation values.}
-  \item{mc.cores}{Number of cores.}
+  \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
+  \item{cores}{Number of cores.}
   \item{n_sampling}{When there are too many rows in the matrix, to get the curmulative distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000 rows can already give a very nice estimation.}
   \item{q_sd}{Percentile of the standard deviation for the rows. Rows with values less than it are ignored.}
   \item{group}{A categorical variable. If it is specified, the correlation is only calculated for the rows in the same group as current row.}

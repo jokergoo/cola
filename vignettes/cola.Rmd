@@ -187,14 +187,14 @@ combination of methods gives the best prediction of subgroups.
 In `run_all_consensus_partition_methods()`, most of the arguments are the same
 as in `consensus_partition()`, except `top_value_method` and
 `partition_method` now accept a vector of method names and multiple cores can
-be set by `mc.cores` argument.
+be set by `cores` argument.
 
 ```{r, eval = FALSE}
 # code is only for demonstration
 rl = run_all_consensus_partition_methods(mat, 
     top_value_method = c("SD", "MAD", ...),
     partition_method = c("hclust", "kmeans", ...),
-    mc.cores = ...)
+    cores = ...)
 cola_report(rl, output_dir = ...)
 ```
 
@@ -882,7 +882,7 @@ methods simultaneously:
 rl = run_all_consensus_partition_methods(mat, 
     top_value_method = c("SD", "MAD", ...),
     partition_method = c("hclust", "kmeans", ...),
-    mc.cores = ...)
+    cores = ...)
 ```
 
 By default it runs analysis for all combinations of top-value methods in
@@ -1079,7 +1079,7 @@ code are enough for you.
 ```{r, eval = FALSE}
 # code is only for demonstration
 mat = adjust_matrix(mat) # for some datasets, you don't need this line.
-rl = run_all_consensus_partition_methods(mat, mc.cores = ...)
+rl = run_all_consensus_partition_methods(mat, cores = ...)
 cola_report(rl, output_dir = ...) # Alles ist da!
 ```
 

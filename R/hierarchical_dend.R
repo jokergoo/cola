@@ -15,7 +15,7 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 	for(i in seq_len(nrow(hierarchy))) {
 		lt[[ hierarchy[i, 2] ]] = lt[[ hierarchy[i, 1] ]]$AddChildNode({
 			node = data.tree::Node$new(hierarchy[i, 2])
-			node$node_height = max_depth - nchar(hierarchy[i, 2])
+			node$height = max_depth - nchar(hierarchy[i, 2])
 			node
 		})
 		l = hierarchy[, 1] == hierarchy[i, 2]
@@ -68,6 +68,8 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 			d
 		})
 	}
+
+
 	
 	tb = table(hierarchy)
 	ap = names(tb[tb > 1])

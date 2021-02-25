@@ -9,7 +9,7 @@ Predict classes for new samples based on signature centroid matrix
 \usage{
 \S4method{predict_classes}{matrix}(object, mat, dist_method = c("euclidean", "correlation", "cosine"),
     nperm = 1000, p_cutoff = 0.05, plot = TRUE, col_fun = NULL, split_by_sigatures = FALSE,
-    verbose = TRUE, prefix = "", mc.cores = 1)
+    verbose = TRUE, prefix = "", mc.cores = 1, cores = mc.cores)
 }
 \arguments{
 
@@ -23,7 +23,8 @@ Predict classes for new samples based on signature centroid matrix
   \item{verbose}{Whether to print messages.}
   \item{split_by_sigatures}{Should the heatmaps be split based on k-means on the main heatmap, or on the patterns of the signature heatmap.}
   \item{prefix}{Used internally.}
-  \item{mc.cores}{Number of cores.}
+  \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
+  \item{cores}{Number of cores.}
 
 }
 \details{

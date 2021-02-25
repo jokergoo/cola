@@ -16,7 +16,8 @@ Predict classes for new samples based on cola classification
     dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
     p_cutoff = 0.05, plot = TRUE, col_fun = NULL,
     split_by_sigatures = FALSE, force = FALSE,
-    verbose = TRUE, help = TRUE, prefix = "", mc.cores = 1)
+    verbose = TRUE, help = TRUE, prefix = "",
+    mc.cores = 1, cores = mc.cores)
 }
 \arguments{
 
@@ -38,7 +39,8 @@ Predict classes for new samples based on cola classification
   \item{verbose}{Whether to print messages. Send to \code{\link{predict_classes,matrix-method}}.}
   \item{help}{Whether to print help messages.}
   \item{prefix}{Used internally.}
-  \item{mc.cores}{Number of cores.}
+  \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
+  \item{cores}{Number of cores.}
 
 }
 \details{

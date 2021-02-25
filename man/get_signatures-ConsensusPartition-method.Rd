@@ -14,7 +14,7 @@ Get signature rows
     group_diff = cola_opt$group_diff,
     scale_rows = object@scale_rows,
     row_km = NULL,
-    diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others"),
+    diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others", "uniquely_high_in_one_group"),
     anno = get_anno(object),
     anno_col = get_anno_col(object),
     internal = FALSE,
@@ -51,7 +51,7 @@ Get signature rows
   \item{seed}{Random seed.}
   \item{left_annotation}{Annotation put on the left of the heatmap. It should be a \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.  The number of items should be the same as the number of the original matrix rows. The subsetting to the significant  rows are automatically performed on the annotation object.}
   \item{right_annotation}{Annotation put on the right of the heatmap. Same format as \code{left_annotation}.}
-  \item{col}{Colors.}
+  \item{col}{Colors for the main heatmap.}
   \item{simplify}{Only used internally.}
   \item{prefix}{Only used internally.}
   \item{enforce}{The analysis is cached by default, so that the analysis with the same input will be automatically extracted without rerunning them. Set \code{enforce} to \code{TRUE} to enforce the funtion to re-perform the analysis.}
@@ -68,6 +68,7 @@ row. There are following methods which test significance of the difference:
   \item{samr/pamr}{use SAM (from samr package)/PAM (from pamr package) method to find significantly different rows between subgroups.}
   \item{Ftest}{use F-test to find significantly different rows between subgroups.}
   \item{one_vs_others}{For each subgroup i in each row, it uses t-test to compare samples in current  subgroup to all other samples, denoted as p_i. The p-value for current row is selected as min(p_i).}
+  \item{uniquely_high_in_one_group}{The signatures are defined as, if they are uniquely up-regulated in subgroup A, then it must fit following criterions: 1. in a two-group t-test of A ~ other_merged_groups, the statistic must be > 0 (high in group A) and p-value must be significant,  and 2. for other groups (excluding A), t-test in every pair of groups should not be significant.}
 }
 
 \code{diff_method} can also be a self-defined function. The function needs two arguments which are the matrix for the analysis

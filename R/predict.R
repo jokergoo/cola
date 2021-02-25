@@ -24,7 +24,8 @@
 # -verbose Whether to print messages. Send to `predict_classes,matrix-method`.
 # -help Whether to print help messages.
 # -prefix Used internally.
-# -mc.cores Number of cores.
+# -mc.cores Number of cores. This argument will be removed in future versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 #
 # == details
 # The prediction is based on the signature centroid matrix from cola classification. The processes are as follows:
@@ -73,7 +74,8 @@ setMethod(f = "predict_classes",
 	dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
 	p_cutoff = 0.05, plot = TRUE, col_fun = NULL, 
 	split_by_sigatures = FALSE, force = FALSE, 
-	verbose = TRUE, help = TRUE, prefix = "", mc.cores = 1) {
+	verbose = TRUE, help = TRUE, prefix = "", 
+	mc.cores = 1, cores = mc.cores) {
 
 	if(help) {
 		if(object@scale_rows) {
@@ -162,7 +164,7 @@ setMethod(f = "predict_classes",
 	
 	predict_classes(sig_mat, mat, nperm = nperm, dist_method = dist_method, p_cutoff = p_cutoff, 
 		plot = plot, col_fun = col_fun, split_by_sigatures = split_by_sigatures, 
-		verbose = verbose, prefix = prefix, mc.cores = mc.cores)
+		verbose = verbose, prefix = prefix, cores = cores)
 })
 
 
@@ -182,7 +184,8 @@ setMethod(f = "predict_classes",
 # -verbose Whether to print messages.
 # -split_by_sigatures Should the heatmaps be split based on k-means on the main heatmap, or on the patterns of the signature heatmap.
 # -prefix Used internally.
-# -mc.cores Number of cores.
+# -mc.cores Number of cores. This argument will be removed in future versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 #
 # == details
 # The signature centroid matrix is a k-column matrix where each column is the centroid of samples 
@@ -235,7 +238,7 @@ setMethod(f = "predict_classes",
 	signature = "matrix",
 	definition = function(object, mat, dist_method = c("euclidean", "correlation", "cosine"), 
 	nperm = 1000, p_cutoff = 0.05, plot = TRUE, col_fun = NULL, split_by_sigatures = FALSE,
-	verbose = TRUE, prefix = "", mc.cores = 1) {
+	verbose = TRUE, prefix = "", mc.cores = 1, cores = mc.cores) {
 
 	sig_mat = object
 
@@ -273,13 +276,19 @@ setMethod(f = "predict_classes",
 # 			if(verbose) counter()
 # 		}
 
-		if(mc.cores > 1) {
-			interval = seq(1, nperm, length = mc.cores + 1)
+		n_cores = get_nc(cores)
+
+		if(n_cores > 1) {
+			interval = seq(1, nperm, length = n_cores + 1)
 			len = floor(diff(interval))
 			len[1] = nperm - sum(len) + len[1]
-			diff_ratio_r = do.call(cbind, mclapply(len, function(x) {
+
+			registerDoParallel(cores)
+			diff_ratio_r = do.call(cbind, { foreach (x = len) %dopar% {
 				cal_diff_ratio_r(t(mat), t(sig_mat), x, dm)
-			}))
+			}})
+			stopImplicitCluster()
+
 		} else {
 			diff_ratio_r = cal_diff_ratio_r(t(mat), t(sig_mat), nperm, dm)
 		}

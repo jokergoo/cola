@@ -1,6 +1,7 @@
-
 Changes in version 1.9.1
 + add `uniquely_high_in_one_group` method in `get_signatures()`.
++ add `compare_partitions()`.
++ parallel computing is implemented with foreach + doParallel
 
 Changes in version 1.9.0
 + use row/column* family functions in `adjust_matrix()` to reduce the memory

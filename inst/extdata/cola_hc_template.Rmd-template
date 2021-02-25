@@ -26,6 +26,8 @@ opts_chunk$set(
 suppressPackageStartupMessages(library(ComplexHeatmap))
 suppressPackageStartupMessages(library(genefilter))
 ht_opt$message = FALSE
+
+n_cores = cola:::get_nc(cores)
 ```
 
 <% res_hc = object -%>
@@ -86,11 +88,11 @@ message(qq("* making density heatmap of global distribution for each sample (@{n
 library(ComplexHeatmap)
 <% if(is.null(get_anno(res_hc))) { -%>
 densityHeatmap(mat, ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
-    mc.cores = <%=mc.cores%>)
+    mc.cores = <%=n_cores%>)
 <% } else { -%>
 densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hc), 
     col = get_anno_col(res_hc)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
-    mc.cores = <%=mc.cores%>)
+    mc.cores = <%=n_cores%>)
 <% } -%>
 ```
 
@@ -367,7 +369,9 @@ n_section = length(all_parents)
 i_section = 0
 .e = environment()
 all_k = res_hc@list[[1]]@k
-md_list = mclapply(seq_along(all_parents), function(ind) {
+registerDoParallel(cores)
+
+md_list <- foreach (ind = seq_along(all_parents)) %dopar% {
     i_section = ind
     node = all_parents[ind]
     top_value_method = res_hc[[node]]@top_value_method
@@ -387,7 +391,8 @@ md_list = mclapply(seq_along(all_parents), function(ind) {
     }
     dev.off()
     return(txt)
-}, mc.cores = mc.cores)
+}
+stopImplicitCluster()
 
 for(i in seq_along(md_list)) {
     cat(md_list[[i]], "\n")

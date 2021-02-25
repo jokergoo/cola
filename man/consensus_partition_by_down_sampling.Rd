@@ -17,7 +17,7 @@ consensus_partition_by_down_sampling(data,
     subset = min(round(ncol(data)*0.2), 250),
     verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
     dist_method = c("euclidean", "correlation", "cosine"),
-    .env = NULL, .predict = TRUE, mc.cores = 1, ...)
+    .env = NULL, .predict = TRUE, mc.cores = 1, cores = mc.cores, ...)
 }
 \arguments{
 
@@ -34,7 +34,8 @@ consensus_partition_by_down_sampling(data,
   \item{dist_method}{Method for predict the class for other columns.}
   \item{.env}{An environment, internally used.}
   \item{.predict}{Internally used.}
-  \item{mc.cores}{Number of cores.}
+  \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
+  \item{cores}{Number of cores.}
   \item{...}{All pass to \code{\link{consensus_partition}}.}
 
 }

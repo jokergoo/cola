@@ -63,7 +63,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
 # -verbose whether print message.
-# -mc.cores multiple cores to use. 
+# -mc.cores multiple cores to use. This argument will be removed in future versions.
+# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 # -help Whether to show the help message.
 # -... pass to `consensus_partition`
 #
@@ -107,7 +108,7 @@ hierarchical_partition = function(data,
 	PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
 	min_n_signatures = round(nrow(data)*min_p_signatures), 
 	min_p_signatures = 0.01,
-	max_k = 4, verbose = TRUE, mc.cores = 1, help = TRUE, ...) {
+	max_k = 4, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...) {
 
 	t1 = Sys.time()
 
@@ -203,13 +204,10 @@ hierarchical_partition = function(data,
 		anno_col = NULL
 	}
 
-	# if(!multicore_supported()) {
-	# 	if(mc.cores > 1) message("* mc.cores is reset to 1 because mclapply() is not supported on this OS.")
-	# 	mc.cores = 1
-	# }
+	n_cores = get_nc(cores)
 	
 	.hierarchical_partition = function(.env, column_index, node_id = '0', 
-		min_samples = 6, max_k = 4, verbose = TRUE, mc.cores = 1, ...) {
+		min_samples = 6, max_k = 4, verbose = TRUE, cores = 1, ...) {
 
 		prefix = ""
 		if(node_id != "0") {
@@ -259,8 +257,8 @@ hierarchical_partition = function(data,
 				return(list(obj = part))
 			}
 		}
-		if(mc.cores > 1 && verbose) {
-			qqcat("@{prefix}* running consensus partitioning with @{mc.cores} cores.\n")
+		if(n_cores > 1 && verbose) {
+			qqcat("@{prefix}* running consensus partitioning with @{n_cores} cores.\n")
 		}
 
 		if(is.null(anno)) {
@@ -279,7 +277,7 @@ hierarchical_partition = function(data,
 				.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
 				part_list[[i]] = consensus_partition(verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
 					top_n = top_n, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
-					mc.cores = mc.cores, anno = anno2, anno_col = anno_col, ...)
+					cores = cores, anno = anno2, anno_col = anno_col, ...)
 			}
 		} else {
 			.env$all_top_value_list = NULL
@@ -294,7 +292,7 @@ hierarchical_partition = function(data,
 				.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
 				part_list[[i]] = consensus_partition_by_down_sampling(subset = subset, verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
 					top_n = top_n, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
-					mc.cores = mc.cores, .predict = FALSE, anno = anno2, anno_col = anno_col, ...)
+					cores = cores, .predict = FALSE, anno = anno2, anno_col = anno_col, ...)
 				all_top_value_list_ds[[part_list[[i]]@top_value_method]] = .env$all_top_value_list[[part_list[[i]]@top_value_method]]
 			}
 		}
@@ -328,7 +326,7 @@ hierarchical_partition = function(data,
 		if(is.null(dist_method)) dist_method = "euclidean"
 		if(length(column_index) > subset) {
 
-			part = convert_to_DownSamplingConsensusPartition(part, column_index, dist_method, verbose, prefix, mc.cores)
+			part = convert_to_DownSamplingConsensusPartition(part, column_index, dist_method, verbose, prefix, cores)
 		}
 
 		attr(part, "node_id") = node_id
@@ -457,12 +455,12 @@ hierarchical_partition = function(data,
     	lt2 = lapply(1:2, function(ind) {
 	    	if(ind == 1) {
 	    		return(.hierarchical_partition(.env, column_index = column_index[set1], node_id = sub_node_1,
-	    			min_samples = min_samples, max_k = min(max_k, length(set1)-1), mc.cores = mc.cores, verbose = verbose, ...))
+	    			min_samples = min_samples, max_k = min(max_k, length(set1)-1), cores = cores, verbose = verbose, ...))
 	    	}
 
 	    	if(ind == 2) {
 	    		return(.hierarchical_partition(.env, column_index = column_index[set2], node_id = sub_node_2,
-	    			min_samples = min_samples, max_k = min(max_k, length(set2)-1), mc.cores = mc.cores, verbose = verbose, ...))
+	    			min_samples = min_samples, max_k = min(max_k, length(set2)-1), cores = cores, verbose = verbose, ...))
 	    	}
 
 	    	return(NULL)
@@ -491,7 +489,7 @@ hierarchical_partition = function(data,
 	.env$node_0_top_value_list = .env$all_top_value_list
    	
 	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), min_samples = min_samples, 
-		node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, mc.cores = mc.cores, ...)
+		node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores, ...)
 
 	qqcat("* formatting the results into a HierarchicalPartition object.\n")
 

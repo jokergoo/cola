@@ -42,7 +42,7 @@ Child nodes: [Node<%=node%>0<%=ifelse(is_leaf_node(res_hc, paste0(node, "0")), "
 ### <%=top_value_method%>:<%=partition_method%><%=mark%>
 <% } -%>
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message-blank, echo = FALSE, message = FALSE}
 message("-----------------------------------------------------------------")
 ```
@@ -86,7 +86,7 @@ res
 `collect_plots()` function collects all the plots made from `res` for all `k` (number of subgroups)
 into one single page to provide an easy and fast comparison between different `k`.
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message1, echo = FALSE, message = FALSE}
 t1 = Sys.time()
 message("  - collecting all plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
@@ -139,7 +139,7 @@ concordance corresponds to better partition. Rand index and Jaccard index
 measure how similar the current partition is compared to partition with `k-1`.
 If they are too similar, we won't accept `k` is better than `k-1`.
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message2, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - plotting various statistics for selecting best k", appendLF = FALSE)
@@ -205,7 +205,7 @@ knitr_insert_tabs('<%=chunk_prefix%>-get-classes')
 Heatmaps for the consensus matrix. It visualizes the probability of two
 samples to be in a same group.
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message3, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - making consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
@@ -221,7 +221,7 @@ knitr_insert_tabs('<%=chunk_prefix%>-consensus-heatmap')
 
 Heatmaps for the membership of samples in all partitions to see how consistent they are:
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message4, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
@@ -240,7 +240,7 @@ As soon as the classes for columns are determined, the signatures
 that are significantly different between subgroups can be looked for. 
 Following are the heatmaps for signatures.
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message5, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
@@ -324,7 +324,7 @@ can be set to `"uniquely_high_in_one_group"`:
 tb = get_signature(res, k = ..., diff_method = "uniquely_high_in_one_group")
 ```
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - making dimension reduction plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
@@ -359,7 +359,7 @@ knitr_add_tab_item('dimension_reduction(res, k = <%=k%>, method = "<%=dr_method%
 knitr_insert_tabs('<%=chunk_prefix%>-dimension-reduction')
 ```
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message7, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - collecting classifications for all k", appendLF = FALSE)
@@ -374,7 +374,7 @@ collect_classes(res)
 
 <% if(has_known_anno) { -%>
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message8, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("  - testing correlation of subgroups to known annotations"), appendLF = FALSE)
@@ -389,14 +389,14 @@ annotation is discrete, chi-squared contingency table test is applied.
 test_to_known_factors(res)
 ```
 
-<% if(mc.cores == 1) { -%>
+<% if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message9, echo = FALSE, message = FALSE}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
 <%}-%>
 
 <%} else {
-if(mc.cores == 1) { -%>
+if(n_cores == 1) { -%>
 ```{r <%=chunk_prefix%>-message9, echo = FALSE, message = FALSE}
 message("")
 ```

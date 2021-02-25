@@ -22,7 +22,7 @@ consensus_partition(data,
     anno_col = NULL,
     scale_rows = NULL,
     verbose = TRUE,
-    mc.cores = 1,
+    mc.cores = 1, cores = mc.cores,
     prefix = "",
     .env = NULL,
     help = cola_opt$help)
@@ -42,7 +42,8 @@ consensus_partition(data,
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{scale_rows}{Whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
   \item{verbose}{Whether print messages.}
-  \item{mc.cores}{Multiple cores to use.}
+  \item{mc.cores}{Multiple cores to use. This argument will be removed in future versions.}
+  \item{cores}{Multiple cores to use.}
   \item{prefix}{Internally used.}
   \item{.env}{An environment, internally used.}
   \item{help}{Whether to print help messages.}
