@@ -21,7 +21,7 @@ Collect plots from ConsensusPartitionList object
   \item{partition_method}{A vector of partitioning methods.}
   \item{verbose}{Whether to print message.}
   \item{mc.cores}{Number of cores. This argument will be removed in figure versions.}
-  \item{cores}{Number of cores.}
+  \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
   \item{...}{other Arguments passed to corresponding \code{fun}.}
 
 }

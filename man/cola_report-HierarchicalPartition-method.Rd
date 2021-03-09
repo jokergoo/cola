@@ -16,7 +16,7 @@ Make HTML report from the HierarchicalPartition object
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
   \item{output_dir}{The output directory where the report is put.}
   \item{mc.cores}{Multiple cores to use. This argument will be removed in future versions.}
-  \item{cores}{Multiple cores to use.}
+  \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
   \item{title}{Title of the report.}
   \item{env}{Where the objects in the report are found, internally used.}
 

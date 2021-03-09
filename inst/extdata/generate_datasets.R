@@ -11,7 +11,7 @@ m = cbind(rbind(matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
               matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
               matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
        ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-cola_rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40), cores = 2)
+cola_rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40), cores = 6)
 
 
 ############# golub_cola ##############
@@ -35,7 +35,7 @@ rownames(m) = rn
 
 set.seed(123)
 golub_cola = run_all_consensus_partition_methods(
-    m, cores = 2, 
+    m, cores = 6, 
     anno = anno[, c("ALL.AML"), drop = FALSE],
     anno_col = c("ALL" = "red", "AML" = "blue")
 )
@@ -45,7 +45,7 @@ golub_cola = run_all_consensus_partition_methods(
 m = get_matrix(golub_cola)
 set.seed(123)
 golub_cola_rh = hierarchical_partition(
-    m, cores = 2, 
+    m, cores = 6, 
     anno = anno[, c("ALL.AML"), drop = FALSE],
     anno_col = c("ALL" = "red", "AML" = "blue")
 )
@@ -55,16 +55,16 @@ golub_cola_rh = hierarchical_partition(
 m = get_matrix(golub_cola)
 set.seed(123)
 golub_cola_ds = consensus_partition_by_down_sampling(
-    m, subset = 50, mc.cores = 2,
+    m, subset = 50, mc.cores = 6,
     anno = anno[, c("ALL.AML"), drop = FALSE],
     anno_col = c("ALL" = "red", "AML" = "blue")
 )
 
 
-save(cola_rl, file = "~/project/cola/data/cola_rl.rda", compress = "xz")
-save(golub_cola, file = "~/project/cola/data/golub_cola.rda", compress = "xz")
-save(golub_cola_ds, file = "~/project/cola/data/golub_cola_ds.rda", compress = "xz")
-save(golub_cola_rh, file = "~/project/cola/data/golub_cola_rh.rda", compress = "xz")
+save(cola_rl, file = "~/project/development/cola/data/cola_rl.rda", compress = "xz")
+save(golub_cola, file = "~/project/development/cola/data/golub_cola.rda", compress = "xz")
+save(golub_cola_ds, file = "~/project/development/cola/data/golub_cola_ds.rda", compress = "xz")
+save(golub_cola_rh, file = "~/project/development/cola/data/golub_cola_rh.rda", compress = "xz")
 
 
 ############################
@@ -79,5 +79,5 @@ m = cbind(rbind(matrix(rnorm(20*20, mean = 2, sd = 0.3), nr = 20),
                 matrix(rnorm(20*20, mean = 0, sd = 0.3), nr = 20),
                 matrix(rnorm(20*20, mean = 1, sd = 0.3), nr = 20))
          ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-cola_rh = hierarchical_partition(m, top_n = c(20, 30, 40), PAC_cutoff = 0.3, cores = 2)
+cola_rh = hierarchical_partition(m, top_n = c(20, 30, 40), PAC_cutoff = 0.3, cores = 6)
 

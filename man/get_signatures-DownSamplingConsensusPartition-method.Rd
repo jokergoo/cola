@@ -22,7 +22,7 @@ Get signature rows
     plot = TRUE, verbose = TRUE, seed = 888,
     left_annotation = NULL, right_annotation = NULL,
     col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
-    simplify = FALSE,
+    simplify = FALSE, prefix = "",
     ...)
 }
 \arguments{
@@ -48,6 +48,7 @@ Get signature rows
   \item{right_annotation}{Annotation put on the right of the heatmap. Same format as \code{left_annotation}.}
   \item{col}{Colors.}
   \item{simplify}{Only use internally.}
+  \item{prefix}{Only use internally.}
   \item{...}{Other arguments.}
 
 }

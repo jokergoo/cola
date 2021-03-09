@@ -26,7 +26,7 @@
 #     
 #     set.seed(123)
 #     golub_cola = run_all_consensus_partition_methods(
-#         m, cores = 2, 
+#         m, cores = 6, 
 #         anno = anno[, c("ALL.AML"), drop = FALSE],
 #         anno_col = c("ALL" = "red", "AML" = "blue")
 #     )
@@ -52,7 +52,7 @@
 #     m = get_matrix(golub_cola)
 #     set.seed(123)
 #     golub_cola_rh = hierarchical_partition(
-#         m, cores = 2, 
+#         m, cores = 6, 
 #         anno = get_anno(golub_cola), 
 #         anno_col = get_anno_col(golub_cola)
 #     )
@@ -76,7 +76,7 @@
 #     m = get_matrix(golub_cola)
 #     set.seed(123)
 #     golub_cola_ds = consensus_partition_by_down_sampling(
-#         m, subset = 50, cores = 2,
+#         m, subset = 50, cores = 6,
 #         anno = get_anno(golub_cola), 
 #         anno_col = get_anno_col(golub_cola),
 #     )
@@ -105,7 +105,7 @@
 #                   matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
 #                   matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
 #            ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-#   cola_rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40), cores = 2)
+#   cola_rl = run_all_consensus_partition_methods(data = m, top_n = c(20, 30, 40), cores = 6)
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>

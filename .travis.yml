@@ -10,4 +10,4 @@ repos:
 install:
   - R -e 'install.packages(c("ComplexHeatmap","matrixStats","GetoptLong","circlize","GlobalOptions","clue","RColorBrewer","cluster","skmeans","png","mclust","crayon","xml2","microbenchmark","httr","knitr","markdown","digest","impute","brew","Rcpp","BiocGenerics","eulerr", "testthat"))'
 env:
-    - _R_CHECK_FORCE_SUGGESTS_=false
+  - _R_CHECK_FORCE_SUGGESTS_=false

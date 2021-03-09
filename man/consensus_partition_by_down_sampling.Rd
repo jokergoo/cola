@@ -14,7 +14,7 @@ consensus_partition_by_down_sampling(data,
     length.out = 3),
     partition_method = "skmeans",
     max_k = 6,
-    subset = min(round(ncol(data)*0.2), 250),
+    subset = min(round(ncol(data)*0.2), 250), pre_select = TRUE,
     verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
     dist_method = c("euclidean", "correlation", "cosine"),
     .env = NULL, .predict = TRUE, mc.cores = 1, cores = mc.cores, ...)
@@ -27,6 +27,7 @@ consensus_partition_by_down_sampling(data,
   \item{partition_method}{A single partitioning method. Available methods are in \code{\link{all_partition_methods}}. Use \code{\link{register_partition_methods}} to add a new partition method.}
   \item{max_k}{Maximal number of subgroups to try. The function will try for \code{2:max_k} subgroups}
   \item{subset}{Number of columns to randomly sample, or a vector of selected indices.}
+  \item{pre_select}{Whether to pre-select by k-means.}
   \item{verbose}{Whether to print messages.}
   \item{prefix}{Internally used.}
   \item{anno}{Annotation data frame.}
@@ -35,7 +36,7 @@ consensus_partition_by_down_sampling(data,
   \item{.env}{An environment, internally used.}
   \item{.predict}{Internally used.}
   \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
-  \item{cores}{Number of cores.}
+  \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
   \item{...}{All pass to \code{\link{consensus_partition}}.}
 
 }

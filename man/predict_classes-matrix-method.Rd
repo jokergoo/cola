@@ -24,7 +24,7 @@ Predict classes for new samples based on signature centroid matrix
   \item{split_by_sigatures}{Should the heatmaps be split based on k-means on the main heatmap, or on the patterns of the signature heatmap.}
   \item{prefix}{Used internally.}
   \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
-  \item{cores}{Number of cores.}
+  \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
 
 }
 \details{

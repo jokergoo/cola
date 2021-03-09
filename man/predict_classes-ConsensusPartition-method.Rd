@@ -40,7 +40,7 @@ Predict classes for new samples based on cola classification
   \item{help}{Whether to print help messages.}
   \item{prefix}{Used internally.}
   \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
-  \item{cores}{Number of cores.}
+  \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
 
 }
 \details{

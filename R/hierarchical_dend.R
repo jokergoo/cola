@@ -3,10 +3,12 @@ has_hierarchy = function(object) {
 	nrow(object@hierarchy) > 0
 }
 
-subgroup_dend = function(object, hierarchy = object@hierarchy) {
+subgroup_dend = function(object, merge_node = merge_node_param()) {
 
 	check_pkg("data.tree", bioc = FALSE)
 
+	hierarchy = get_hierarchy_table(object, merge_node)
+	
 	lt = list()
 	lt[["0"]] = data.tree::Node$new("0")
 	cn = colnames(object@list[["0"]]@.env$data)
@@ -15,7 +17,7 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 	for(i in seq_len(nrow(hierarchy))) {
 		lt[[ hierarchy[i, 2] ]] = lt[[ hierarchy[i, 1] ]]$AddChildNode({
 			node = data.tree::Node$new(hierarchy[i, 2])
-			node$height = max_depth - nchar(hierarchy[i, 2])
+			node$max_height = max_depth - nchar(hierarchy[i, 2])
 			node
 		})
 		l = hierarchy[, 1] == hierarchy[i, 2]
@@ -69,8 +71,6 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 		})
 	}
 
-
-	
 	tb = table(hierarchy)
 	ap = names(tb[tb > 1])
 
@@ -95,33 +95,27 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 	l = apply(data, 1, function(x) any(is.na(x)))
 	data = data[!l, ]
 
-	fit = prcomp(t(data))
-	loc = fit$x[, 1:2]
-	dist = as.matrix(dist(loc))
+	cl = get_classes(object, merge_node)
+	mt = do.call(rbind, tapply(seq_along(cl), cl, function(ind) {
+		rowMeans(data[, ind, drop = FALSE])
+	}))
+	dist = as.matrix(dist(mt))
+
+	max_dist = function(dist, node1, node2) {
+		all_nodes = rownames(dist)
+		children1 = grep(paste0("^", node1), all_nodes, value = TRUE)
+		children2 = grep(paste0("^", node2), all_nodes, value = TRUE)
+		max(dist[children1, children2], dist[children1, children1], dist[children2, children2])
+	}
 
 	dend = edit_node(dend, function(d, index) {
 		if(is.leaf(d)) {
 			attr(d, "height") = 0
 		} else {
 			node1 = attr(d[[1]], "node_id")
-			if(inherits(object[[node1]], "DownSamplingConsensusPartition")) {
-				
-				ind1 = object[[node1]]@full_column_index
-			} else if(inherits(object[[node1]], "ConsensusPartition")) {
-				ind1 = object[[node1]]@column_index
-			} else {
-				ind1 = attr(object[[node1]], "column_index")
-			}
-			
 			node2 = attr(d[[2]], "node_id")
-			if(inherits(object[[node2]], "DownSamplingConsensusPartition")) {
-				ind2 = object[[node2]]@full_column_index
-			} else if(inherits(object[[node2]], "ConsensusPartition")) {
-				ind2 = object[[node2]]@column_index
-			} else {
-				ind2 = attr(object[[node2]], "column_index")
-			}
-			attr(d, "height") = max(dist[c(ind1, ind2), c(ind1, ind2)])
+
+			attr(d, "height") = max_dist(dist, node1, node2)
 		}
 		d
 	})
@@ -134,8 +128,7 @@ subgroup_dend = function(object, hierarchy = object@hierarchy) {
 
 get_hierarchy_dend = function(object, merge_node = merge_node_param()) {
 
-	hierarchy = get_hierarchy_table(object, merge_node)
-	dend = subgroup_dend(object, hierarchy)
+	dend = subgroup_dend(object, merge_node)
 	dend
 }
 
@@ -170,6 +163,21 @@ calc_dend = function(object, merge_node = merge_node_param(), mat = NULL) {
 	if(is.null(names(classes))) names(classes) = seq_along(classes)
 
 	if(is.null(mat)) {
+		if(inherits(object[["0"]], "ConsensusPartition")) {
+			mat = apply(object[["0"]]@anno, 2, rank)
+		} else {
+			if(!is.null(object[["0"]]@full_anno)) {
+				mat = apply(object[["0"]]@full_anno, 2, rank)
+			} else if(!is.null(object[["0"]]@anno)) {
+				mat = apply(object[["0"]]@anno, 2, rank)
+			} 
+		}
+		mat = t(mat)
+	}
+
+	colnames(mat) = names(classes)
+
+	if(is.null(mat)) {
 		cd_list = lapply(tapply(names(classes), classes, function(x) x), function(x) {
 			d = random_dend(length(x))
 			d = dendextend::`labels<-`(d, value = x)
@@ -187,6 +195,7 @@ calc_dend = function(object, merge_node = merge_node_param(), mat = NULL) {
 	dend = merge_dendrogram(pd, cd_list)
 	dend = adjust_dend_by_x(dend)
 	dend = dendextend::`order.dendrogram<-`(dend, value = structure(1:length(classes), names = names(classes))[labels(dend)])
+
 	dend
 }
 
@@ -269,9 +278,14 @@ get_hierarchy_table = function(object, merge_node = merge_node_param()) {
 	p_signatures = n_signatures/nrow(object)
 	node_height = object@node_level$node_height
 
-	hierarchy = hierarchy[ n_signatures[hierarchy[, 1]] >= merge_node$min_n_signatures &
-	                       p_signatures[hierarchy[, 1]] >= merge_node$min_p_signatures &
-	                       node_height[hierarchy[, 1]] >= merge_node$node_height, , drop = FALSE ]
+	if(is.null(node_height)) {
+		hierarchy = hierarchy[ n_signatures[hierarchy[, 1]] >= merge_node$min_n_signatures &
+		                       p_signatures[hierarchy[, 1]] >= merge_node$min_p_signatures, , drop = FALSE ]
+	} else {
+		hierarchy = hierarchy[ n_signatures[hierarchy[, 1]] >= merge_node$min_n_signatures &
+		                       p_signatures[hierarchy[, 1]] >= merge_node$min_p_signatures &
+		                       node_height[hierarchy[, 1]] >= merge_node$node_height, , drop = FALSE ]
+	}
 	
 	hierarchy = hierarchy[nchar(hierarchy[, 2]) <= merge_node$depth, , drop = FALSE]
 	

@@ -43,7 +43,7 @@ consensus_partition(data,
   \item{scale_rows}{Whether to scale rows. If it is \code{TRUE}, scaling method defined in \code{\link{register_partition_methods}} is used.}
   \item{verbose}{Whether print messages.}
   \item{mc.cores}{Multiple cores to use. This argument will be removed in future versions.}
-  \item{cores}{Multiple cores to use.}
+  \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
   \item{prefix}{Internally used.}
   \item{.env}{An environment, internally used.}
   \item{help}{Whether to print help messages.}

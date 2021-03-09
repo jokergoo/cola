@@ -36,7 +36,7 @@ Following code was used to generate \code{golub_cola}:
 
     set.seed(123)
     golub_cola = run_all_consensus_partition_methods(
-        m, cores = 2, 
+        m, cores = 6, 
         anno = anno[, c("ALL.AML"), drop = FALSE],
         anno_col = c("ALL" = "red", "AML" = "blue")
     )  }

@@ -110,11 +110,18 @@ setMethod(f = "dimension_reduction",
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
 			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
 		if(!internal) {
-			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
-				pch = c(rep(16, n_class), 0),
-				col = c(cola_opt$color_set_2[class_level], "white"), xjust = 0, yjust = 0.5,
-				title = "Class", title.adj = 0.1, bty = "n",
-				text.col = c(rep("black", n_class), "white"))
+			if(is.null(color_by)) {
+				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
+					pch = c(rep(16, n_class), 0),
+					col = c(cola_opt$color_set_2[class_level], "white"), xjust = 0, yjust = 0.5,
+					title = "Class", title.adj = 0.1, bty = "n",
+					text.col = c(rep("black", n_class), "white"))
+			} else {
+				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = names(object@anno_col[[color_by]]), 
+					pch = 16,
+					col = object@anno_col[[color_by]], xjust = 0, yjust = 0.5,
+					title = color_by, title.adj = 0.1, bty = "n")
+			}
 		}
 	} else {
 		loc = dimension_reduction(data, pch = ifelse(l, 16, 4), col = col[l],
@@ -122,16 +129,30 @@ setMethod(f = "dimension_reduction",
 			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
 		if(!internal) {
 			if(any(!l)) {
-				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
-						pch = c(rep(16, n_class), 4),
-						col = c(cola_opt$color_set_2[class_level], "black"), xjust = 0, yjust = 0.5,
-						title = "Class", title.adj = 0.1, bty = "n")
+				if(is.null(color_by)) {
+					legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
+							pch = c(rep(16, n_class), 4),
+							col = c(cola_opt$color_set_2[class_level], "black"), xjust = 0, yjust = 0.5,
+							title = "Class", title.adj = 0.1, bty = "n")
+				} else {
+					legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = names(object@anno_col[[color_by]]), 
+						pch = 16,
+						col = object@anno_col[[color_by]], xjust = 0, yjust = 0.5,
+						title = color_by, title.adj = 0.1, bty = "n")
+				}
 			} else {
-				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
-					pch = c(rep(16, n_class), 0),
-					col = c(cola_opt$color_set_2[class_level], "white"), xjust = 0, yjust = 0.5,
-					title = "Class", title.adj = 0.1, bty = "n",
-					text.col = c(rep("black", n_class), "white"))
+				if(is.null(color_by)) {
+					legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(paste0("group", class_level), "ambiguous"), 
+						pch = c(rep(16, n_class), 0),
+						col = c(cola_opt$color_set_2[class_level], "white"), xjust = 0, yjust = 0.5,
+						title = "Class", title.adj = 0.1, bty = "n",
+						text.col = c(rep("black", n_class), "white"))
+				} else {
+					legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = names(object@anno_col[[color_by]]), 
+						pch = 16,
+						col = object@anno_col[[color_by]], xjust = 0, yjust = 0.5,
+						title = color_by, title.adj = 0.1, bty = "n")
+				}
 			}
 		}
 	}
@@ -222,6 +243,9 @@ setMethod(f = "dimension_reduction",
 	} else if(length(pc) == 1) {
 		pc = 1:pc
 	}
+	if(method %in% c("UMAP", "t-SNE")) {
+		pc = 1:max(pc)
+	}
 
 	if(method %in% c("UMAP", "t-SNE")) {
 		main = paste0(main, qq(", with @{length(pc)} PCs"))
@@ -258,7 +282,7 @@ setMethod(f = "dimension_reduction",
 		loc = cmdscale(dist(t(data)))
 		plot(loc, pch = pch, col = col, cex = cex, main = main, xlab = "Coordinate 1", ylab = "Coordinate 2")
 	} else if(method == "PCA") {
-		fit = prcomp(t(data))
+		fit = prcomp_irlba(t(data), n = max(pc))
 		sm = summary(fit)
 		prop = sm$importance[2, pc]
 		loc = fit$x[, pc]
@@ -267,7 +291,7 @@ setMethod(f = "dimension_reduction",
 	} else if(method == "t-SNE") {
 
 		check_pkg("Rtsne", bioc = FALSE)
-		fit = prcomp(t(data))
+		fit = prcomp_irlba(t(data), n = max(pc))
 		sm = summary(fit)
 		loc = fit$x[, pc]
 
@@ -284,7 +308,7 @@ setMethod(f = "dimension_reduction",
 
 		check_pkg("umap", bioc = FALSE)
 
-		fit = prcomp(t(data))
+		fit = prcomp_irlba(t(data), n = max(pc))
 		sm = summary(fit)
 		loc = fit$x[, pc]
 
@@ -292,11 +316,11 @@ setMethod(f = "dimension_reduction",
 		if(!"config" %in% names(control)) {
 			# reset n_neighbors for small dataset
 			control$config = umap::umap.defaults
-			control$config$n_neighbors = min(umap::umap.defaults$n_neighbors, round(ncol(data)/2))
+			control$config$n_neighbors = min(umap::umap.defaults$n_neighbors, 10)
 		} else {
 			if(!"n_neighbors" %in% names(control$config)) {
 				# reset n_neighbors for small dataset
-				control$config$n_neighbors = min(umap::umap.defaults$n_neighbors, round(ncol(data)/2))
+				control$config$n_neighbors = min(umap::umap.defaults$n_neighbors, 10)
 			}
 		}
 		param = c(param, control)

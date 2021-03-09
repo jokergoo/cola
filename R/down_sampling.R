@@ -36,6 +36,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 #                   Use `register_partition_methods` to add a new partition method.
 # -max_k Maximal number of subgroups to try. The function will try for ``2:max_k`` subgroups
 # -subset Number of columns to randomly sample, or a vector of selected indices.
+# -pre_select Whether to pre-select by k-means.
 # -verbose Whether to print messages.
 # -prefix Internally used.
 # -anno Annotation data frame.
@@ -68,7 +69,7 @@ consensus_partition_by_down_sampling = function(data,
 		        length.out = 3),
 	partition_method = "skmeans",
 	max_k = 6, 
-	subset = min(round(ncol(data)*0.2), 250),
+	subset = min(round(ncol(data)*0.2), 250), pre_select = TRUE,
 	verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
 	dist_method = c("euclidean", "correlation", "cosine"),
 	.env = NULL, .predict = TRUE, mc.cores = 1, cores = mc.cores, ...) {
@@ -140,11 +141,15 @@ consensus_partition_by_down_sampling = function(data,
 			if(is.null(.env$node_0_top_value_list[[top_value_method]])) {
 				subset = sample(length(column_index), subset)
 			} else {
-				qqcat("@{prefix}* assign sampling probability to columns by a pre-partitioning.\n")
-				km = kmeans(t(.env$data[order(.env$node_0_top_value_list[[top_value_method]], decreasing = TRUE)[1:top_n[1]], .env$column_index, drop = FALSE]), centers = max_k)$cluster
-				tb = table(km)
-				p = km/tb[as.character(km)]
-				subset = unique(sample(seq_along(column_index), subset, prob = p))
+				if(pre_select) {
+					qqcat("@{prefix}* assign sampling probability to columns by a pre-partitioning.\n")
+					km = kmeans(t(.env$data[order(.env$node_0_top_value_list[[top_value_method]], decreasing = TRUE)[1:top_n[1]], .env$column_index, drop = FALSE]), centers = max_k)$cluster
+					tb = table(km)
+					p = km/tb[as.character(km)]
+					subset = unique(sample(seq_along(column_index), subset, prob = p))
+				} else {
+					subset = sample(length(column_index), subset)
+				}
 			}
 		}
 		subset_index = column_index[subset]
@@ -502,7 +507,7 @@ setMethod(f = "dimension_reduction",
 		if(!color_by %in% colnames(object@anno)) {
 			stop_wrap("`color_by` should only contain the annotation names.")
 		}
-		col = object@anno_col[[color_by]][ object@anno[, color_by] ]
+		col = object@anno_col[[color_by]][ object@full_anno[, color_by] ]
 	}
 	if(remove) {
 		dimension_reduction(data[, l], pch = 16, col = col[l],
@@ -510,30 +515,7 @@ setMethod(f = "dimension_reduction",
 			main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (p < @{p_cutoff})"),
 			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
 		if(!internal) {
-			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), 
-				legend = c(paste0("group", class_level), "predicted"), 
-				pch = c(rep(16, n_class), 16),
-				pt.cex = c(rep(1, n_class), 0.5),
-				col = c(cola_opt$color_set_2[class_level], "black"), 
-				xjust = 0, yjust = 0.5,
-				title = "Class", title.adj = 0.1, bty = "n",
-				text.col = c(rep("black", n_class), "black"))
-		}
-	} else {
-		dimension_reduction(data, pch = ifelse(l, 16, 4), col = col,
-			cex = ifelse(1:ncol(data) %in% object@column_index, 1, 0.5),
-			main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (p < @{p_cutoff})"),
-			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
-		if(!internal) {
-			if(any(!l)) {
-				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), 
-					legend = c(paste0("group", class_level), "ambiguous", "predicted", "predicted"), 
-						pch = c(rep(16, n_class), 4, 16, 4),
-						pt.cex = c(rep(1, n_class), 1, 0.5, 0.5),
-						col = c(cola_opt$color_set_2[class_level], "black", "black", "black"), 
-						xjust = 0, yjust = 0.5,
-						title = "Class", title.adj = 0.1, bty = "n")
-			} else {
+			if(is.null(color_by)) {
 				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), 
 					legend = c(paste0("group", class_level), "predicted"), 
 					pch = c(rep(16, n_class), 16),
@@ -542,6 +524,50 @@ setMethod(f = "dimension_reduction",
 					xjust = 0, yjust = 0.5,
 					title = "Class", title.adj = 0.1, bty = "n",
 					text.col = c(rep("black", n_class), "black"))
+			} else {
+				legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = names(object@anno_col[[color_by]]), 
+					pch = 16,
+					col = object@anno_col[[color_by]], xjust = 0, yjust = 0.5,
+					title = color_by, title.adj = 0.1, bty = "n")
+			}
+		}
+	} else {
+		dimension_reduction(data, pch = ifelse(l, 16, 4), col = col,
+			cex = ifelse(1:ncol(data) %in% object@column_index, 1, 0.5),
+			main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (p < @{p_cutoff})"),
+			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
+		if(!internal) {
+			if(any(!l)) {
+				if(is.null(color_by)) {
+					legend(x = par("usr")[2], y = mean(par("usr")[3:4]), 
+						legend = c(paste0("group", class_level), "ambiguous", "predicted", "predicted"), 
+							pch = c(rep(16, n_class), 4, 16, 4),
+							pt.cex = c(rep(1, n_class), 1, 0.5, 0.5),
+							col = c(cola_opt$color_set_2[class_level], "black", "black", "black"), 
+							xjust = 0, yjust = 0.5,
+							title = "Class", title.adj = 0.1, bty = "n")
+				} else {
+					legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = names(object@anno_col[[color_by]]), 
+						pch = 16,
+						col = object@anno_col[[color_by]], xjust = 0, yjust = 0.5,
+						title = color_by, title.adj = 0.1, bty = "n")
+				}
+			} else {
+				if(is.null(color_by)) {
+					legend(x = par("usr")[2], y = mean(par("usr")[3:4]), 
+						legend = c(paste0("group", class_level), "predicted"), 
+						pch = c(rep(16, n_class), 16),
+						pt.cex = c(rep(1, n_class), 0.5),
+						col = c(cola_opt$color_set_2[class_level], "black"), 
+						xjust = 0, yjust = 0.5,
+						title = "Class", title.adj = 0.1, bty = "n",
+						text.col = c(rep("black", n_class), "black"))
+				} else {
+					legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = names(object@anno_col[[color_by]]), 
+						pch = 16,
+						col = object@anno_col[[color_by]], xjust = 0, yjust = 0.5,
+						title = color_by, title.adj = 0.1, bty = "n")
+				}
 			}
 		}
 	}
@@ -577,6 +603,7 @@ setMethod(f = "dimension_reduction",
 # -right_annotation Annotation put on the right of the heatmap. Same format as ``left_annotation``.
 # -col Colors.
 # -simplify Only use internally.
+# -prefix Only use internally.
 # -... Other arguments.
 # 
 # == details
@@ -605,7 +632,7 @@ setMethod(f = "get_signatures",
 	plot = TRUE, verbose = TRUE, seed = 888,
 	left_annotation = NULL, right_annotation = NULL,
 	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
-	simplify = FALSE,
+	simplify = FALSE, prefix = "",
 	...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
@@ -629,7 +656,7 @@ setMethod(f = "get_signatures",
 	has_ambiguous = sum(!column_used_logical)
 	n_sample_used = length(class)
 
-	if(verbose) qqcat("* @{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by p-value (<= @{p_cutoff}).\n")
+	if(verbose) qqcat("@{prefix}* @{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by p-value (<= @{p_cutoff}).\n")
 
 	tb = table(class)
 	if(sum(tb > 1) <= 1) {
@@ -638,7 +665,7 @@ setMethod(f = "get_signatures",
 			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
 			grid.text("not enough samples", gp = gpar(fontsize = fontsize))
 		}
-		if(verbose) cat("* Not enough samples.\n")
+		if(verbose) qqcat("@{prefix}* Not enough samples.\n")
 		return(invisible(data.frame(which_row = integer(0))))
 	}
 	if(length(unique(class)) <= 1) {
@@ -647,13 +674,13 @@ setMethod(f = "get_signatures",
 			fontsize = convertUnit(unit(0.1, "npc"), "char", valueOnly = TRUE)*get.gpar("fontsize")$fontsize
 			grid.text("not enough classes", gp = gpar(fontsize = fontsize))
 		}
-		if(verbose) cat("* Not enough classes.\n")
+		if(verbose) qqcat("@{prefix}* Not enough classes.\n")
 		return(invisible(data.frame(which_row = integer(0))))
 	}
 
 	do_row_clustering = TRUE
 	if(inherits(diff_method, "function")) {
-		if(verbose) qqcat("* calculate row difference between subgroups by user-defined function.\n")
+		if(verbose) qqcat("@{prefix}* calculate row difference between subgroups by user-defined function.\n")
 		diff_method_fun = diff_method
 		diff_method = digest(diff_method)
 	} else {
@@ -681,7 +708,7 @@ setMethod(f = "get_signatures",
 					algo = "md5")
 	}
 	nm = paste0("signature_fdr_", hash)
-	if(verbose) qqcat("* cache hash: @{hash} (seed @{seed}).\n")
+	if(verbose) qqcat("@{prefix}* cache hash: @{hash} (seed @{seed}).\n")
 
 	find_signature = TRUE
 	if(!is.null(object@.env[[nm]])) {
@@ -708,7 +735,7 @@ setMethod(f = "get_signatures",
 		}
 	}
 
-	if(verbose) qqcat("* calculating row difference between subgroups by @{diff_method}.\n")
+	if(verbose) qqcat("@{prefix}* calculating row difference between subgroups by @{diff_method}.\n")
 	if(find_signature) {
 		if(diff_method == "ttest") {
 			fdr = ttest(data2, class)
@@ -722,7 +749,7 @@ setMethod(f = "get_signatures",
 			fdr = diff_method_fun(data2, class)
 		}
 	} else {
-		if(verbose) qqcat("  - row difference is extracted from cache.\n")
+		if(verbose) qqcat("@{prefix}  - row difference is extracted from cache.\n")
 	}
 
 	object@.env[[nm]]$diff_method = diff_method
@@ -733,11 +760,11 @@ setMethod(f = "get_signatures",
 
 	if(scale_rows && !is.null(object@.env[[nm]]$row_order_scaled)) {
 		row_order = object@.env[[nm]]$row_order_scaled
-		if(verbose) qqcat("  - row order for the scaled matrix is extracted from cache.\n")
+		if(verbose) qqcat("@{prefix}  - row order for the scaled matrix is extracted from cache.\n")
 		do_row_clustering = FALSE
 	} else if(!scale_rows && !is.null(object@.env[[nm]]$row_order_unscaled)) {
 		row_order = object@.env[[nm]]$row_order_unscaled
-		if(verbose) qqcat("  - row order for the unscaled matrix is extracted from cache.\n")
+		if(verbose) qqcat("@{prefix}  - row order for the unscaled matrix is extracted from cache.\n")
 		do_row_clustering = FALSE
 	}
 
@@ -815,7 +842,7 @@ setMethod(f = "get_signatures",
 				if(is.null(row_km) || identical(as.integer(row_km), length(row_km_fit$size))) {
 					returned_obj$km = apply(pdist(row_km_fit$centers, mat_for_km, as.integer(1)), 2, which.min)
 					do_kmeans = FALSE
-					if(verbose) qqcat("* use k-means partition that are already calculated in previous runs.\n")
+					if(verbose) qqcat("@{prefix}* use k-means partition that are already calculated in previous runs.\n")
 				}
 			}
 			if(do_kmeans) {
@@ -823,9 +850,9 @@ setMethod(f = "get_signatures",
 				if(is.null(row_km)) {
 					wss = (nrow(mat_for_km2)-1)*sum(apply(mat_for_km2,1,var))
 					max_km = min(c(nrow(mat_for_km) - 1, 15))
-					# if(verbose) qqcat("* apply k-means on rows with 2~@{max_km} clusters.\n")
+					# if(verbose) qqcat("@{prefix}* apply k-means on rows with 2~@{max_km} clusters.\n")
 					for (i in 2:max_km) {
-						# if(verbose) qqcat("  - applying k-means with @{i} clusters.\n")
+						# if(verbose) qqcat("@{prefix}  - applying k-means with @{i} clusters.\n")
 						wss[i] = sum(kmeans(mat_for_km2, centers = i, iter.max = 50)$withinss)
 					}
 					row_km = min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
@@ -841,12 +868,12 @@ setMethod(f = "get_signatures",
 						object@.env[[nm]]$row_km_fit_unscaled = row_km_fit
 					}
 				}
-				if(verbose) qqcat("* split rows into @{row_km} groups by k-means clustering.\n")
+				if(verbose) qqcat("@{prefix}* split rows into @{row_km} groups by k-means clustering.\n")
 			}
 		}
 	}
 
-	if(verbose) qqcat("* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) under fdr < @{fdr_cutoff}, group_diff > @{group_diff}.\n")
+	if(verbose) qqcat("@{prefix}* @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) under fdr < @{fdr_cutoff}, group_diff > @{group_diff}.\n")
 
 	if(nrow(mat) == 0) {
 		if(plot) {
@@ -864,7 +891,7 @@ setMethod(f = "get_signatures",
 	set.seed(seed)
 	more_than_5k = FALSE
 	if(!is.null(object@.env[[nm]]$row_index)) {
-		if(verbose) qqcat("  - use the 2000 signatures what are already generated in previous runs.\n")
+		if(verbose) qqcat("@{prefix}  - use the 2000 signatures what are already generated in previous runs.\n")
 		row_index = object@.env[[nm]]$row_index
 		mat1 = mat[row_index, column_used_logical, drop = FALSE]
 		mat2 = mat[row_index, !column_used_logical, drop = FALSE]
@@ -880,7 +907,7 @@ setMethod(f = "get_signatures",
 		mat1 = mat[row_index, column_used_logical, drop = FALSE]
 		mat2 = mat[row_index, !column_used_logical, drop = FALSE]
 		# group2 = group2[order(fdr2)[1:top_k_genes]]
-		if(verbose) cat(paste0("  - randomly sample 2000 signatures.\n"))
+		if(verbose) qqcat("@{prefix}  - randomly sample 2000 signatures.\n")
 		if(!is.null(left_annotation)) left_annotation = left_annotation[row_index, ]
 		if(!is.null(right_annotation)) right_annotation = right_annotation[row_index, ]
 	} else {
@@ -990,7 +1017,7 @@ setMethod(f = "get_signatures",
 		}
 	}
 
-	if(verbose) qqcat("* making heatmaps for signatures.\n")
+	if(verbose) qqcat("@{prefix}* making heatmaps for signatures.\n")
 
 	row_split = NULL
 	if(!internal) {
@@ -1107,7 +1134,7 @@ setMethod(f = "get_signatures",
 		}
 		
 	} else {
-		if(verbose) cat("  - use row order from cache.\n")
+		if(verbose) qqcat("@{prefix}  - use row order from cache.\n")
 		draw(ht_list, main_heatmap = heatmap_name, column_title = ifelse(internal, "", qq("@{k} subgroups, @{nrow(mat)} signatures (@{sprintf('%.1f',nrow(mat)/nrow(object)*100)}%) with fdr < @{fdr_cutoff}@{ifelse(group_diff > 0, paste0(', group_diff > ', group_diff), '')}")),
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
 			cluster_rows = FALSE, row_order = row_order, heatmap_legend_list = heatmap_legend_list,

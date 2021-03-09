@@ -46,6 +46,8 @@ setMethod(f = "get_classes",
 # -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
 # -group_diff Cutoff for the maximal difference between group means.
 # -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
+# -diff_method Methods to get rows which are significantly different between subgroups.
+# -fdr_cutoff Cutoff for FDR of the difference test between subgroups.
 # -scale_rows whether apply row scaling when making the heatmap.
 # -anno a data frame of annotations for the original matrix columns. 
 #       By default it uses the annotations specified in `hierarchical_partition`.
@@ -104,7 +106,7 @@ setMethod(f = "get_signatures",
 			mat = t(scale(t(mat)))
 		}
 		fdr = uniquely_high_in_one_group(mat, get_classes(object, merge_node))
-		all_index = which(fdr < cutoff)
+		all_index = which(fdr < fdr_cutoff)
 	} else {
 		sig_lt = list()
 		.env = object@list[[1]]@.env
@@ -292,7 +294,7 @@ setMethod(f = "get_signatures",
 		col = col_fun,
 		use_raster = TRUE, row_split = row_split,
 		show_row_dend = FALSE, cluster_columns = dend, column_split = length(unique(class)),
-		column_title = qq("@{length(unique(class))} groups, @{length(all_index)} signatures"),
+		column_title = qq("@{length(unique(class))} groups, @{nrow(mat)} signatures"),
 		bottom_annotation = bottom_anno1,
 		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
 
@@ -418,7 +420,7 @@ setMethod(f = "collect_classes",
 	}
 
 	cl = get_classes(object, merge_node)
-	dend = object@subgroup_dend
+	dend = calc_dend(object, merge_node)
 
 	ht_list = Heatmap(cl, name = "Class", col = object@subgroup_col, width = unit(5, "mm"),
 		row_title_rot = 0, cluster_rows = dend, row_dend_width = unit(2, "cm"),
@@ -605,28 +607,41 @@ setMethod(f = "dimension_reduction",
 			if(!color_by %in% colnames(object@list[[1]]@anno)) {
 				stop_wrap("`color_by` should only contain the annotation names.")
 			}
-			col = object@list[[1]]@anno_col[[color_by]][ object@list[[1]]@anno[, color_by] ]
+			if(inherits(object@list[[1]], "DownSamplingConsensusPartition")) {
+				col = object@list[[1]]@anno_col[[color_by]][ as.character(object@list[[1]]@full_anno[, color_by]) ]
+			} else {
+				col = object@list[[1]]@anno_col[[color_by]][ as.character(object@list[[1]]@anno[, color_by]) ]
+			}
 		}
-		dimension_reduction(data, pch = 16, col = col,
-			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{ncol(data)} samples with @{n_class} classes"),
+		loc = dimension_reduction(data, pch = 16, col = col,
+			main = qq("@{method} on @{top_n} rows with highest @{top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{ncol(data)} samples with @{n_class} classes"),
 			method = method, scale_rows = scale_rows, ...)
-		class_level = sort(unique(class))
-		legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(class_level, "ambiguous"), 
-			pch = c(rep(16, n_class), 0),
-			col = c(object@subgroup_col[class_level], "white"), xjust = 0, yjust = 0.5,
-			title = "Class", title.adj = 0.1, bty = "n",
-			text.col = c(rep("black", n_class), "white"))
+		if(is.null(color_by)) {
+			class_level = sort(unique(class))
+			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = c(class_level, "ambiguous"), 
+				pch = c(rep(16, n_class), 0),
+				col = c(object@subgroup_col[class_level], "white"), xjust = 0, yjust = 0.5,
+				title = "Class", title.adj = 0.1, bty = "n",
+				text.col = c(rep("black", n_class), "white"))
+		} else {
+			legend(x = par("usr")[2], y = mean(par("usr")[3:4]), legend = names(object@list[[1]]@anno_col[[color_by]]), 
+				pch = 16,
+				col = object@list[[1]]@anno_col[[color_by]], xjust = 0, yjust = 0.5,
+				title = color_by, title.adj = 0.1, bty = "n")
+		}
 	} else {
 		if(!parent_node %in% setdiff(all_nodes(object), all_leaves(object))) {
 			stop_wrap(qq("@{parent_node} has no children nodes."))
 		}
 		obj = object[parent_node]
-		dimension_reduction(obj, k = suggest_best_k(obj), top_n = top_n, method = method,
+		loc = dimension_reduction(obj, k = suggest_best_k(obj), top_n = top_n, method = method,
 			scale_rows = scale_rows, color_by = color_by, ...)
 		legend(x = par("usr")[2], y = par("usr")[4], legend = qq("node @{parent_node}"))
 	}
 
 	par(op)
+
+	return(invisible(loc))
 })
 
 
@@ -940,3 +955,25 @@ setMethod(f = "functional_enrichment",
     return(lt)
 })
 
+
+expand_dimension_reduction_plot = function(loc, class, col, ...) {
+	class = as.character(class)
+	le = unique(class)
+	ncl = length(le)
+
+	n1 = ceiling(sqrt(ncl))
+	n2 = ceiling(ncl/n1)
+
+	op = par(no.readonly = TRUE)
+	par(mfrow = c(n1, n2), mar = c(0.5, 0.5, 0.5, 0.5))
+	for(i in 1:ncl) {
+		l = class == le[i]
+		col2 = col[class]
+		col2[!l] = "#EEEEEE"
+		od = c(which(!l), which(l))
+		plot(loc[od, ], col = col2[od], ..., axes = FALSE, ann = FALSE)
+		text(par("usr")[1], par("usr")[4], le[i], adj = c(0, 1))
+		box()
+	}
+	par(op)
+}

@@ -19,7 +19,7 @@ Following code was used to generate \code{golub_cola_ds}:
     m = get_matrix(golub_cola)
     set.seed(123)
     golub_cola_ds = consensus_partition_by_down_sampling(
-        m, subset = 50, cores = 2,
+        m, subset = 50, cores = 6,
         anno = get_anno(golub_cola), 
         anno_col = get_anno_col(golub_cola),
     )  }

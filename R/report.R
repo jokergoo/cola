@@ -265,10 +265,10 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 
 	options(digits = 3)
 
-	if(!multicore_supported()) {
-		if(cores > 1 && verbose) qqcat("* `cores` is reset to 1 because multi-core is not supported on this OS.\n")
-		cores = 1
-	}
+	# if(!multicore_supported()) {
+	# 	if(cores > 1) qqcat("* `cores` is reset to 1 because multi-core is not supported on this OS.\n")
+	# 	cores = 1
+	# }
 
 	report_template = file.path(TEMPLATE_DIR, template_file[class])
 

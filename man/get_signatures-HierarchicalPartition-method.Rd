@@ -9,7 +9,7 @@ Get signatures rows
 \usage{
 \S4method{get_signatures}{HierarchicalPartition}(object, merge_node = merge_node_param(),
     group_diff = cola_opt$group_diff,
-    row_km = NULL,
+    row_km = NULL, diff_method = "Ftest", fdr_cutoff = cola_opt$fdr_cutoff,
     scale_rows = object[1]@scale_rows,
     anno = get_anno(object),
     anno_col = get_anno_col(object),
@@ -23,6 +23,8 @@ Get signatures rows
   \item{merge_node}{Parameters to merge sub-dendrograms, see \code{\link{merge_node_param}}.}
   \item{group_diff}{Cutoff for the maximal difference between group means.}
   \item{row_km}{Number of groups for performing k-means clustering on rows. By default it is automatically selected.}
+  \item{diff_method}{Methods to get rows which are significantly different between subgroups.}
+  \item{fdr_cutoff}{Cutoff for FDR of the difference test between subgroups.}
   \item{scale_rows}{whether apply row scaling when making the heatmap.}
   \item{anno}{a data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{hierarchical_partition}}.}
   \item{anno_col}{a list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}

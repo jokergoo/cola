@@ -37,7 +37,7 @@ hierarchical_partition(data,
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}
   \item{verbose}{whether print message.}
   \item{mc.cores}{multiple cores to use. This argument will be removed in future versions.}
-  \item{cores}{multiple cores to use. }
+  \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
   \item{help}{Whether to show the help message.}
   \item{...}{pass to \code{\link{consensus_partition}}}
 

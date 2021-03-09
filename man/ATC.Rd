@@ -18,7 +18,7 @@ ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
   \item{min_cor}{Cutoff for the minimal absolute correlation.}
   \item{power}{Power on the correlation values.}
   \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
-  \item{cores}{Number of cores.}
+  \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
   \item{n_sampling}{When there are too many rows in the matrix, to get the curmulative distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000 rows can already give a very nice estimation.}
   \item{q_sd}{Percentile of the standard deviation for the rows. Rows with values less than it are ignored.}
   \item{group}{A categorical variable. If it is specified, the correlation is only calculated for the rows in the same group as current row.}

@@ -114,6 +114,10 @@ hierarchical_partition = function(data,
 
 	data = as.matrix(data)
 
+	if(any(rowSds(data) == 0)) {
+		stop_wrap("Deteched some rows have zero SD, please remove them.")
+	}
+
 	if(help) {
 		if(identical(subset, Inf) && ncol(data) > 500) {
 			qqcat_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can set `subset` argument to a number less than the total number of columns or a subset of column indices. The classification of unselected columns are inferred from the classes of the selected columns. Set the argument 'help = FALSE' to turn off this message. Other tips: 1. set a single value for `top_value_method` and `partition_method`, 2. set a single value for `top_n`.\n")

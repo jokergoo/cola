@@ -26,7 +26,7 @@ run_all_consensus_partition_methods(data,
   \item{max_k}{Maximal number of subgroups to try. The function will try \code{2:max_k} subgroups.}
   \item{top_n}{Number of rows with top values. The value can be a vector with length > 1. When n > 5000,  the function only randomly sample 5000 rows from top n rows. If \code{top_n} is a vector, paritition will be applied to every values in \code{top_n} and consensus partition is summarized from all partitions.}
   \item{mc.cores}{Number of cores to use. This argument will be removed in future versions.}
-  \item{cores}{Number of cores to use.}
+  \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
   \item{anno}{A data frame with known annotation of columns.}
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{sample_by}{Should randomly sample the matrix by rows or by columns?}

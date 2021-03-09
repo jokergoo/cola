@@ -303,7 +303,7 @@ register_partition_methods(
 	# 	cclust(x = t(mat), centers = k, ...)
 	# },
 	mclust = function(mat, k, ...) {
-		pca = prcomp(t(mat))
+		pca = prcomp_irlba(t(mat), n = 3)
 		if(nrow(mat) >= 3) {
 			Mclust(pca$x[, 1:3], G = k, verbose = FALSE, control = emControl(itmax = c(1000, 1000)), ...)$classification
 		} else if(nrow(mat) == 2) {
