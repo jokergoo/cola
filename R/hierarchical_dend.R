@@ -163,19 +163,19 @@ calc_dend = function(object, merge_node = merge_node_param(), mat = NULL) {
 	if(is.null(names(classes))) names(classes) = seq_along(classes)
 
 	if(is.null(mat)) {
-		if(inherits(object[["0"]], "ConsensusPartition")) {
-			mat = apply(object[["0"]]@anno, 2, rank)
-		} else {
-			if(!is.null(object[["0"]]@full_anno)) {
-				mat = apply(object[["0"]]@full_anno, 2, rank)
-			} else if(!is.null(object[["0"]]@anno)) {
+		if(!is.null(object[["0"]]@anno)) {
+			if(inherits(object[["0"]], "ConsensusPartition")) {
 				mat = apply(object[["0"]]@anno, 2, rank)
-			} 
+			} else {
+				if(!is.null(object[["0"]]@full_anno)) {
+					mat = apply(object[["0"]]@full_anno, 2, rank)
+				} else if(!is.null(object[["0"]]@anno)) {
+					mat = apply(object[["0"]]@anno, 2, rank)
+				} 
+			}
+			mat = t(mat)
 		}
-		mat = t(mat)
 	}
-
-	colnames(mat) = names(classes)
 
 	if(is.null(mat)) {
 		cd_list = lapply(tapply(names(classes), classes, function(x) x), function(x) {
@@ -184,6 +184,7 @@ calc_dend = function(object, merge_node = merge_node_param(), mat = NULL) {
 			d
 		})
 	} else {
+		colnames(mat) = names(classes)
 		cd_list = tapply(seq_along(classes), classes, function(ind) {
 			d = as.dendrogram(hclust(dist(t(mat[, ind, drop = FALSE]))))
 			d = edit_node(d, function(x) {attr(x, "height") = 0; x})
