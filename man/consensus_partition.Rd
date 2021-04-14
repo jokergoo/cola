@@ -14,6 +14,7 @@ consensus_partition(data,
     length.out = 3),
     partition_method = "skmeans",
     max_k = 6,
+    k = NULL,
     sample_by = "row",
     p_sampling = 0.8,
     partition_repeat = 50,
@@ -34,6 +35,7 @@ consensus_partition(data,
   \item{top_n}{Number of rows with top values. The value can be a vector with length > 1. When n > 5000,  the function only randomly sample 5000 rows from top n rows. If \code{top_n} is a vector, paritition will be applied to every values in \code{top_n} and consensus partition is summarized from all partitions.}
   \item{partition_method}{A single partitioning method. Available methods are in \code{\link{all_partition_methods}}. Use \code{\link{register_partition_methods}} to add a new partition method.}
   \item{max_k}{Maximal number of subgroups to try. The function will try for \code{2:max_k} subgroups}
+  \item{k}{Alternatively, you can specify a vector k.}
   \item{sample_by}{Should randomly sample the matrix by rows or by columns?}
   \item{p_sampling}{Proportion of the submatrix which contains the top n rows to sample.}
   \item{partition_repeat}{Number of repeats for the random sampling.}

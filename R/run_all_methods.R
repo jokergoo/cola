@@ -10,6 +10,7 @@
 #        Allowed methods are in `all_partition_methods` and can be self-added 
 #        by `register_partition_methods`.
 # -max_k Maximal number of subgroups to try. The function will try ``2:max_k`` subgroups.
+# -k Alternatively, you can specify a vector k.
 # -top_n Number of rows with top values. The value can be a vector with length > 1. When n > 5000, 
 #        the function only randomly sample 5000 rows from top n rows. If ``top_n`` is a vector, paritition
 #        will be applied to every values in ``top_n`` and consensus partition is summarized from all partitions.
@@ -50,7 +51,7 @@
 run_all_consensus_partition_methods = function(data, 
 	top_value_method = all_top_value_methods(), 
 	partition_method = all_partition_methods(), 
-	max_k = 6, 
+	max_k = 6, k = NULL,
 	top_n = seq(min(1000, round(nrow(data)*0.1)), 
 		        min(3000, round(nrow(data)*0.3)), 
 		        length.out = 3),
@@ -151,7 +152,7 @@ run_all_consensus_partition_methods = function(data,
 		if(verbose) qqcat("------------------------------------------------------------\n")
 		if(verbose) qqcat("* running partition by @{tm}:@{pm}. @{i}/@{nrow(comb)}\n")
 
-		try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k,
+		try_and_trace(res <- consensus_partition(top_value_method = tm, partition_method = pm, max_k = max_k, k = k,
 				anno = anno, anno_col = anno_col, .env = .env, verbose = verbose,
 				top_n = top_n, sample_by = sample_by, p_sampling = p_sampling, partition_repeat = partition_repeat, scale_rows = scale_rows,
 				cores = cores), qq("You have an error when doing partition for @{tm}:@{pm}."))
@@ -203,10 +204,13 @@ run_all_consensus_partition_methods = function(data,
     	class = class_df[, "class"]
 
     	map = relabel_class(class, rc, full_set = 1:(all_k[i]))
+    	l = which( (duplicated(map) | duplicated(map, fromLast = TRUE)) & map != names(map))
+    	unmapped = setdiff(names(map), map)
+    	if(any(l)) {
+    		map[l] = unmapped
+    	}
     	map2 = structure(names(map), names = map)
-    	# unmapped = setdiff(as.character(1:k[i]), map)
-    	# map = c(map, structure(unmapped, names = unmapped))
-    	# map2 = c(map2, structure(unmapped, names = unmapped))
+    	
     	reference_class[[i]]$class_df$class = as.numeric(map[as.character(class)])
     	
     	# the class label for the global membership matrix needs to be adjusted

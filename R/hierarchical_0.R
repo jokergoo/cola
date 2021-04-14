@@ -279,7 +279,7 @@ hierarchical_partition = function(data,
 			for(i in seq_along(combination_method)) {
 				if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
 				.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
-				part_list[[i]] = consensus_partition(verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
+				part_list[[i]] = consensus_partition(verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
 					top_n = top_n, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
 					cores = cores, anno = anno2, anno_col = anno_col, ...)
 			}
@@ -294,7 +294,7 @@ hierarchical_partition = function(data,
 			for(i in seq_along(combination_method)) {
 				if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
 				.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
-				part_list[[i]] = consensus_partition_by_down_sampling(subset = subset, verbose = TRUE, .env = .env, max_k = max_k, prefix = prefix,
+				part_list[[i]] = consensus_partition_by_down_sampling(subset = subset, verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
 					top_n = top_n, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
 					cores = cores, .predict = FALSE, anno = anno2, anno_col = anno_col, ...)
 				all_top_value_list_ds[[part_list[[i]]@top_value_method]] = .env$all_top_value_list[[part_list[[i]]@top_value_method]]
@@ -495,7 +495,7 @@ hierarchical_partition = function(data,
 	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), min_samples = min_samples, 
 		node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores, ...)
 
-	qqcat("* formatting the results into a HierarchicalPartition object.\n")
+	if(verbose) qqcat("* formatting the results into a HierarchicalPartition object.\n")
 
 	# reformat lt
 	.e = new.env(parent = emptyenv())

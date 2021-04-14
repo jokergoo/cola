@@ -12,6 +12,7 @@
 # -partition_method A single partitioning method. Available methods are in `all_partition_methods`.
 #                   Use `register_partition_methods` to add a new partition method.
 # -max_k Maximal number of subgroups to try. The function will try for ``2:max_k`` subgroups
+# -k Alternatively, you can specify a vector k.
 # -sample_by Should randomly sample the matrix by rows or by columns?
 # -p_sampling Proportion of the submatrix which contains the top n rows to sample.
 # -partition_repeat Number of repeats for the random sampling.
@@ -68,6 +69,7 @@ consensus_partition = function(data,
 		        length.out = 3),
 	partition_method = "skmeans",
 	max_k = 6, 
+	k = NULL,
 	sample_by = "row",
 	p_sampling = 0.8,
 	partition_repeat = 50,
@@ -108,7 +110,7 @@ consensus_partition = function(data,
 		top_value_method = top_value_method,
 		top_n = top_n,
 		partition_method = partition_method,
-		k = 2:max_k, 
+		k = if(is.null(k)) 2:max_k else k, 
 		p_sampling = p_sampling,
 		sample_by = sample_by,
 		partition_repeat = partition_repeat,
@@ -513,17 +515,20 @@ consensus_partition = function(data,
 	## adjust class labels for different k should also be adjusted
 	if(verbose) qqcat("@{prefix}* adjust class labels between different k.\n")
 	reference_class = object_list[[1]]$class_df$class
+
 	for(i in seq_along(k)[-1]) {
 		class_df = object_list[[i]]$class_df
     	class = class_df[, "class"]
 
     	map = relabel_class(class, reference_class, full_set = 1:(k[i]))
+    	l = which( (duplicated(map) | duplicated(map, fromLast = TRUE)) & map != names(map))
+    	unmapped = setdiff(names(map), map)
+    	if(any(l)) {
+    		map[l] = unmapped
+    	}
     	map2 = structure(names(map), names = map)
-    	# unmapped = setdiff(as.character(1:k[i]), map)
-    	# map = c(map, structure(unmapped, names = unmapped))
-    	# map2 = c(map2, structure(unmapped, names = unmapped))
     	object_list[[i]]$class_df$class = as.numeric(map[as.character(class)])
-    	
+
     	# the class label for the global membership matrix needs to be adjusted
     	object_list[[i]]$membership = object_list[[i]]$membership[, as.numeric(map2[as.character(1:k[i])]) ]
 		colnames(object_list[[i]]$membership) = paste0("p", 1:k[i])

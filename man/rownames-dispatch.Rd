@@ -11,8 +11,8 @@ Method dispatch page for \code{rownames}.
 
 \itemize{
 \item \code{\link{rownames,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
-\item \code{\link{rownames,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 \item \code{\link{rownames,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
+\item \code{\link{rownames,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 }
 }
 \examples{

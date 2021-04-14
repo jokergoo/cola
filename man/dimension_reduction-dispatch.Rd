@@ -10,10 +10,10 @@ Method dispatch page for \code{dimension_reduction}.
 \code{dimension_reduction} can be dispatched on following classes:
 
 \itemize{
+\item \code{\link{dimension_reduction,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 \item \code{\link{dimension_reduction,DownSamplingConsensusPartition-method}}, \code{\link{DownSamplingConsensusPartition-class}} class method
 \item \code{\link{dimension_reduction,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 \item \code{\link{dimension_reduction,matrix-method}}, \code{\link{matrix-class}} class method
-\item \code{\link{dimension_reduction,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 }
 }
 \examples{
