@@ -351,6 +351,7 @@ recalc_stats = function(rl) {
 # - If it does not fit the second rule. The k with the maximal vote of the highest
 #   1-PAC score, highest mean silhouette, and highest concordance is taken as
 #   the best k.
+# -help Whether to print help message.
 #
 # Additionally, if 1-PAC for the best k is larger than 0.9 (10\% ambiguity for
 # the partition), cola marks it as a stable partition. It should be noted that
@@ -373,7 +374,7 @@ recalc_stats = function(rl) {
 # suggest_best_k(obj)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
-	definition = function(object, jaccard_index_cutoff = 0.95) {
+	definition = function(object, jaccard_index_cutoff = 0.95, help = TRUE) {
 
 	# if(verbose) {
 	# 	cat("This function only suggests the best k. It is recommended that users look ...")
@@ -388,6 +389,22 @@ setMethod(f = "suggest_best_k",
 
 	if(nrow(stat) == 1) {
 		return(stat[, "k"])
+	}
+
+	if(help) {
+		message_wrap("The best k suggested by this function might not reflect the real subgroups in the data (especially when you expect a large best k). It is recommended to directly look at the plots from select_partition_number() or other related plotting functions.")
+	}
+
+	if(max(object@k) > 6) {
+		dec = c(which.max(stat[, "1-PAC"]),
+			    which.max(stat[, "mean_silhouette"]),
+			    which.max(stat[, "concordance"]))
+		
+		tb = table(dec)
+		max_ind = order(tb, as.numeric(names(tb)), decreasing = TRUE)[1]
+		x = rownames(stat)[as.numeric(names(tb[max_ind]))]
+		
+		return(as.numeric(x))
 	}
 
 	l = stat[, "1-PAC"] >= 0.9
@@ -410,7 +427,8 @@ setMethod(f = "suggest_best_k",
 		    which.max(stat[, "concordance"]))
 	
 	tb = table(dec)
-	x = rownames(stat)[as.numeric(names(tb[which.max(tb)[1]]))]
+	max_ind = order(tb, as.numeric(names(tb)), decreasing = TRUE)[1]
+	x = rownames(stat)[as.numeric(names(tb[max_ind]))]
 	
 	as.numeric(x)
 })
@@ -439,7 +457,7 @@ setMethod(f = "is_best_k",
 	signature = "ConsensusPartition",
 	definition = function(object, k, ...) {
 
-	best_k = suggest_best_k(object, ...)
+	best_k = suggest_best_k(object, ..., help = FALSE)
 	if(is.na(best_k)) {
 		return(FALSE)
 	} else {
@@ -516,7 +534,7 @@ setMethod(f = "suggest_best_k",
 		for(pm in object@partition_method) {
 			nm = paste0(tm, ":", pm)
 			obj = object@list[[nm]]
-			k = suggest_best_k(obj, jaccard_index_cutoff)
+			k = suggest_best_k(obj, jaccard_index_cutoff, help = FALSE)
 			best_k[nm] = k
 			op = attr(k, "optional")
 			if(is.null(op)) {

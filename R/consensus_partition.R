@@ -609,7 +609,7 @@ setMethod(f = "show",
 	qqcat("  Top rows (@{paste(top_n_str, collapse = ', ')}) are extracted by '@{object@top_value_method}' method.\n")
 	qqcat("  Subgroups are detected by '@{object@partition_method}' method.\n")
 	qqcat("  Performed in total @{object@n_partition} partitions by @{object@sample_by} resampling.\n")
-	best_k = suggest_best_k(object)
+	best_k = suggest_best_k(object, help = FALSE)
 	if(is.na(best_k)) {
 		qqcat("  There is no best k.\n")
 	} else {
@@ -710,7 +710,7 @@ setMethod(f = "select_partition_number",
 
 	plot_ecdf(object, lwd = 1)
 
-	best_k = suggest_best_k(object)
+	best_k = suggest_best_k(object, help = FALSE)
 	if(is.na(best_k)) best_k = -1
 
 	for(i in seq_len(ncol(m))) {
@@ -725,7 +725,8 @@ setMethod(f = "select_partition_number",
 
 	par(xpd = NA, mar = c(4, 2, 1, 1))
 	plot(c(0, 1), c(0, 1), type = "n", axes = FALSE, ann = FALSE)
-	text(x = 0, y = 1,
+	if(max(object@k) <= 6) {
+		text(x = 0, y = 1,
 "Suggested rules:
 Jaccard index < 0.95;
 If 1-PAC >= 0.90,
@@ -735,6 +736,16 @@ else take the k with higest votes of
   2. max mean silhouette,
   3. max concordance.
 ", cex = 1.2, adj = c(0, 1))
+	} else {
+		text(x = 0, y = 1,
+"Suggested rules:
+Jaccard index < 0.95;
+take the k with higest votes of
+  1. max 1-PAC,
+  2. max mean silhouette,
+  3. max concordance.
+", cex = 1.2, adj = c(0, 1))
+	}
 
 	legend("topright", pch = 16, col = "Red", legend = "best k", cex = 1.5)
 

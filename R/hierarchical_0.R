@@ -305,7 +305,7 @@ hierarchical_partition = function(data,
 
 		stat_tb = sapply(part_list, function(part) {
 			stat_df = get_stats(part, all_stats = TRUE)
-			best_k = suggest_best_k(part)
+			best_k = suggest_best_k(part, help = FALSE)
 			if(is.na(best_k)) {
 				c(0, 0, 0, 0, 0)
 			} else {
@@ -337,7 +337,7 @@ hierarchical_partition = function(data,
 
 		lt = list(obj = part)
 
-	    best_k = suggest_best_k(part)
+	    best_k = suggest_best_k(part, help = FALSE)
 	    if(is.na(best_k)) {
 	    	attr(lt$obj, "stop_reason") = STOP_REASON["z"]
 	    	if(verbose) qqcat("@{prefix}* Rand index is too high, no meaningful subgroups, stop.\n")
@@ -523,7 +523,7 @@ hierarchical_partition = function(data,
 	hp@list = .e$lt
 	hp@node_level$best_k = sapply(.e$lt, function(x) {
 		if(inherits(x, "ConsensusPartition")) {
-			suggest_best_k(x)
+			suggest_best_k(x, help = FALSE)
 		} else {
 			NA
 		}
@@ -563,7 +563,7 @@ hierarchical_partition = function(data,
 		if(nodes[i] %in% leaves) {
 			n_signatures[i] = NA_real_
 		} else {
-			sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]]), verbose = FALSE, plot = FALSE, simplify = TRUE)
+			sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE)
 			n_signatures[i] = nrow(sig_tb)
 		}
 	}

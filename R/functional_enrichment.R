@@ -193,7 +193,7 @@ setMethod(f = "functional_enrichment",
     for(i in seq_along(object@list)) {
         nm = names(object@list)[i]
 
-        best_k = suggest_best_k(object@list[[i]])
+        best_k = suggest_best_k(object@list[[i]], help = FALSE)
         cat("-----------------------------------------------------------\n")
         qqcat("* enrich signature genes (k = @{best_k}) to @{ontology} terms for @{nm} on @{org_db}, @{i}/@{length(object@list)}\n")
         lt[[nm]] = functional_enrichment(object@list[[i]], gene_fdr_cutoff = gene_fdr_cutoff, id_mapping = id_mapping, org_db = org_db,
@@ -232,7 +232,7 @@ setMethod(f = "functional_enrichment",
 #
 setMethod(f = "functional_enrichment",
     signature = "ConsensusPartition",
-    definition = function(object, gene_fdr_cutoff = cola_opt$fdr_cutoff, k = suggest_best_k(object),
+    definition = function(object, gene_fdr_cutoff = cola_opt$fdr_cutoff, k = suggest_best_k(object, help = FALSE),
     row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db, verbose), 
     org_db = "org.Hs.eg.db", ontology = "BP",
     min_set_size = 10, max_set_size = 1000, 

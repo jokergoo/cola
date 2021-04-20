@@ -79,10 +79,10 @@ subgroup_dend = function(object, merge_node = merge_node_param()) {
 		if(p %in% names(object@.env$signature_hash)) {
 			sig_hash = object@.env$signature_hash[[p]]
 			# qqcat("use a cached hash: @{sig_hash}\n")
-			best_k = suggest_best_k(object[[p]])
+			best_k = suggest_best_k(object[[p]], help = FALSE)
 			sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, hash = sig_hash)
 		} else {
-			best_k = suggest_best_k(object[[p]])
+			best_k = suggest_best_k(object[[p]], help = FALSE)
 			sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE)
 		}
 		sig_lt[[p]] = sig_tb

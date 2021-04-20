@@ -111,7 +111,7 @@ setMethod(f = "get_signatures",
 		sig_lt = list()
 		.env = object@list[[1]]@.env
 		for(p in ap) {
-			best_k = suggest_best_k(object[[p]])
+			best_k = suggest_best_k(object[[p]], help = FALSE)
 			if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
 			sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = verbose, plot = FALSE, simplify = TRUE, seed = seed, diff_method = diff_method, fdr_cutoff = fdr_cutoff, ...)
 			if(is.null(.env$signature_hash)) {
@@ -343,7 +343,7 @@ setMethod(f = "compare_signatures",
 	lt = object@list[nodes]
 
 	sig_list = lapply(lt, function(x) {
-		tb = get_signatures(x, k = suggest_best_k(x), verbose = verbose, ..., plot = FALSE)
+		tb = get_signatures(x, k = suggest_best_k(x, help = FALSE), verbose = verbose, ..., plot = FALSE)
 		if(is.null(tb)) {
 			return(integer(0))
 		} else {
@@ -634,7 +634,7 @@ setMethod(f = "dimension_reduction",
 			stop_wrap(qq("@{parent_node} has no children nodes."))
 		}
 		obj = object[parent_node]
-		loc = dimension_reduction(obj, k = suggest_best_k(obj), top_n = top_n, method = method,
+		loc = dimension_reduction(obj, k = suggest_best_k(obj, help = FALSE), top_n = top_n, method = method,
 			scale_rows = scale_rows, color_by = color_by, ...)
 		legend(x = par("usr")[2], y = par("usr")[4], legend = qq("node @{parent_node}"))
 	}
@@ -678,7 +678,7 @@ setMethod(f = "suggest_best_k",
 	for(i in seq_along(object@list)) {
 		obj = object@list[[i]]
 		if(inherits(obj, "ConsensusPartition")) {
-			k = suggest_best_k(obj, jaccard_index_cutoff)
+			k = suggest_best_k(obj, jaccard_index_cutoff, help = FALSE)
 			best_k[i] = k
 
 			if(is.na(best_k[i])) {
