@@ -40,11 +40,12 @@ subgroup_dend = function(object, merge_node = merge_node_param()) {
 	.get_node_id = function(d) {
 		node_id = attr(d, "node_id")
 		if(is.null(node_id)) {
-			child_node_id = .get_node_id(d[[1]])
-			if(is.null(child_node_id)) {
-				child_node_id = .get_node_id(d[[2]])
+			n_children = length(d)
+			for(i in seq_len(n)) {
+				child_node_id = .get_node_id(d[[i]])
+				if(!is.null(child_node_id)) break
 			}
-			return(gsub("\\d$", "", child_node_id))
+			node_id = gsub("\\d$", "", child_node_id)
 		}
 		return(node_id)
 	}
@@ -101,21 +102,22 @@ subgroup_dend = function(object, merge_node = merge_node_param()) {
 	}))
 	dist = as.matrix(dist(mt))
 
-	max_dist = function(dist, node1, node2) {
+	max_dist = function(dist, node_list) {
 		all_nodes = rownames(dist)
-		children1 = grep(paste0("^", node1), all_nodes, value = TRUE)
-		children2 = grep(paste0("^", node2), all_nodes, value = TRUE)
-		max(dist[children1, children2], dist[children1, children1], dist[children2, children2])
+		children_list = lapply(node_list, function(x) {
+			grep(paste0("^", x), all_nodes, value = TRUE)
+		})
+		children_list = unique(unlist(children_list))
+		max(dist[children_list, children_list])
 	}
 
 	dend = edit_node(dend, function(d, index) {
 		if(is.leaf(d)) {
 			attr(d, "height") = 0
 		} else {
-			node1 = attr(d[[1]], "node_id")
-			node2 = attr(d[[2]], "node_id")
+			node_list = sapply(d, function(x) attr(x, "node_id"))
 
-			attr(d, "height") = max_dist(dist, node1, node2)
+			attr(d, "height") = max_dist(dist, node_list)
 		}
 		d
 	})
@@ -134,7 +136,11 @@ get_hierarchy_dend = function(object, merge_node = merge_node_param()) {
 
 random_dend = function(n) {
 	x = rnorm(n)
-	dend = as.dendrogram(hclust(dist(1:n)))
+	if(n == 1) {
+		dend = structure(1, members = 1, height = 0, label = colnames(mat)[ind], leaf = TRUE, class = "dendrogram")
+	} else {
+		dend = as.dendrogram(hclust(dist(1:n)))
+	}
 	# set height to zero
 
 	dendrapply(dend, function(x) {attr(x, "height") = 0; x})
@@ -186,7 +192,11 @@ calc_dend = function(object, merge_node = merge_node_param(), mat = NULL) {
 	} else {
 		colnames(mat) = names(classes)
 		cd_list = tapply(seq_along(classes), classes, function(ind) {
-			d = as.dendrogram(hclust(dist(t(mat[, ind, drop = FALSE]))))
+			if(length(ind) > 1) {
+				d = as.dendrogram(hclust(dist(t(mat[, ind, drop = FALSE]))))
+			} else {
+				d = structure(1, members = 1, height = 0, label = colnames(mat)[ind], leaf = TRUE, class = "dendrogram")
+			}
 			d = edit_node(d, function(x) {attr(x, "height") = 0; x})
 			d
 		})

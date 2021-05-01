@@ -23,7 +23,6 @@ dend_node_apply = function(dend, fun) {
 		env$var[[k]] = v
 	}
 
-
 	if(length(as.list(formals(fun))) == 1) {
 		fun2 = fun
 		fun = function(d, index) fun2(d)
@@ -47,7 +46,11 @@ dend_node_apply = function(dend, fun) {
 			}
 		}
 
-		n = length(dend)
+		if(is.null(index)) {
+			n = length(dend)
+		} else {
+			n = length(dend[[index]])
+		}
 		for(i in seq_len(n)) {
 			.do(dend, fun, c(index, i))
 		}

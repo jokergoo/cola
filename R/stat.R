@@ -62,7 +62,7 @@
 # mat = rbind(mat1, mat2, mat3)
 # ATC_score = ATC(mat)
 # plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
-ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
+ATC = function(mat, cor_fun = stats::cor, min_cor = 0.5, power = 1, top_k = NULL,
 	mc.cores = 1, cores = mc.cores, n_sampling = c(1000, 500), 
 	q_sd = 0, group = NULL, ...) {
 
@@ -87,7 +87,7 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 		return(v)
 	}
 
-	if(length(n_sampling) == 1) n_sampling = rep(n_sampling, 2)
+	if(length(n_sampling) == 1) n_sampling = c(n_sampling, Inf)
 
 	# internally we do it by columns to avoid too many t() callings
 	if(ncol(mat) > n_sampling[2]) {
@@ -117,12 +117,14 @@ ATC = function(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
 		v = numeric(length(ind))
 		for(i in seq_along(ind)) {
 			ind2 = seq_len(ncol(mat))[-ind[i]]
-			if(length(ind2) > n_sampling[1]) {
+			if(length(ind2) > n_sampling[1] && is.null(top_k)) {
 				ind2 = sample(ind2, n_sampling[1])
 			}
-			suppressWarnings(cor_v <- abs(cor(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
+			suppressWarnings(cor_v <- abs(cor_fun(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
+			if(!is.null(top_k)) {
+				min_cor = cor_v[order(-cor_v)[top_k]]
+			}
 			cor_v = cor_v^power
-			
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
 				v[i] = 1
 			} else {
@@ -373,5 +375,5 @@ cophcor = function(consensus_mat) {
 # consensus_classes = get_classes(golub_cola["SD", "kmeans"], k = 3)$class
 # concordance(membership_each, consensus_classes)
 concordance = function(membership_each, class) {
-	mean(apply(membership_each, 2, function(x) sum(x == class, na.rm = TRUE)/length(x)))
+	mean(apply(membership_each, 2, function(x) sum(x == class, na.rm = TRUE)/length(x[!is.na(x)])))
 }

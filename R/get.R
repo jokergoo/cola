@@ -339,6 +339,7 @@ recalc_stats = function(rl) {
 # == param
 # -object A `ConsensusPartition-class` object.
 # -jaccard_index_cutoff The cutoff for Jaccard index for comparing to previous k.
+# -help Whether to print help message.
 #
 # == details
 # The best k is selected according to following rules:
@@ -351,13 +352,14 @@ recalc_stats = function(rl) {
 # - If it does not fit the second rule. The k with the maximal vote of the highest
 #   1-PAC score, highest mean silhouette, and highest concordance is taken as
 #   the best k.
-# -help Whether to print help message.
 #
 # Additionally, if 1-PAC for the best k is larger than 0.9 (10\% ambiguity for
 # the partition), cola marks it as a stable partition. It should be noted that
 # it is difficult to find the best k deterministically, we encourage users to
 # compare results for all k and determine a proper one which best explain
 # their studies.
+#
+# When k > 6, only the third rule is applied because 1-PAC does not work well for larger k.
 #
 # == see also
 # The selection of the best k can be visualized by `select_partition_number`.
@@ -407,7 +409,17 @@ setMethod(f = "suggest_best_k",
 		return(as.numeric(x))
 	}
 
-	l = stat[, "1-PAC"] >= 0.9
+	if(min(stat[, "Jaccard"]) >= 0.75) {
+		dec = c(which.max(stat[, "mean_silhouette"]))
+		
+		tb = table(dec)
+		max_ind = order(tb, as.numeric(names(tb)), decreasing = TRUE)[1]
+		x = rownames(stat)[as.numeric(names(tb[max_ind]))]
+		
+		return(as.numeric(x))
+	}
+
+	l = stat[, "1-PAC"] >= 0.9 & (stat[, "mean_silhouette"] >= 0.9 | stat[, "concordance"] >= 0.9)
 	if(sum(l) == 1) {
 		return(as.numeric(rownames(stat)[l]))
 	} else if(sum(l) > 1) {
