@@ -41,7 +41,7 @@ subgroup_dend = function(object, merge_node = merge_node_param()) {
 		node_id = attr(d, "node_id")
 		if(is.null(node_id)) {
 			n_children = length(d)
-			for(i in seq_len(n)) {
+			for(i in seq_len(n_children)) {
 				child_node_id = .get_node_id(d[[i]])
 				if(!is.null(child_node_id)) break
 			}

@@ -437,7 +437,7 @@ hierarchical_partition = function(data,
     		return(lt)
     	}
 
-    	if(verbose) qqcat("@{prefix}* best k = @{best_k}, partition into @{best_k} subgroups\n")
+    	if(verbose) qqcat("@{prefix}* best k = @{best_k}, partition into @{best_k} subgroups.\n")
 
 	    lt2 = lapply(sort(unique(cl$class)), function(i_class) {
 	    	set = cl$class == i_class
