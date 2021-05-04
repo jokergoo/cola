@@ -64,8 +64,8 @@ ATC_cgi_anno = function (mat, cgi_anno, min_cor = 0, mc.cores = 1) {
 
 m = matrix(rnorm(100), 10)
 group = c(rep("a", 5), rep("b", 5))
-s1 = ATC(m, group = group)
-s2 = ATC_cgi_anno(m, cgi_anno = group)
+s1 = ATC(m, group = group, min_cor = 0.5)
+s2 = ATC_cgi_anno(m, cgi_anno = group, min_cor = 0.5)
 
 test_that("test ATC with groups", {
 	expect_equal(s1, s2)

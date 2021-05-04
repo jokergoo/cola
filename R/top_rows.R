@@ -124,11 +124,15 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 	method = c("euler", "upset", "venn", "correspondance"), 
 	fill = NULL, ...) {
 
-	if(length(unique(sapply(object, length))) > 1) {
-		stop_wrap("Length of all vectors in the input list should be the same.")
-	}
+	if(!is.null(top_n)) {
+		if(length(unique(sapply(object, length))) > 1) {
+			stop_wrap("Length of all vectors in the input list should be the same.")
+		}
 
-	lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
+		lt = lapply(object, function(x) order(x, decreasing = TRUE)[1:top_n])
+	} else {
+		lt = object
+	}
 
 	if(length(lt) == 1) {
 		stop_wrap("Expect at least two lists.")
@@ -139,19 +143,25 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
     method = tolower(method)
     method = match.arg(method)
 
+    if(is.null(top_n)) {
+    	main = "top rows"
+    } else {
+		main = qq("top @{top_n} rows")
+	}
+
     if(method == "venn") {
     	check_pkg("gplots", bioc = FALSE)
 		gplots::venn(lt, ...)
-		title(qq("top @{top_n} rows"))
+		title(main)
 	} else if(method == "euler") {
 		if(is.null(fill)) fill = cola_opt$color_set_1[seq_along(lt)]
 		
-		print(plot(eulerr::euler(lt), main = qq("top @{top_n} rows"), 
+		print(plot(eulerr::euler(lt), main = main, 
 			legend = legendGrob(labels = names(lt), ncol = 1, pch = 21, gp = gpar(fill = fill)), 
 			fills = add_transparency(fill, 0.5), ...))
 	} else if(method == "upset") {
 		cm = make_comb_mat(lt)
-		ht = UpSet(cm, column_title = qq("top @{top_n} rows"), ...)
+		ht = UpSet(cm, column_title = main, ...)
 		draw(ht)
 	} else if(method == "correspondance") {
 		correspond_between_rankings(object, top_n = top_n, ...)
@@ -320,5 +330,68 @@ setMethod(f = "top_rows_heatmap",
 	    if(file.exists(file_name)) file.remove(file_name)
 	}
 	upViewport()
+})
+
+# == title
+# Heatmap of top rows
+#
+# == param
+# -object A `ConsensusPartition-class` object.
+# -top_n Number of top rows.
+# -anno A data frame of annotations.
+# -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
+#       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
+# -scale_rows Wether to scale rows. 
+# -... Pass to `top_rows_heatmap,matrix-method`
+#
+# == value
+# No value is returned.
+#
+# == seealso
+# `top_rows_heatmap,matrix-method`
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+# == example
+# \donttest{
+# data(golub_cola)
+# top_rows_heatmap(golub_cola["ATC:skmeans"])
+# }
+setMethod(f = "top_rows_heatmap",
+	signature = "ConsensusPartition",
+	definition = function(object, top_n = min(object@top_n), 
+	anno = get_anno(object), anno_col = get_anno_col(object),
+	scale_rows = object@scale_rows, ...) {
+
+	all_top_value_list = list(object@top_value_list)
+	names(all_top_value_list) = object@top_value_method
+    
+    mat = get_matrix(object)
+
+    if(is.null(anno)) {
+		bottom_anno = NULL
+	} else {
+		if(is.atomic(anno)) {
+			anno_nm = deparse(substitute(anno))
+			anno = data.frame(anno)
+			colnames(anno) = anno_nm
+			if(!is.null(anno_col)) {
+				anno_col = list(anno_col)
+				names(anno_col) = anno_nm
+			}
+		}
+
+		if(is.null(anno_col)) {
+			bottom_anno = HeatmapAnnotation(df = anno,
+				show_annotation_name = TRUE, annotation_name_side = "right")
+		} else {
+			bottom_anno = HeatmapAnnotation(df = anno, col = anno_col,
+				show_annotation_name = TRUE, annotation_name_side = "right")
+		}
+	}
+
+    top_rows_heatmap(mat, all_top_value_list = all_top_value_list, top_n = top_n, 
+    	scale_rows = scale_rows, bottom_annotation = bottom_anno, ...)
 })
 

@@ -7,7 +7,7 @@ Perform functional enrichment on signature genes
 Perform functional enrichment on signature genes
 }
 \usage{
-\S4method{functional_enrichment}{ConsensusPartition}(object, gene_fdr_cutoff = cola_opt$fdr_cutoff, k = suggest_best_k(object),
+\S4method{functional_enrichment}{ConsensusPartition}(object, gene_fdr_cutoff = cola_opt$fdr_cutoff, k = suggest_best_k(object, help = FALSE),
     row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db, verbose),
     org_db = "org.Hs.eg.db", ontology = "BP",
     min_set_size = 10, max_set_size = 1000,

@@ -7,12 +7,13 @@ Suggest the best number of subgroups
 Suggest the best number of subgroups
 }
 \usage{
-\S4method{suggest_best_k}{ConsensusPartition}(object, jaccard_index_cutoff = 0.95)
+\S4method{suggest_best_k}{ConsensusPartition}(object, jaccard_index_cutoff = 0.95, help = TRUE)
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
   \item{jaccard_index_cutoff}{The cutoff for Jaccard index for comparing to previous k.}
+  \item{help}{Whether to print help message.}
 
 }
 \details{
@@ -29,6 +30,8 @@ the partition), cola marks it as a stable partition. It should be noted that
 it is difficult to find the best k deterministically, we encourage users to
 compare results for all k and determine a proper one which best explain
 their studies.
+
+When k > 6, only the third rule is applied because 1-PAC does not work well for larger k.
 }
 \section{See}{
 The selection of the best k can be visualized by \code{\link{select_partition_number}}.}

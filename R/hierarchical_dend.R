@@ -134,10 +134,10 @@ get_hierarchy_dend = function(object, merge_node = merge_node_param()) {
 	dend
 }
 
-random_dend = function(n) {
+random_dend = function(n, label) {
 	x = rnorm(n)
 	if(n == 1) {
-		dend = structure(1, members = 1, height = 0, label = colnames(mat)[ind], leaf = TRUE, class = "dendrogram")
+		dend = structure(1, members = 1, height = 0, label = label[ind], leaf = TRUE, class = "dendrogram")
 	} else {
 		dend = as.dendrogram(hclust(dist(1:n)))
 	}
@@ -185,7 +185,7 @@ calc_dend = function(object, merge_node = merge_node_param(), mat = NULL) {
 
 	if(is.null(mat)) {
 		cd_list = lapply(tapply(names(classes), classes, function(x) x), function(x) {
-			d = random_dend(length(x))
+			d = random_dend(length(x), colnames(object))
 			d = dendextend::`labels<-`(d, value = x)
 			d
 		})

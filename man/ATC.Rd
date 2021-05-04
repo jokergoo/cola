@@ -7,7 +7,7 @@ Ability to correlate to other rows
 Ability to correlate to other rows
 }
 \usage{
-ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
+ATC(mat, cor_fun = stats::cor, min_cor = 0.5, power = 1, top_k = NULL,
     mc.cores = 1, cores = mc.cores, n_sampling = c(1000, 500),
     q_sd = 0, group = NULL, ...)
 }
@@ -17,6 +17,7 @@ ATC(mat, cor_fun = stat::cor, min_cor = 0, power = 1,
   \item{cor_fun}{A function which calculates correlations.}
   \item{min_cor}{Cutoff for the minimal absolute correlation.}
   \item{power}{Power on the correlation values.}
+  \item{top_k}{Nearest k neighbours to only look at.}
   \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
   \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
   \item{n_sampling}{When there are too many rows in the matrix, to get the curmulative distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000 rows can already give a very nice estimation.}

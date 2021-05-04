@@ -990,4 +990,3 @@ setMethod(f = "membership_heatmap",
 		}
 	}
 })
-

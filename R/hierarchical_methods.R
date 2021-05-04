@@ -872,7 +872,48 @@ setMethod(f = "top_rows_heatmap",
     	scale_rows = scale_rows, bottom_annotation = bottom_anno, ...)
 })
 
+# == title
+# Overlap of top rows on different nodes
+#
+# == param
+# -object A `HierarchicalPartition-class` object.
+# -method ``euler``: plot Euler diagram by `eulerr::euler`; 
+#         ``upset``: draw the Upset plot by `ComplexHeatmap::UpSet`; ``venn``: plot Venn diagram by `gplots::venn`; 
+#         ``correspondance``: use `correspond_between_rankings`.
+# -fill Filled color for the Euler diagram. The value should be a color vector. Transparency of 0.5 are added internally.
+# -... Additional arguments passed to `eulerr::plot.euler`, `ComplexHeatmap::UpSet` or `correspond_between_rankings`.
+#
+# == value
+# No value is returned.
+#
+# == seealso
+# `top_elements_overlap`
+#
+# == author
+# Zuguang Gu <z.gu@dkfz.de>
+#
+# == example
+# data(golub_cola_rh)
+# top_rows_overlap(golub_cola_rh, method = "euler")
+# top_rows_overlap(golub_cola_rh, method = "upset")
+# top_rows_overlap(golub_cola_rh, method = "venn")
+setMethod(f = "top_rows_overlap",
+	signature = "HierarchicalPartition",
+	definition = function(object, method = c("euler", "upset", "venn"), fill = NULL, ...) {
 
+	rl = object@list
+	rl = rl[sapply(rl, class) != "character"]
+	all_top_value_list = lapply(rl, function(x) {
+		x@row_index[order(x@top_value_list)[seq_len(max(x@top_n))]]
+	})
+	names(all_top_value_list) = paste0(names(all_top_value_list), "|", sapply(rl, function(x) x@top_value_method))
+
+	if(is.null(fill)) {
+		fill = cola_opt$color_set_1[seq_along(all_top_value_list)]
+	}
+	method = match.arg(method)[1]
+	top_elements_overlap(all_top_value_list, method = method, fill = fill, top_n = NULL, ...)
+})
 
 
 # == title

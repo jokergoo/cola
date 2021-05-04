@@ -8,6 +8,7 @@
 # -cor_fun A function which calculates correlations.
 # -min_cor Cutoff for the minimal absolute correlation.
 # -power Power on the correlation values.
+# -top_k Nearest k neighbours to only look at.
 # -mc.cores Number of cores. This argument will be removed in future versions.
 # -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
 # -n_sampling When there are too many rows in the matrix, to get the curmulative
@@ -111,6 +112,8 @@ ATC = function(mat, cor_fun = stats::cor, min_cor = 0.5, power = 1, top_k = NULL
 	} else {
 		ind_list = list(1:n)
 	}
+
+	if(!is.null(top_k)) top_k = min(top_k, ncol(mat))
 
 	registerDoParallel(cores)
 	v_list <- foreach(ind = ind_list) %dopar% {

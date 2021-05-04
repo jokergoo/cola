@@ -30,6 +30,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
         subgroup_col = "character",
         subgroup_dend = "ANY",
         node_level = "list",
+        param = "list",
         call = "ANY",
         .env = "environment"
     )
@@ -55,6 +56,8 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
 # -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
+# -group_diff Pass to `get_signatures,ConsensusPartition-method`.
+# -fdr_cutoff Pass to `get_signatures,ConsensusPartition-method`.
 # -subset Number of columns to randomly sample.
 # -min_n_signatures Minimal number of signatures under the best classification.
 # -min_p_signatures Minimal proportion of signatures under the best classification. If the corresponding values
@@ -104,6 +107,7 @@ hierarchical_partition = function(data,
 	combination_method =  expand.grid(top_value_method, partition_method),
 	anno = NULL, anno_col = NULL,
 	PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
+	group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff,
 	min_n_signatures = round(nrow(data)*min_p_signatures), 
 	min_p_signatures = 0.05,
 	max_k = 4, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...) {
@@ -206,7 +210,7 @@ hierarchical_partition = function(data,
 		anno_col = NULL
 	}
 
-	n_cores = get_nc(cores)
+	cores = get_nc(cores)
 
 	.env = new.env(parent = emptyenv())
 	.env$data = data
@@ -223,241 +227,11 @@ hierarchical_partition = function(data,
 	names(all_top_value_list) = all_top_value_method
 	.env$all_top_value_list = all_top_value_list
 	.env$node_0_top_value_list = .env$all_top_value_list
-   
-	.hierarchical_partition = function(.env, column_index, node_id = '0', 
-		min_samples = 6, max_k = 4, verbose = TRUE, cores = 1, ...) {
+	.env$combination_method = combination_method
 
-		prefix = ""
-		if(node_id != "0") {
-			prefix = paste(rep("  ", nchar(node_id) - 1), collapse = "")
-		}
-
-		if(verbose) qqcat(crayon::red("@{prefix}================== node @{node_id} ============================\n"))
-		if(verbose) qqcat("@{prefix}* submatrix with @{length(column_index)} columns, node_id: @{node_id}.\n")
-
-		if(length(column_index) < 2*min_samples) {
-			if(verbose) qqcat("@{prefix}* number of samples is not enough to perform partitioning.\n")
-			part = STOP_REASON["b"]
-			# we need the following two values for other functions
-			attr(part, "node_id") = node_id
-			attr(part, "column_index") = column_index
-			attr(part, "stop_reason") = STOP_REASON["b"]
-			return(list(obj = part))
-		}
-
-		## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
-	   	
-	   	if(node_id == "0") {
-	   		if(all(top_n <= 1)) {
-				top_n = floor(top_n * nrow(data))
-				top_n = top_n[top_n > 0]
-			}
-	   	}
-		if(node_id != "0") {
-			row_sd = rowSds(data[, column_index, drop = FALSE])
-			qa = quantile(unique(row_sd[row_sd > 1e-10]), 0.95, na.rm = TRUE)*0.05
-			l = row_sd > qa
-			.env$row_index = which(l)
-			if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
-
-			if(all(top_n <= 1)) {
-				top_n = floor(top_n * length(.env$row_index))
-				top_n = top_n[top_n > 0]
-			}
-
-			min_n = ifelse(top_n > 100, 100, top_n)
-			top_n = (top_n - min_n) * length(column_index)/ncol(.env$data) + min_n
-			top_n = unique(top_n)
-
-			if(length(.env$row_index) < min(top_n)*1.2 || length(top_n) == 0) {
-				if(verbose) qqcat("@{prefix}* number of rows is not enough to perform partitioning.\n")
-				part = STOP_REASON["d"]
-				# we need the following two values for other functions
-				attr(part, "node_id") = node_id
-				attr(part, "column_index") = column_index
-				attr(part, "stop_reason") = STOP_REASON["d"]
-				return(list(obj = part))
-			}
-		}
-		if(n_cores > 1 && verbose) {
-			qqcat("@{prefix}* running consensus partitioning with @{n_cores} cores.\n")
-		}
-
-		if(is.null(anno)) {
-			anno2 = NULL
-		} else {
-			anno2 = anno[column_index, , drop = FALSE]
-		}
-
-		part_list = list()
-		if(length(column_index) <= subset) {
-			if(node_id != "0") .env$all_top_value_list = NULL
-		
-			for(i in seq_along(combination_method)) {
-				if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
-				.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
-				nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-row")
-				part_list[[nm]] = consensus_partition(verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
-						top_n = top_n, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
-						cores = cores, anno = anno2, anno_col = anno_col, ...)
-				
-				# if(verbose) qqcat("@{prefix}* .......................................................\n")
-				# nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-column")
-				# part_list[[nm]] = consensus_partition(verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
-				# 		top_n = top_n, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
-				# 		cores = cores, anno = anno2, anno_col = anno_col, sample_by = "column", ...)
-			}
-		} else {
-			.env$all_top_value_list = NULL
-
-			# in consensus_partition_by_down_sampling(), .env$all_top_value_list is always reset to NULL
-			# because the columns are randomly sampled and top_value changes. However, here we cache
-			# the recent top_value for a top_value_method for downstream process
-			all_top_value_list_ds = list()
-
-			for(i in seq_along(combination_method)) {
-				if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
-				.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
-				nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-row")
-				part_list[[nm]] = consensus_partition_by_down_sampling(subset = subset, verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
-						top_n = top_n, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
-						cores = cores, .predict = FALSE, anno = anno2, anno_col = anno_col, ...)
-				all_top_value_list_ds[[part_list[[nm]]@top_value_method]] = .env$all_top_value_list[[part_list[[nm]]@top_value_method]]
-
-				# if(verbose) qqcat("@{prefix}* ........................................................\n")
-				# nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-column")
-				# part_list[[nm]] = consensus_partition_by_down_sampling(subset = subset, verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
-				# 		top_n = top_n, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
-				# 		cores = cores, .predict = FALSE, anno = anno2, anno_col = anno_col, sample_by = "column", ...)
-			}
-		}
-
-		e$list[[node_id]] = part_list
-
-		if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
-
-		# find the best partitioning result
-		stat_tb = lapply(names(part_list), function(nm) {
-			part = part_list[[nm]]
-			stat_df = get_stats(part, all_stats = TRUE)
-			nc = ncol(part)
-			best_k = suggest_best_k(part, help = FALSE, jaccard_index_cutoff = ifelse(nc < 30, 0.7, ifelse(nc < 60, 0.8, 0.9)))
-			optional_k = attr(best_k, "optional")
-			if(is.na(best_k)) {
-				x = data.frame(k = 0, "1-PAC" = 0, "mean_silhouette" = 0, "concordance" = 0, "area_increased" = 0, method = nm, check.names = FALSE)
-			} else {
-				x = stat_df[stat_df[, "k"] == best_k, c("k", "1-PAC", "mean_silhouette", "concordance", "area_increased"), drop = FALSE]
-				x = as.data.frame(x)
-				x$method = nm
-			}
-			if(!is.null(optional_k)) {
-				x2 = stat_df[stat_df[, "k"] %in% optional_k, c("k", "1-PAC", "mean_silhouette", "concordance", "area_increased"), drop = FALSE]
-				x2 = as.data.frame(x2)
-				x2$method = nm
-				x = rbind(x, x2)
-			}
-			x
-		})
-		stat_tb = do.call("rbind", stat_tb)
-
-		stat_tb2 = stat_tb
-		stat_tb = stat_tb[stat_tb$`1-PAC` >= 0.9 & (stat_tb$mean_silhouette >= 0.9 | stat_tb$concordance >= 0.9), , drop = FALSE]
-		if(nrow(stat_tb) == 1) {
-			ind = do.call(order, -stat_tb[setdiff(colnames(stat_tb), "method")])[1]
-			part = part_list[[ stat_tb[ind, "method"] ]]
-			best_k = stat_tb[ind, "k"]
-
-			if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} because this is the only stable partitioning result.\n")
-
-		} else if(nrow(stat_tb) > 1) {
-			stat_tb$n_signatures = -Inf
-			for(i in seq_len(nrow(stat_tb))) {
-				sig_tb = get_signatures(part_list[[stat_tb[i, "method"]]], k = stat_tb[i, "k"], plot = FALSE, verbose = FALSE, simplify = TRUE)
-				stat_tb$n_signatures[i] = nrow(sig_tb)
-			}
-			ind = do.call(order, -stat_tb[, c("n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "method")))])[1]
-			part = part_list[[ stat_tb[ind, "method"] ]]
-			best_k = stat_tb[ind, "k"]
-
-			if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} because it has the highest number of signatures among all @{nrow(stat_tb)} stable partitioning results.\n")
-		} else {
-			ind = do.call(order, -stat_tb2[setdiff(colnames(stat_tb2), "method")])[1]
-			part = part_list[[ stat_tb2[ind, "method"] ]]
-			best_k = stat_tb2[ind, "k"]
-
-			if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} as the best partitioning result.\n")
-		}
-
-		attr(part, "node_id") = node_id
-		lt = list(obj = part)
-
-		if(is.na(best_k)) {
-	    	attr(lt$obj, "stop_reason") = STOP_REASON["z"]
-	    	if(verbose) qqcat("@{prefix}* Jaccard index is too high, no meaningful subgroups, stop.\n")
-	    	return(lt)
-	    }
-
-	   	# check PAC score
-	    PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
-	    if(PAC_score > PAC_cutoff) {
-	    	if(verbose) qqcat("@{prefix}* PAC score is too big (@{sprintf('%.2f', PAC_score)}), stop.\n")
-	    	attr(lt$obj, "stop_reason") = STOP_REASON["a"]
-	    	return(lt)
-	    }
-		
-		dist_method = list(...)$dist_method
-		if(is.null(dist_method)) dist_method = "euclidean"
-		if(length(column_index) > subset) {
-
-			part = convert_to_DownSamplingConsensusPartition(part, column_index, dist_method, verbose, prefix, cores)
-		}
-
-	    cl = get_classes(part, k = best_k)
-
-
-	    .env$all_top_value_list = NULL
-
-    	# check the numbers of signatures
-    	if(verbose) qqcat("@{prefix}* checking number of signatures in the best classification.\n")
-    	if(length(column_index) <= subset) {
-    		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, silhouette_cutoff = -Inf)
-    	} else {
-    		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, p_cutoff = Inf)
-    	}
-    	if(is.null(part@.env$signature_hash)) {
-    		part@.env$signature_hash = list()
-    	}
-    	part@.env$signature_hash[[node_id]] = attr(sig_df, "hash")
-    	
-    	n_sig = nrow(sig_df)
-    	p_sig = n_sig/nrow(part)
-    	if(n_sig <= min_n_signatures && p_sig <= min_p_signatures) {
-    		if(verbose) qqcat("@{prefix}* too few signatures (n = @{n_sig}, p = @{sprintf('%.3f', p_sig)}) under the best classification, stop.\n")
-    		attr(lt$obj, "stop_reason") = STOP_REASON["c"]
-    		return(lt)
-    	}
-
-    	if(verbose) qqcat("@{prefix}* best k = @{best_k}, partition into @{best_k} subgroups.\n")
-
-	    lt2 = lapply(sort(unique(cl$class)), function(i_class) {
-	    	set = cl$class == i_class
-	    	sub_node = paste0(node_id, i_class)
-	    	return(.hierarchical_partition(.env, column_index = column_index[set], node_id = sub_node,
-	    			min_samples = min_samples, max_k = min(max_k, length(set)-1), cores = cores, verbose = verbose, ...))
-	    })
-
-	    for(i in seq_along(lt2)) {
-	    	if(!is.null(lt2[[i]])) {
-	    		lt[[qq("child@{i}")]] = lt2[[i]]
-	    	}
-	    }
-
-	    return(lt)
-	}
-
-		
-	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), min_samples = min_samples, 
-		node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores, ...)
+	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), subset = subset, anno = anno, anno_col = anno_col,
+		min_samples = min_samples, node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores,
+		top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, ...)
 
 	if(verbose) qqcat("* formatting the results into a HierarchicalPartition object.\n")
 
@@ -524,13 +298,15 @@ hierarchical_partition = function(data,
 		}
 		if(nodes[i] %in% leaves) {
 			if(attr(hp@list[[i]], "stop_reason") == STOP_REASON["c"]) {
-				sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE)
+				sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
+					group_diff = group_diff, fdr_cutoff = fdr_cutoff)
 				n_signatures[i] = nrow(sig_tb)
 			} else {
 				n_signatures[i] = NA_real_
 			}
 		} else {
-			sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE)
+			sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
+				group_diff = group_diff, fdr_cutoff = fdr_cutoff)
 			n_signatures[i] = nrow(sig_tb)
 		}
 	}
@@ -558,12 +334,257 @@ hierarchical_partition = function(data,
 
 	hp@.env$combination_methods = combination_method
 
+	hp@param = list(top_n = top_n, combination_method = combination_method, PAC_cutoff = PAC_cutoff, min_samples = min_samples,
+		subset = subset, group_diff = group_diff, fdr_cutoff = fdr_cutoff, min_n_signatures = min_n_signatures, max_k = max_k, cores = cores)
+
 	t2 = Sys.time()
 	if(verbose) cat("* totally used ", gsub("^ +", "", format(t2 - t1)), ".\n", sep = "")
 
 	return(hp)
 }
 
+   
+.hierarchical_partition = function(.env, column_index, node_id = '0', subset = Inf, anno = NULL, anno_col = anno_col,
+	min_samples = 6, max_k = 4, verbose = TRUE, cores = 1, 
+	top_n = 1000, PAC_cutoff = 0.2, min_n_signatures = 100, group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff, ...) {
+
+	prefix = ""
+	if(node_id != "0") {
+		prefix = paste(rep("  ", nchar(node_id) - 1), collapse = "")
+	}
+
+	if(verbose) qqcat(crayon::red("@{prefix}================== node @{node_id} ============================\n"))
+	if(verbose) qqcat("@{prefix}* submatrix with @{length(column_index)} columns, node_id: @{node_id}.\n")
+
+	if(length(column_index) < 2*min_samples) {
+		if(verbose) qqcat("@{prefix}* number of samples is not enough to perform partitioning.\n")
+		part = STOP_REASON["b"]
+		# we need the following two values for other functions
+		attr(part, "node_id") = node_id
+		attr(part, "column_index") = column_index
+		attr(part, "stop_reason") = STOP_REASON["b"]
+		return(list(obj = part))
+	}
+
+	## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
+   	data = .env$data
+   	combination_method = .env$combination_method
+
+   	top_n2 = top_n
+   	if(node_id == "0") {
+   		if(all(top_n2 <= 1)) {
+			top_n2 = floor(top_n2 * nrow(data))
+			top_n2 = top_n2[top_n2 > 0]
+		}
+   	}
+	if(node_id != "0") {
+		row_sd = rowSds(data[, column_index, drop = FALSE])
+		qa = quantile(unique(row_sd[row_sd > 1e-10]), 0.95, na.rm = TRUE)*0.05
+		l = row_sd > qa
+		.env$row_index = which(l)
+		if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
+
+		if(all(top_n2 <= 1)) {
+			top_n2 = floor(top_n2 * length(.env$row_index))
+			top_n2 = top_n2[top_n2 > 0]
+		}
+
+		min_n = ifelse(top_n2 > 100, 100, top_n2)
+		top_n2 = (top_n2 - min_n) * length(column_index)/ncol(.env$data) + min_n
+		top_n2 = unique(top_n2)
+
+		if(length(.env$row_index) < min(top_n2)*1.2 || length(top_n2) == 0) {
+			if(verbose) qqcat("@{prefix}* number of rows is not enough to perform partitioning.\n")
+			part = STOP_REASON["d"]
+			# we need the following two values for other functions
+			attr(part, "node_id") = node_id
+			attr(part, "column_index") = column_index
+			attr(part, "stop_reason") = STOP_REASON["d"]
+			return(list(obj = part))
+		}
+	}
+	if(cores > 1 && verbose) {
+		qqcat("@{prefix}* running consensus partitioning with @{cores} cores.\n")
+	}
+
+	if(is.null(anno)) {
+		anno2 = NULL
+	} else {
+		anno2 = anno[column_index, , drop = FALSE]
+	}
+
+	part_list = list()
+	if(length(column_index) <= subset) {
+		if(node_id != "0") .env$all_top_value_list = NULL
+	
+		for(i in seq_along(combination_method)) {
+			if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
+			.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
+			nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-row")
+			part_list[[nm]] = consensus_partition(verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
+					top_n = top_n2, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
+					cores = cores, anno = anno2, anno_col = anno_col, ...)
+			
+			# if(verbose) qqcat("@{prefix}* .......................................................\n")
+			# nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-column")
+			# part_list[[nm]] = consensus_partition(verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
+			# 		top_n = top_n2, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
+			# 		cores = cores, anno = anno2, anno_col = anno_col, sample_by = "column", ...)
+		}
+	} else {
+		.env$all_top_value_list = NULL
+
+		# in consensus_partition_by_down_sampling(), .env$all_top_value_list is always reset to NULL
+		# because the columns are randomly sampled and top_value changes. However, here we cache
+		# the recent top_value for a top_value_method for downstream process
+		all_top_value_list_ds = list()
+
+		for(i in seq_along(combination_method)) {
+			if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
+			.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
+			nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-row")
+			part_list[[nm]] = consensus_partition_by_down_sampling(subset = subset, verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
+					top_n = top_n2, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
+					cores = cores, .predict = FALSE, anno = anno2, anno_col = anno_col, ...)
+			all_top_value_list_ds[[part_list[[nm]]@top_value_method]] = .env$all_top_value_list[[part_list[[nm]]@top_value_method]]
+
+			# if(verbose) qqcat("@{prefix}* ........................................................\n")
+			# nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-column")
+			# part_list[[nm]] = consensus_partition_by_down_sampling(subset = subset, verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
+			# 		top_n = top_n2, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
+			# 		cores = cores, .predict = FALSE, anno = anno2, anno_col = anno_col, sample_by = "column", ...)
+		}
+	}
+
+	if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
+
+	# find the best partitioning result
+	stat_tb = lapply(names(part_list), function(nm) {
+		part = part_list[[nm]]
+		stat_df = get_stats(part, all_stats = TRUE)
+		nc = ncol(part)
+		best_k = suggest_best_k(part, help = FALSE, jaccard_index_cutoff = ifelse(nc < 30, 0.7, ifelse(nc < 60, 0.8, 0.9)))
+		optional_k = attr(best_k, "optional")
+		if(is.na(best_k)) {
+			x = data.frame(k = 0, "1-PAC" = 0, "mean_silhouette" = 0, "concordance" = 0, "area_increased" = 0, method = nm, check.names = FALSE)
+		} else {
+			x = stat_df[stat_df[, "k"] == best_k, c("k", "1-PAC", "mean_silhouette", "concordance", "area_increased"), drop = FALSE]
+			x = as.data.frame(x)
+			x$method = nm
+		}
+		if(!is.null(optional_k)) {
+			x2 = stat_df[stat_df[, "k"] %in% optional_k, c("k", "1-PAC", "mean_silhouette", "concordance", "area_increased"), drop = FALSE]
+			x2 = as.data.frame(x2)
+			x2$method = nm
+			x = rbind(x, x2)
+		}
+		x
+	})
+	stat_tb = do.call("rbind", stat_tb)
+
+	stat_tb2 = stat_tb
+	stat_tb = stat_tb[stat_tb$`1-PAC` >= 1-PAC_cutoff & (stat_tb$mean_silhouette >= 0.9 | stat_tb$concordance >= 0.9), , drop = FALSE]
+	if(nrow(stat_tb) == 1) {
+		ind = do.call(order, -stat_tb[setdiff(colnames(stat_tb), "method")])[1]
+		part = part_list[[ stat_tb[ind, "method"] ]]
+		best_k = stat_tb[ind, "k"]
+
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} because this is the only stable partitioning result.\n")
+
+	} else if(nrow(stat_tb) > 1) {
+		stat_tb$n_signatures = -Inf
+		for(i in seq_len(nrow(stat_tb))) {
+			sig_tb = get_signatures(part_list[[stat_tb[i, "method"]]], k = stat_tb[i, "k"], plot = FALSE, verbose = FALSE, simplify = TRUE,
+				group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+			stat_tb$n_signatures[i] = nrow(sig_tb)
+		}
+		ind = do.call(order, -stat_tb[, c("n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "method")))])[1]
+		part = part_list[[ stat_tb[ind, "method"] ]]
+		best_k = stat_tb[ind, "k"]
+
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} because it has the highest number of signatures among all @{nrow(stat_tb)} stable partitioning results.\n")
+	} else {
+		ind = do.call(order, -stat_tb2[setdiff(colnames(stat_tb2), "method")])[1]
+		part = part_list[[ stat_tb2[ind, "method"] ]]
+		best_k = stat_tb2[ind, "k"]
+
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} as the best partitioning result.\n")
+	}
+
+	dist_method = list(...)$dist_method
+	if(is.null(dist_method)) dist_method = "euclidean"
+	if(length(column_index) > subset) {
+		part = convert_to_DownSamplingConsensusPartition(part, column_index, dist_method, verbose, prefix, cores)
+	}
+
+	attr(part, "node_id") = node_id
+	lt = list(obj = part)
+
+	if(is.na(best_k)) {
+    	attr(lt$obj, "stop_reason") = STOP_REASON["z"]
+    	if(verbose) qqcat("@{prefix}* Jaccard index is too high, no meaningful subgroups, stop.\n")
+    	return(lt)
+    }
+
+    if(best_k == 0) {
+    	attr(lt$obj, "stop_reason") = STOP_REASON["z"]
+    	if(verbose) qqcat("@{prefix}* Jaccard index is too high, no meaningful subgroups, stop.\n")
+    	return(lt)
+    }
+
+   	# check PAC score
+    PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
+    if(PAC_score > PAC_cutoff) {
+    	if(verbose) qqcat("@{prefix}* PAC score is too big (@{sprintf('%.2f', PAC_score)}), stop.\n")
+    	attr(lt$obj, "stop_reason") = STOP_REASON["a"]
+    	return(lt)
+    }
+
+    cl = get_classes(part, k = best_k)
+
+
+    .env$all_top_value_list = NULL
+
+	# check the numbers of signatures
+	if(verbose) qqcat("@{prefix}* checking number of signatures in the best classification.\n")
+	if(length(column_index) <= subset) {
+		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, silhouette_cutoff = -Inf,
+			group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+	} else {
+		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, p_cutoff = Inf,
+			group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+	}
+	if(is.null(part@.env$signature_hash)) {
+		part@.env$signature_hash = list()
+	}
+	part@.env$signature_hash[[node_id]] = attr(sig_df, "hash")
+	
+	n_sig = nrow(sig_df)
+	p_sig = n_sig/nrow(part)
+	if(n_sig <= min_n_signatures) {
+		if(verbose) qqcat("@{prefix}* too few signatures (n = @{n_sig}, p = @{sprintf('%.3f', p_sig)}) under the best classification, stop.\n")
+		attr(lt$obj, "stop_reason") = STOP_REASON["c"]
+		return(lt)
+	}
+
+	if(verbose) qqcat("@{prefix}* best k = @{best_k}, partition into @{best_k} subgroups.\n")
+
+    lt2 = lapply(sort(unique(cl$class)), function(i_class) {
+    	set = cl$class == i_class
+    	sub_node = paste0(node_id, i_class)
+    	return(.hierarchical_partition(.env, column_index = column_index[set], node_id = sub_node, subset = subset, anno = anno, anno_col = anno_col,
+    			min_samples = min_samples, max_k = min(max_k, length(set)-1), cores = cores, verbose = verbose, 
+    			top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, ...))
+    })
+
+    for(i in seq_along(lt2)) {
+    	if(!is.null(lt2[[i]])) {
+    		lt[[qq("child@{i}")]] = lt2[[i]]
+    	}
+    }
+
+    return(lt)
+}
 
 STOP_REASON = c(
 	"z" = "Jaccard indices for all k were too high.",
