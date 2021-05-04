@@ -113,7 +113,7 @@ ATC = function(mat, cor_fun = stats::cor, min_cor = 0.5, power = 1, top_k = NULL
 		ind_list = list(1:n)
 	}
 
-	if(!is.null(top_k)) top_k = min(top_k, ncol(mat))
+	if(!is.null(top_k)) top_k = min(top_k, ncol(mat)-1)
 
 	registerDoParallel(cores)
 	v_list <- foreach(ind = ind_list) %dopar% {
@@ -125,7 +125,9 @@ ATC = function(mat, cor_fun = stats::cor, min_cor = 0.5, power = 1, top_k = NULL
 			}
 			suppressWarnings(cor_v <- abs(cor_fun(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
 			if(!is.null(top_k)) {
-				min_cor = cor_v[order(-cor_v)[top_k]]
+				# min_cor = cor_v[order(-cor_v)[top_k]]
+				cor_v = sort(cor_v, decreasing = TRUE)[seq_len(top_k)]
+				min_cor = 0
 			}
 			cor_v = cor_v^power
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
