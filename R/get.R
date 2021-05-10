@@ -376,7 +376,7 @@ recalc_stats = function(rl) {
 # suggest_best_k(obj)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
-	definition = function(object, jaccard_index_cutoff = 0.95, help = TRUE) {
+	definition = function(object, jaccard_index_cutoff = 0.95, stable_PAC = 0.1, help = TRUE) {
 
 	# if(verbose) {
 	# 	cat("This function only suggests the best k. It is recommended that users look ...")
@@ -397,18 +397,6 @@ setMethod(f = "suggest_best_k",
 		message_wrap("The best k suggested by this function might not reflect the real subgroups in the data (especially when you expect a large best k). It is recommended to directly look at the plots from select_partition_number() or other related plotting functions.")
 	}
 
-	if(max(object@k) > 6) {
-		dec = c(which.max(stat[, "1-PAC"]),
-			    which.max(stat[, "mean_silhouette"]),
-			    which.max(stat[, "concordance"]))
-		
-		tb = table(dec)
-		max_ind = order(tb, as.numeric(names(tb)), decreasing = TRUE)[1]
-		x = rownames(stat)[as.numeric(names(tb[max_ind]))]
-		
-		return(as.numeric(x))
-	}
-
 	if(min(stat[, "Jaccard"]) >= 0.75) {
 		dec = c(which.max(stat[, "mean_silhouette"]))
 		
@@ -419,7 +407,7 @@ setMethod(f = "suggest_best_k",
 		return(as.numeric(x))
 	}
 
-	l = stat[, "1-PAC"] >= 0.9 & (stat[, "mean_silhouette"] >= 0.9 | stat[, "concordance"] >= 0.9)
+	l = stat[, "1-PAC"] >= 1 - stable_PAC & (stat[, "mean_silhouette"] >= 0.9 | stat[, "concordance"] >= 0.9)
 	if(sum(l) == 1) {
 		return(as.numeric(rownames(stat)[l]))
 	} else if(sum(l) > 1) {

@@ -115,6 +115,10 @@ hierarchical_partition = function(data,
 
 	t1 = Sys.time()
 
+	if(PAC_cutoff > 0.5) {
+		if(help) qqcat("!! You set PAC_cutoff to @{PAC_cutoff}, but do you mean PAC_cutoff = @{1-PAC_cutoff}?\n")
+	}
+
 	data = as.matrix(data)
 
 	if(any(rowSds(data) == 0)) {
@@ -453,7 +457,7 @@ hierarchical_partition = function(data,
 		part = part_list[[nm]]
 		stat_df = get_stats(part, all_stats = TRUE)
 		nc = ncol(part)
-		best_k = suggest_best_k(part, help = FALSE, jaccard_index_cutoff = ifelse(nc < 30, 0.7, ifelse(nc < 60, 0.8, 0.9)))
+		best_k = suggest_best_k(part, help = FALSE, stable_PAC = PAC_cutoff, jaccard_index_cutoff = ifelse(nc < 30, 0.7, ifelse(nc < 60, 0.8, 0.9)))
 		optional_k = attr(best_k, "optional")
 		if(is.na(best_k)) {
 			x = data.frame(k = 0, "1-PAC" = 0, "mean_silhouette" = 0, "concordance" = 0, "area_increased" = 0, method = nm, check.names = FALSE)

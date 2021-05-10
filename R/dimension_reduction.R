@@ -105,6 +105,7 @@ setMethod(f = "dimension_reduction",
 		}
 		col = object@anno_col[[color_by]][ object@anno[, color_by] ]
 	}
+
 	if(remove) {
 		loc = dimension_reduction(data[, l], pch = 16, col = col[l],
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
@@ -124,7 +125,7 @@ setMethod(f = "dimension_reduction",
 			}
 		}
 	} else {
-		loc = dimension_reduction(data, pch = ifelse(l, 16, 4), col = col[l],
+		loc = dimension_reduction(data, pch = ifelse(l, 16, 4), col = col,
 			cex = 1, main = qq("@{method} on @{top_n} rows with highest @{object@top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{sum(l)}/@{length(l)} confident samples (silhouette > @{silhouette_cutoff})"),
 			method = method, control = control, scale_rows = scale_rows, nr = nr, internal = internal, verbose = verbose, ...)
 		if(!internal) {
