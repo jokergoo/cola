@@ -31,6 +31,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
         subgroup_dend = "ANY",
         node_level = "list",
         param = "list",
+        running_time = "ANY",
         call = "ANY",
         .env = "environment"
     )
@@ -334,6 +335,7 @@ hierarchical_partition = function(data,
 	t2 = Sys.time()
 	if(verbose) cat("* totally used ", gsub("^ +", "", format(t2 - t1)), ".\n", sep = "")
 
+	hp@running_time = t2 - t1
 	return(hp)
 }
 
