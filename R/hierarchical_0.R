@@ -444,8 +444,6 @@ hierarchical_partition = function(data,
 		}
 	}
 
-	e$list[[node_id]] = part_list
-
 	if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
 
 	# find the best partitioning result
