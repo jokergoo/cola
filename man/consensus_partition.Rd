@@ -9,9 +9,7 @@ Consensus partition
 \usage{
 consensus_partition(data,
     top_value_method = "ATC",
-    top_n = seq(min(1000, round(nrow(data)*0.1)),
-    min(3000, round(nrow(data)*0.3)),
-    length.out = 3),
+    top_n = NULL,
     partition_method = "skmeans",
     max_k = 6,
     k = NULL,

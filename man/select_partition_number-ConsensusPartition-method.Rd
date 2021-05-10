@@ -8,7 +8,7 @@ Several plots for determining the optimized number of subgroups
 Several plots for determining the optimized number of subgroups
 }
 \usage{
-\S4method{select_partition_number}{ConsensusPartition}(object, all_stats = FALSE)
+\S4method{select_partition_number}{ConsensusPartition}(object, mark_best = TRUE, all_stats = FALSE)
 }
 \arguments{
 

@@ -72,60 +72,12 @@ subgroup_dend = function(object, merge_node = merge_node_param()) {
 		})
 	}
 
-	tb = table(hierarchy)
-	ap = names(tb[tb > 1])
-
-	sig_lt = list()
-	for(p in ap) {
-		if(p %in% names(object@.env$signature_hash)) {
-			sig_hash = object@.env$signature_hash[[p]]
-			# qqcat("use a cached hash: @{sig_hash}\n")
-			best_k = suggest_best_k(object[[p]], help = FALSE)
-			sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE, hash = sig_hash)
-		} else {
-			best_k = suggest_best_k(object[[p]], help = FALSE)
-			sig_tb = get_signatures(object[[p]], k = best_k, verbose = FALSE, plot = FALSE)
-		}
-		sig_lt[[p]] = sig_tb
-	}
-
-	all_index = unique(unlist(lapply(sig_lt, function(x) x[, 1])))
-
-	data = get_matrix(object)[all_index, , drop = FALSE]
-	if(object@list[[1]]@scale_rows) data = t(scale(t(data)))
-	l = apply(data, 1, function(x) any(is.na(x)))
-	data = data[!l, ]
-
-	cl = get_classes(object, merge_node)
-	mt = do.call(rbind, tapply(seq_along(cl), cl, function(ind) {
-		rowMeans(data[, ind, drop = FALSE])
-	}))
-	dist = as.matrix(dist(mt))
-
-	max_dist = function(dist, node_list) {
-		all_nodes = rownames(dist)
-		children_list = lapply(node_list, function(x) {
-			grep(paste0("^", x), all_nodes, value = TRUE)
-		})
-		children_list = unique(unlist(children_list))
-		max(dist[children_list, children_list])
-	}
-
-	dend = edit_node(dend, function(d, index) {
-		if(is.leaf(d)) {
-			attr(d, "height") = 0
-		} else {
-			node_list = sapply(d, function(x) attr(x, "node_id"))
-
-			attr(d, "height") = max_dist(dist, node_list)
-		}
-		d
-	})
-	max_height = attr(dend, "height")
+	max_height = max(nchar(all_nodes(object)))
 	edit_node(dend, function(d) {
-		attr(d, "height") = attr(d, "height")/max_height
+		attr(d, "height") = (max_height - nchar(attr(d, "node_id")))
 		d
 	})
+
 }
 
 get_hierarchy_dend = function(object, merge_node = merge_node_param()) {

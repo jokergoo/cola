@@ -13,6 +13,8 @@
 #          the final number of signatures might not be exactly the same as the one that has been set.
 # -group_diff Cutoff for the maximal difference between group means.
 # -scale_rows Whether apply row scaling when making the heatmap.
+# -.scale_mean Internally used.
+# -.scale_sd Internally used.
 # -row_km Number of groups for performing k-means clustering on rows. By default it is automatically selected.
 # -diff_method Methods to get rows which are significantly different between subgroups, see 'Details' section.
 # -anno A data frame of annotations for the original matrix columns. 
@@ -83,7 +85,7 @@ setMethod(f = "get_signatures",
 	fdr_cutoff = cola_opt$fdr_cutoff, 
 	top_signatures = NULL,
 	group_diff = cola_opt$group_diff,
-	scale_rows = object@scale_rows,
+	scale_rows = object@scale_rows, .scale_mean = NULL, .scale_sd = NULL,
 	row_km = NULL,
 	diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others", "uniquely_high_in_one_group"),
 	anno = get_anno(object), 
@@ -104,7 +106,7 @@ setMethod(f = "get_signatures",
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
 
-	data = get_matrix(object)
+	data = get_matrix(object, include_all_rows = TRUE)
 
 	l = class_df$silhouette >= silhouette_cutoff
 	data2 = data[, l, drop = FALSE]
@@ -731,7 +733,7 @@ knee_finder = function(x, y) {
 	n = length(x)
 	a = (y[n] - y[1])/(x[n] - x[1])
 	b = y[1] - a*x[1]
-	d = a*x - y
+	d = a*x + b - y
 	x[which.max(d)]
 }
 

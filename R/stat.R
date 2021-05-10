@@ -1,6 +1,109 @@
 
 
 # == title
+# Ability to correlate to other rows - an approximate method
+#
+# == param
+# -mat A numeric matrix. ATC score is calculated by rows.
+# -cor_fun A function which calculates correlations.
+# -min_cor Cutoff for the minimal absolute correlation.
+# -power Power on the correlation values.
+# -k_neighbours Nearest k neighbours. Note when this argument is set, there won't be subset sampling for calculating
+#     correlations, whihc means, it will calculate correlation to all other rows.
+# -mc.cores Number of cores. This argument will be removed in future versions.
+# -cores Number of cores.
+# -n_sampling When there are too many rows in the matrix, to get the curmulative
+#           distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000
+#           rows can already give a very nice estimation.
+# -group A categorical variable. If it is specified, the correlation is only calculated for the rows in the same group as current row.
+# -... Pass to ``cor_fun``.
+#
+# == details
+# For a matrix with huge number of rows. It is not possible to calculate correlation to all other rows, thus the correlation is only
+# calculated for a randomly sampled subset of othe rows.
+#
+ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = NULL,
+	mc.cores = 1, cores = mc.cores, n_sampling = c(1000, 500), 
+	group = NULL, ...) {
+
+	if(!is.null(group)) {
+		if(length(group) != nrow(mat)) {
+			stop_wrap("Length of `group` should be equal to nrow of the matrix.")
+		}
+
+		ind_list = split(1:nrow(mat), group)
+		sl = lapply(ind_list, function(ind) {
+			if(length(ind) == 1) {
+				return(0)
+			} else {
+				ATC_approx(mat[ind, , drop = FALSE], cor_fun = cor_fun, min_cor = min_cor, power = power,
+					cores = cores, n_sampling = n_sampling, group = NULL, ...)
+			}
+		})
+		v = numeric(nrow(mat))
+		for(i in seq_along(ind_list)) {
+			v[ ind_list[[i]] ] = sl[[i]]
+		}
+		return(v)
+	}
+
+	if(length(n_sampling) == 1) n_sampling = c(n_sampling, Inf)
+
+	# internally we do it by columns to avoid too many t() callings
+	if(ncol(mat) > n_sampling[2]) {
+		mat = mat[, sample(ncol(mat), n_sampling[2])]
+	}
+	mat = t(mat)
+
+	n_cores = get_nc(cores)
+
+	n = ncol(mat)
+	if(n_cores > 1) {
+		le = cut(1:n, n_cores)
+		ind_list = split(1:n, le)
+	} else {
+		ind_list = list(1:n)
+	}
+
+	if(!is.null(k_neighbours)) k_neighbours = min(k_neighbours, ncol(mat)-1)
+
+	registerDoParallel(cores)
+	v_list <- foreach(ind = ind_list) %dopar% {
+		v = numeric(length(ind))
+		for(i in seq_along(ind)) {
+			ind2 = seq_len(ncol(mat))[-ind[i]]
+			if(length(ind2) > n_sampling[1] && is.null(k_neighbours)) {
+				ind2 = sample(ind2, n_sampling[1])
+			}
+			suppressWarnings(cor_v <- abs(cor_fun(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
+			if(!is.null(k_neighbours)) {
+				# min_cor = cor_v[order(-cor_v)[k_neighbours]]
+				cor_v = sort(cor_v, decreasing = TRUE)[seq_len(k_neighbours)]
+				min_cor = 0
+			}
+			cor_v = cor_v^power
+			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
+				v[i] = 1
+			} else {
+				f = ecdf(cor_v)
+				cor_v = seq(min_cor, 1, length = 1000)
+				n2 = length(cor_v)
+				v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
+			}
+		}
+		return(v)
+	}
+	stopImplicitCluster()
+
+	v = do.call("c", v_list)
+	v = (1 - min_cor) - v
+	names(v) = NULL
+
+	return(v)
+}
+
+
+# == title
 # Ability to correlate to other rows
 #
 # == param
@@ -8,13 +111,9 @@
 # -cor_fun A function which calculates correlations.
 # -min_cor Cutoff for the minimal absolute correlation.
 # -power Power on the correlation values.
-# -top_k Nearest k neighbours to only look at.
+# -k_neighbours Nearest k neighbours.
 # -mc.cores Number of cores. This argument will be removed in future versions.
-# -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
-# -n_sampling When there are too many rows in the matrix, to get the curmulative
-#           distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000
-#           rows can already give a very nice estimation.
-# -q_sd Percentile of the standard deviation for the rows. Rows with values less than it are ignored.
+# -cores Number of cores.
 # -group A categorical variable. If it is specified, the correlation is only calculated for the rows in the same group as current row.
 # -... Pass to ``cor_fun``.
 # 
@@ -63,93 +162,101 @@
 # mat = rbind(mat1, mat2, mat3)
 # ATC_score = ATC(mat)
 # plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
-ATC = function(mat, cor_fun = stats::cor, min_cor = 0.5, power = 1, top_k = NULL,
-	mc.cores = 1, cores = mc.cores, n_sampling = c(1000, 500), 
-	q_sd = 0, group = NULL, ...) {
-
-	if(!is.null(group)) {
-		if(length(group) != nrow(mat)) {
-			stop_wrap("Length of `group` should be equal to nrow of the matrix.")
-		}
-
-		ind_list = split(1:nrow(mat), group)
-		sl = lapply(ind_list, function(ind) {
-			if(length(ind) == 1) {
-				return(0)
-			} else {
-				ATC(mat[ind, , drop = FALSE], cor_fun = cor_fun, min_cor = min_cor, power = power,
-					cores = cores, n_sampling = n_sampling, q_sd = q_sd, group = NULL, ...)
-			}
-		})
-		v = numeric(nrow(mat))
-		for(i in seq_along(ind_list)) {
-			v[ ind_list[[i]] ] = sl[[i]]
-		}
-		return(v)
-	}
-
-	if(length(n_sampling) == 1) n_sampling = c(n_sampling, Inf)
-
-	# internally we do it by columns to avoid too many t() callings
-	if(ncol(mat) > n_sampling[2]) {
-		mat = mat[, sample(ncol(mat), n_sampling[2])]
-	}
-	mat = t(mat)
-
-	col_sd = colSds(mat)
-	l = col_sd >= quantile(unique(col_sd[col_sd > 1e-10]), q_sd)
-	v2 = numeric(length(col_sd))
-	v2[!l] = 0
-
-	mat = mat[, l, drop = FALSE]
-	
-	n_cores = get_nc(cores)
-
-	n = ncol(mat)
-	if(n_cores > 1) {
-		le = cut(1:n, n_cores)
-		ind_list = split(1:n, le)
+ATC = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, cores = 1, ...) {
+	if(nrow(mat) > 100000) {
+		ATC_approx(mat, cor_fun = cor_fun, min_cor = min_cor, power = power, k_neighbours = k_neighbours, cores = cores, ...)
 	} else {
-		ind_list = list(1:n)
-	}
 
-	if(!is.null(top_k)) top_k = min(top_k, ncol(mat)-1)
+		if(!is.null(group)) {
+			if(length(group) != nrow(mat)) {
+				stop_wrap("Length of `group` should be equal to nrow of the matrix.")
+			}
 
-	registerDoParallel(cores)
-	v_list <- foreach(ind = ind_list) %dopar% {
-		v = numeric(length(ind))
-		for(i in seq_along(ind)) {
-			ind2 = seq_len(ncol(mat))[-ind[i]]
-			if(length(ind2) > n_sampling[1] && is.null(top_k)) {
-				ind2 = sample(ind2, n_sampling[1])
+			ind_list = split(1:nrow(mat), group)
+			sl = lapply(ind_list, function(ind) {
+				if(length(ind) == 1) {
+					return(0)
+				} else {
+					ATC(mat[ind, , drop = FALSE], cor_fun = cor_fun, min_cor = min_cor, power = power,
+						cores = cores, group = NULL, ...)
+				}
+			})
+			v = numeric(nrow(mat))
+			for(i in seq_along(ind_list)) {
+				v[ ind_list[[i]] ] = sl[[i]]
 			}
-			suppressWarnings(cor_v <- abs(cor_fun(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
-			if(!is.null(top_k)) {
-				# min_cor = cor_v[order(-cor_v)[top_k]]
-				cor_v = sort(cor_v, decreasing = TRUE)[seq_len(top_k)]
-				min_cor = 0
-			}
-			cor_v = cor_v^power
-			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
-				v[i] = 1
-			} else {
-				f = ecdf(cor_v)
-				cor_v = seq(min_cor, 1, length = 1000)
-				n2 = length(cor_v)
-				v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
-			}
+			return(v)
 		}
-		return(v)
+
+		mat = t(mat)
+		n = ncol(mat)
+		if(k_neighbours > 0) {
+			k_neighbours = min(n-1, k_neighbours)
+		}
+
+		if(cores > 1) {
+			le = cut(1:n, ceiling(sqrt(cores)))
+			ind_list = split(1:n, le)
+
+			ind_mat = expand.grid(seq_along(ind_list), seq_along(ind_list))
+
+			corm = matrix(NA_real_, nrow = n, ncol = n)
+
+			registerDoParallel(cores)
+			cm_list <- foreach(i = 1:nrow(ind_mat)) %dopar% {
+				block_i = ind_mat[i, 1]
+				block_j = ind_mat[i, 2]
+
+				ind1 = ind_list[[block_i]]
+				ind2 = ind_list[[block_j]]
+
+				if(block_i == block_j) {
+					cm = abs(cor_fun(mat[, ind1, drop = FALSE], ...))
+				} else {
+					cm = abs(cor_fun(mat[, ind1, drop = FALSE], mat[, ind2, drop = FALSE], ...))
+				}
+				cm
+			}
+			stopImplicitCluster()
+
+			for(i in 1:nrow(ind_mat)) {
+				block_i = ind_mat[i, 1]
+				block_j = ind_mat[i, 2]
+
+				ind1 = ind_list[[block_i]]
+				ind2 = ind_list[[block_j]]
+
+				corm[ind1, ind2] = cm_list[[i]]
+			}
+
+			le = cut(1:n, cores)
+			ind_list = split(1:n, le)
+			registerDoParallel(cores)
+			s_list <- foreach(ind = ind_list) %dopar% {
+				rowATC(corm[ind, , drop = FALSE], min_cor = min_cor, power = power, k_neighbours = k_neighbours, self = ind)
+			}
+			stopImplicitCluster()
+
+			unlist(s_list)
+
+		} else {
+			corm = abs(cor_fun(mat, ...))
+			rowATC(corm, min_cor = min_cor, power = power, k_neighbours = k_neighbours, self = 1:n)
+		}
 	}
-	stopImplicitCluster()
-
-	v = do.call("c", v_list)
-	v = (1 - min_cor) - v
-	names(v) = NULL
-
-	v2[l] = v
-	return(v2)
 }
+
+
+# only for testing purpose
+ATC_single_test = function(x, power = 1, min_cor = 0) {
+	x = x^power
+	f = ecdf(x)
+	cor_v = seq(min_cor, 1, length = 1000)
+	n2 = length(cor_v)
+	v = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
+	1 - min_cor - v
+}
+
 
 entropy = function(p) {
 	n = length(p)

@@ -64,9 +64,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # }
 consensus_partition_by_down_sampling = function(data, 
 	top_value_method = "ATC",
-	top_n = seq(min(1000, round(nrow(data)*0.1)), 
-		        min(3000, round(nrow(data)*0.3)), 
-		        length.out = 3),
+	top_n = NULL,
 	partition_method = "skmeans",
 	max_k = 6, 
 	subset = min(round(ncol(data)*0.2), 250), pre_select = TRUE,
@@ -143,7 +141,14 @@ consensus_partition_by_down_sampling = function(data,
 			} else {
 				if(pre_select) {
 					qqcat("@{prefix}* assign sampling probability to columns by a pre-partitioning.\n")
-					km = kmeans(t(.env$data[order(.env$node_0_top_value_list[[top_value_method]], decreasing = TRUE)[1:top_n[1]], .env$column_index, drop = FALSE]), centers = max_k)$cluster
+					top_n = find_top_n(.env$node_0_top_value_list[[top_value_method]])
+					if(partition_method == "skmeans") {
+						km = skmeans(t(.env$data[order(.env$node_0_top_value_list[[top_value_method]], decreasing = TRUE)[1:top_n[1]], .env$column_index, drop = FALSE]), k = max_k)$cluster	
+					} else if(partition_method == "pam") {
+						km = pam(t(.env$data[order(.env$node_0_top_value_list[[top_value_method]], decreasing = TRUE)[1:top_n[1]], .env$column_index, drop = FALSE]), k = max_k)$cluster	
+					} else {
+						km = kmeans(t(.env$data[order(.env$node_0_top_value_list[[top_value_method]], decreasing = TRUE)[1:top_n[1]], .env$column_index, drop = FALSE]), centers = max_k)$cluster
+					}
 					tb = table(km)
 					p = km/tb[as.character(km)]
 					subset = unique(sample(seq_along(column_index), subset, prob = p))
@@ -204,7 +209,7 @@ convert_to_DownSamplingConsensusPartition = function(cp, column_index, dist_meth
 	}
 
 	for(k in cp@k) {
-		qqcat("@{prefix}* predict class for @{ncol(data)} samples with k = @{k}\n")
+		if(verbose) qqcat("@{prefix}* predict class for @{ncol(data)} samples with k = @{k}\n")
 		if(cp@scale_rows) {
 			cl[[as.character(k)]] = predict_classes(cp, k = k, data2, p_cutoff = Inf, dist_method = dist_method, 
 				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "), cores = cores)

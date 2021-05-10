@@ -152,6 +152,7 @@ adjust_outlier = function(x, q = 0.05) {
 # -m A numeric matrix.
 # -sd_quantile Cutoff of the quantile of standard deviation. Rows with standard deviation less than it are removed.
 # -max_na Maximum NA fraction in each row. Rows with NA fraction larger than it are removed.
+# -verbose Whether to print messages.
 #
 # == details
 # The function uses `impute::impute.knn` to impute missing values, then
@@ -172,12 +173,12 @@ adjust_outlier = function(x, q = 0.05) {
 # m
 # m2 = adjust_matrix(m)
 # m2
-adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
+adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25, verbose = TRUE) {
 
 	md = typeof(m)
 
 	l = rowSums(is.na(m))/ncol(m) < max_na
-	if(sum(!l)) {
+	if(sum(!l) && verbose) {
 		message_wrap(qq("removed @{sum(!l)} rows (@{sprintf('%.1f', sum(!l)/length(l)*100)}%) where more than @{round(max_na*100)}% of samples have NA values."))
 	}
 	m = m[l, , drop = FALSE]
@@ -209,12 +210,12 @@ adjust_matrix = function(m, sd_quantile = 0.05, max_na = 0.25) {
 	l = abs(row_sd) <= 1e-10
 	m2 = m[!l, , drop = FALSE]
 	row_sd = row_sd[!l]
-	if(sum(l)) {
+	if(sum(l) && verbose) {
 		message_wrap(qq("@{sum(l)} rows have been removed with zero variance."))
 	}
 	qa = quantile(unique(row_sd), sd_quantile, na.rm = TRUE)
 	l = row_sd > qa
-	if(sum(!l)) {
+	if(sum(!l) && verbose) {
 		message_wrap(qq("@{sum(!l)} rows have been removed with too low variance (sd <= @{sd_quantile} quantile)"))
 	}
 	m2 = m2[l, , drop = FALSE]

@@ -12,7 +12,7 @@ Get signature rows
     fdr_cutoff = cola_opt$fdr_cutoff,
     top_signatures = NULL,
     group_diff = cola_opt$group_diff,
-    scale_rows = object@scale_rows,
+    scale_rows = object@scale_rows, .scale_mean = NULL, .scale_sd = NULL,
     row_km = NULL,
     diff_method = c("Ftest", "ttest", "samr", "pamr", "one_vs_others", "uniquely_high_in_one_group"),
     anno = get_anno(object),
@@ -37,6 +37,8 @@ Get signature rows
   \item{top_signatures}{Top signatures with most significant fdr. Note since fdr might be same for multiple rows, the final number of signatures might not be exactly the same as the one that has been set.}
   \item{group_diff}{Cutoff for the maximal difference between group means.}
   \item{scale_rows}{Whether apply row scaling when making the heatmap.}
+  \item{.scale_mean}{Internally used.}
+  \item{.scale_sd}{Internally used.}
   \item{row_km}{Number of groups for performing k-means clustering on rows. By default it is automatically selected.}
   \item{diff_method}{Methods to get rows which are significantly different between subgroups, see 'Details' section.}
   \item{anno}{A data frame of annotations for the original matrix columns.  By default it uses the annotations specified in \code{\link{consensus_partition}} or \code{\link{run_all_consensus_partition_methods}}.}

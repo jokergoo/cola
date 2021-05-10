@@ -66,7 +66,40 @@ m = matrix(rnorm(100), 10)
 group = c(rep("a", 5), rep("b", 5))
 s1 = ATC(m, group = group, min_cor = 0.5)
 s2 = ATC_cgi_anno(m, cgi_anno = group, min_cor = 0.5)
+s3 = ATC_approx(m, group = group, min_cor = 0.5)
 
 test_that("test ATC with groups", {
-	expect_equal(s1, s2)
+	expect_equal( all(abs(s1 - s2) < 1e-2), TRUE)
+    expect_equal( all(abs(s1 - s3) < 1e-2), TRUE)
+})
+
+
+m = matrix(rnorm(100*100), 100)
+
+s1 = ATC(m)
+s2 = ATC_approx(m)
+test_that("test ATC with defaults", {
+    expect_equal( all(abs(s1 - s2) < 1e-2), TRUE)
+})
+
+
+s1 = ATC(m, k_neighbours = 5)
+s2 = ATC_approx(m, k_neighbours = 5)
+test_that("test ATC with kNN", {
+    expect_equal( all(abs(s1 - s2) < 1e-2), TRUE)
+})
+
+
+
+s1 = ATC(m, min_cor = 0.2)
+s2 = ATC_approx(m, min_cor = 0.2)
+test_that("test ATC with min_cor", {
+    expect_equal( all(abs(s1 - s2) < 1e-2), TRUE)
+})
+
+
+s1 = ATC(m, power = 2)
+s2 = ATC_approx(m, power = 2)
+test_that("test ATC with power", {
+    expect_equal( all(abs(s1 - s2) < 1e-2), TRUE)
 })

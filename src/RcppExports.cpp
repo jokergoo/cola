@@ -5,6 +5,21 @@
 
 using namespace Rcpp;
 
+// rowATC
+NumericVector rowATC(NumericMatrix m, float min_cor, float power, int k_neighbours, IntegerVector self);
+RcppExport SEXP _cola_rowATC(SEXP mSEXP, SEXP min_corSEXP, SEXP powerSEXP, SEXP k_neighboursSEXP, SEXP selfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    Rcpp::traits::input_parameter< float >::type min_cor(min_corSEXP);
+    Rcpp::traits::input_parameter< float >::type power(powerSEXP);
+    Rcpp::traits::input_parameter< int >::type k_neighbours(k_neighboursSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type self(selfSEXP);
+    rcpp_result_gen = Rcpp::wrap(rowATC(m, min_cor, power, k_neighbours, self));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_consensus_matrix
 NumericMatrix get_consensus_matrix(IntegerMatrix membership_each);
 RcppExport SEXP _cola_get_consensus_matrix(SEXP membership_eachSEXP) {
@@ -45,6 +60,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_cola_rowATC", (DL_FUNC) &_cola_rowATC, 5},
     {"_cola_get_consensus_matrix", (DL_FUNC) &_cola_get_consensus_matrix, 1},
     {"_cola_pdist", (DL_FUNC) &_cola_pdist, 3},
     {"_cola_cal_diff_ratio_r", (DL_FUNC) &_cola_cal_diff_ratio_r, 4},

@@ -101,16 +101,16 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # rh = hierarchical_partition(m, top_value_method = "SD", partition_method = "kmeans")
 # }
 hierarchical_partition = function(data, 
-	top_n = min(1000, round(nrow(data)*0.1)),
-	top_value_method = c("SD", "ATC"), 
+	top_n = NULL,
+	top_value_method = "ATC", 
 	partition_method = c("kmeans", "skmeans"),
 	combination_method =  expand.grid(top_value_method, partition_method),
 	anno = NULL, anno_col = NULL,
-	PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
+	PAC_cutoff = 0.1, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
 	group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff,
 	min_n_signatures = round(nrow(data)*min_p_signatures), 
 	min_p_signatures = 0.05,
-	max_k = 4, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...) {
+	max_k = 6, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...) {
 
 	t1 = Sys.time()
 
@@ -326,12 +326,6 @@ hierarchical_partition = function(data,
 	hp@call = cl
 	hp@.env = hp@list[[1]]@.env
 
-	if(has_hierarchy(hp)) {
-		hp@subgroup_dend = subgroup_dend(hp)
-		hp@node_level$node_height = structure(dend_node_apply(hp@subgroup_dend, function(d) attr(d, "height")),
-			                            names = dend_node_apply(hp@subgroup_dend, function(d) attr(d, "node_id")))
-	}
-
 	hp@.env$combination_methods = combination_method
 
 	hp@param = list(top_n = top_n, combination_method = combination_method, PAC_cutoff = PAC_cutoff, min_samples = min_samples,
@@ -346,7 +340,7 @@ hierarchical_partition = function(data,
    
 .hierarchical_partition = function(.env, column_index, node_id = '0', subset = Inf, anno = NULL, anno_col = anno_col,
 	min_samples = 6, max_k = 4, verbose = TRUE, cores = 1, 
-	top_n = 1000, PAC_cutoff = 0.2, min_n_signatures = 100, group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff, ...) {
+	top_n = NULL, PAC_cutoff = 0.1, min_n_signatures = 100, group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff, ...) {
 
 	prefix = ""
 	if(node_id != "0") {
@@ -371,12 +365,6 @@ hierarchical_partition = function(data,
    	combination_method = .env$combination_method
 
    	top_n2 = top_n
-   	if(node_id == "0") {
-   		if(all(top_n2 <= 1)) {
-			top_n2 = floor(top_n2 * nrow(data))
-			top_n2 = top_n2[top_n2 > 0]
-		}
-   	}
 	if(node_id != "0") {
 		row_sd = rowSds(data[, column_index, drop = FALSE])
 		qa = quantile(unique(row_sd[row_sd > 1e-10]), 0.95, na.rm = TRUE)*0.05
@@ -384,23 +372,23 @@ hierarchical_partition = function(data,
 		.env$row_index = which(l)
 		if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
 
-		if(all(top_n2 <= 1)) {
-			top_n2 = floor(top_n2 * length(.env$row_index))
-			top_n2 = top_n2[top_n2 > 0]
-		}
+		if(!is.null(top_n)) {
+			if(length(top_n2) > 1) {
+				min_n = min(top_n2)
+				max_n = max(top_n2)
+				top_n2 = (max_n - min_n) * length(column_index)/ncol(.env$data) + min_n
+				top_n2 = unique(top_n2)
+			}
 
-		min_n = ifelse(top_n2 > 100, 100, top_n2)
-		top_n2 = (top_n2 - min_n) * length(column_index)/ncol(.env$data) + min_n
-		top_n2 = unique(top_n2)
-
-		if(length(.env$row_index) < min(top_n2)*1.2 || length(top_n2) == 0) {
-			if(verbose) qqcat("@{prefix}* number of rows is not enough to perform partitioning.\n")
-			part = STOP_REASON["d"]
-			# we need the following two values for other functions
-			attr(part, "node_id") = node_id
-			attr(part, "column_index") = column_index
-			attr(part, "stop_reason") = STOP_REASON["d"]
-			return(list(obj = part))
+			if(length(.env$row_index) < min(top_n2)*1.2 || length(top_n2) == 0) {
+				if(verbose) qqcat("@{prefix}* number of rows is not enough to perform partitioning.\n")
+				part = STOP_REASON["d"]
+				# we need the following two values for other functions
+				attr(part, "node_id") = node_id
+				attr(part, "column_index") = column_index
+				attr(part, "stop_reason") = STOP_REASON["d"]
+				return(list(obj = part))
+			}
 		}
 	}
 	if(cores > 1 && verbose) {
@@ -456,6 +444,8 @@ hierarchical_partition = function(data,
 		}
 	}
 
+	e$list[[node_id]] = part_list
+
 	if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
 
 	# find the best partitioning result
@@ -489,7 +479,7 @@ hierarchical_partition = function(data,
 		part = part_list[[ stat_tb[ind, "method"] ]]
 		best_k = stat_tb[ind, "k"]
 
-		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} because this is the only stable partitioning result.\n")
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because this is the only stable partitioning result.\n")
 
 	} else if(nrow(stat_tb) > 1) {
 		stat_tb$n_signatures = -Inf
@@ -502,13 +492,13 @@ hierarchical_partition = function(data,
 		part = part_list[[ stat_tb[ind, "method"] ]]
 		best_k = stat_tb[ind, "k"]
 
-		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} because it has the highest number of signatures among all @{nrow(stat_tb)} stable partitioning results.\n")
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because it has the highest number of signatures among all @{nrow(stat_tb)} stable partitioning results.\n")
 	} else {
 		ind = do.call(order, -stat_tb2[setdiff(colnames(stat_tb2), "method")])[1]
 		part = part_list[[ stat_tb2[ind, "method"] ]]
 		best_k = stat_tb2[ind, "k"]
 
-		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} as the best partitioning result.\n")
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) as the best partitioning result.\n")
 	}
 
 	dist_method = list(...)$dist_method
@@ -548,10 +538,10 @@ hierarchical_partition = function(data,
 	# check the numbers of signatures
 	if(verbose) qqcat("@{prefix}* checking number of signatures in the best classification.\n")
 	if(length(column_index) <= subset) {
-		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, silhouette_cutoff = -Inf,
+		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE,
 			group_diff = group_diff, fdr_cutoff = fdr_cutoff)
 	} else {
-		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE, p_cutoff = Inf,
+		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE,
 			group_diff = group_diff, fdr_cutoff = fdr_cutoff)
 	}
 	if(is.null(part@.env$signature_hash)) {
@@ -573,7 +563,7 @@ hierarchical_partition = function(data,
     	set = cl$class == i_class
     	sub_node = paste0(node_id, i_class)
     	return(.hierarchical_partition(.env, column_index = column_index[set], node_id = sub_node, subset = subset, anno = anno, anno_col = anno_col,
-    			min_samples = min_samples, max_k = min(max_k, length(set)-1), cores = cores, verbose = verbose, 
+    			min_samples = min_samples, max_k = min(max_k, length(set)-1), cores = cores, verbose = verbose, PAC_cutoff = PAC_cutoff,
     			top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, ...))
     })
 
@@ -894,3 +884,286 @@ setMethod(f = "node_info",
 })
 
 
+
+knee_finder2 = function(x, y, p = 0.99, plot = FALSE) {
+	
+	ind1 = which.max(y)
+	ind2 = which.min(y)
+
+	if(ind1 > ind2) {
+		x = x[ind2:ind1]
+		y = y[ind2:ind1]
+	} else {
+		x = x[ind1:ind2]
+		y = y[ind1:ind2]
+	}
+
+	n = length(x)
+
+	a = (y[n] - y[1])/(x[n] - x[1])
+	b = y[1] - a*x[1]
+	d = a*x + b - y
+	if(ind1 > ind2) {
+		x0 = min(x[d >= max(d)*p])
+	} else {
+		x0 = max(x[d >= max(d)*p])
+	}
+
+	if(plot) {
+		xm = x[which.max(d)]
+		
+		layout(rbind(c(3, 1, 2)))
+		plot(x, y, xlab = "index", ylab = "(ymax - y)/(xmax - x)")
+		abline(a = b, b = a)
+		if(p != 1) abline(v = xm, col = "red")
+		abline(v = x0)
+
+		plot(d, xlab = "inidex", ylab = "distance to diagonal line")
+		if(p != 1) abline(v = xm, col = "red")
+		abline(v = x0)
+	}
+
+	return(x0)
+}
+
+find_top_n = function(x, plot = FALSE, p = 0.99) {
+	x = sort(x)
+
+	y = (max(x) - x)/(length(x) - seq_along(x))
+	y = y[!is.na(y)]
+	
+	x0 = knee_finder2(seq_along(y), y, p = p, plot = plot)
+	if(plot) {
+		plot(x, xlab = "index (x)", ylab = "value (y)")
+		abline(v = x0)
+		if(p != 1) {
+			xm = knee_finder2(seq_along(y), y, p = 1)
+			abline(v = xm, col = "red")
+		}
+		layout(1)
+	}
+	length(x) - x0 + 1
+}
+
+# == title 
+# Merge node
+#
+# == param
+# -object
+# -node_id
+#
+setMethod(f = "merge_node",
+	signature = "HierarchicalPartition",
+	definition = function(object, node_id) {
+
+	if(length(node_id) > 1) {
+		for(i in seq_along(node_id)) {
+			object = merge_node(object, node_id[i])
+		}
+		return(object)
+	}
+
+	if(is_leaf_node(object, node_id)) {
+		stop_wrap(qq("'@{node_id}' is a leaf node. Maybe you want to merge on node '@{gsub('.$', '', node_id)}'?"))
+	}
+
+	all_nodes = all_nodes(object)
+	nodes_to_remove = all_nodes[ grepl(qq("^@{node_id}\\d+"), all_nodes) ]
+
+	object@hierarchy = object@hierarchy[ !(object@hierarchy[, 1] %in% c(node_id, nodes_to_remove) | object@hierarchy[, 2] %in% nodes_to_remove), , drop = FALSE]
+
+	object@node_level = lapply(object@node_level, function(x) {
+		x[setdiff(names(x), nodes_to_remove)]
+	})
+
+	object@subgroup[ object@subgroup %in% nodes_to_remove ] = node_id
+	object@subgroup_col = object@subgroup_col[setdiff(names(object@subgroup_col), nodes_to_remove)]
+
+	if(has_hierarchy(object)) {
+		object@subgroup_dend = subgroup_dend(object)
+	}
+
+	object@list = object@list[setdiff(names(object@list), nodes_to_remove)]
+
+	object
+})
+
+# == title 
+# Split node
+#
+# == param 
+# -object object
+# -node_id node id
+# -subset subset
+# -max_k max_k
+# -cores cores
+# -verbose verobse
+# -top_n top_n
+# -min_n_signatures min-sigatures
+# -group_diff group diff
+# -fdr_cutoff fdr cutoff
+#
+setMethod(f = "split_node",
+	signature = "HierarchicalPartition",
+	definition = function(object, node_id, 
+	subset = object@param$subset,
+	min_samples = object@param$min_samples, max_k = object@param$max_k, cores = object@param$cores, 
+	verbose = TRUE, 
+	top_n = object@param$top_n, min_n_signatures = object@param$min_n_signatures, 
+	group_diff = object@param$group_diff, fdr_cutoff = object@param$fdr_cutoff) {
+
+	if(length(node_id) > 1) {
+		for(i in seq_along(node_id)) {
+			object = split_node(object, node_id[i])
+		}
+		return(object)
+	}
+
+	if(!is_leaf_node(object, node_id)) {
+		if(verbose) qqcat("Remove node @{node_id} because it is not a leave node.\n")
+		merge_node(object, node_id)
+	}
+
+	pnode = object@list[[node_id]]
+
+	lt = .hierarchical_partition(object@.env, column_index = pnode@column_index, node_id = node_id, 
+		subset = subset, anno = object@list[[1]]@anno, anno_col = object@list[[1]]@anno_col,
+		min_samples = min_samples, max_k = max_k, cores = cores, verbose = verbose, 
+		top_n = top_n, min_n_signatures = min_n_signatures, 
+		group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+
+	# reformat lt
+	.e = new.env(parent = emptyenv())
+	.e$hierarchy = matrix(nrow = 0, ncol = 2)
+	.e$lt = list()
+	reformat_lt = function(lt, .e) {
+		nm = names(lt)
+		parent_id = attr(lt$obj, "node_id")
+		.e$lt[[parent_id]] = lt$obj
+
+		for(nm in names(lt)) {
+			if(grepl("^child\\d+$", nm)) {
+				child_id = attr(lt[[nm]]$obj, "node_id")
+				.e$hierarchy = rbind(.e$hierarchy, c(parent_id, child_id))
+				reformat_lt(lt[[nm]], .e)
+			}
+		}
+	}
+	reformat_lt(lt, .e)
+
+	hierarchy = .e$hierarchy
+	list = .e$lt
+
+	if(nrow(hierarchy) == 0) {
+		if(verbose) qqcat("- Node cannot be split because no hierarchy was generated.\n")
+		return(object)
+	}
+
+	node_level = list()
+	node_level$best_k = sapply(.e$lt, function(x) {
+		if(inherits(x, "ConsensusPartition")) {
+			suggest_best_k(x, help = FALSE)
+		} else {
+			NA
+		}
+	})
+	if(nrow(hierarchy) > 0) {
+		tb = table(hierarchy)
+		leaves = names(tb[tb <= 1])
+	} else {
+		leaves = "0"
+	}
+
+	subgroup = object@subgroup
+	for(le in leaves) {
+		if(inherits(.e$lt[[le]], "DownSamplingConsensusPartition")) {
+			subgroup[ .e$lt[[le]]@full_column_index ] = le
+		} else if(inherits(.e$lt[[le]], "ConsensusPartition")) {
+			subgroup[ .e$lt[[le]]@column_index ] = le
+		} else {
+			subgroup[ attr(.e$lt[[le]], "column_index") ] = le
+		}
+	}
+	object@subgroup = subgroup
+
+	n = length(list)
+	n_columns = numeric(n); names(n_columns) = names(list)
+	n_signatures = rep(NA_real_, n); names(n_signatures) = names(list)
+	nodes = names(list)
+	for(i in seq_len(n)) {
+		if(inherits(list[[i]], "DownSamplingConsensusPartition")) {
+			n_columns[i] = length(list[[i]]@full_column_index)
+		} else if(inherits(list[[i]], "ConsensusPartition")) {
+			n_columns[i] = length(list[[i]]@column_index)
+		} else {
+			n_columns[i] = length(attr(list[[i]], "column_index"))
+		}
+		if(nodes[i] %in% leaves) {
+			if(attr(list[[i]], "stop_reason") == STOP_REASON["c"]) {
+				sig_tb = get_signatures(list[[i]], k = suggest_best_k(list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
+					group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+				n_signatures[i] = nrow(sig_tb)
+			} else {
+				n_signatures[i] = NA_real_
+			}
+		} else {
+			sig_tb = get_signatures(list[[i]], k = suggest_best_k(list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
+				group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+			n_signatures[i] = nrow(sig_tb)
+		}
+	}
+
+	node_level$n_columns = n_columns
+	node_level$n_signatures = n_signatures
+	node_level$p_signatures = n_signatures/nrow(object)
+
+	subgroup_col = object@subgroup_col
+	le = setdiff(as.vector(hierarchy), all_nodes(object))
+	col_pal = Polychrome::kelly.colors(22)
+	col_pal = col_pal[!(names(col_pal) %in% c("white", "black"))]
+	col_pal = setdiff(col_pal, subgroup_col)
+	if(length(le) <= length(col_pal)) {
+		subgroup_col2 = structure(col_pal[seq_along(le)], names = le)
+	} else {
+		subgroup_col2 = structure(c(col_pal, rand_color(length(le) - length(col_pal))), names = le)
+	}
+	subgroup_col = c(subgroup_col, subgroup_col2)
+	object@subgroup_col = subgroup_col
+
+	for(nm in names(node_level)) {
+		v = object@node_level[[nm]]
+		cn = intersect(names(v), names(node_level[[nm]]))
+		object@node_level[[nm]][cn] = node_level[[nm]][cn]
+		cn2 = setdiff(names(node_level[[nm]]), names(v))
+		object@node_level[[nm]] = c(object@node_level[[nm]], node_level[[nm]][cn2])
+	}
+	
+	object@hierarchy = rbind(object@hierarchy, hierarchy)
+	object@hierarchy = reorder_hierarchy(object@hierarchy)
+	cn = intersect(names(object@list), names(list))
+	object@list[cn] = list[cn]
+	cn2 = setdiff(names(list), names(object@list))
+	object@list = c(object@list, list[cn2])
+
+	return(object)
+})
+
+reorder_hierarchy = function(hierarchy) {
+
+	e = new.env()
+	e$od = NULL
+	look_child = function(hierarchy, node) {
+		ind = which(hierarchy[, 1] == node)
+		if(length(ind) == 0) {
+			return(NULL)
+		} else {
+			for(i in ind) {
+				e$od = c(e$od, i)
+				look_child(hierarchy, hierarchy[i, 2])
+			}
+		}
+	}
+	look_child(hierarchy, "0")
+	hierarchy[e$od, , drop = FALSE]
+
+}

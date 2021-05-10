@@ -9,9 +9,7 @@ Consensus partitioning only with a subset of columns
 \usage{
 consensus_partition_by_down_sampling(data,
     top_value_method = "ATC",
-    top_n = seq(min(1000, round(nrow(data)*0.1)),
-    min(3000, round(nrow(data)*0.3)),
-    length.out = 3),
+    top_n = NULL,
     partition_method = "skmeans",
     max_k = 6,
     subset = min(round(ncol(data)*0.2), 250), pre_select = TRUE,

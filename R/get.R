@@ -663,6 +663,7 @@ setMethod(f = "get_matrix",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -full Whether to extract the complete original matrix.
+# -include_all_rows Internally used.
 #
 # == value
 # A numeric matrix.
@@ -676,9 +677,13 @@ setMethod(f = "get_matrix",
 # get_matrix(obj)
 setMethod(f = "get_matrix",
 	signature = "ConsensusPartition",
-	definition = function(object, full = FALSE) {
+	definition = function(object, full = FALSE, include_all_rows = FALSE) {
 	if(!full) {
-		object@.env$data[, object@column_index, drop = FALSE]
+		if(include_all_rows) {
+			object@.env$data[, object@column_index, drop = FALSE]
+		} else {
+			object@.env$data[object@row_index, object@column_index, drop = FALSE]
+		}
 	} else {
 		object@.env$data
 	}

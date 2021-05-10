@@ -58,24 +58,28 @@ get_top_value_method = function(method) {
 # )
 # all_top_value_methods()
 # remove_top_value_methods("ATC_spearman")
-register_top_value_methods = function(...) {
+register_top_value_methods = function(..., validate = TRUE) {
 	lt = list(...)
 	lt1 = lt[intersect(names(lt), .ENV$ALL_TOP_VALUE_METHODS)]
 	lt2 = lt[setdiff(names(lt), .ENV$ALL_TOP_VALUE_METHODS)]
 
 	rand_mat = matrix(rnorm(10*20), nrow = 20)
 	if(length(lt1)) {
-		for(i in seq_along(lt1)) {
-			if(length(lt1[[i]](rand_mat)) != nrow(rand_mat)) {
-				stop_wrap(qq("Top-value method of @{names(lt1[i])} should return a vector with the same length of matrix rows."))
+		if(validate) {
+			for(i in seq_along(lt1)) {
+				if(length(lt1[[i]](rand_mat)) != nrow(rand_mat)) {
+					stop_wrap(qq("Top-value method of @{names(lt1[i])} should return a vector with the same length of matrix rows."))
+				}
 			}
 		}
 		.ENV$ALL_TOP_VALUE_FUN[names(lt1)] = lt1
 	}
 	if(length(lt2)) {
-		for(i in seq_along(lt2)) {
-			if(length(lt2[[i]](rand_mat)) != nrow(rand_mat)) {
-				stop_wrap(qq("Top-value method of @{names(lt2[i])} should return a vector with the same length of matrix rows."))
+		if(validate) {
+			for(i in seq_along(lt2)) {
+				if(length(lt2[[i]](rand_mat)) != nrow(rand_mat)) {
+					stop_wrap(qq("Top-value method of @{names(lt2[i])} should return a vector with the same length of matrix rows."))
+				}
 			}
 		}
 		.ENV$ALL_TOP_VALUE_FUN = c(.ENV$ALL_TOP_VALUE_FUN, lt2)
@@ -108,8 +112,16 @@ register_top_value_methods(
 		rowSds(mat)/(s + quantile(s, 0.1))
 	},
 	MAD = matrixStats::rowMads,
-	ATC = ATC
+	ATC = ATC,
+	validate = FALSE
 )
+
+register_ATC_kNN = function(k_neighbours = 20) {
+	k_neighbours = k_neighbours
+	register_top_value_methods(
+		ATC_kNN = function(x) ATC_kNN(x, k_neighbours = k_neighbours)
+	)
+}
 
 get_partition_method = function(method, partition_param = list()) {
 	if(!method %in% .ENV$ALL_PARTITION_METHODS) {

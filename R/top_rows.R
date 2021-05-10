@@ -369,6 +369,12 @@ setMethod(f = "top_rows_heatmap",
     
     mat = get_matrix(object)
 
+    if(missing(anno)) {
+    	if(inherits(object, "DownSamplingConsensusPartition")) {
+    		anno = get_anno(object, reduce = TRUE)
+    	}
+    }
+
     if(is.null(anno)) {
 		bottom_anno = NULL
 	} else {
@@ -394,4 +400,3 @@ setMethod(f = "top_rows_heatmap",
     top_rows_heatmap(mat, all_top_value_list = all_top_value_list, top_n = top_n, 
     	scale_rows = scale_rows, bottom_annotation = bottom_anno, ...)
 })
-

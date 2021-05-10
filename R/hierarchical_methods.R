@@ -902,7 +902,8 @@ setMethod(f = "top_rows_overlap",
 	definition = function(object, method = c("euler", "upset", "venn"), fill = NULL, ...) {
 
 	rl = object@list
-	rl = rl[sapply(rl, class) != "character"]
+	nodes = setdiff(all_nodes(object), all_leaves(object))
+	rl = rl[nodes]
 	all_top_value_list = lapply(rl, function(x) {
 		x@row_index[order(x@top_value_list)[seq_len(max(x@top_n))]]
 	})

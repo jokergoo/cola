@@ -8,16 +8,16 @@ Hierarchical partition
 }
 \usage{
 hierarchical_partition(data,
-    top_n = min(1000, round(nrow(data)*0.1)),
-    top_value_method = c("SD", "ATC"),
+    top_n = NULL,
+    top_value_method = "ATC",
     partition_method = c("kmeans", "skmeans"),
     combination_method =  expand.grid(top_value_method, partition_method),
     anno = NULL, anno_col = NULL,
-    PAC_cutoff = 0.2, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
+    PAC_cutoff = 0.1, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
     group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff,
     min_n_signatures = round(nrow(data)*min_p_signatures),
     min_p_signatures = 0.05,
-    max_k = 4, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...)
+    max_k = 6, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...)
 }
 \arguments{
 

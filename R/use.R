@@ -2,8 +2,9 @@
 use_scRNASeq = function() {
 	cat(
 "Following configurations are suggested for scRNASeq datasets:
-- ATC(): use `WGCNA::bicor` as correlation function
-    register_top_value_method(ATC = function(x) ATC(x, cor_fun = WGCNA::bicor, min_cor = 0.2))
+- use `ATC_kNN()` for extracting top genes for clustering.
+    first call `register_ATC_kNN()` to register ATC_kNN method,
+    and later method 'ATC_kNN' can be used for clustering.
 - hierarchical_partition():
     min_n_signature = 100
 - get_signatures():

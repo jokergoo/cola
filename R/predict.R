@@ -109,7 +109,7 @@ setMethod(f = "predict_classes",
 	if(nrow(tb) < 20) {
 		if(force) {
 			hash = attr(tb, "hash")
-			data = get_matrix(object)
+			data = get_matrix(object, include_all_rows = TRUE)
 			if(object@scale_rows) {
 				data = t(scale(t(data)))
 			}
@@ -121,18 +121,18 @@ setMethod(f = "predict_classes",
 
 			# if no hash attribute, randomly select one sample from each group
 			if(is.null(hash)) {
-				ind = order(apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(1000, nrow(data))]
+				ind = order(apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(500, nrow(data))]
 				sig_mat = sig_mat[ind, , drop = FALSE]
 				mat = mat[ind, , drop = FALSE]
-				if(verbose) qqcat("@{prefix}* simply take top @{min(1000, nrow(data))} rows with the highest row range.\n")
+				if(verbose) qqcat("@{prefix}* simply take top @{min(500, nrow(data))} rows with the highest row range.\n")
 			} else {
 				# if there is hash attached, adjust fdr_cutoff
 				hash_nm = paste0("signature_fdr_", hash)
 				fdr = object@.env[[hash_nm]]$fdr
-				ind = order(-fdr, apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(1000, nrow(data))]
+				ind = order(-fdr, apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(500, nrow(data))]
 				sig_mat = sig_mat[ind, , drop = FALSE]
 				mat = mat[ind, , drop = FALSE]
-				if(verbose) qqcat("@{prefix}* simply take top @{min(1000, nrow(data))} rows with the most significant FDRs.\n")
+				if(verbose) qqcat("@{prefix}* simply take top @{min(500, nrow(data))} rows with the most significant FDRs.\n")
 			}
 
 			l = apply(sig_mat, 1, function(x) any(is.na(x)))
@@ -156,12 +156,11 @@ setMethod(f = "predict_classes",
 		mat = mat[tb$which_row, , drop = FALSE]
 	}
 
-	if(nrow(mat) > 1000) {
-		ind = sample(nrow(mat), 1000)
+	if(nrow(mat) > 500) {
+		ind = sample(nrow(mat), 500)
 		mat = mat[ind, , drop = FALSE]
 		sig_mat = sig_mat[ind, , drop = FALSE]
 	}
-	
 	predict_classes(sig_mat, mat, nperm = nperm, dist_method = dist_method, p_cutoff = p_cutoff, 
 		plot = plot, col_fun = col_fun, split_by_sigatures = split_by_sigatures, 
 		verbose = verbose, prefix = prefix, cores = cores)

@@ -7,7 +7,7 @@ Register user-defined top-value methods
 Register user-defined top-value methods
 }
 \usage{
-register_top_value_methods(...)
+register_top_value_methods(..., validate = TRUE)
 }
 \arguments{
 

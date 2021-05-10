@@ -64,9 +64,7 @@
 # res
 consensus_partition = function(data,
 	top_value_method = "ATC",
-	top_n = seq(min(1000, round(nrow(data)*0.1)), 
-		        min(3000, round(nrow(data)*0.3)), 
-		        length.out = 3),
+	top_n = NULL,
 	partition_method = "skmeans",
 	max_k = 6, 
 	k = NULL,
@@ -83,6 +81,12 @@ consensus_partition = function(data,
 	.env = NULL,
 	help = cola_opt$help) {
 
+	if(help && !missing(data)) {
+		if(identical(subset, Inf) && ncol(data) > 500) {
+			qqcat_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can use the function `consensus_partition_by_down_sampling()` to apply to a subset of column. The classification of unselected columns are inferred from the classes of the selected columns. Set the argument 'help = FALSE' to turn off this message.\n")
+		}
+	}
+
 	if(missing(data)) {
 		data = .env$data
 	} else {
@@ -96,12 +100,6 @@ consensus_partition = function(data,
 	if(max_k >= 10) {
 		if(help) {
 			qqcat_wrap("It is not recommended to set `max_k` larger than 10. Users are suggested to use `hierarchical_partition()` function to obtain more subgroups. Set the argument `help` to FALSE to turn off this message.\n")
-		}
-	}
-
-	if(help && !missing(data)) {
-		if(identical(subset, Inf) && ncol(data) > 500) {
-			qqcat_wrap("You have quite a lot of columns in the matrix. For reducing the runtime, you can use the function `consensus_partition_by_down_sampling()` to apply to a subset of column. The classification of unselected columns are inferred from the classes of the selected columns. Set the argument 'help = FALSE' to turn off this message.\n")
 		}
 	}
 
@@ -135,9 +133,7 @@ consensus_partition = function(data,
 
 .consensus_partition = function(data,
 	top_value_method = "MAD",
-	top_n = seq(min(1000, round(nrow(data)*0.1)), 
-		        min(3000, round(nrow(data)*0.3)), 
-		        length.out = 3),
+	top_n = NULL,
 	partition_method = "kmeans",
 	k = 2:6, 
 	p_sampling = 0.8,
@@ -237,16 +233,6 @@ consensus_partition = function(data,
 	if(length(k) == 0) {
 		stop_wrap("There is no valid k.\n")
 	}
-	
-	top_n = round(top_n)
-	l = top_n <= nrow(data)
-	if(sum(l) != length(top_n)) {
-		qqcat("@{prefix}* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
-	}
-	top_n = top_n[l]
-	if(length(top_n) == 0) {
-		stop_wrap("There is no valid top_n.\n")
-	}
 
 	partition_fun = get_partition_method(partition_method, partition_param)
 
@@ -272,6 +258,19 @@ consensus_partition = function(data,
 	} else {
 		if(verbose) qqcat("@{prefix}* @{top_value_method} values have already been calculated. Get from cache.\n")
 		all_top_value = .env$all_top_value_list[[top_value_method]]
+	}
+
+	if(is.null(top_n)) {
+		top_n = find_top_n(all_top_value)
+	}
+	top_n = round(top_n)
+	l = top_n <= nrow(data)
+	if(sum(l) != length(top_n)) {
+		qqcat("@{prefix}* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
+	}
+	top_n = top_n[l]
+	if(length(top_n) == 0) {
+		stop_wrap("There is no valid top_n.\n")
 	}
 
 	if(is.null(scale_rows)) {
@@ -300,11 +299,13 @@ consensus_partition = function(data,
 	# in case NA is produced in scaling
 	l = apply(data, 1, function(x) any(is.na(x)))
 	if(any(l)) {
-		if(verbose) qqcat("@{prefix}* remove @{sum(l)} rows with NA values.\n")
+		if(verbose) qqcat("@{prefix}* remove @{sum(l)} rows with zero standard deviations.\n")
 		data = data[!l, , drop = FALSE]
 		all_top_value = all_top_value[!l]
+		.env$row_index = .env$row_index[!l]
 		l = top_n <= nrow(data)
 		top_n = top_n[l]
+		
 
 		if(sum(l) != length(top_n)) {
 			qqcat("@{prefix}* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
@@ -582,6 +583,8 @@ consensus_partition = function(data,
 	return(res)
 }
 
+
+
 # == title
 # Print the ConsensusPartition object
 #
@@ -696,7 +699,7 @@ setMethod(f = "plot_ecdf",
 # select_partition_number(golub_cola["ATC", "skmeans"])
 setMethod(f = "select_partition_number",
 	signature = "ConsensusPartition",
-	definition = function(object, all_stats = FALSE) {
+	definition = function(object, mark_best = TRUE, all_stats = FALSE) {
 	op = par(no.readonly = TRUE)
 
 	m = get_stats(object, all_stats = all_stats)
@@ -714,7 +717,12 @@ setMethod(f = "select_partition_number",
 	if(is.na(best_k)) best_k = -1
 
 	for(i in seq_len(ncol(m))) {
-		l = object@k == best_k
+		
+		if(mark_best) {
+			l = object@k == best_k
+		} else {
+			l = rep(FALSE, length(object@k))
+		}
 		plot(object@k, m[, i], type = "b", xlab = "k", ylab = nm[i])
 		if(any(l)) {
 			points(object@k, m[, i],
@@ -747,7 +755,7 @@ setMethod(f = "select_partition_number",
 # ", cex = 1.2, adj = c(0, 1))
 # 	}
 
-	legend("topright", pch = 16, col = "Red", legend = "best k", cex = 1.5)
+	if(mark_best) legend("topright", pch = 16, col = "Red", legend = "best k", cex = 1.5)
 
 	par(op)
 })
