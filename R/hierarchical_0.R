@@ -235,7 +235,7 @@ hierarchical_partition = function(data,
 	.env$combination_method = combination_method
 
 	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), subset = subset, anno = anno, anno_col = anno_col,
-		min_samples = min_samples, node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores,
+		min_samples = min_samples, node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores, PAC_cutoff = PAC_cutoff,
 		top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, ...)
 
 	if(verbose) qqcat("* formatting the results into a HierarchicalPartition object.\n")
