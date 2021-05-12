@@ -264,7 +264,7 @@ hierarchical_partition = function(data,
 	hp@list = .e$lt
 	hp@node_level$best_k = sapply(.e$lt, function(x) {
 		if(inherits(x, "ConsensusPartition")) {
-			suggest_best_k(x, help = FALSE)
+			suggest_best_k(x, stable_PAC = PAC_cutoff, help = FALSE)
 		} else {
 			NA
 		}
@@ -303,14 +303,14 @@ hierarchical_partition = function(data,
 		}
 		if(nodes[i] %in% leaves) {
 			if(attr(hp@list[[i]], "stop_reason") == STOP_REASON["c"]) {
-				sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
+				sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]], stable_PAC = PAC_cutoff, help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
 					group_diff = group_diff, fdr_cutoff = fdr_cutoff)
 				n_signatures[i] = nrow(sig_tb)
 			} else {
 				n_signatures[i] = NA_real_
 			}
 		} else {
-			sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
+			sig_tb = get_signatures(hp@list[[i]], k = suggest_best_k(hp@list[[i]], stable_PAC = PAC_cutoff, help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
 				group_diff = group_diff, fdr_cutoff = fdr_cutoff)
 			n_signatures[i] = nrow(sig_tb)
 		}
@@ -477,7 +477,7 @@ hierarchical_partition = function(data,
 	stat_tb = do.call("rbind", stat_tb)
 
 	stat_tb2 = stat_tb
-	stat_tb = stat_tb[stat_tb$`1-PAC` >= 1-PAC_cutoff & (stat_tb$mean_silhouette >= 0.9 | stat_tb$concordance >= 0.9), , drop = FALSE]
+	stat_tb = stat_tb[stat_tb$`1-PAC` >= 1-PAC_cutoff, , drop = FALSE]
 	if(nrow(stat_tb) == 1) {
 		ind = do.call(order, -stat_tb[setdiff(colnames(stat_tb), "method")])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]
@@ -492,11 +492,11 @@ hierarchical_partition = function(data,
 				group_diff = group_diff, fdr_cutoff = fdr_cutoff)
 			stat_tb$n_signatures[i] = nrow(sig_tb)
 		}
-		ind = do.call(order, -stat_tb[, c("n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "method")))])[1]
+		ind = do.call(order, -stat_tb[, c("k", "n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "k", "method")))])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]
 		best_k = stat_tb[ind, "k"]
 
-		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because it has the highest number of signatures among all @{nrow(stat_tb)} stable partitioning results.\n")
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because it has the highest number of subgroups among all @{nrow(stat_tb)} stable partitioning results.\n")
 	} else {
 		ind = do.call(order, -stat_tb2[setdiff(colnames(stat_tb2), "method")])[1]
 		part = part_list[[ stat_tb2[ind, "method"] ]]

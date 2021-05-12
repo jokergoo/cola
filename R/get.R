@@ -407,7 +407,7 @@ setMethod(f = "suggest_best_k",
 		return(as.numeric(x))
 	}
 
-	l = stat[, "1-PAC"] >= 1 - stable_PAC & (stat[, "mean_silhouette"] >= 0.9 | stat[, "concordance"] >= 0.9)
+	l = stat[, "1-PAC"] >= 1 - stable_PAC
 	if(sum(l) == 1) {
 		return(as.numeric(rownames(stat)[l]))
 	} else if(sum(l) > 1) {
