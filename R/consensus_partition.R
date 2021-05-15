@@ -128,6 +128,19 @@ consensus_partition = function(data,
 		tf = format(tc + structure(t[["elapsed"]], units = "secs", class = "difftime") - tc)
 		qqcat("@{prefix}* @{top_value_method}:@{partition_method} used @{tf}.\n")
 	}
+
+	# test if k = 2 is stable and correlates to column mean
+	if(help) {
+		if(is_stable_k(res, k = 2)) {
+			cl = get_classes(res, k = 2)[, "class"]
+			le = unique(cl)
+			cm = colMeans(get_matrix(res))
+			p = t.test(cm[cl == le[1]], cm[cl == le[2]])$p.value
+			if(p < 0.01) {
+				message_wrap("Classification with 2 groups is stable and it significantly (p-value  = @{p}) correlates to the column mean of the matrix. You might have system-level batch in the matrix. Consider to transform your matrix, such as by quantile normalization. Set `help = FALSE` to turn it off.")
+			}
+		}
+	}
 	return(res)
 }
 
@@ -272,6 +285,8 @@ consensus_partition = function(data,
 	if(length(top_n) == 0) {
 		stop_wrap("There is no valid top_n.\n")
 	}
+
+	if(top_n < 20) browser()
 
 	if(is.null(scale_rows)) {
 		scale_rows = TRUE

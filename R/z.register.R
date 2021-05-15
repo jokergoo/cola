@@ -119,7 +119,7 @@ register_top_value_methods(
 register_ATC_kNN = function(k_neighbours = 20) {
 	k_neighbours = k_neighbours
 	register_top_value_methods(
-		ATC_kNN = function(x) ATC_kNN(x, k_neighbours = k_neighbours)
+		ATC_kNN = function(x) ATC(x, k_neighbours = k_neighbours)
 	)
 }
 

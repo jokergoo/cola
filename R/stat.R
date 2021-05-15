@@ -257,7 +257,6 @@ ATC_single_test = function(x, power = 1, min_cor = 0) {
 	1 - min_cor - v
 }
 
-
 entropy = function(p) {
 	n = length(p)
 	p = p[p > 0]

@@ -613,6 +613,7 @@ setMethod(f = "dimension_reduction",
 				col = object@list[[1]]@anno_col[[color_by]][ as.character(object@list[[1]]@anno[, color_by]) ]
 			}
 		}
+
 		loc = dimension_reduction(data, pch = 16, col = col,
 			main = qq("@{method} on @{top_n} rows with highest @{top_value_method} scores@{ifelse(scale_rows, ', rows are scaled', '')}\n@{ncol(data)} samples with @{n_class} classes"),
 			method = method, scale_rows = scale_rows, ...)

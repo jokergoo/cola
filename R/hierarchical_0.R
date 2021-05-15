@@ -492,11 +492,12 @@ hierarchical_partition = function(data,
 				group_diff = group_diff, fdr_cutoff = fdr_cutoff)
 			stat_tb$n_signatures[i] = nrow(sig_tb)
 		}
+		stat_tb[, "k"] = -stat_tb[, "k"]
 		ind = do.call(order, -stat_tb[, c("k", "n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "k", "method")))])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]
 		best_k = stat_tb[ind, "k"]
 
-		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because it has the highest number of subgroups among all @{nrow(stat_tb)} stable partitioning results.\n")
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because it has the smallest number of subgroups among all @{nrow(stat_tb)} stable partitioning results.\n")
 	} else {
 		ind = do.call(order, -stat_tb2[setdiff(colnames(stat_tb2), "method")])[1]
 		part = part_list[[ stat_tb2[ind, "method"] ]]
@@ -888,65 +889,42 @@ setMethod(f = "node_info",
 })
 
 
-
-knee_finder2 = function(x, y, p = 0.99, plot = FALSE) {
+knee_finder2 = function(x, plot = FALSE) {
 	
-	ind1 = which.max(y)
-	ind2 = which.min(y)
-
-	if(ind1 > ind2) {
-		x = x[ind2:ind1]
-		y = y[ind2:ind1]
-	} else {
-		x = x[ind1:ind2]
-		y = y[ind1:ind2]
-	}
+	y = sort(x)
+	x = seq_along(y)
 
 	n = length(x)
 
 	a = (y[n] - y[1])/(x[n] - x[1])
 	b = y[1] - a*x[1]
 	d = a*x + b - y
-	if(ind1 > ind2) {
-		x0 = min(x[d >= max(d)*p])
-	} else {
-		x0 = max(x[d >= max(d)*p])
-	}
+	x1 = x[which.min(d)]
+	x2 = x[which.max(d)]
+
+	if(all(d >= 0)) x1 = NA
+	if(all(d <= 0)) x2 = NA
 
 	if(plot) {
-		xm = x[which.max(d)]
-		
-		layout(rbind(c(3, 1, 2)))
-		plot(x, y, xlab = "index", ylab = "(ymax - y)/(xmax - x)")
+		par(mfrow = c(1, 2))
+		plot(x, y, xlab = "index", ylab = "value")
 		abline(a = b, b = a)
-		if(p != 1) abline(v = xm, col = "red")
-		abline(v = x0)
+		abline(v = x1, col = "green")
+		abline(v = x2, col = "red")
 
 		plot(d, xlab = "inidex", ylab = "distance to diagonal line")
-		if(p != 1) abline(v = xm, col = "red")
-		abline(v = x0)
+		abline(v = x1, col = "green")
+		abline(v = x2, col = "red")
+		par(mfrow = c(1, 1))
 	}
 
-	return(x0)
+	return(c(x1, x2))
 }
 
-find_top_n = function(x, plot = FALSE, p = 0.99) {
-	x = sort(x)
 
-	y = (max(x) - x)/(length(x) - seq_along(x))
-	y = y[!is.na(y)]
-	
-	x0 = knee_finder2(seq_along(y), y, p = p, plot = plot)
-	if(plot) {
-		plot(x, xlab = "index (x)", ylab = "value (y)")
-		abline(v = x0)
-		if(p != 1) {
-			xm = knee_finder2(seq_along(y), y, p = 1)
-			abline(v = xm, col = "red")
-		}
-		layout(1)
-	}
-	length(x) - x0 + 1
+find_top_n = function(x, plot = FALSE) {
+	v = knee_finder2(x, plot = plot)
+	length(x) - v[2] + 1
 }
 
 # == title 

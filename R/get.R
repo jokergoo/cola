@@ -262,7 +262,7 @@ setMethod(f = "get_classes",
 		df = do.call("cbind", lapply(k, function(i) object@object_list[[as.character(i)]]$class_df$class))
 		colnames(df) = paste0("k=", k)
 		rownames(df) = rownames(object@object_list[[1]]$class_df)
-		df
+		as.data.frame(df)
 	}
 })
 
@@ -495,9 +495,9 @@ setMethod(f = "is_best_k",
 # is_stable_k(obj, k = 3)
 setMethod(f = "is_stable_k",
 	signature = "ConsensusPartition",
-	definition = function(object, k, ...) {
+	definition = function(object, k, stable_PAC = 0.1, ...) {
 
-	is_best_k(object, k, ...) & get_stats(object, k = k)[, "1-PAC"] >= 0.9
+	is_best_k(object, k, ...) & get_stats(object, k = k)[, "1-PAC"] >= 1 - stable_PAC
 })
 
 # == title
