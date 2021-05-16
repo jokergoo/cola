@@ -135,9 +135,11 @@ consensus_partition = function(data,
 			cl = get_classes(res, k = 2)[, "class"]
 			le = unique(cl)
 			cm = colMeans(get_matrix(res))
-			p = t.test(cm[cl == le[1]], cm[cl == le[2]])$p.value
-			if(p < 0.01) {
-				message_wrap("Classification with 2 groups is stable and it significantly (p-value  = @{p}) correlates to the column mean of the matrix. You might have system-level batch in the matrix. Consider to transform your matrix, such as by quantile normalization. Set `help = FALSE` to turn it off.")
+			if(max(cm) - min(cm) > 1e-10) {
+				p <- t.test(cm[cl == le[1]], cm[cl == le[2]])$p.value
+				if(p < 0.01) {
+					message_wrap("Classification with 2 groups is stable and it significantly (p-value  = @{p}) correlates to the column mean of the matrix. You might have system-level batch in the matrix. Consider to transform your matrix, such as by quantile normalization. Set `help = FALSE` to turn it off.")
+				}
 			}
 		}
 	}
