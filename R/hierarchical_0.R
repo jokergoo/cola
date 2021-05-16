@@ -495,7 +495,7 @@ hierarchical_partition = function(data,
 		stat_tb[, "k"] = -stat_tb[, "k"]
 		ind = do.call(order, -stat_tb[, c("k", "n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "k", "method")))])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]
-		best_k = stat_tb[ind, "k"]
+		best_k = -stat_tb[ind, "k"]
 
 		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because it has the smallest number of subgroups among all @{nrow(stat_tb)} stable partitioning results.\n")
 	} else {
