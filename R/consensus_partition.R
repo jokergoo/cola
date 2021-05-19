@@ -130,19 +130,20 @@ consensus_partition = function(data,
 	}
 
 	# test if k = 2 is stable and correlates to column mean
-	if(help) {
-		if(is_stable_k(res, k = 2)) {
-			cl = get_classes(res, k = 2)[, "class"]
-			le = unique(cl)
-			cm = colMeans(get_matrix(res))
-			if(max(cm) - min(cm) > 1e-10) {
-				p <- t.test(cm[cl == le[1]], cm[cl == le[2]])$p.value
-				if(p < 0.01) {
-					message_wrap("Classification with 2 groups is stable and it significantly (p-value  = @{p}) correlates to the column mean of the matrix. You might have system-level batch in the matrix. Consider to transform your matrix, such as by quantile normalization. Set `help = FALSE` to turn it off.")
-				}
-			}
-		}
-	}
+	# if(help) {
+	# 	if(is_stable_k(res, k = 2)) {
+	# 		cl = get_classes(res, k = 2)[, "class"]
+	# 		le = unique(cl)
+	# 		cm_diff = rowMeans(get_matrix(res[, cl == le[1], drop = FALSE])) - colMeans(get_matrix(res[, cl == le[2]]))
+	# 		tb = table(sign(cm_diff))
+	# 		if(max(cm) - min(cm) > 1e-10) {
+	# 			p <- t.test(cm[cl == le[1]], cm[cl == le[2]])$p.value
+	# 			if(p < 0.01) {
+	# 				message_wrap(qq("Classification with 2 groups is stable and it significantly (p-value  = @{p}) correlates to the column mean of the matrix. You might have system-level batch in the matrix. Consider to transform your matrix, such as by quantile normalization. Set `help = FALSE` to turn it off."))
+	# 			}
+	# 		}
+	# 	}
+	# }
 	return(res)
 }
 
@@ -252,8 +253,9 @@ consensus_partition = function(data,
 	partition_fun = get_partition_method(partition_method, partition_param)
 
 	get_top_value_fun = get_top_value_method(top_value_method)
-	if(top_value_method == "ATC") {
-		get_top_value_fun = function(mat) ATC(mat, cores = cores)
+	if(identical(get_top_value_method(top_value_method), ATC) && cores > 1) {
+		config_ATC(cores = cores)
+		if(verbose) qqcat("@{prefix}* set @{cores} cores for ATC()\n")
 	}
 
 	# also since one top value metric will be used for different partition methods,
@@ -277,6 +279,7 @@ consensus_partition = function(data,
 
 	if(is.null(top_n)) {
 		top_n = find_top_n(all_top_value)
+		top_n = min(top_n, round(length(all_top_value)*0.1))
 	}
 	top_n = round(top_n)
 	l = top_n <= nrow(data)

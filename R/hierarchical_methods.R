@@ -83,8 +83,8 @@ setMethod(f = "get_classes",
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
 	definition = function(object, merge_node = merge_node_param(),
-	group_diff = cola_opt$group_diff,
-	row_km = NULL, diff_method = "Ftest", fdr_cutoff = cola_opt$fdr_cutoff,
+	group_diff = rh@param$group_diff,
+	row_km = NULL, diff_method = "Ftest", fdr_cutoff = rh@param$fdr_cutoff,
 	scale_rows = object[1]@scale_rows, 
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
@@ -113,7 +113,8 @@ setMethod(f = "get_signatures",
 		for(p in ap) {
 			best_k = suggest_best_k(object[[p]], help = FALSE)
 			if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
-			sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = verbose, plot = FALSE, simplify = TRUE, seed = seed, diff_method = diff_method, fdr_cutoff = fdr_cutoff, ...)
+			sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = verbose, plot = FALSE, simplify = TRUE, seed = seed, diff_method = diff_method, 
+				fdr_cutoff = fdr_cutoff, .scale_mean = object@.env$global_scale_mean, .scale_sd = object@.env$global_scale_sd, ...)
 			if(is.null(.env$signature_hash)) {
 	    		.env$signature_hash = list()
 	    	}
@@ -162,6 +163,7 @@ setMethod(f = "get_signatures",
 		}
 		colnames(group_mean_scaled) = paste0("scaled_mean_", colnames(group_mean_scaled))
 		returned_df = cbind(returned_df, group_mean_scaled)
+		returned_df$group_diff_scaled = apply(group_mean_scaled, 1, function(x) max(x) - min(x))
 	}
 
 	returned_obj = returned_df

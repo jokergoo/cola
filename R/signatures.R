@@ -164,6 +164,8 @@ setMethod(f = "get_signatures",
 			               class = class,
 			               n_group = k, 
 			               diff_method = diff_method,
+			               .scale_mean = .scale_mean,
+			               .scale_sd = .scale_sd,
 			               column_index = object@column_index,
 			               group_diff = group_diff,
 			               fdr_cutoff = fdr_cutoff,
@@ -177,6 +179,8 @@ setMethod(f = "get_signatures",
 		               class = class,
 		               n_group = k, 
 		               diff_method = diff_method,
+		               .scale_mean = .scale_mean,
+		               .scale_sd = .scale_sd,
 		               column_index = object@column_index,
 		               group_diff = group_diff,
 		               fdr_cutoff = fdr_cutoff,
@@ -255,6 +259,8 @@ setMethod(f = "get_signatures",
 	object@.env[[nm]]$fdr = fdr
 	object@.env[[nm]]$n_sample_used = n_sample_used
 	object@.env[[nm]]$group_diff = group_diff
+	object@.env[[nm]]$.scale_mean = .scale_mean
+	object@.env[[nm]]$.scale_sd = .scale_sd
 
 	# filter by fdr
 	fdr[is.na(fdr)] = 1
@@ -265,6 +271,12 @@ setMethod(f = "get_signatures",
 	fdr2 = fdr[l_fdr]
 	if(!is.null(p_value)) {
 		p_value = p_value[l_fdr]
+	}
+	if(!is.null(.scale_mean)) {
+		.scale_mean = .scale_mean[l_fdr]
+	}
+	if(!is.null(.scale_sd)) {
+		.scale_sd = .scale_sd[l_fdr]
 	}
 	
 	if(!is.null(left_annotation)) left_annotation = left_annotation[l_fdr, ]
@@ -294,15 +306,14 @@ setMethod(f = "get_signatures",
 	returned_df = cbind(returned_df, group_mean)
 	returned_df$group_diff = apply(group_mean, 1, function(x) max(x) - min(x))
 
-	if(group_diff > 0) {
-		l_diff = returned_df$group_diff >= group_diff
-		mat = mat[l_diff, , drop = FALSE]
-		mat1 = mat1[l_diff, , drop = FALSE]
-		returned_df = returned_df[l_diff, , drop = FALSE]
-	}
-
 	if(scale_rows) {
-		mat1_scaled = t(scale(t(mat[, column_used_logical, drop = FALSE])))
+		mfoo = mat[, column_used_logical, drop = FALSE]
+		if(!is.null(.scale_mean) && !is.null(.scale_sd)) {
+			cat("!!! matrix is scaled by a specified mean and sd\n")
+			mat1_scaled = (mfoo - .scale_mean)/.scale_sd
+		} else {
+			mat1_scaled = (mfoo - rowMeans(mfoo))/rowSds(mfoo)
+		}
 		if(nrow(mat) == 1) {
 			group_mean_scaled = rbind(tapply(mat1_scaled, class, mean))
 		} else {
@@ -312,6 +323,19 @@ setMethod(f = "get_signatures",
 		}
 		colnames(group_mean_scaled) = paste0("scaled_mean_", colnames(group_mean_scaled))
 		returned_df = cbind(returned_df, group_mean_scaled)
+		returned_df$group_diff_scaled = apply(group_mean_scaled, 1, function(x) max(x) - min(x))
+	}
+
+	if(group_diff > 0) {
+		if(scale_rows) {
+			cat("!!! group_diff is filtered by the scaled data\n")
+			l_diff = returned_df$group_diff_scaled >= group_diff
+		} else {
+			l_diff = returned_df$group_diff >= group_diff
+		}
+		mat = mat[l_diff, , drop = FALSE]
+		mat1 = mat1[l_diff, , drop = FALSE]
+		returned_df = returned_df[l_diff, , drop = FALSE]
 	}
 
 	returned_obj = returned_df

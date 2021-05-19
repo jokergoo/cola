@@ -163,7 +163,7 @@ ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neigh
 # ATC_score = ATC(mat)
 # plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
 ATC = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, cores = 1, ...) {
-	if(nrow(mat) > 100000) {
+	if(nrow(mat) > 30000) {
 		ATC_approx(mat, cor_fun = cor_fun, min_cor = min_cor, power = power, k_neighbours = k_neighbours, cores = cores, ...)
 	} else {
 
@@ -246,6 +246,19 @@ ATC = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours =
 	}
 }
 
+
+config_ATC = function(cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, cores = 1, ...) {
+	cor_fun = cor_fun
+	min_cor = min_cor
+	power = power
+	k_neighbours = k_neighbours
+	group = group
+	cores = cores
+
+	register_top_value_methods(ATC = function(mat) {
+		ATC(mat, cor_fun = cor_fun, min_cor = min_cor, power = power, k_neighbours = k_neighbours, group = group, cores = cores, ...)
+	}, validate = FALSE)
+}
 
 # only for testing purpose
 ATC_single_test = function(x, power = 1, min_cor = 0) {

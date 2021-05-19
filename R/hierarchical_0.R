@@ -104,7 +104,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 hierarchical_partition = function(data, 
 	top_n = NULL,
 	top_value_method = "ATC", 
-	partition_method = c("kmeans", "skmeans"),
+	partition_method = c("skmeans"),
 	combination_method =  expand.grid(top_value_method, partition_method),
 	anno = NULL, anno_col = NULL,
 	PAC_cutoff = 0.1, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
@@ -233,6 +233,9 @@ hierarchical_partition = function(data,
 	.env$all_top_value_list = all_top_value_list
 	.env$node_0_top_value_list = .env$all_top_value_list
 	.env$combination_method = combination_method
+
+	.env$global_row_mean = rowMeans(data)
+	.env$global_row_sd = rowSds(data)
 
 	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), subset = subset, anno = anno, anno_col = anno_col,
 		min_samples = min_samples, node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores, PAC_cutoff = PAC_cutoff,
@@ -369,6 +372,8 @@ hierarchical_partition = function(data,
 	## all_top_value_list is only used in run_all_consensus_partition_methods(), we remove it here
    	data = .env$data
    	combination_method = .env$combination_method
+   	global_row_mean = .env$global_row_mean
+   	global_row_sd = .env$global_row_sd
 
    	top_n2 = top_n
 	if(node_id != "0") {
@@ -489,7 +494,7 @@ hierarchical_partition = function(data,
 		stat_tb$n_signatures = -Inf
 		for(i in seq_len(nrow(stat_tb))) {
 			sig_tb = get_signatures(part_list[[stat_tb[i, "method"]]], k = stat_tb[i, "k"], plot = FALSE, verbose = FALSE, simplify = TRUE,
-				group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+				group_diff = group_diff, fdr_cutoff = fdr_cutoff, .scale_mean = global_row_mean, .scale_sd = global_row_sd)
 			stat_tb$n_signatures[i] = nrow(sig_tb)
 		}
 		stat_tb[, "k"] = -stat_tb[, "k"]
@@ -544,10 +549,10 @@ hierarchical_partition = function(data,
 	if(verbose) qqcat("@{prefix}* checking number of signatures in the best classification.\n")
 	if(length(column_index) <= subset) {
 		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE,
-			group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+			group_diff = group_diff, fdr_cutoff = fdr_cutoff, .scale_mean = global_row_mean, .scale_sd = global_row_sd)
 	} else {
 		sig_df = get_signatures(part, k = best_k, plot = FALSE, verbose = FALSE, simplify = TRUE,
-			group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+			group_diff = group_diff, fdr_cutoff = fdr_cutoff, .scale_mean = global_row_mean, .scale_sd = global_row_sd)
 	}
 	if(is.null(part@.env$signature_hash)) {
 		part@.env$signature_hash = list()
@@ -1083,14 +1088,14 @@ setMethod(f = "split_node",
 		if(nodes[i] %in% leaves) {
 			if(attr(list[[i]], "stop_reason") == STOP_REASON["c"]) {
 				sig_tb = get_signatures(list[[i]], k = suggest_best_k(list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
-					group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+					group_diff = group_diff, fdr_cutoff = fdr_cutoff, .scale_mean = object@.env$global_row_mean, .scale_sd = object@.env$global_row_sd)
 				n_signatures[i] = nrow(sig_tb)
 			} else {
 				n_signatures[i] = NA_real_
 			}
 		} else {
 			sig_tb = get_signatures(list[[i]], k = suggest_best_k(list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
-				group_diff = group_diff, fdr_cutoff = fdr_cutoff)
+				group_diff = group_diff, fdr_cutoff = fdr_cutoff, .scale_mean = object@.env$global_row_mean, .scale_sd = object@.env$global_row_sd)
 			n_signatures[i] = nrow(sig_tb)
 		}
 	}
