@@ -98,10 +98,18 @@ setMethod(f = "get_signatures",
 	plot = TRUE, verbose = TRUE, seed = 888,
 	left_annotation = NULL, right_annotation = NULL,
 	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
-	simplify = FALSE, prefix = "", enforce = FALSE, hash = NULL,
+	simplify = FALSE, prefix = "", enforce = FALSE, hash = NULL, from_hc = FALSE,
 	...) {
 
-	if(missing(k)) stop_wrap("k needs to be provided.")
+	if(from_hc) {
+		group_diff = object@.env$group_diff
+		fdr_cutoff = object@.env$fdr_cutoff
+		.scale_mean = object@.env$global_row_mean
+		.scale_sd = object@.env$global_row_sd
+		k = attr(object, "best_k")
+	} else {
+		if(missing(k)) stop_wrap("k needs to be provided.")
+	}
 	
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
@@ -289,10 +297,6 @@ setMethod(f = "get_signatures",
 	attr(returned_df, "sample_used") = column_used_logical
 	attr(returned_df, "hash") = hash
 
-	if(simplify && !plot) {
-		return(returned_df)
-	}
-
 	# filter by group_diff
 	mat1 = mat[, column_used_logical, drop = FALSE]
 	if(nrow(mat) == 1) {
@@ -343,6 +347,10 @@ setMethod(f = "get_signatures",
 
 	attr(returned_obj, "sample_used") = column_used_logical
 	attr(returned_obj, "hash") = hash
+
+	if(simplify && !plot) {
+		return(returned_df)
+	}
 
 	## add k-means
 	row_km_fit = NULL

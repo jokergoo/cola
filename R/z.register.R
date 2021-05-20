@@ -123,6 +123,20 @@ register_ATC_kNN = function(k_neighbours = 20) {
 	)
 }
 
+config_ATC = function(cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, cores = 1, ...) {
+	cor_fun = cor_fun
+	min_cor = min_cor
+	power = power
+	k_neighbours = k_neighbours
+	group = group
+	cores = cores
+
+	register_top_value_methods(ATC = function(mat) {
+		ATC(mat, cor_fun = cor_fun, min_cor = min_cor, power = power, k_neighbours = k_neighbours, group = group, cores = cores, ...)
+	}, validate = FALSE)
+}
+
+
 get_partition_method = function(method, partition_param = list()) {
 	if(!method %in% .ENV$ALL_PARTITION_METHODS) {
 		stop_wrap(qq("partition method '@{method}' has not been defined yet."))

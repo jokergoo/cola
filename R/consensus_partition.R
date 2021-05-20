@@ -253,9 +253,9 @@ consensus_partition = function(data,
 	partition_fun = get_partition_method(partition_method, partition_param)
 
 	get_top_value_fun = get_top_value_method(top_value_method)
-	if(identical(get_top_value_method(top_value_method), ATC) && cores > 1) {
+	if(identical(get_top_value_method(top_value_method), ATC)) {
 		config_ATC(cores = cores)
-		if(verbose) qqcat("@{prefix}* set @{cores} cores for ATC()\n")
+		if(verbose && cores > 1) qqcat("@{prefix}* set @{cores} cores for ATC()\n")
 	}
 
 	# also since one top value metric will be used for different partition methods,
