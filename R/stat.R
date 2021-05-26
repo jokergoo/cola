@@ -162,7 +162,8 @@ ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neigh
 # mat = rbind(mat1, mat2, mat3)
 # ATC_score = ATC(mat)
 # plot(ATC_score, pch = 16, col = c(rep(1, nr1), rep(2, nr2), rep(3, nr3)))
-ATC = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, cores = 1, ...) {
+ATC = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, mc.cores = 1, cores = mc.cores, ...) {
+	
 	if(nrow(mat) > 30000) {
 		ATC_approx(mat, cor_fun = cor_fun, min_cor = min_cor, power = power, k_neighbours = k_neighbours, cores = cores, ...)
 	} else {
@@ -215,6 +216,7 @@ ATC = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours =
 				} else {
 					cm = abs(cor_fun(mat[, ind1, drop = FALSE], mat[, ind2, drop = FALSE], ...))
 				}
+				cm[is.na(cm)] = 0
 				cm
 			}
 			stopImplicitCluster()
@@ -243,6 +245,16 @@ ATC = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours =
 			corm = abs(cor_fun(mat, ...))
 			rowATC(corm, min_cor = min_cor, power = power, k_neighbours = k_neighbours, self = 1:n)
 		}
+	}
+}
+
+cor_spearman = function(x, y, ...) {
+	x = rowRanks(x, ties.method = "random")
+	if(missing(y)) {
+		cor(x, ...)
+	} else {
+		y = rowRanks(y, ties.method = "random")
+		cor(x, y, ...)
 	}
 }
 
@@ -487,3 +499,4 @@ cophcor = function(consensus_mat) {
 concordance = function(membership_each, class) {
 	mean(apply(membership_each, 2, function(x) sum(x == class, na.rm = TRUE)/length(x[!is.na(x)])))
 }
+

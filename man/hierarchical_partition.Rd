@@ -10,14 +10,14 @@ Hierarchical partition
 hierarchical_partition(data,
     top_n = NULL,
     top_value_method = "ATC",
-    partition_method = c("kmeans", "skmeans"),
+    partition_method = "skmeans",
     combination_method =  expand.grid(top_value_method, partition_method),
     anno = NULL, anno_col = NULL,
     PAC_cutoff = 0.1, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
-    group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff,
-    min_n_signatures = round(nrow(data)*min_p_signatures),
-    min_p_signatures = 0.05,
-    max_k = 6, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...)
+    group_diff = ifelse(scale_rows, 0.5, 0),
+    fdr_cutoff = cola_opt$fdr_cutoff,
+    min_n_signatures = NULL,
+    max_k = 4, scale_rows = TRUE, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...)
 }
 \arguments{
 
@@ -34,8 +34,8 @@ hierarchical_partition(data,
   \item{fdr_cutoff}{Pass to \code{\link{get_signatures,ConsensusPartition-method}}.}
   \item{subset}{Number of columns to randomly sample.}
   \item{min_n_signatures}{Minimal number of signatures under the best classification.}
-  \item{min_p_signatures}{Minimal proportion of signatures under the best classification. If the corresponding values are smaller than both \code{min_n_signatures} and \code{min_p_signatures}, the hierarchical partitioning stops on that node.}
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}
+  \item{scale_rows}{Whether rows are scaled?}
   \item{verbose}{whether print message.}
   \item{mc.cores}{multiple cores to use. This argument will be removed in future versions.}
   \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}

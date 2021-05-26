@@ -1,5 +1,6 @@
 \name{split_node-HierarchicalPartition-method}
 \alias{split_node,HierarchicalPartition-method}
+\alias{split_node}
 \title{
 Split node
 }
@@ -19,6 +20,7 @@ Split node
   \item{object}{object}
   \item{node_id}{node id}
   \item{subset}{subset}
+  \item{min_samples}{-min_samples}
   \item{max_k}{max_k}
   \item{cores}{cores}
   \item{verbose}{verobse}
@@ -28,8 +30,8 @@ Split node
   \item{fdr_cutoff}{fdr cutoff}
 
 }
-\alias{split_node}
 \examples{
 # There is no example
 NULL
+
 }

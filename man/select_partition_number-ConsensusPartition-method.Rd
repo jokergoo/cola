@@ -13,6 +13,7 @@ Several plots for determining the optimized number of subgroups
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
+  \item{mark_best}{Whether mark the best k in the plot.}
   \item{all_stats}{Whether to show all statistics that were calculated. Used internally.}
 
 }

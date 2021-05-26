@@ -104,7 +104,7 @@ setMethod(f = "predict_classes",
 
 	tb = get_signatures(object, k = k, plot = FALSE, silhouette_cutoff = silhouette_cutoff, 
 		fdr_cutoff = fdr_cutoff, group_diff = group_diff, scale_rows = scale_rows, 
-		diff_method = diff_method, verbose = verbose, prefix = prefix)
+		diff_method = diff_method, prefix = prefix, verbose = FALSE)
 
 	if(nrow(tb) < 20) {
 		if(force) {
@@ -248,7 +248,7 @@ setMethod(f = "predict_classes",
 	dist_method = match.arg(dist_method)[1]
 	n_sig = ncol(sig_mat)
 
-	if(verbose) qqcat("@{prefix}* Predict classes based on @{ncol(sig_mat)}-group classification (@{dist_method} method) on a @{ncol(mat)}-column matrix.\n")
+	# if(verbose) qqcat("@{prefix}* Predict classes based on @{ncol(sig_mat)}-group classification (@{dist_method} method) on a @{ncol(mat)}-column matrix.\n")
 
 	if(dist_method %in% c("euclidean", "cosine")) {
 

@@ -25,7 +25,7 @@ Get signature rows
     plot = TRUE, verbose = TRUE, seed = 888,
     left_annotation = NULL, right_annotation = NULL,
     col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
-    simplify = FALSE, prefix = "", enforce = FALSE, hash = NULL,
+    simplify = FALSE, prefix = "", enforce = FALSE, hash = NULL, from_hc = FALSE,
     ...)
 }
 \arguments{
@@ -58,6 +58,7 @@ Get signature rows
   \item{prefix}{Only used internally.}
   \item{enforce}{The analysis is cached by default, so that the analysis with the same input will be automatically extracted without rerunning them. Set \code{enforce} to \code{TRUE} to enforce the funtion to re-perform the analysis.}
   \item{hash}{Userd internally.}
+  \item{from_hc}{Is the \code{\link{ConsensusPartition-class}} object a node of a \code{\link{HierarchicalPartition}} object?}
   \item{...}{Other arguments.}
 
 }

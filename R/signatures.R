@@ -39,6 +39,7 @@
 # -enforce The analysis is cached by default, so that the analysis with the same input will be automatically extracted
 #     without rerunning them. Set ``enforce`` to ``TRUE`` to enforce the funtion to re-perform the analysis.
 # -hash Userd internally.
+# -from_hc Is the `ConsensusPartition-class` object a node of a `HierarchicalPartition` object?
 # -... Other arguments.
 # 
 # == details 
@@ -110,13 +111,31 @@ setMethod(f = "get_signatures",
 	} else {
 		if(missing(k)) stop_wrap("k needs to be provided.")
 	}
+
+	dotdot = list(...)
+	p_cutoff = NULL
+	if("p_cutoff" %in% names(dotdot)) {
+		p_cutoff = dotdot$p_cutoff
+	}
+	from_down_sampling = FALSE
+	if(inherits(object, "DownSamplingConsensusPartition")) {
+		from_down_sampling = TRUE
+	}
 	
 	class_df = get_classes(object, k)
 	class_ids = class_df$class
 
-	data = get_matrix(object, include_all_rows = TRUE)
+	if(is.null(p_cutoff)) {
+		data = get_matrix(object, include_all_rows = TRUE)
+	} else {
+		data = object@.env$data[, object@full_column_index, drop = FALSE]
+	}
 
-	l = class_df$silhouette >= silhouette_cutoff
+	if(!from_down_sampling) {
+		l = class_df$silhouette >= silhouette_cutoff
+	} else {
+		l = class_df$p <= p_cutoff
+	}
 	data2 = data[, l, drop = FALSE]
 	class = class_df$class[l]
 	column_used_index = which(l)
@@ -130,8 +149,12 @@ setMethod(f = "get_signatures",
 	has_ambiguous = sum(!column_used_logical)
 	n_sample_used = length(class)
 
-	if(verbose) qqcat("@{prefix}* @{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
-
+	if(!from_down_sampling) {
+		if(verbose) qqcat("@{prefix}* @{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by silhouette (>= @{silhouette_cutoff}).\n")
+	} else {
+		if(verbose) qqcat("@{prefix}* @{n_sample_used}/@{nrow(class_df)} samples (in @{length(unique(class))} classes) remain after filtering by p-value (<= @{p_cutoff}).\n")
+	}
+	
 	tb = table(class)
 	if(sum(tb > 1) <= 1) {
 		if(plot) {
@@ -230,7 +253,6 @@ setMethod(f = "get_signatures",
 
 	if(verbose) qqcat("@{prefix}* calculating row difference between subgroups by @{diff_method}.\n")
 	if(find_signature) {
-
 		if(diff_method == "ttest") {
 			fdr = ttest(data2, class)
 		} else if(diff_method == "samr") {
@@ -313,7 +335,6 @@ setMethod(f = "get_signatures",
 	if(scale_rows) {
 		mfoo = mat[, column_used_logical, drop = FALSE]
 		if(!is.null(.scale_mean) && !is.null(.scale_sd)) {
-			cat("!!! matrix is scaled by a specified mean and sd\n")
 			mat1_scaled = (mfoo - .scale_mean)/.scale_sd
 		} else {
 			mat1_scaled = (mfoo - rowMeans(mfoo))/rowSds(mfoo)
@@ -332,7 +353,6 @@ setMethod(f = "get_signatures",
 
 	if(group_diff > 0) {
 		if(scale_rows) {
-			cat("!!! group_diff is filtered by the scaled data\n")
 			l_diff = returned_df$group_diff_scaled >= group_diff
 		} else {
 			l_diff = returned_df$group_diff >= group_diff
@@ -553,8 +573,12 @@ setMethod(f = "get_signatures",
 				show_annotation_name = !internal, annotation_name_side = "right")	
 		}
 	}
-	silhouette_range = range(class_df$silhouette)
-	silhouette_range[2] = 1
+	if(is.null(p_cutoff)) {
+		silhouette_range = range(class_df$silhouette)
+		silhouette_range[2] = 1
+	} else {
+		p_range = c(0, 1)
+	}
 
 	if(verbose) qqcat("@{prefix}* making heatmaps for signatures.\n")
 
@@ -576,6 +600,14 @@ setMethod(f = "get_signatures",
 
 	membership_mat = get_membership(object, k)
 	prop_col_fun = colorRamp2(c(0, 1), c("white", "red"))
+	
+	if(from_down_sampling) {
+		class_df_logp = class_df$p
+		class_df_logp[class_df_logp == 0] = 0.001
+		class_df_logp = -log10(class_df_logp)
+		p_range = range(class_df_logp)
+		p_range[1] = 0
+	}
 
 	if(internal) {
 		ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
@@ -586,29 +618,57 @@ setMethod(f = "get_signatures",
 				show_legend = TRUE)
 	} else {
 		if(simplify) {
-			ha1 = HeatmapAnnotation(
-				Class = class_df$class[column_used_logical],
-				silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
-					gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
-						      col = NA),
-					bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
-					height = unit(15, "mm")),
-				col = list(Class = cola_opt$color_set_2),
-				show_annotation_name = !has_ambiguous & !internal,
-				annotation_name_side = "right",
-				show_legend = TRUE)
+			if(!from_down_sampling) {
+				ha1 = HeatmapAnnotation(
+					Class = class_df$class[column_used_logical],
+					silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
+						gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
+							      col = NA),
+						bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+						height = unit(15, "mm")),
+					col = list(Class = cola_opt$color_set_2),
+					show_annotation_name = !has_ambiguous & !internal,
+					annotation_name_side = "right",
+					show_legend = TRUE)
+			} else {
+				ha1 = HeatmapAnnotation(
+					Class = class_df$class[column_used_logical],
+					p_prediction = anno_barplot(class_df_logp[column_used_logical], ylim = p_range,
+						gp = gpar(fill = ifelse(class_df_logp[column_used_logical] >= -log10(p_cutoff), "black", "#EEEEEE"),
+							      col = NA),
+						bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+						height = unit(15, "mm")),
+					col = list(Class = cola_opt$color_set_2),
+					show_annotation_name = !has_ambiguous & !internal,
+					annotation_name_side = "right",
+					show_legend = TRUE)
+			}
 		} else {
-			ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
-				Class = class_df$class[column_used_logical],
-				silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
-					gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
-						      col = NA),
-					bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
-					height = unit(15, "mm")),
-				col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
-				show_annotation_name = !has_ambiguous & !internal,
-				annotation_name_side = "right",
-				show_legend = TRUE)
+			if(!from_down_sampling) {
+				ha1 = HeatmapAnnotation(Prob = membership_mat[column_used_logical, ],
+					Class = class_df$class[column_used_logical],
+					silhouette = anno_barplot(class_df$silhouette[column_used_logical], ylim = silhouette_range,
+						gp = gpar(fill = ifelse(class_df$silhouette[column_used_logical] >= silhouette_cutoff, "black", "#EEEEEE"),
+							      col = NA),
+						bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+						height = unit(15, "mm")),
+					col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
+					show_annotation_name = !has_ambiguous & !internal & c(TRUE, TRUE, FALSE),
+					annotation_name_side = "right",
+					show_legend = TRUE)
+			} else {
+				ha1 = HeatmapAnnotation(
+					Class = class_df$class[column_used_logical],
+					p_prediction = anno_barplot(class_df_logp[column_used_logical], ylim = p_range,
+						gp = gpar(fill = ifelse(class_df_logp[column_used_logical] >= -log10(p_cutoff), "black", "#EEEEEE"),
+							      col = NA),
+						bar_width = 1, baseline = 0, axis = !has_ambiguous, axis_param = list(side= "right"),
+						height = unit(15, "mm")),
+					col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
+					show_annotation_name = !has_ambiguous & !internal & c(TRUE, FALSE),
+					annotation_name_side = "right",
+					show_legend = TRUE)
+			}
 		}
 	}
 	ht_list = ht_list + Heatmap(use_mat1, name = heatmap_name, col = col_fun,
@@ -638,29 +698,57 @@ setMethod(f = "get_signatures",
 				show_legend = FALSE)
 		} else {
 			if(simplify) {
-				ha2 = HeatmapAnnotation(
-					Class = class_df$class[!column_used_logical],
-					silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
-						gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
-						      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
-						bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
-						height = unit(15, "mm")), 
-					col = list(Class = cola_opt$color_set_2),
-					show_annotation_name = c(TRUE, FALSE) & !internal,
-					annotation_name_side = "right",
-					show_legend = FALSE)
+				if(!from_down_sampling) {
+					ha2 = HeatmapAnnotation(
+						Class = class_df$class[!column_used_logical],
+						silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
+							gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
+							      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
+							bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
+							height = unit(15, "mm")), 
+						col = list(Class = cola_opt$color_set_2),
+						show_annotation_name = c(TRUE, FALSE) & !internal,
+						annotation_name_side = "right",
+						show_legend = FALSE)
+				} else {
+					ha2 = HeatmapAnnotation(
+						Class = class_df$class[!column_used_logical],
+						p_prediction2 = anno_barplot(class_df_logp[!column_used_logical], ylim = p_range,
+							gp = gpar(fill = ifelse(class_df_logp[!column_used_logical] >= -log10(p_cutoff), "grey", "grey"),
+							      col = ifelse(class_df_logp[!column_used_logical] <= -log10(p_cutoff), "black", NA)),
+							bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
+							height = unit(15, "mm")), 
+						col = list(Class = cola_opt$color_set_2),
+						show_annotation_name = c(TRUE, FALSE) & !internal,
+						annotation_name_side = "right",
+						show_legend = FALSE)
+				}
 			} else {
-				ha2 = HeatmapAnnotation(Prob = membership_mat[!column_used_logical, ,drop = FALSE],
-					Class = class_df$class[!column_used_logical],
-					silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
-						gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
-						      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
-						bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
-						height = unit(15, "mm")), 
-					col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
-					show_annotation_name = c(TRUE, TRUE, FALSE) & !internal,
-					annotation_name_side = "right",
-					show_legend = FALSE)
+				if(!from_down_sampling) {
+					ha2 = HeatmapAnnotation(Prob = membership_mat[!column_used_logical, ,drop = FALSE],
+						Class = class_df$class[!column_used_logical],
+						silhouette2 = anno_barplot(class_df$silhouette[!column_used_logical], ylim = silhouette_range,
+							gp = gpar(fill = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "grey", "grey"),
+							      col = ifelse(class_df$silhouette[!column_used_logical] >= silhouette_cutoff, "black", NA)),
+							bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
+							height = unit(15, "mm")), 
+						col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
+						show_annotation_name = c(TRUE, TRUE, FALSE) & !internal,
+						annotation_name_side = "right",
+						show_legend = FALSE)
+				} else {
+					ha2 = HeatmapAnnotation(
+						Class = class_df$class[!column_used_logical],
+						p_prediction2 = anno_barplot(class_df_logp[!column_used_logical], ylim = p_range,
+							gp = gpar(fill = ifelse(class_df_logp[!column_used_logical] >= -log10(p_cutoff), "grey", "grey"),
+							      col = ifelse(class_df_logp[!column_used_logical] >= -log10(p_cutoff), "black", NA)),
+							bar_width = 1, baseline = 0, axis = TRUE, axis_param = list(side = "right"),
+							height = unit(15, "mm")), 
+						col = list(Class = cola_opt$color_set_2, Prob = prop_col_fun),
+						show_annotation_name = c(TRUE, FALSE) & !internal,
+						annotation_name_side = "right",
+						show_legend = FALSE)
+				}
 			}
 			
 		}
@@ -716,19 +804,36 @@ setMethod(f = "get_signatures",
 	# the cutoff
 	# https://www.stat.berkeley.edu/~s133/Cluster2a.html
 	if(!internal) {
-		for(i in seq_along(unique(class_df$class[column_used_logical]))) {
-			decorate_annotation("silhouette",  slice = i, {
-				grid.rect(gp = gpar(fill = "transparent"))
-				grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
-				if(!has_ambiguous) grid.text("Silhouette\nscore", x = unit(1, "npc") + unit(10, "mm"), just = "top", rot = 90, gp = gpar(fontsize = 8))
-			})
-		}
-		if(has_ambiguous) {
-			decorate_annotation("silhouette2", {
-				grid.rect(gp = gpar(fill = "transparent"))
-				grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
-				if(has_ambiguous) grid.text("Silhouette\nscore", x = unit(1, "npc") + unit(10, "mm"), just = "top", rot = 90, gp = gpar(fontsize = 8))
-			})
+		if(is.null(p_cutoff)) {
+			if(!has_ambiguous) {
+				decorate_annotation("silhouette",  slice = length(unique(class_df$class[column_used_logical])), {
+					grid.rect(gp = gpar(fill = "transparent"))
+					grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
+					if(!has_ambiguous) grid.text("Silhouette\nscore", x = unit(1, "npc") + unit(5, "mm"), just = "left", gp = gpar(fontsize = 10))
+				})
+			}
+			if(has_ambiguous) {
+				decorate_annotation("silhouette2", {
+					grid.rect(gp = gpar(fill = "transparent"))
+					grid.lines(c(0, 1), unit(c(silhouette_cutoff, silhouette_cutoff), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
+					if(has_ambiguous) grid.text("Silhouette\nscore", x = unit(1, "npc") + unit(5, "mm"), just = "left", gp = gpar(fontsize = 10))
+				})
+			}
+		} else {
+			if(!has_ambiguous) {
+				decorate_annotation("p_prediction",  slice = length(unique(class_df$class[column_used_logical])), {
+					grid.rect(gp = gpar(fill = "transparent"))
+					grid.lines(c(0, 1), unit(-log10(c(p_cutoff, p_cutoff)), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
+					if(!has_ambiguous) grid.text("-log10(prediction\n    p-value)", x = unit(1, "npc") + unit(5, "mm"), just = "left", gp = gpar(fontsize = 10))
+				})
+			}
+			if(has_ambiguous) {
+				decorate_annotation("p_prediction2", {
+					grid.rect(gp = gpar(fill = "transparent"))
+					grid.lines(c(0, 1), unit(-log10(c(p_cutoff, p_cutoff)), "native"), gp = gpar(lty = 2, col = "#CCCCCC"))
+					if(has_ambiguous) grid.text("-log10(prediction\n    p-value)", x = unit(1, "npc") + unit(5, "mm"), just = "left", gp = gpar(fontsize = 10))
+				})
+			}
 		}
 	}
 

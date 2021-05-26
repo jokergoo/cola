@@ -7,7 +7,7 @@ Ability to correlate to other rows
 Ability to correlate to other rows
 }
 \usage{
-ATC(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, cores = 1, ...)
+ATC(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, mc.cores = 1, cores = mc.cores, ...)
 }
 \arguments{
 

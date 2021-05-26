@@ -19,6 +19,7 @@ get_top_value_method = function(method) {
 #
 # == param
 # -... A named list of functions.
+# -validate Whether validate the functions.
 # 
 # == details 
 # The user-defined function should accept one argument which is the data
@@ -116,10 +117,11 @@ register_top_value_methods(
 	validate = FALSE
 )
 
-register_ATC_kNN = function(k_neighbours = 20) {
+register_ATC_kNN = function(k_neighbours = 20, cores = 1) {
 	k_neighbours = k_neighbours
+	cores = cores
 	register_top_value_methods(
-		ATC_kNN = function(x) ATC(x, k_neighbours = k_neighbours)
+		ATC_kNN = function(x) ATC(x, k_neighbours = k_neighbours, cores = cores)
 	)
 }
 
@@ -131,9 +133,25 @@ config_ATC = function(cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours
 	group = group
 	cores = cores
 
-	register_top_value_methods(ATC = function(mat) {
+	fun = function(mat) {
 		ATC(mat, cor_fun = cor_fun, min_cor = min_cor, power = power, k_neighbours = k_neighbours, group = group, cores = cores, ...)
-	}, validate = FALSE)
+	}
+	
+	cor_name = as.character(as.list(match.call())$cor_fun)
+	if(length(cor_name) == 1) {
+		attr(fun, "cor_fun") = cor_name
+	} else if(length(cor_name) == 3) {
+		attr(fun, "cor_fun") = paste0(cor_name[2], cor_name[1], cor_name[3])
+	} else {
+		attr(fun, "cor_fun") = "stats::cor"
+	}
+	
+
+	attr(fun, "min_cor") = min_cor
+	attr(fun, "power") = power
+	attr(fun, "k_neighbours") = k_neighbours
+
+	register_top_value_methods(ATC = fun, validate = FALSE)
 }
 
 

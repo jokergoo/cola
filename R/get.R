@@ -339,6 +339,7 @@ recalc_stats = function(rl) {
 # == param
 # -object A `ConsensusPartition-class` object.
 # -jaccard_index_cutoff The cutoff for Jaccard index for comparing to previous k.
+# -stable_PAC Cutoff for stable PAC.
 # -help Whether to print help message.
 #
 # == details
@@ -376,7 +377,8 @@ recalc_stats = function(rl) {
 # suggest_best_k(obj)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
-	definition = function(object, jaccard_index_cutoff = 0.95, stable_PAC = 0.1, help = TRUE) {
+	definition = function(object, jaccard_index_cutoff = select_jaccard_cutoff(ncol(object)), 
+	stable_PAC = 0.1, help = TRUE) {
 
 	# if(verbose) {
 	# 	cat("This function only suggests the best k. It is recommended that users look ...")
@@ -479,6 +481,7 @@ setMethod(f = "is_best_k",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -k Number of subgroups.
+# -stable_PAC Cutoff for stable PAC.
 # -...  Pass to `suggest_best_k,ConsensusPartition-method`.
 #
 # == details
@@ -523,7 +526,7 @@ setMethod(f = "is_stable_k",
 # suggest_best_k(golub_cola)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartitionList",
-	definition = function(object, jaccard_index_cutoff = 0.95) {
+	definition = function(object, jaccard_index_cutoff = select_jaccard_cutoff(ncol(object))) {
 
 	best_k = NULL
 	stability = NULL
@@ -748,3 +751,11 @@ setMethod(f = "get_anno_col",
 	definition = function(object) {
 	object@anno_col
 })
+
+
+# assume 2-partition with size n/2 and n/2 and 3-partition with size n/2, n/2 - 1 and 1
+select_jaccard_cutoff = function(x) { 
+	max(0.5, (x^2 - 4*x + 4)/(x^2 - 2*x -4)*0.95)
+}
+
+

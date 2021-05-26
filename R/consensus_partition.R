@@ -257,6 +257,13 @@ consensus_partition = function(data,
 		config_ATC(cores = cores)
 		if(verbose && cores > 1) qqcat("@{prefix}* set @{cores} cores for ATC()\n")
 	}
+	
+	l = abs(rowSds(data)) < 1e-6
+	if(any(l)) {
+		if(verbose) qqcat("@{prefix}* remove @{sum(l)} rows with zero standard deviations.\n")
+		data = data[!l, , drop = FALSE]
+		.env$row_index = .env$row_index[!l]
+	}
 
 	# also since one top value metric will be used for different partition methods,
 	# we cache the top values for repetitive use
@@ -276,13 +283,14 @@ consensus_partition = function(data,
 		if(verbose) qqcat("@{prefix}* @{top_value_method} values have already been calculated. Get from cache.\n")
 		all_top_value = .env$all_top_value_list[[top_value_method]]
 	}
-
 	if(is.null(top_n)) {
 		top_n = find_top_n(all_top_value)
+		if(is.na(top_n)) top_n = round(length(all_top_value)*0.1)
 		top_n = min(top_n, round(length(all_top_value)*0.1))
 	}
 	top_n = round(top_n)
 	l = top_n <= nrow(data)
+
 	if(sum(l) != length(top_n)) {
 		qqcat("@{prefix}* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
 	}
@@ -290,8 +298,6 @@ consensus_partition = function(data,
 	if(length(top_n) == 0) {
 		stop_wrap("There is no valid top_n.\n")
 	}
-
-	if(top_n < 20) browser()
 
 	if(is.null(scale_rows)) {
 		scale_rows = TRUE
@@ -314,26 +320,6 @@ consensus_partition = function(data,
 			scale_rows = FALSE
 		}
 		attr(scale_rows, "scale_method") = scale_method
-	}
-
-	# in case NA is produced in scaling
-	l = apply(data, 1, function(x) any(is.na(x)))
-	if(any(l)) {
-		if(verbose) qqcat("@{prefix}* remove @{sum(l)} rows with zero standard deviations.\n")
-		data = data[!l, , drop = FALSE]
-		all_top_value = all_top_value[!l]
-		.env$row_index = .env$row_index[!l]
-		l = top_n <= nrow(data)
-		top_n = top_n[l]
-		
-
-		if(sum(l) != length(top_n)) {
-			qqcat("@{prefix}* Following top_n (@{paste(top_n[!l], collapse = ', ')}) are removed.\n")
-		}
-		top_n = top_n[l]
-		if(length(top_n) == 0) {
-			stop_wrap("There is no valid top_n.\n")
-		}
 	}
 
 	# now we do repetitive clustering
@@ -695,6 +681,7 @@ setMethod(f = "plot_ecdf",
 #
 # == param
 # -object A `ConsensusPartition-class` object.
+# -mark_best Whether mark the best k in the plot.
 # -all_stats Whether to show all statistics that were calculated. Used internally.
 #
 # == details

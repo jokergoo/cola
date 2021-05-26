@@ -61,11 +61,10 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -fdr_cutoff Pass to `get_signatures,ConsensusPartition-method`.
 # -subset Number of columns to randomly sample.
 # -min_n_signatures Minimal number of signatures under the best classification.
-# -min_p_signatures Minimal proportion of signatures under the best classification. If the corresponding values
-#     are smaller than both ``min_n_signatures`` and ``min_p_signatures``, the hierarchical partitioning stops on that node.
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
+# -scale_rows Whether rows are scaled?
 # -verbose whether print message.
 # -mc.cores multiple cores to use. This argument will be removed in future versions.
 # -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
@@ -110,9 +109,8 @@ hierarchical_partition = function(data,
 	PAC_cutoff = 0.1, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
 	group_diff = ifelse(scale_rows, 0.5, 0), 
 	fdr_cutoff = cola_opt$fdr_cutoff,
-	min_n_signatures = round(nrow(data)*min_p_signatures), 
-	min_p_signatures = 0.05,
-	max_k = 6, scale_rows = TRUE, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...) {
+	min_n_signatures = NULL, 
+	max_k = 4, scale_rows = TRUE, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...) {
 
 	t1 = Sys.time()
 
@@ -241,7 +239,6 @@ hierarchical_partition = function(data,
 	})
 	names(all_top_value_list) = all_top_value_method
 	.env$all_top_value_list = all_top_value_list
-	.env$node_0_top_value_list = .env$all_top_value_list
 	.env$combination_method = combination_method
 
 	.env$global_row_mean = rowMeans(data)
@@ -349,6 +346,8 @@ hierarchical_partition = function(data,
 
 	hp@.env$combination_methods = combination_method
 
+	if(!is.null(.env$min_n_signatures)) min_n_signatures = .env$min_n_signatures
+
 	hp@param = list(top_n = top_n, combination_method = combination_method, PAC_cutoff = PAC_cutoff, min_samples = min_samples,
 		subset = subset, group_diff = group_diff, fdr_cutoff = fdr_cutoff, min_n_signatures = min_n_signatures, max_k = max_k, cores = cores)
 
@@ -391,7 +390,7 @@ hierarchical_partition = function(data,
    	top_n2 = top_n
 	if(node_id != "0") {
 		row_sd = rowSds(data[, column_index, drop = FALSE])
-		qa = quantile(unique(row_sd[row_sd > 1e-10]), 0.95, na.rm = TRUE)*0.05
+		qa = quantile(unique(row_sd[row_sd > 1e-10]), 0.05, na.rm = TRUE)
 		l = row_sd > qa
 		.env$row_index = which(l)
 		if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
@@ -414,6 +413,8 @@ hierarchical_partition = function(data,
 				return(list(obj = part))
 			}
 		}
+	} else {
+		.env$row_index = seq_len(nrow(data))
 	}
 	if(cores > 1 && verbose) {
 		qqcat("@{prefix}* running consensus partitioning with @{cores} cores.\n")
@@ -444,21 +445,19 @@ hierarchical_partition = function(data,
 			# 		cores = cores, anno = anno2, anno_col = anno_col, sample_by = "column", ...)
 		}
 	} else {
-		.env$all_top_value_list = NULL
 
 		# in consensus_partition_by_down_sampling(), .env$all_top_value_list is always reset to NULL
 		# because the columns are randomly sampled and top_value changes. However, here we cache
 		# the recent top_value for a top_value_method for downstream process
-		all_top_value_list_ds = list()
-
+		if(node_id != "0") .env$all_top_value_list = NULL
 		for(i in seq_along(combination_method)) {
 			if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
 			.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
 			nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-row")
+
 			part_list[[nm]] = consensus_partition_by_down_sampling(subset = subset, verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
 					top_n = top_n2, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
 					cores = cores, .predict = FALSE, anno = anno2, anno_col = anno_col, scale_rows = scale_rows, ...)
-			all_top_value_list_ds[[part_list[[nm]]@top_value_method]] = .env$all_top_value_list[[part_list[[nm]]@top_value_method]]
 
 			# if(verbose) qqcat("@{prefix}* ........................................................\n")
 			# nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-column")
@@ -510,6 +509,7 @@ hierarchical_partition = function(data,
 				group_diff = group_diff, fdr_cutoff = fdr_cutoff, .scale_mean = global_row_mean, .scale_sd = global_row_sd)
 			stat_tb$n_signatures[i] = nrow(sig_tb)
 		}
+
 		stat_tb[, "k"] = -stat_tb[, "k"]
 		ind = do.call(order, -stat_tb[, c("k", "n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "k", "method")))])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]
@@ -575,7 +575,14 @@ hierarchical_partition = function(data,
 	
 	n_sig = nrow(sig_df)
 	p_sig = n_sig/nrow(part)
-	if(n_sig <= min_n_signatures) {
+
+	if(is.null(min_n_signatures)) {
+		if(node_id == "0") {
+			min_n_signatures = n_sig*0.1
+			.env$min_n_signatures = min_n_signatures
+		}
+	}
+	if(n_sig <= min_n_signatures && node_id != "0") {
 		if(verbose) qqcat("@{prefix}* too few signatures (n = @{n_sig}, p = @{sprintf('%.3f', p_sig)}) under the best classification, stop.\n")
 		attr(lt$obj, "stop_reason") = STOP_REASON["c"]
 		return(lt)
@@ -656,7 +663,6 @@ setMethod(f = "show",
 
 		si = NULL
 		for(i in seq_len(n)) {
-			
 			k_end = max_k[as.character(nc[i])[[1]]]
 			lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl(qq("@{k_end}$"), nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{n_columns[nodes[i]]} cols"))
 			if(!is.na(n_signatures[nodes[i]])) {
@@ -671,6 +677,7 @@ setMethod(f = "show",
 			p = nodes[i]
 			while(p != "0") {
 				p = parent[p]
+				k_end = max_k[as.character(nchar(p))]
 				if((!grepl(qq("@{k_end}$"), p)) && (p != "0")) {
 					substr(lines[i], (nc[p] - 2)*4+3, (nc[p] - 2)*4+3) = "|"
 				}
@@ -942,6 +949,7 @@ knee_finder2 = function(x, plot = FALSE) {
 
 
 find_top_n = function(x, plot = FALSE) {
+	x = x[is.finite(x)]
 	v = knee_finder2(x, plot = plot)
 	length(x) - v[2] + 1
 }
@@ -996,6 +1004,7 @@ setMethod(f = "merge_node",
 # -object object
 # -node_id node id
 # -subset subset
+# -min_samples
 # -max_k max_k
 # -cores cores
 # -verbose verobse

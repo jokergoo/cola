@@ -12,6 +12,7 @@ register_top_value_methods(..., validate = TRUE)
 \arguments{
 
   \item{...}{A named list of functions.}
+  \item{validate}{Whether validate the functions.}
 
 }
 \details{

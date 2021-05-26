@@ -7,12 +7,11 @@ Guess the best number of partitions
 Guess the best number of partitions
 }
 \usage{
-\S4method{suggest_best_k}{HierarchicalPartition}(object, jaccard_index_cutoff = 0.95)
+\S4method{suggest_best_k}{HierarchicalPartition}(object)
 }
 \arguments{
 
   \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
-  \item{jaccard_index_cutoff}{The cutoff for Jaccard index for comparing to previous k.}
 
 }
 \details{

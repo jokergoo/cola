@@ -1,5 +1,6 @@
 \name{merge_node-HierarchicalPartition-method}
 \alias{merge_node,HierarchicalPartition-method}
+\alias{merge_node}
 \title{
 Merge node
 }
@@ -15,8 +16,8 @@ Merge node
   \item{node_id}{-node_id}
 
 }
-\alias{merge_node}
 \examples{
 # There is no example
 NULL
+
 }

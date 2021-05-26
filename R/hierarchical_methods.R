@@ -83,8 +83,8 @@ setMethod(f = "get_classes",
 setMethod(f = "get_signatures",
 	signature = "HierarchicalPartition",
 	definition = function(object, merge_node = merge_node_param(),
-	group_diff = rh@param$group_diff,
-	row_km = NULL, diff_method = "Ftest", fdr_cutoff = rh@param$fdr_cutoff,
+	group_diff = object@param$group_diff,
+	row_km = NULL, diff_method = "Ftest", fdr_cutoff = object@param$fdr_cutoff,
 	scale_rows = object[1]@scale_rows, 
 	anno = get_anno(object), 
 	anno_col = get_anno_col(object),
@@ -589,16 +589,11 @@ setMethod(f = "dimension_reduction",
 	if(missing(parent_node)) {
 		if(!is.null(top_n)) {
 			top_n = min(c(top_n, nrow(data)))
-			if(top_value_method %in% names(object@.env$node_0_top_value_list)) {
-				all_top_value = object@.env$node_0_top_value_list[[top_value_method]]
-			} else {
-				if(verbose) qqcat("calculating @{top_value_method} values.\n")
-				all_top_value = get_top_value_method(top_value_method)(data)
-			}
+			all_top_value = object@list[[1]]@top_value_list
 			ind = order(all_top_value, decreasing = TRUE)[1:top_n]
 			data = data[ind, , drop = FALSE]
 		} else {
-			top_n = nrow(data)
+			top_n = max(object@list[[1]]@top_n)
 		}
 		class = get_classes(object, merge_node)
 		n_class = length(unique(class))
@@ -654,7 +649,6 @@ setMethod(f = "dimension_reduction",
 #
 # == param
 # -object A `HierarchicalPartition-class` object.
-# -jaccard_index_cutoff The cutoff for Jaccard index for comparing to previous k.
 #
 # == details
 # It basically gives the best k at each node.
@@ -670,7 +664,7 @@ setMethod(f = "dimension_reduction",
 # suggest_best_k(golub_cola_rh)
 setMethod(f = "suggest_best_k",
 	signature = "HierarchicalPartition",
-	definition = function(object, jaccard_index_cutoff = 0.95) {
+	definition = function(object) {
 
 	best_k = NULL
 	stability = NULL
@@ -681,7 +675,7 @@ setMethod(f = "suggest_best_k",
 	for(i in seq_along(object@list)) {
 		obj = object@list[[i]]
 		if(inherits(obj, "ConsensusPartition")) {
-			k = suggest_best_k(obj, jaccard_index_cutoff, help = FALSE)
+			k = suggest_best_k(obj, help = FALSE)
 			best_k[i] = k
 
 			if(is.na(best_k[i])) {
@@ -845,7 +839,8 @@ setMethod(f = "top_rows_heatmap",
 	anno = get_anno(object), anno_col = get_anno_col(object),
 	scale_rows = object@list[[1]]@scale_rows, ...) {
 
-	all_top_value_list = object@.env$node_0_top_value_list
+	all_top_value_list = list(object@list[[1]]@top_value_list)
+	names(all_top_value_list) = object@list[[1]]@top_value_method
     
     mat = object@.env$data
 
@@ -870,6 +865,8 @@ setMethod(f = "top_rows_heatmap",
 				show_annotation_name = TRUE, annotation_name_side = "right")
 		}
 	}
+
+	bottom_anno = c(bottom_anno, HeatmapAnnotation(cola_class = get_classes(object), col = list(cola_class = object@subgroup_col)))
 
     top_rows_heatmap(mat, all_top_value_list = all_top_value_list, top_n = top_n, 
     	scale_rows = scale_rows, bottom_annotation = bottom_anno, ...)

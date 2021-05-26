@@ -8,8 +8,8 @@ Get signatures rows
 }
 \usage{
 \S4method{get_signatures}{HierarchicalPartition}(object, merge_node = merge_node_param(),
-    group_diff = cola_opt$group_diff,
-    row_km = NULL, diff_method = "Ftest", fdr_cutoff = cola_opt$fdr_cutoff,
+    group_diff = object@param$group_diff,
+    row_km = NULL, diff_method = "Ftest", fdr_cutoff = object@param$fdr_cutoff,
     scale_rows = object[1]@scale_rows,
     anno = get_anno(object),
     anno_col = get_anno_col(object),

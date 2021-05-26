@@ -7,7 +7,7 @@ Suggest the best number of subgroups
 Suggest the best number of subgroups
 }
 \usage{
-\S4method{suggest_best_k}{ConsensusPartitionList}(object, jaccard_index_cutoff = 0.95)
+\S4method{suggest_best_k}{ConsensusPartitionList}(object, jaccard_index_cutoff = select_jaccard_cutoff(ncol(object)))
 }
 \arguments{
 

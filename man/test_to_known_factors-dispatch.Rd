@@ -11,9 +11,9 @@ Method dispatch page for \code{test_to_known_factors}.
 
 \itemize{
 \item \code{\link{test_to_known_factors,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
-\item \code{\link{test_to_known_factors,DownSamplingConsensusPartition-method}}, \code{\link{DownSamplingConsensusPartition-class}} class method
 \item \code{\link{test_to_known_factors,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 \item \code{\link{test_to_known_factors,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
+\item \code{\link{test_to_known_factors,DownSamplingConsensusPartition-method}}, \code{\link{DownSamplingConsensusPartition-class}} class method
 }
 }
 \examples{

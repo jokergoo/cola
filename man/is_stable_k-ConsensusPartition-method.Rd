@@ -7,12 +7,13 @@ Test whether the current k corresponds to a stable partition
 Test whether the current k corresponds to a stable partition
 }
 \usage{
-\S4method{is_stable_k}{ConsensusPartition}(object, k, ...)
+\S4method{is_stable_k}{ConsensusPartition}(object, k, stable_PAC = 0.1, ...)
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
   \item{k}{Number of subgroups.}
+  \item{stable_PAC}{Cutoff for stable PAC.}
   \item{...}{Pass to \code{\link{suggest_best_k,ConsensusPartition-method}}.}
 
 }

@@ -281,7 +281,7 @@ setMethod(f = "top_rows_heatmap",
 	}
 
 	lt = lapply(all_top_value_list, function(x) order(x, decreasing = TRUE)[1:top_n])
-    
+
     grid.newpage()
     pushViewport(viewport(layout = grid.layout(nrow = 2, ncol = length(lt),
     	heights = unit.c(2*max_text_height("foo"), unit(1, "null")))))
@@ -290,12 +290,12 @@ setMethod(f = "top_rows_heatmap",
     	grid.text(qq("top @{top_n} rows of @{top_value_method[i]}"))
     	popViewport()
 	}
-    image_width = 500
-	image_height = 500
+    image_width = 500*2
+	image_height = 500*2
     for(i in seq_along(lt)) {
     	pushViewport(viewport(layout.pos.row = 2, layout.pos.col = i))
 		file_name = tempfile()
-        png(file_name, width = image_width, height = image_height)
+        png(file_name, width = image_width, height = image_height, res = 72*2)
 		
 		mat = object[lt[[i]], ]
 		if(nrow(mat) > 5000) {
@@ -367,11 +367,15 @@ setMethod(f = "top_rows_heatmap",
 	all_top_value_list = list(object@top_value_list)
 	names(all_top_value_list) = object@top_value_method
     
-    mat = get_matrix(object)
+    if(inherits(object, "DownSamplingConsensusPartition")) {
+    	mat = object@.env$data[, object@full_column_index, drop = FALSE]
+    } else {
+    	mat = get_matrix(object)
+    }
 
     if(missing(anno)) {
     	if(inherits(object, "DownSamplingConsensusPartition")) {
-    		anno = get_anno(object, reduce = TRUE)
+    		anno = get_anno(object)
     	}
     }
 
@@ -395,6 +399,14 @@ setMethod(f = "top_rows_heatmap",
 			bottom_anno = HeatmapAnnotation(df = anno, col = anno_col,
 				show_annotation_name = TRUE, annotation_name_side = "right")
 		}
+	}
+
+	best_k = attr(object, "best_k")
+	if(is.null(best_k)) best_k = suggest_best_k(object, help = FALSE)
+	if(!is.null(bottom_anno)) {
+		bottom_anno = c(bottom_anno, HeatmapAnnotation(cola_class = as.character(get_classes(object, k = best_k)[, "class"])))
+	} else {		
+		bottom_anno = HeatmapAnnotation(cola_class = as.character(get_classes(object, k = best_k)[, "class"]))
 	}
 
     top_rows_heatmap(mat, all_top_value_list = all_top_value_list, top_n = top_n, 
