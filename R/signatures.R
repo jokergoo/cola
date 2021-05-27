@@ -776,8 +776,7 @@ setMethod(f = "get_signatures",
 		}
 		ht_list = draw(ht_list, main_heatmap = heatmap_name, column_title = column_title,
 			show_heatmap_legend = !internal, show_annotation_legend = !internal,
-			heatmap_legend_list = heatmap_legend_list,
-			row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")}
+			heatmap_legend_list = heatmap_legend_list
 		)
 		
 		row_order = row_order(ht_list)

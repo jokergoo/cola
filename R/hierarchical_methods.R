@@ -129,6 +129,19 @@ setMethod(f = "get_signatures",
 
 	returned_df = data.frame(which_row = all_index)
 
+	if(exists("sig_lt")) {
+		is_sig = list()
+		for(p in names(sig_lt)) {
+			x = rep(FALSE, length(all_index))
+			x[all_index %in% sig_lt[[p]]$which_row] = TRUE
+
+			is_sig[[p]] = x
+		}
+		is_sig = as.data.frame(is_sig, check.names = FALSE)
+		colnames(is_sig) = paste0("is_sig_", colnames(is_sig))
+		returned_df = cbind(returned_df, is_sig)
+	}
+
 	# filter by group_diff
 	mat = object@.env$data[all_index, , drop = FALSE]
 	class = get_classes(object, merge_node)
@@ -297,8 +310,7 @@ setMethod(f = "get_signatures",
 		use_raster = TRUE, row_split = row_split,
 		show_row_dend = FALSE, cluster_columns = dend, column_split = length(unique(class)),
 		column_title = qq("@{length(unique(class))} groups, @{nrow(mat)} signatures"),
-		bottom_annotation = bottom_anno1,
-		row_title = {if(length(unique(row_split)) <= 1) NULL else qq("k-means with @{length(unique(row_split))} groups")})
+		bottom_annotation = bottom_anno1)
 
 	all_value_positive = !any(mat1 < 0)
  	if(scale_rows && all_value_positive) {
