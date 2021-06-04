@@ -8,6 +8,7 @@ float singleATC(NumericVector x, float min_cor, float power, int k_neighbours) {
 	std::sort(x.begin(), x.end());
 
 	int n = x.size();
+	float ma = max(x);
 		
 	if(k_neighbours > 0) {
 		for(int i = 0; i < n - k_neighbours; i ++) {
@@ -28,9 +29,9 @@ float singleATC(NumericVector x, float min_cor, float power, int k_neighbours) {
 		if(x[i] > -0.5) {
 			if(i == n - 1) {
 				if(x[i] >= min_cor) {
-					s += (1 - pow(x[i], power))*1;
+					s += (pow(ma, power) - pow(x[i], power))*1;
 				} else {
-					s += (1 - pow(min_cor, power))*1;
+					s += (pow(ma, power) - pow(min_cor, power))*1;
 				}
 			} else {
 				if(x[i] >= min_cor) {
@@ -43,7 +44,7 @@ float singleATC(NumericVector x, float min_cor, float power, int k_neighbours) {
 		}
 	}
 	
-	s = 1 - min_cor - s;
+	s = pow(ma, power) - min_cor - s;
 	return(s);
 }
 

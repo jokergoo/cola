@@ -368,7 +368,7 @@ setMethod(f = "top_rows_heatmap",
 	names(all_top_value_list) = object@top_value_method
     
     if(inherits(object, "DownSamplingConsensusPartition")) {
-    	mat = object@.env$data[, object@full_column_index, drop = FALSE]
+    	mat = object@.env$data[object@row_index, object@full_column_index, drop = FALSE]
     } else {
     	mat = get_matrix(object)
     }

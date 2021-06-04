@@ -110,6 +110,10 @@ hierarchical_partition = function(data,
 	group_diff = ifelse(scale_rows, 0.5, 0), 
 	fdr_cutoff = cola_opt$fdr_cutoff,
 	min_n_signatures = NULL, 
+	filter_fun = function(mat) {
+		s = rowSds(mat)
+		s > quantile(unique(s[s > 1e-10]), 0.05, na.rm = TRUE)
+	},
 	max_k = 4, scale_rows = TRUE, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...) {
 
 	t1 = Sys.time()
@@ -249,7 +253,8 @@ hierarchical_partition = function(data,
 
 	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), subset = subset, anno = anno, anno_col = anno_col,
 		min_samples = min_samples, node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores, PAC_cutoff = PAC_cutoff,
-		top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, scale_rows = scale_rows, ...)
+		top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, scale_rows = scale_rows, 
+		filter_fun = filter_fun, ...)
 
 	if(verbose) qqcat("* formatting the results into a HierarchicalPartition object.\n")
 
@@ -361,6 +366,11 @@ hierarchical_partition = function(data,
    
 .hierarchical_partition = function(.env, column_index, node_id = '0', subset = Inf, anno = NULL, anno_col = anno_col,
 	min_samples = 6, max_k = 4, verbose = TRUE, cores = 1, scale_rows = TRUE,
+	filter_fun = function(mat) {
+		s = rowSds(mat)
+		qa = quantile(unique(s[s > 1e-10]), 0.05, na.rm = TRUE)
+		s > qa
+	},
 	top_n = NULL, PAC_cutoff = 0.1, min_n_signatures = 100, group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff, ...) {
 
 	prefix = ""
@@ -389,11 +399,14 @@ hierarchical_partition = function(data,
 
    	top_n2 = top_n
 	if(node_id != "0") {
-		row_sd = rowSds(data[, column_index, drop = FALSE])
-		qa = quantile(unique(row_sd[row_sd > 1e-10]), 0.05, na.rm = TRUE)
-		l = row_sd > qa
-		.env$row_index = which(l)
-		if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
+		l = filter_fun(data[, column_index, drop = FALSE])
+		if(is.logical(l)) {
+			.env$row_index = which(l)
+			if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
+		} else {
+			.env$row_index = l
+			if(verbose) qqcat("@{prefix}* @{nrow(data) - length(l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
+		}
 
 		if(!is.null(top_n)) {
 			if(length(top_n2) > 1) {
@@ -414,7 +427,14 @@ hierarchical_partition = function(data,
 			}
 		}
 	} else {
-		.env$row_index = seq_len(nrow(data))
+		l = filter_fun(data)
+		if(is.logical(l)) {
+			.env$row_index = which(l)
+			if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
+		} else {
+			.env$row_index = l
+			if(verbose) qqcat("@{prefix}* @{nrow(data) - length(l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
+		}
 	}
 	if(cores > 1 && verbose) {
 		qqcat("@{prefix}* running consensus partitioning with @{cores} cores.\n")
@@ -428,7 +448,7 @@ hierarchical_partition = function(data,
 
 	part_list = list()
 	if(length(column_index) <= subset) {
-		if(node_id != "0") .env$all_top_value_list = NULL
+		.env$all_top_value_list = NULL
 	
 		for(i in seq_along(combination_method)) {
 			if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
@@ -449,7 +469,7 @@ hierarchical_partition = function(data,
 		# in consensus_partition_by_down_sampling(), .env$all_top_value_list is always reset to NULL
 		# because the columns are randomly sampled and top_value changes. However, here we cache
 		# the recent top_value for a top_value_method for downstream process
-		if(node_id != "0") .env$all_top_value_list = NULL
+		.env$all_top_value_list = NULL
 		for(i in seq_along(combination_method)) {
 			if(verbose) qqcat("@{prefix}* -------------------------------------------------------\n")
 			.env$column_index = column_index #note .env$column_index is only for passing to `consensus_partition()` function
@@ -494,7 +514,7 @@ hierarchical_partition = function(data,
 	stat_tb = do.call("rbind", stat_tb)
 
 	stat_tb2 = stat_tb
-	stat_tb = stat_tb[stat_tb$`1-PAC` >= 1-PAC_cutoff, , drop = FALSE]
+	stat_tb = stat_tb[stat_tb$`mean_silhouette` >= 0.95, , drop = FALSE]
 	if(nrow(stat_tb) == 1) {
 		ind = do.call(order, -stat_tb[setdiff(colnames(stat_tb), "method")])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]
@@ -510,14 +530,14 @@ hierarchical_partition = function(data,
 			stat_tb$n_signatures[i] = nrow(sig_tb)
 		}
 
-		stat_tb[, "k"] = -stat_tb[, "k"]
+		stat_tb[, "k"] = stat_tb[, "k"]
 		ind = do.call(order, -stat_tb[, c("k", "n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "k", "method")))])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]
-		best_k = -stat_tb[ind, "k"]
+		best_k = stat_tb[ind, "k"]
 
 		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because it has the smallest number of subgroups among all @{nrow(stat_tb)} stable partitioning results.\n")
 	} else {
-		ind = do.call(order, -stat_tb2[setdiff(colnames(stat_tb2), "method")])[1]
+		ind = do.call(order, -stat_tb2[c("mean_silhouette", setdiff(colnames(stat_tb2), "method"))])[1]
 		part = part_list[[ stat_tb2[ind, "method"] ]]
 		best_k = stat_tb2[ind, "k"]
 
@@ -595,7 +615,8 @@ hierarchical_partition = function(data,
     	sub_node = paste0(node_id, i_class)
     	return(.hierarchical_partition(.env, column_index = column_index[set], node_id = sub_node, subset = subset, anno = anno, anno_col = anno_col,
     			min_samples = min_samples, max_k = min(max_k, length(set)-1), cores = cores, verbose = verbose, PAC_cutoff = PAC_cutoff,
-    			top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, scale_rows = scale_rows, ...))
+    			top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, scale_rows = scale_rows, 
+    			filter_fun = filter_fun, ...))
     })
 
     for(i in seq_along(lt2)) {
@@ -652,7 +673,9 @@ setMethod(f = "show",
 		nc = nchar(nodes)
 		names(nc) = nodes
 		n = length(nc)
-		max_k = tapply(names(nc), nc, function(x) max(as.numeric(substr(x, nchar(x), nchar(x)))))
+		each_node_max_k = tapply(names(nc), gsub("\\d$", "0", names(nc)), function(x) {
+			max(as.numeric(substr(x, nchar(x), nchar(x))))
+		})
 
 		parent = structure(hierarchy[, 1], names = hierarchy[, 2])
 		all_leaves = all_leaves(object)
@@ -663,7 +686,7 @@ setMethod(f = "show",
 
 		si = NULL
 		for(i in seq_len(n)) {
-			k_end = max_k[as.character(nc[i])[[1]]]
+			k_end = each_node_max_k[as.character(gsub("\\d$", "0", names(nc)[i]))]
 			lines[i] = paste0("  ", strrep("    ", nc[i] - 2), ifelse(grepl(qq("@{k_end}$"), nodes[i]), "`-", "|-") ,"- ", nodes[i], qq(", @{n_columns[nodes[i]]} cols"))
 			if(!is.na(n_signatures[nodes[i]])) {
 				lines[i] = paste0(lines[i], qq(", @{n_signatures[nodes[i]]} signatures"))
@@ -677,7 +700,7 @@ setMethod(f = "show",
 			p = nodes[i]
 			while(p != "0") {
 				p = parent[p]
-				k_end = max_k[as.character(nchar(p))]
+				k_end = each_node_max_k[as.character(gsub("\\d$", "0", p))]
 				if((!grepl(qq("@{k_end}$"), p)) && (p != "0")) {
 					substr(lines[i], (nc[p] - 2)*4+3, (nc[p] - 2)*4+3) = "|"
 				}

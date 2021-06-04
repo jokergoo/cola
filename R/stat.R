@@ -22,7 +22,7 @@
 # For a matrix with huge number of rows. It is not possible to calculate correlation to all other rows, thus the correlation is only
 # calculated for a randomly sampled subset of othe rows.
 #
-ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = NULL,
+ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1,
 	mc.cores = 1, cores = mc.cores, n_sampling = c(1000, 500), 
 	group = NULL, ...) {
 
@@ -65,30 +65,31 @@ ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neigh
 		ind_list = list(1:n)
 	}
 
-	if(!is.null(k_neighbours)) k_neighbours = min(k_neighbours, ncol(mat)-1)
+	if(k_neighbours > 0) k_neighbours = min(k_neighbours, ncol(mat)-1)
 
 	registerDoParallel(cores)
 	v_list <- foreach(ind = ind_list) %dopar% {
 		v = numeric(length(ind))
 		for(i in seq_along(ind)) {
 			ind2 = seq_len(ncol(mat))[-ind[i]]
-			if(length(ind2) > n_sampling[1] && is.null(k_neighbours)) {
+			if(length(ind2) > n_sampling[1]) {
 				ind2 = sample(ind2, n_sampling[1])
 			}
 			suppressWarnings(cor_v <- abs(cor_fun(mat[, ind[i], drop = FALSE], mat[, ind2, drop = FALSE], ...)))
-			if(!is.null(k_neighbours)) {
+			if(k_neighbours > 0) {
 				# min_cor = cor_v[order(-cor_v)[k_neighbours]]
 				cor_v = sort(cor_v, decreasing = TRUE)[seq_len(k_neighbours)]
 				min_cor = 0
 			}
 			cor_v = cor_v^power
 			if(sum(is.na(cor_v))/length(cor_v) >= 0.75) {
-				v[i] = 1
+				v[i] = 0
 			} else {
 				f = ecdf(cor_v)
-				cor_v = seq(min_cor, 1, length = 1000)
+				ma = max(cor_v)^power
+				cor_v = seq(min_cor, ma, length = 1000)
 				n2 = length(cor_v)
-				v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
+				v[i] = (ma - min_cor) - sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
 			}
 		}
 		return(v)
@@ -96,7 +97,6 @@ ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neigh
 	stopImplicitCluster()
 
 	v = do.call("c", v_list)
-	v = (1 - min_cor) - v
 	names(v) = NULL
 
 	return(v)

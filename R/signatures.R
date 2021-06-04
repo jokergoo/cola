@@ -1009,6 +1009,7 @@ Ftest = function(mat, class) {
 
 	check_pkg("genefilter", bioc = TRUE)
 	rownames(mat) = NULL
+
 	p = genefilter::rowFtests(mat, factor(class))[, "p.value"]
 	fdr = p.adjust(p, "BH")
 	fdr[is.na(fdr)] = Inf

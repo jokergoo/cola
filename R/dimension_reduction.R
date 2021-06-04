@@ -300,6 +300,7 @@ setMethod(f = "dimension_reduction",
 		if(! "perplexity" %in% names(control)) {
 			control$perplexity = min(30, floor(ncol(data)-1)/3)
 		}
+		control$pca = FALSE
 		param = c(param, control)
 		param$pca = FALSE
 		fit = do.call(Rtsne::Rtsne, param)

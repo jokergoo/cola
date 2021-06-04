@@ -129,11 +129,29 @@ consensus_partition_by_down_sampling = function(data,
 		anno_col = NULL
 	}
 
-	qqcat("@{prefix}* @{ifelse(length(subset) == 1, subset, length(subset))} columns are randomly sampled from @{length(.env$column_index)} columns.\n")
-
+	
 	column_index = .env$column_index
+
+	if(is.null(.env$row_index)) {
+		.env$row_index = seq_len(nrow(data))
+	}
+
 	if(length(subset) == 1) {
+		# top n smallest knn mean distance
 		subset = sample(length(column_index), subset)
+		# qqcat("@{prefix}* @{ifelse(length(subset) == 1, subset, length(subset))} columns are picked from @{length(.env$column_index)} columns based on distance to nearest columns.\n")
+		# qqcat("@{prefix}* calculate @{top_value_method} scores based on the complete matrix.\n")
+		# top_value = get_top_value_method(top_value_method)(data[.env$row_index, .env$column_index])
+		# if(is.null(top_n)) {
+		# 	m = data[.env$row_index, .env$column_index][order(top_value, decreasing = TRUE)[1:round(length(.env$row_index)*0.1)], ]
+		# } else {
+		# 	m = data[.env$row_index, .env$column_index][order(top_value, decreasing = TRUE)[1:min(top_n)], ]
+		# }
+		# kn = min(10, round(ncol(dm)*0.1))
+		# qqcat("@{prefix}* calculate mean distance to the nearest @{kn} columns.\n")
+		# nearest_dm = ATC(t(m), k_neighbours = kn, cores = cores)
+		# subset = order(nearest_dm, decreasing = TRUE)[1:subset]
+
 		subset_index = column_index[subset]
 	} else {
 		if(!is.numeric(subset)) {

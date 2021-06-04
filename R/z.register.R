@@ -445,6 +445,17 @@ register_SOM = function() {
 	)
 }
 
+register_kmeanspp = function() {
+	check_pkg("flexclust", bioc = FALSE)
+	register_partition_methods(
+		kmeanspp = function(mat, k, ...) {
+		 	cl = flexclust::kcca(t(mat), k = k, 
+	        family = flexclust::kccaFamily("kmeans"),
+	        control = list(initcent = "kmeanspp"))@cluster
+	    }
+	)
+}
+
 # == title
 # Remove top-value methods
 #

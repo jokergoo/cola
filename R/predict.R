@@ -153,6 +153,15 @@ setMethod(f = "predict_classes",
 		sig_mat = as.matrix(sig_mat)
 		colnames(sig_mat) = NULL
 
+		if(nrow(tb) > 500) {
+			if("fdr" %in% colnames(tb)) {
+				ind = order(tb$fdr)[1:500]
+				tb = tb[ind, , drop = FALSE]
+				sig_mat = sig_mat[ind, , drop = FALSE]
+				if(verbose) qqcat("@{prefix}* take top 500/@{nrow(tb)} most significant signatures for prediction.\n")
+			}
+		}
+
 		mat = mat[tb$which_row, , drop = FALSE]
 	}
 
