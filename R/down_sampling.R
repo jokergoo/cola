@@ -482,7 +482,7 @@ setMethod(f = "dimension_reduction",
 	if(!is.null(top_n)) {
 		top_n = min(c(top_n, nrow(data)))
 		all_value = object@top_value_list
-		ind = order(all_value)[1:top_n]
+		ind = order(all_value, decreasing = TRUE)[1:top_n]
 		if(length(ind) > nr) ind = sample(ind, nr)
 		data = data[ind, , drop = FALSE]
 	} else {

@@ -97,7 +97,7 @@ consensus_partition = function(data,
 		stop_wrap("max_k should be no less than 2.")
 	}
 
-	if(max_k >= 10) {
+	if(max_k > 10) {
 		if(help) {
 			qqcat_wrap("It is not recommended to set `max_k` larger than 10. Users are suggested to use `hierarchical_partition()` function to obtain more subgroups. Set the argument `help` to FALSE to turn off this message.\n")
 		}

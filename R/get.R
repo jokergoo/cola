@@ -378,6 +378,7 @@ recalc_stats = function(rl) {
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
 	definition = function(object, jaccard_index_cutoff = select_jaccard_cutoff(ncol(object)), 
+	mean_silhouette_cutoff = NULL,
 	stable_PAC = 0.1, help = TRUE) {
 
 	# if(verbose) {
@@ -409,7 +410,11 @@ setMethod(f = "suggest_best_k",
 		return(as.numeric(x))
 	}
 
-	l = stat[, "1-PAC"] >= 1 - stable_PAC
+	if(is.null(mean_silhouette_cutoff)) {
+		l = stat[, "1-PAC"] >= 1 - stable_PAC
+	} else {
+		l = stat[, "mean_silhouette"] >= mean_silhouette_cutoff
+	}
 	if(sum(l) == 1) {
 		return(as.numeric(rownames(stat)[l]))
 	} else if(sum(l) > 1) {

@@ -106,7 +106,7 @@ hierarchical_partition = function(data,
 	partition_method = "skmeans",
 	combination_method =  expand.grid(top_value_method, partition_method),
 	anno = NULL, anno_col = NULL,
-	PAC_cutoff = 0.1, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
+	mean_silhouette_cutoff = 0.9, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
 	group_diff = ifelse(scale_rows, 0.5, 0), 
 	fdr_cutoff = cola_opt$fdr_cutoff,
 	min_n_signatures = NULL, 
@@ -117,10 +117,6 @@ hierarchical_partition = function(data,
 	max_k = 4, scale_rows = TRUE, verbose = TRUE, mc.cores = 1, cores = mc.cores, help = TRUE, ...) {
 
 	t1 = Sys.time()
-
-	if(PAC_cutoff > 0.5) {
-		if(help) qqcat("!! You set PAC_cutoff to @{PAC_cutoff}, but do you mean PAC_cutoff = @{1-PAC_cutoff}?\n")
-	}
 
 	data = as.matrix(data)
 
@@ -252,7 +248,7 @@ hierarchical_partition = function(data,
 	.env$fdr_cutoff = fdr_cutoff
 
 	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), subset = subset, anno = anno, anno_col = anno_col,
-		min_samples = min_samples, node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores, PAC_cutoff = PAC_cutoff,
+		min_samples = min_samples, node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores, mean_silhouette_cutoff = mean_silhouette_cutoff,
 		top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, scale_rows = scale_rows, 
 		filter_fun = filter_fun, ...)
 
@@ -282,7 +278,7 @@ hierarchical_partition = function(data,
 	hp@list = .e$lt
 	hp@node_level$best_k = sapply(.e$lt, function(x) {
 		if(inherits(x, "ConsensusPartition")) {
-			suggest_best_k(x, stable_PAC = PAC_cutoff, help = FALSE)
+			attr(x, "best_k")
 		} else {
 			NA
 		}
@@ -353,7 +349,7 @@ hierarchical_partition = function(data,
 
 	if(!is.null(.env$min_n_signatures)) min_n_signatures = .env$min_n_signatures
 
-	hp@param = list(top_n = top_n, combination_method = combination_method, PAC_cutoff = PAC_cutoff, min_samples = min_samples,
+	hp@param = list(top_n = top_n, combination_method = combination_method, mean_silhouette_cutoff = mean_silhouette_cutoff, min_samples = min_samples,
 		subset = subset, group_diff = group_diff, fdr_cutoff = fdr_cutoff, min_n_signatures = min_n_signatures, max_k = max_k, cores = cores)
 
 	t2 = Sys.time()
@@ -371,7 +367,7 @@ hierarchical_partition = function(data,
 		qa = quantile(unique(s[s > 1e-10]), 0.05, na.rm = TRUE)
 		s > qa
 	},
-	top_n = NULL, PAC_cutoff = 0.1, min_n_signatures = 100, group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff, ...) {
+	top_n = NULL, mean_silhouette_cutoff = 0.9, min_n_signatures = 100, group_diff = cola_opt$group_diff, fdr_cutoff = cola_opt$fdr_cutoff, ...) {
 
 	prefix = ""
 	if(node_id != "0") {
@@ -493,23 +489,9 @@ hierarchical_partition = function(data,
 	stat_tb = lapply(names(part_list), function(nm) {
 		part = part_list[[nm]]
 		stat_df = get_stats(part, all_stats = TRUE)
-		nc = ncol(part)
-		best_k = suggest_best_k(part, help = FALSE, stable_PAC = PAC_cutoff)
-		optional_k = attr(best_k, "optional")
-		if(is.na(best_k)) {
-			x = data.frame(k = 0, "1-PAC" = 0, "mean_silhouette" = 0, "concordance" = 0, "area_increased" = 0, method = nm, check.names = FALSE)
-		} else {
-			x = stat_df[stat_df[, "k"] == best_k, c("k", "1-PAC", "mean_silhouette", "concordance", "area_increased"), drop = FALSE]
-			x = as.data.frame(x)
-			x$method = nm
-		}
-		if(!is.null(optional_k)) {
-			x2 = stat_df[stat_df[, "k"] %in% optional_k, c("k", "1-PAC", "mean_silhouette", "concordance", "area_increased"), drop = FALSE]
-			x2 = as.data.frame(x2)
-			x2$method = nm
-			x = rbind(x, x2)
-		}
-		x
+		stat_df = as.data.frame(stat_df)
+		stat_df$method = nm
+		stat_df
 	})
 	stat_tb = do.call("rbind", stat_tb)
 
@@ -530,8 +512,26 @@ hierarchical_partition = function(data,
 			stat_tb$n_signatures[i] = nrow(sig_tb)
 		}
 
-		stat_tb[, "k"] = stat_tb[, "k"]
-		ind = do.call(order, -stat_tb[, c("k", "n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "k", "method")))])[1]
+		stat_tb = do.call(rbind, tapply(1:nrow(stat_tb), stat_tb$method, function(ind) {
+			if(length(ind) == 1) {
+				return(stat_tb[ind, , drop = FALSE])
+			} else {
+				tb = stat_tb[ind, ]
+				tb = tb[order(tb$k), ]
+				j = 1
+				for(i in seq_len(nrow(tb))[-1]) {
+					if(tb$n_signatures[i]/tb$n_signatures[j] > 1.1) {
+						j = i
+					} else {
+						tb$n_signatures[i] = -1
+					}
+				}
+				tb = tb[tb$n_signatures > 0, , drop = FALSE]
+			}
+			tb
+		}))
+
+		ind = do.call(order, -stat_tb[, c("n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "k", "method")))])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]
 		best_k = stat_tb[ind, "k"]
 
@@ -566,16 +566,14 @@ hierarchical_partition = function(data,
     	return(lt)
     }
 
-   	# check PAC score
-    PAC_score = 1 - get_stats(part, k = best_k)[, "1-PAC"]
-    if(PAC_score > PAC_cutoff) {
-    	if(verbose) qqcat("@{prefix}* PAC score is too big (@{sprintf('%.2f', PAC_score)}), stop.\n")
+    mean_silhouette = get_stats(part, k = best_k)[, "mean_silhouette"]
+    if(mean_silhouette < mean_silhouette_cutoff) {
+    	if(verbose) qqcat("@{prefix}* mean_silhouette score is too small (@{sprintf('%.2f', mean_silhouette)}), stop.\n")
     	attr(lt$obj, "stop_reason") = STOP_REASON["a"]
     	return(lt)
     }
 
     cl = get_classes(part, k = best_k)
-
 
     .env$all_top_value_list = NULL
 
@@ -614,7 +612,7 @@ hierarchical_partition = function(data,
     	set = cl$class == i_class
     	sub_node = paste0(node_id, i_class)
     	return(.hierarchical_partition(.env, column_index = column_index[set], node_id = sub_node, subset = subset, anno = anno, anno_col = anno_col,
-    			min_samples = min_samples, max_k = min(max_k, length(set)-1), cores = cores, verbose = verbose, PAC_cutoff = PAC_cutoff,
+    			min_samples = min_samples, max_k = min(max_k, length(set)-1), cores = cores, verbose = verbose, mean_silhouette_cutoff = mean_silhouette_cutoff,
     			top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, scale_rows = scale_rows, 
     			filter_fun = filter_fun, ...))
     })
@@ -630,7 +628,7 @@ hierarchical_partition = function(data,
 
 STOP_REASON = c(
 	"z" = "Jaccard indices for all k were too high.",
-	"a" = "PAC score was too big.",
+	"a" = "Mean silhouette score was too small",
 	"b" = "Subgroup had too few columns.",
 	"c" = "There were too few signatures.",
 	"d" = "Matrix has too few rows (less than 'top_n').",
@@ -1096,7 +1094,7 @@ setMethod(f = "split_node",
 	node_level = list()
 	node_level$best_k = sapply(.e$lt, function(x) {
 		if(inherits(x, "ConsensusPartition")) {
-			suggest_best_k(x, help = FALSE)
+			attr(x, "best_k")
 		} else {
 			NA
 		}
@@ -1134,14 +1132,14 @@ setMethod(f = "split_node",
 		}
 		if(nodes[i] %in% leaves) {
 			if(attr(list[[i]], "stop_reason") == STOP_REASON["c"]) {
-				sig_tb = get_signatures(list[[i]], k = suggest_best_k(list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
+				sig_tb = get_signatures(list[[i]], k = attr(list[[i]], "best_k"), verbose = FALSE, plot = FALSE, simplify = TRUE,
 					group_diff = group_diff, fdr_cutoff = fdr_cutoff, .scale_mean = object@.env$global_row_mean, .scale_sd = object@.env$global_row_sd)
 				n_signatures[i] = nrow(sig_tb)
 			} else {
 				n_signatures[i] = NA_real_
 			}
 		} else {
-			sig_tb = get_signatures(list[[i]], k = suggest_best_k(list[[i]], help = FALSE), verbose = FALSE, plot = FALSE, simplify = TRUE,
+			sig_tb = get_signatures(list[[i]], k = attr(list[[i]], "best_k"), verbose = FALSE, plot = FALSE, simplify = TRUE,
 				group_diff = group_diff, fdr_cutoff = fdr_cutoff, .scale_mean = object@.env$global_row_mean, .scale_sd = object@.env$global_row_sd)
 			n_signatures[i] = nrow(sig_tb)
 		}
