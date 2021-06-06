@@ -266,7 +266,7 @@ setMethod(f = "top_rows_heatmap",
 	definition = function(object, all_top_value_list = NULL, 
 	top_value_method = all_top_value_methods(), 
 	bottom_annotation = NULL,
-	top_n = round(0.25*nrow(object)), scale_rows = TRUE) {
+	top_n = round(0.25*nrow(object)), scale_rows = TRUE, ...) {
 
 	if(is.null(all_top_value_list)) {
 		all_top_value_list = lapply(top_value_method, function(x) {
@@ -318,7 +318,7 @@ setMethod(f = "top_rows_heatmap",
 				column_title = NULL,
 				show_row_dend = FALSE, show_column_names = FALSE, 
 				bottom_annotation = bottom_annotation,
-				use_raster = TRUE, raster_quality = 2),
+				use_raster = TRUE, raster_quality = 2, ...),
 				merge_legend = TRUE)
 		)
 		dev.off2()
@@ -360,7 +360,7 @@ setMethod(f = "top_rows_heatmap",
 # }
 setMethod(f = "top_rows_heatmap",
 	signature = "ConsensusPartition",
-	definition = function(object, top_n = min(object@top_n), 
+	definition = function(object, top_n = min(object@top_n), k = NULL,
 	anno = get_anno(object), anno_col = get_anno_col(object),
 	scale_rows = object@scale_rows, ...) {
 
@@ -401,14 +401,18 @@ setMethod(f = "top_rows_heatmap",
 		}
 	}
 
-	best_k = attr(object, "best_k")
-	if(is.null(best_k)) best_k = suggest_best_k(object, help = FALSE)
+	if(is.null(k)) {
+		best_k = attr(object, "best_k")
+		if(is.null(best_k)) best_k = suggest_best_k(object, help = FALSE)
+			k = best_k
+	}
+	cola_cl = as.character(get_classes(object, k = k)[, "class"])
 	if(!is.null(bottom_anno)) {
-		bottom_anno = c(bottom_anno, HeatmapAnnotation(cola_class = as.character(get_classes(object, k = best_k)[, "class"])))
+		bottom_anno = c(bottom_anno, HeatmapAnnotation(cola_class = cola_cl))
 	} else {		
-		bottom_anno = HeatmapAnnotation(cola_class = as.character(get_classes(object, k = best_k)[, "class"]))
+		bottom_anno = HeatmapAnnotation(cola_class = cola_cl)
 	}
 
     top_rows_heatmap(mat, all_top_value_list = all_top_value_list, top_n = top_n, 
-    	scale_rows = scale_rows, bottom_annotation = bottom_anno, ...)
+    	scale_rows = scale_rows, bottom_annotation = bottom_anno, column_split = cola_cl, ...)
 })

@@ -224,21 +224,21 @@ hierarchical_partition = function(data,
 	all_top_value_method = unique(sapply(combination_method, function(x) x[1]))
 	
 
-	all_top_value_list = lapply(all_top_value_method, function(tm) {
-		if(verbose) qqcat("  - calculate @{tm} score for @{nrow(data)} rows.\n")
-		if(tm == "ATC") {
-			if(identical(get_top_value_method("ATC"), ATC)) {
-				config_ATC(cores = cores)
-				if(verbose && cores > 1) qqcat("  - set @{cores} cores for ATC()\n")
-			}
-		}
+	# all_top_value_list = lapply(all_top_value_method, function(tm) {
+	# 	if(verbose) qqcat("  - calculate @{tm} score for @{nrow(data)} rows.\n")
+	# 	if(tm == "ATC") {
+	# 		if(identical(get_top_value_method("ATC"), ATC)) {
+	# 			config_ATC(cores = cores)
+	# 			if(verbose && cores > 1) qqcat("  - set @{cores} cores for ATC()\n")
+	# 		}
+	# 	}
 
-		all_top_value = get_top_value_method(tm)(data)
-		all_top_value[is.na(all_top_value)] = -Inf
-		return(all_top_value)
-	})
-	names(all_top_value_list) = all_top_value_method
-	.env$all_top_value_list = all_top_value_list
+	# 	all_top_value = get_top_value_method(tm)(data)
+	# 	all_top_value[is.na(all_top_value)] = -Inf
+	# 	return(all_top_value)
+	# })
+	# names(all_top_value_list) = all_top_value_method
+	# .env$all_top_value_list = all_top_value_list
 	.env$combination_method = combination_method
 
 	.env$global_row_mean = rowMeans(data)
@@ -397,6 +397,7 @@ hierarchical_partition = function(data,
 	if(node_id != "0") {
 		l = filter_fun(data[, column_index, drop = FALSE])
 		if(is.logical(l)) {
+			l[is.na(l)] = FALSE
 			.env$row_index = which(l)
 			if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
 		} else {
@@ -425,6 +426,7 @@ hierarchical_partition = function(data,
 	} else {
 		l = filter_fun(data)
 		if(is.logical(l)) {
+			l[is.na(l)] = FALSE
 			.env$row_index = which(l)
 			if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
 		} else {
@@ -520,7 +522,7 @@ hierarchical_partition = function(data,
 				tb = tb[order(tb$k), ]
 				j = 1
 				for(i in seq_len(nrow(tb))[-1]) {
-					if(tb$n_signatures[i]/tb$n_signatures[j] > 1.1) {
+					if(tb$n_signatures[i]/tb$n_signatures[j] > 1.1^(i-j)) {
 						j = i
 					} else {
 						tb$n_signatures[i] = -1
@@ -596,7 +598,7 @@ hierarchical_partition = function(data,
 
 	if(is.null(min_n_signatures)) {
 		if(node_id == "0") {
-			min_n_signatures = n_sig*0.1
+			min_n_signatures = n_sig*0.05
 			.env$min_n_signatures = min_n_signatures
 		}
 	}
