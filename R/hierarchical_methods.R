@@ -114,7 +114,7 @@ setMethod(f = "get_signatures",
 			best_k = suggest_best_k(object[[p]], help = FALSE)
 			if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
 			sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = verbose, plot = FALSE, simplify = TRUE, seed = seed, diff_method = diff_method, 
-				fdr_cutoff = fdr_cutoff, .scale_mean = object@.env$global_scale_mean, .scale_sd = object@.env$global_scale_sd, ...)
+				fdr_cutoff = fdr_cutoff, .scale_mean = object@.env$global_scale_mean, .scale_sd = object@.env$global_scale_sd, group_diff = group_diff, ...)
 			if(is.null(.env$signature_hash)) {
 	    		.env$signature_hash = list()
 	    	}

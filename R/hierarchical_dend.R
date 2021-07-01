@@ -251,6 +251,7 @@ get_hierarchy_table = function(object, merge_node = merge_node_param()) {
 	}
 	
 	hierarchy = hierarchy[nchar(hierarchy[, 2]) <= merge_node$depth, , drop = FALSE]
+	hierarchy = hierarchy[ !(hierarchy[, 1] != "0" & !hierarchy[, 1] %in% hierarchy[, 2]), , drop = FALSE]
 	
 	hierarchy
 }
