@@ -243,6 +243,7 @@ setMethod(f = "top_rows_heatmap",
 # -bottom_annotation A `ComplexHeatmap::HeatmapAnnotation-class` object.
 # -top_n Number of top rows to show in the heatmap.
 # -scale_rows Whether to scale rows.
+# -...
 #
 # == details
 # The function makes heatmaps where the rows are scaled (or not scaled) for the top n rows
@@ -338,6 +339,7 @@ setMethod(f = "top_rows_heatmap",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -top_n Number of top rows.
+# -k
 # -anno A data frame of annotations.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.

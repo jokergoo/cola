@@ -10,10 +10,10 @@ Method dispatch page for \code{colnames}.
 \code{colnames} can be dispatched on following classes:
 
 \itemize{
+\item \code{\link{colnames,DownSamplingConsensusPartition-method}}, \code{\link{DownSamplingConsensusPartition-class}} class method
+\item \code{\link{colnames,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{colnames,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 \item \code{\link{colnames,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
-\item \code{\link{colnames,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
-\item \code{\link{colnames,DownSamplingConsensusPartition-method}}, \code{\link{DownSamplingConsensusPartition-class}} class method
 }
 }
 \examples{

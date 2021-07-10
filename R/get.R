@@ -339,6 +339,7 @@ recalc_stats = function(rl) {
 # == param
 # -object A `ConsensusPartition-class` object.
 # -jaccard_index_cutoff The cutoff for Jaccard index for comparing to previous k.
+# -mean_silhouette_cutoff
 # -stable_PAC Cutoff for stable PAC.
 # -help Whether to print help message.
 #

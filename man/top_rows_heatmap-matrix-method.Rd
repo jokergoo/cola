@@ -10,7 +10,7 @@ Heatmap of top rows from different top-value methods
 \S4method{top_rows_heatmap}{matrix}(object, all_top_value_list = NULL,
     top_value_method = all_top_value_methods(),
     bottom_annotation = NULL,
-    top_n = round(0.25*nrow(object)), scale_rows = TRUE)
+    top_n = round(0.25*nrow(object)), scale_rows = TRUE, ...)
 }
 \arguments{
 
@@ -20,6 +20,7 @@ Heatmap of top rows from different top-value methods
   \item{bottom_annotation}{A \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.}
   \item{top_n}{Number of top rows to show in the heatmap.}
   \item{scale_rows}{Whether to scale rows.}
+  \item{...}{-...}
 
 }
 \details{

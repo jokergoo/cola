@@ -1,4 +1,6 @@
 #include <Rcpp.h>
+#include <chrono>       // std::chrono::system_clock
+#include <random>       // std::default_random_engine
 
 using namespace Rcpp;
 
@@ -63,6 +65,8 @@ NumericMatrix cal_diff_ratio_r(NumericMatrix mat, NumericMatrix sig_mat, int n_p
 	// mat: a n_sample x n_sig matrix
 	// sig_mat: a n_group x n_sig matrix
 	// return diff_ratio_r: a n_sample x n_perm matrix
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+
 	int n_sample = mat.nrow();
 	int n_sig = mat.ncol();
 	int n_group = sig_mat.nrow();
@@ -75,7 +79,7 @@ NumericMatrix cal_diff_ratio_r(NumericMatrix mat, NumericMatrix sig_mat, int n_p
 		for(int k = 0; k < n_group; k ++) {
 			NumericVector foo = sig_mat(k, _);
 			NumericVector v = clone(foo);
-			std::random_shuffle(v.begin(), v.end());
+			std::shuffle(v.begin(), v.end(), std::default_random_engine(seed));
 			sig_mat_r(k, _) = v;
 		}
 		NumericMatrix dist_to_signatures_r = pdist(mat, sig_mat_r, dm);

@@ -7,7 +7,7 @@ Ability to correlate to other rows - an approximate method
 Ability to correlate to other rows - an approximate method
 }
 \usage{
-ATC_approx(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = NULL,
+ATC_approx(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1,
     mc.cores = 1, cores = mc.cores, n_sampling = c(1000, 500),
     group = NULL, ...)
 }

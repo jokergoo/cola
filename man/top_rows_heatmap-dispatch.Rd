@@ -11,9 +11,9 @@ Method dispatch page for \code{top_rows_heatmap}.
 
 \itemize{
 \item \code{\link{top_rows_heatmap,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
-\item \code{\link{top_rows_heatmap,matrix-method}}, \code{\link{matrix-class}} class method
-\item \code{\link{top_rows_heatmap,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{top_rows_heatmap,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
+\item \code{\link{top_rows_heatmap,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
+\item \code{\link{top_rows_heatmap,matrix-method}}, \code{\link{matrix-class}} class method
 }
 }
 \examples{

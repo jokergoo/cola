@@ -132,10 +132,11 @@ register_ATC_kNN = function(k_neighbours = 20, cores = 1) {
 # -cor_fun
 # -min_cor
 # -power
-# -k_neighbour
+# -k_neighbours
 # -group
 # -cores
 # -...
+#
 config_ATC = function(cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, cores = 1, ...) {
 	cor_fun = cor_fun
 	min_cor = min_cor

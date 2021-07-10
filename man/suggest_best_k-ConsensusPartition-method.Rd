@@ -8,12 +8,14 @@ Suggest the best number of subgroups
 }
 \usage{
 \S4method{suggest_best_k}{ConsensusPartition}(object, jaccard_index_cutoff = select_jaccard_cutoff(ncol(object)),
+    mean_silhouette_cutoff = NULL,
     stable_PAC = 0.1, help = TRUE)
 }
 \arguments{
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
   \item{jaccard_index_cutoff}{The cutoff for Jaccard index for comparing to previous k.}
+  \item{mean_silhouette_cutoff}{-mean_silhouette_cutoff}
   \item{stable_PAC}{Cutoff for stable PAC.}
   \item{help}{Whether to print help message.}
 

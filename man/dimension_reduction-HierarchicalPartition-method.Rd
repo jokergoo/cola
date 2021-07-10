@@ -10,7 +10,7 @@ Visualize columns after dimension reduction
 \S4method{dimension_reduction}{HierarchicalPartition}(object, merge_node = merge_node_param(),
     parent_node, top_n = NULL, top_value_method = object@list[[1]]@top_value_method,
     method = c("PCA", "MDS", "t-SNE", "UMAP"), color_by = NULL,
-    scale_rows = TRUE, verbose = TRUE, ...)
+    scale_rows = object@list[[1]]@scale_rows, verbose = TRUE, ...)
 }
 \arguments{
 

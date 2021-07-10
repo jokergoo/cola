@@ -55,12 +55,13 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 #       to predicted subgroups will be tested.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -PAC_cutoff the cutoff of PAC scores to determine whether to continue looking for subgroups.
+# -mean_silhouette_cutoff
 # -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
 # -group_diff Pass to `get_signatures,ConsensusPartition-method`.
 # -fdr_cutoff Pass to `get_signatures,ConsensusPartition-method`.
 # -subset Number of columns to randomly sample.
 # -min_n_signatures Minimal number of signatures under the best classification.
+# -filter_fun
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
