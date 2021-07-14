@@ -36,7 +36,7 @@ If you want to run this function multiple times, please set time intervals betwe
 A data frame with functional enrichment results.
 }
 \seealso{
-Now cola has a replacement function \code{\link{functional_enrichment}} to perform enrichment anallysis.
+Now cola has a replacement function \code{\link{functional_enrichment}} to perform enrichment analysis.
 }
 \author{
 Zuguang Gu <z.gu@dkfz.de>

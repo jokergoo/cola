@@ -11,7 +11,7 @@ consensus_partition_by_down_sampling(data,
     top_value_method = "ATC",
     top_n = NULL,
     partition_method = "skmeans",
-    max_k = 6,
+    max_k = 6, k = NULL,
     subset = min(round(ncol(data)*0.2), 250), pre_select = TRUE,
     verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
     dist_method = c("euclidean", "correlation", "cosine"),
@@ -24,6 +24,7 @@ consensus_partition_by_down_sampling(data,
   \item{top_n}{Number of rows with top values. The value can be a vector with length > 1. When n > 5000,  the function only randomly sample 5000 rows from top n rows. If \code{top_n} is a vector, paritition will be applied to every values in \code{top_n} and consensus partition is summarized from all partitions.}
   \item{partition_method}{A single partitioning method. Available methods are in \code{\link{all_partition_methods}}. Use \code{\link{register_partition_methods}} to add a new partition method.}
   \item{max_k}{Maximal number of subgroups to try. The function will try for \code{2:max_k} subgroups}
+  \item{k}{Alternatively, you can specify a vector k.}
   \item{subset}{Number of columns to randomly sample, or a vector of selected indices.}
   \item{pre_select}{Whether to pre-select by k-means.}
   \item{verbose}{Whether to print messages.}

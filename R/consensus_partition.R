@@ -762,7 +762,7 @@ setMethod(f = "select_partition_number",
 # ", cex = 1.2, adj = c(0, 1))
 # 	}
 
-	if(mark_best) legend("topright", pch = 16, col = "Red", legend = "best k", cex = 1.5)
+	if(mark_best) legend("topleft", pch = 16, col = "Red", legend = "best k", cex = 1.5)
 
 	par(op)
 })
@@ -782,7 +782,7 @@ setMethod(f = "select_partition_number",
 # -show_row_names Whether plot row names on the consensus heatmap (which are the column names in the original matrix)
 # -row_names_gp Graphics parameters for row names.
 # -simplify Internally used.
-# -... other arguments
+# -... other arguments.
 #
 # == details
 # For row i and column j in the consensus matrix, the value of corresponding x_ij
@@ -900,7 +900,7 @@ setMethod(f = "consensus_heatmap",
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_column_names Whether show column names in the heatmap (which is the column name in the original matrix).
 # -column_names_gp Graphics parameters for column names.
-# -... Other arguments
+# -... Other arguments.
 #
 # == details
 # Each row in the heatmap is the membership in one single partition.

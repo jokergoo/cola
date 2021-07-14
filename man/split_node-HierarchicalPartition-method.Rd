@@ -17,18 +17,24 @@ Split node
 }
 \arguments{
 
-  \item{object}{object}
-  \item{node_id}{node id}
-  \item{subset}{subset}
-  \item{min_samples}{-min_samples}
-  \item{max_k}{max_k}
-  \item{cores}{cores}
-  \item{verbose}{verobse}
-  \item{top_n}{top_n}
-  \item{min_n_signatures}{min-sigatures}
-  \item{group_diff}{group diff}
-  \item{fdr_cutoff}{fdr cutoff}
+  \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{node_id}{A single ID of a node that is going to be split.}
+  \item{subset}{The same as in \code{\link{hierarchical_partition}}.}
+  \item{min_samples}{The same as in \code{\link{hierarchical_partition}}.}
+  \item{max_k}{max_k The same as in \code{\link{hierarchical_partition}}.}
+  \item{cores}{Number of cores.}
+  \item{verbose}{Whether to print messages.}
+  \item{top_n}{The same as in \code{\link{hierarchical_partition}}.}
+  \item{min_n_signatures}{The same as in \code{\link{hierarchical_partition}}.}
+  \item{group_diff}{The same as in \code{\link{hierarchical_partition}}.}
+  \item{fdr_cutoff}{The same as in \code{\link{hierarchical_partition}}.}
 
+}
+\details{
+It applies hierarchical consensus partitioning on the specified node.
+}
+\value{
+A \code{\link{HierarchicalPartition-class}} object.
 }
 \examples{
 # There is no example

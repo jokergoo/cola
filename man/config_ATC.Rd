@@ -11,17 +11,21 @@ config_ATC(cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, grou
 }
 \arguments{
 
-  \item{cor_fun}{-cor_fun}
-  \item{min_cor}{-min_cor}
-  \item{power}{-power}
-  \item{k_neighbours}{-k_neighbours}
-  \item{group}{-group}
-  \item{cores}{-cores}
-  \item{...}{-...}
+  \item{cor_fun}{A function that calculates correlations from a matrix (on matrix rows).}
+  \item{min_cor}{Cutoff for the minimal absolute correlation.}
+  \item{power}{Power on the correlation values.}
+  \item{k_neighbours}{Number of the closest neighbours to use.}
+  \item{group}{A categorical variable.}
+  \item{cores}{Number of cores.}
+  \item{...}{Other arguments passed to \code{\link{ATC}}.}
 
 }
+\details{
+This function changes the default parameters for ATC method. All the arguments in this function all pass to \code{\link{ATC}}.
+}
 \examples{
-# There is no example
-NULL
-
+# use Spearman correlation
+config_ATC(cor_fun = function(m) stats::cor(m, method = "spearman"))
+# use knn
+config_ATC(k_neighbours = 100)
 }

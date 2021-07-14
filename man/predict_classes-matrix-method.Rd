@@ -9,7 +9,7 @@ Predict classes for new samples based on signature centroid matrix
 \usage{
 \S4method{predict_classes}{matrix}(object, mat, dist_method = c("euclidean", "correlation", "cosine"),
     nperm = 1000, p_cutoff = 0.05, plot = TRUE, col_fun = NULL, split_by_sigatures = FALSE,
-    verbose = TRUE, prefix = "", mc.cores = 1, cores = mc.cores)
+    verbose = TRUE, prefix = "", mc.cores = 1, cores = mc.cores, width1 = NULL, width2 = NULL)
 }
 \arguments{
 
@@ -25,6 +25,8 @@ Predict classes for new samples based on signature centroid matrix
   \item{prefix}{Used internally.}
   \item{mc.cores}{Number of cores. This argument will be removed in future versions.}
   \item{cores}{Number of cores, or a \code{cluster} object returned by \code{\link[parallel]{makeCluster}}.}
+  \item{width1}{Width of the first heatmap.}
+  \item{width2}{Width of the second heatmap.}
 
 }
 \details{

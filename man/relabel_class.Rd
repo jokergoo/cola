@@ -14,7 +14,7 @@ relabel_class(class, ref, full_set = union(class, ref), return_map = TRUE)
   \item{class}{A vector of class labels.}
   \item{ref}{A vector of reference labels.}
   \item{full_set}{The full set of labels. 	}
-  \item{return_map}{Whether return the mapping or the adjusted labels.}
+  \item{return_map}{Whether to return the mapping of the adjusted labels.}
 
 }
 \details{

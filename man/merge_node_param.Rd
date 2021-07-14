@@ -1,10 +1,10 @@
 \name{merge_node_param}
 \alias{merge_node_param}
 \title{
-Parameters to merge subgroup dendrogram.
+Parameters to merge branches in subgroup dendrogram.
 }
 \description{
-Parameters to merge subgroup dendrogram.
+Parameters to merge branches in subgroup dendrogram.
 }
 \usage{
 merge_node_param(depth = Inf, min_n_signatures = -Inf,

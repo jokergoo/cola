@@ -1,10 +1,10 @@
 \name{ATC_approx}
 \alias{ATC_approx}
 \title{
-Ability to correlate to other rows - an approximate method
+Ability to correlate to other rows - an approximated method
 }
 \description{
-Ability to correlate to other rows - an approximate method
+Ability to correlate to other rows - an approximated method
 }
 \usage{
 ATC_approx(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1,
@@ -14,7 +14,7 @@ ATC_approx(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1,
 \arguments{
 
   \item{mat}{A numeric matrix. ATC score is calculated by rows.}
-  \item{cor_fun}{A function which calculates correlations.}
+  \item{cor_fun}{A function which calculates correlations on matrix rows.}
   \item{min_cor}{Cutoff for the minimal absolute correlation.}
   \item{power}{Power on the correlation values.}
   \item{k_neighbours}{Nearest k neighbours. Note when this argument is set, there won't be subset sampling for calculating correlations, whihc means, it will calculate correlation to all other rows.}
@@ -28,6 +28,9 @@ ATC_approx(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1,
 \details{
 For a matrix with huge number of rows. It is not possible to calculate correlation to all other rows, thus the correlation is only
 calculated for a randomly sampled subset of othe rows.
+
+With small numbers of rows of the matrix, \code{\link{ATC}} should be used which calculates the "exact" ATC value, but the value of \code{\link{ATC}} and \code{\link{ATC_approx}}
+should be very similar.
 }
 \examples{
 # There is no example

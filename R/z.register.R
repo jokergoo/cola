@@ -129,14 +129,22 @@ register_ATC_kNN = function(k_neighbours = 20, cores = 1) {
 # Adjust parameters for default ATC method
 #
 # == param
-# -cor_fun
-# -min_cor
-# -power
-# -k_neighbours
-# -group
-# -cores
-# -...
+# -cor_fun A function that calculates correlations from a matrix (on matrix rows).
+# -min_cor Cutoff for the minimal absolute correlation.
+# -power Power on the correlation values.
+# -k_neighbours Number of the closest neighbours to use.
+# -group A categorical variable.
+# -cores Number of cores.
+# -... Other arguments passed to `ATC`.
 #
+# == details
+# This function changes the default parameters for ATC method. All the arguments in this function all pass to `ATC`.
+#
+# == examples
+# # use Spearman correlation
+# config_ATC(cor_fun = function(m) stats::cor(m, method = "spearman"))
+# # use knn
+# config_ATC(k_neighbours = 100)
 config_ATC = function(cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1, group = NULL, cores = 1, ...) {
 	cor_fun = cor_fun
 	min_cor = min_cor

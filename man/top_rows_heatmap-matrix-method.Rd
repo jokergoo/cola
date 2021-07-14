@@ -20,7 +20,7 @@ Heatmap of top rows from different top-value methods
   \item{bottom_annotation}{A \code{\link[ComplexHeatmap]{HeatmapAnnotation-class}} object.}
   \item{top_n}{Number of top rows to show in the heatmap.}
   \item{scale_rows}{Whether to scale rows.}
-  \item{...}{-...}
+  \item{...}{Pass to \code{\link[ComplexHeatmap]{Heatmap}}.}
 
 }
 \details{

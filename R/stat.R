@@ -1,11 +1,11 @@
 
 
 # == title
-# Ability to correlate to other rows - an approximate method
+# Ability to correlate to other rows - an approximated method
 #
 # == param
 # -mat A numeric matrix. ATC score is calculated by rows.
-# -cor_fun A function which calculates correlations.
+# -cor_fun A function which calculates correlations on matrix rows.
 # -min_cor Cutoff for the minimal absolute correlation.
 # -power Power on the correlation values.
 # -k_neighbours Nearest k neighbours. Note when this argument is set, there won't be subset sampling for calculating
@@ -21,6 +21,9 @@
 # == details
 # For a matrix with huge number of rows. It is not possible to calculate correlation to all other rows, thus the correlation is only
 # calculated for a randomly sampled subset of othe rows.
+#
+# With small numbers of rows of the matrix, `ATC` should be used which calculates the "exact" ATC value, but the value of `ATC` and `ATC_approx`
+# should be very similar.
 #
 ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours = -1,
 	mc.cores = 1, cores = mc.cores, n_sampling = c(1000, 500), 
@@ -135,6 +138,8 @@ ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neigh
 #     register_top_value_methods(
 #         "ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor)
 #     )
+#
+# If the number of rows execeeds 30000, it internally uses `ATC_approx`.
 #
 # == seealso
 # https://jokergoo.github.io/cola_supplementary/suppl_1_ATC/suppl_1_ATC.html

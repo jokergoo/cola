@@ -12,9 +12,12 @@ Merge node
 }
 \arguments{
 
-  \item{object}{-object}
-  \item{node_id}{-node_id}
+  \item{object}{A \code{\link{HierarchicalPartition-class}} object.}
+  \item{node_id}{A vector of node IDs where each node is merged as a leaf node.}
 
+}
+\value{
+A \code{\link{HierarchicalPartition-class}} object.
 }
 \examples{
 # There is no example

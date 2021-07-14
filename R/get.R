@@ -339,29 +339,29 @@ recalc_stats = function(rl) {
 # == param
 # -object A `ConsensusPartition-class` object.
 # -jaccard_index_cutoff The cutoff for Jaccard index for comparing to previous k.
-# -mean_silhouette_cutoff
-# -stable_PAC Cutoff for stable PAC.
+# -mean_silhouette_cutoff Cutoff for mean silhourtte scores.
+# -stable_PAC Cutoff for stable PAC. This argument only take effect when ``mean_silhouette_cutoff`` is set to ``NULL``.
 # -help Whether to print help message.
 #
 # == details
 # The best k is selected according to following rules:
 #
-# - All k with Jaccard index larger than 0.95 are removed because increasing k does not
+# - All k with Jaccard index larger than ``jaccard_index_cutoff`` are removed because increasing k does not
 #   provide enough extra information. If all k are removed, it is marked as no
 #   subgroup is detected. 
-# - For all k with 1-PAC score larger than 0.9, the
-#   maximal k is taken as the best k, and other k are marked as optional k. 
+# - If all k with Jaccard index larger than 0.75, k with the highest mean silhourtte score is taken as the best k.
+# - For all k with mean silhouette score larger than ``mean_silhouette_cutoff``, the
+#   maximal k is taken as the best k, and other k are marked as optional best k. 
+# - If argument ``mean_silhouette_cutoff`` is set to NULL, which means we do not filter by mean silhouette scores while by 1-PAC scores.
+#   Similarly, k with the highest 1-PAC is taken the best k and other k are marked as optional best k.
 # - If it does not fit the second rule. The k with the maximal vote of the highest
 #   1-PAC score, highest mean silhouette, and highest concordance is taken as
 #   the best k.
 #
-# Additionally, if 1-PAC for the best k is larger than 0.9 (10\% ambiguity for
-# the partition), cola marks it as a stable partition. It should be noted that
+# It should be noted that
 # it is difficult to find the best k deterministically, we encourage users to
 # compare results for all k and determine a proper one which best explain
 # their studies.
-#
-# When k > 6, only the third rule is applied because 1-PAC does not work well for larger k.
 #
 # == see also
 # The selection of the best k can be visualized by `select_partition_number`.
@@ -378,7 +378,8 @@ recalc_stats = function(rl) {
 # suggest_best_k(obj)
 setMethod(f = "suggest_best_k",
 	signature = "ConsensusPartition",
-	definition = function(object, jaccard_index_cutoff = select_jaccard_cutoff(ncol(object)), 
+	definition = function(object, 
+	jaccard_index_cutoff = select_jaccard_cutoff(ncol(object)), 
 	mean_silhouette_cutoff = NULL,
 	stable_PAC = 0.1, help = TRUE) {
 
@@ -506,7 +507,7 @@ setMethod(f = "is_stable_k",
 	signature = "ConsensusPartition",
 	definition = function(object, k, stable_PAC = 0.1, ...) {
 
-	is_best_k(object, k, ...) & get_stats(object, k = k)[, "1-PAC"] >= 1 - stable_PAC
+	is_best_k(object, k, stable_PAC = stable_PAC, ...) & get_stats(object, k = k)[, "1-PAC"] >= 1 - stable_PAC
 })
 
 # == title

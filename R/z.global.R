@@ -23,6 +23,7 @@ names(brewer_pal_set2_col) = 1:16
 # -``fdr_cutoff`` Used in `get_signatures,ConsensusPartition-method` to globally control the cutoff of FDR for the differential signature tests.
 # -``color_set_2`` Colors for the predicted subgroups.
 # -``help`` Whether to print help messages.
+# -``message`` Whether to print messages.
 #
 # == example
 # cola_opt

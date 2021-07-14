@@ -190,7 +190,7 @@ setMethod(f = "max_depth",
 
 
 # == title
-# Parameters to merge subgroup dendrogram.
+# Parameters to merge branches in subgroup dendrogram.
 #
 # == param
 # -depth Depth of the dendrogram.

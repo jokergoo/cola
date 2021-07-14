@@ -18,6 +18,7 @@
 # -`dimension_reduction,HierarchicalPartition-method`: make dimension reduction plots.
 # -`test_to_known_factors,HierarchicalPartition-method`: test correlation between predicted subgrouping and known annotations, if available.
 # -`cola_report,HierarchicalPartition-method`: generate a HTML report for the whole analysis.
+# -`functional_enrichment,HierarchicalPartition-method`: apply functional enrichment.
 #
 # == author
 # Zuguang Gu <z.gu@dkfz.de>
@@ -42,11 +43,9 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 #
 # == param
 # -data a numeric matrix where subgroups are found by columns.
-# -top_n Number of rows with top values. Since the number of rows of sub-matrieces might be different,
-#       here ``top_n`` can be set as a vector of values less than 1 which are treated as the fraction
-#       of the rows from the input matrix.
-# -top_value_method a single top-value method. Available methods are in `all_top_value_methods`.
-# -partition_method a single partition method. Available methods are in `all_partition_methods`.
+# -top_n Number of rows with top values.
+# -top_value_method a single or a vector of top-value methods. Available methods are in `all_top_value_methods`.
+# -partition_method a single or a vector of partition methods. Available methods are in `all_partition_methods`.
 # -combination_method A list of combinations of top-value methods and partitioning methods. The value
 #     can be a two-column data frame where the first column is the top-value methods and the second
 #     column is the partitioning methods. Or it can be a vector of combination names in a form of
@@ -55,13 +54,13 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 #       to predicted subgroups will be tested.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
-# -mean_silhouette_cutoff
+# -mean_silhouette_cutoff The cutoff to test whether partition in current node is stable.
 # -min_samples the cutoff of number of samples to determine whether to continue looking for subgroups.
 # -group_diff Pass to `get_signatures,ConsensusPartition-method`.
 # -fdr_cutoff Pass to `get_signatures,ConsensusPartition-method`.
 # -subset Number of columns to randomly sample.
 # -min_n_signatures Minimal number of signatures under the best classification.
-# -filter_fun
+# -filter_fun A self-defined function which filters the original matrix and returns a submatrix for partitioning.
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
 #        partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found
 #        in the whole partition hierarchy, on each node, ``max_k`` should not be set to a large value.
@@ -938,7 +937,33 @@ setMethod(f = "node_info",
 	df
 })
 
+# == title
+# Information on the nodes
+#
+# == param
+# -object A `HierarchicalPartition-class` object.
+#
+# == details
+# It is the same as `node_info,HierarchicalPartition-method`.
+setMethod(f = "node_level",
+	signature = "HierarchicalPartition",
+	definition = function(object) {
+	node_info(object)
+})
 
+# == title
+# Find the knee/elbow of a list of sorted points
+#
+# == param
+# -x A numeric vector.
+# -plot Whether to make the plot.
+#
+# == value
+# A vector of two numeric values. One for the left knee and the second for the right knee.
+#
+# == example
+# x = rnorm(1000)
+# knee_finder2(x, plot = TRUE)
 knee_finder2 = function(x, plot = FALSE) {
 	
 	y = sort(x)
@@ -956,6 +981,7 @@ knee_finder2 = function(x, plot = FALSE) {
 	if(all(d <= 0)) x2 = NA
 
 	if(plot) {
+		op = par(no.readonly = TRUE)
 		par(mfrow = c(1, 2))
 		plot(x, y, xlab = "index", ylab = "value")
 		abline(a = b, b = a)
@@ -965,7 +991,7 @@ knee_finder2 = function(x, plot = FALSE) {
 		plot(d, xlab = "inidex", ylab = "distance to diagonal line")
 		abline(v = x1, col = "green")
 		abline(v = x2, col = "red")
-		par(mfrow = c(1, 1))
+		par(op)
 	}
 
 	return(c(x1, x2))
@@ -982,9 +1008,11 @@ find_top_n = function(x, plot = FALSE) {
 # Merge node
 #
 # == param
-# -object
-# -node_id
+# -object A `HierarchicalPartition-class` object.
+# -node_id A vector of node IDs where each node is merged as a leaf node.
 #
+# == value
+# A `HierarchicalPartition-class` object.
 setMethod(f = "merge_node",
 	signature = "HierarchicalPartition",
 	definition = function(object, node_id) {
@@ -1025,18 +1053,23 @@ setMethod(f = "merge_node",
 # Split node
 #
 # == param 
-# -object object
-# -node_id node id
-# -subset subset
-# -min_samples
-# -max_k max_k
-# -cores cores
-# -verbose verobse
-# -top_n top_n
-# -min_n_signatures min-sigatures
-# -group_diff group diff
-# -fdr_cutoff fdr cutoff
+# -object A `HierarchicalPartition-class` object.
+# -node_id A single ID of a node that is going to be split.
+# -subset The same as in `hierarchical_partition`.
+# -min_samples The same as in `hierarchical_partition`.
+# -max_k max_k The same as in `hierarchical_partition`.
+# -cores Number of cores.
+# -verbose Whether to print messages.
+# -top_n The same as in `hierarchical_partition`.
+# -min_n_signatures The same as in `hierarchical_partition`.
+# -group_diff The same as in `hierarchical_partition`.
+# -fdr_cutoff The same as in `hierarchical_partition`.
 #
+# == details
+# It applies hierarchical consensus partitioning on the specified node.
+#
+# == value
+# A `HierarchicalPartition-class` object.
 setMethod(f = "split_node",
 	signature = "HierarchicalPartition",
 	definition = function(object, node_id, 

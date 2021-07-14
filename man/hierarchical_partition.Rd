@@ -26,19 +26,19 @@ hierarchical_partition(data,
 \arguments{
 
   \item{data}{a numeric matrix where subgroups are found by columns.}
-  \item{top_n}{Number of rows with top values. Since the number of rows of sub-matrieces might be different, here \code{top_n} can be set as a vector of values less than 1 which are treated as the fraction of the rows from the input matrix.}
-  \item{top_value_method}{a single top-value method. Available methods are in \code{\link{all_top_value_methods}}.}
-  \item{partition_method}{a single partition method. Available methods are in \code{\link{all_partition_methods}}.}
+  \item{top_n}{Number of rows with top values.}
+  \item{top_value_method}{a single or a vector of top-value methods. Available methods are in \code{\link{all_top_value_methods}}.}
+  \item{partition_method}{a single or a vector of partition methods. Available methods are in \code{\link{all_partition_methods}}.}
   \item{combination_method}{A list of combinations of top-value methods and partitioning methods. The value can be a two-column data frame where the first column is the top-value methods and the second column is the partitioning methods. Or it can be a vector of combination names in a form of "top_value_method:partitioning_method".}
   \item{anno}{A data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation to predicted subgroups will be tested.}
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
-  \item{mean_silhouette_cutoff}{-mean_silhouette_cutoff}
+  \item{mean_silhouette_cutoff}{The cutoff to test whether partition in current node is stable.}
   \item{min_samples}{the cutoff of number of samples to determine whether to continue looking for subgroups.}
   \item{group_diff}{Pass to \code{\link{get_signatures,ConsensusPartition-method}}.}
   \item{fdr_cutoff}{Pass to \code{\link{get_signatures,ConsensusPartition-method}}.}
   \item{subset}{Number of columns to randomly sample.}
   \item{min_n_signatures}{Minimal number of signatures under the best classification.}
-  \item{filter_fun}{-filter_fun}
+  \item{filter_fun}{A self-defined function which filters the original matrix and returns a submatrix for partitioning.}
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}
   \item{scale_rows}{Whether rows are scaled?}
   \item{verbose}{whether print message.}

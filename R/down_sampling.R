@@ -35,6 +35,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # -partition_method A single partitioning method. Available methods are in `all_partition_methods`.
 #                   Use `register_partition_methods` to add a new partition method.
 # -max_k Maximal number of subgroups to try. The function will try for ``2:max_k`` subgroups
+# -k Alternatively, you can specify a vector k.
 # -subset Number of columns to randomly sample, or a vector of selected indices.
 # -pre_select Whether to pre-select by k-means.
 # -verbose Whether to print messages.
@@ -66,7 +67,7 @@ consensus_partition_by_down_sampling = function(data,
 	top_value_method = "ATC",
 	top_n = NULL,
 	partition_method = "skmeans",
-	max_k = 6, 
+	max_k = 6, k = NULL,
 	subset = min(round(ncol(data)*0.2), 250), pre_select = TRUE,
 	verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
 	dist_method = c("euclidean", "correlation", "cosine"),
@@ -172,7 +173,7 @@ consensus_partition_by_down_sampling = function(data,
 	# top_value_list cannot be repetitively used here
 	.env$all_top_value_list = NULL
 	cp = consensus_partition(.env = .env, top_value_method = top_value_method, partition_method = partition_method, 
-		top_n = top_n, max_k = max_k, prefix = prefix, anno = anno2, anno_col = anno_col, cores = cores, ...)
+		top_n = top_n, max_k = max_k, k = k, prefix = prefix, anno = anno2, anno_col = anno_col, cores = cores, ...)
 
 	attr(cp, "full_anno") = anno
 	

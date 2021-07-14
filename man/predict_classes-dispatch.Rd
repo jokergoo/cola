@@ -10,8 +10,8 @@ Method dispatch page for \code{predict_classes}.
 \code{predict_classes} can be dispatched on following classes:
 
 \itemize{
-\item \code{\link{predict_classes,matrix-method}}, \code{\link{matrix-class}} class method
 \item \code{\link{predict_classes,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
+\item \code{\link{predict_classes,matrix-method}}, \code{\link{matrix-class}} class method
 }
 }
 \examples{

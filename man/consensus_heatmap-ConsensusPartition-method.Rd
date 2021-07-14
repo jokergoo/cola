@@ -23,7 +23,7 @@ Heatmap of the consensus matrix
   \item{show_row_names}{Whether plot row names on the consensus heatmap (which are the column names in the original matrix)}
   \item{row_names_gp}{Graphics parameters for row names.}
   \item{simplify}{Internally used.}
-  \item{...}{other arguments}
+  \item{...}{other arguments.}
 
 }
 \details{

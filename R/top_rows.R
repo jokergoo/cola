@@ -180,7 +180,7 @@ top_elements_overlap = function(object, top_n = round(0.25*length(object[[1]])),
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -scale_rows Wether to scale rows. 
-# -... Pass to `top_rows_heatmap,matrix-method`
+# -... Pass to `top_rows_heatmap,matrix-method`.
 #
 # == value
 # No value is returned.
@@ -243,7 +243,7 @@ setMethod(f = "top_rows_heatmap",
 # -bottom_annotation A `ComplexHeatmap::HeatmapAnnotation-class` object.
 # -top_n Number of top rows to show in the heatmap.
 # -scale_rows Whether to scale rows.
-# -...
+# -... Pass to `ComplexHeatmap::Heatmap`.
 #
 # == details
 # The function makes heatmaps where the rows are scaled (or not scaled) for the top n rows
@@ -339,12 +339,12 @@ setMethod(f = "top_rows_heatmap",
 # == param
 # -object A `ConsensusPartition-class` object.
 # -top_n Number of top rows.
-# -k
+# -k Number of subgroups. If it is not specified, it uses the "best k".
 # -anno A data frame of annotations.
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -scale_rows Wether to scale rows. 
-# -... Pass to `top_rows_heatmap,matrix-method`
+# -... Pass to `top_rows_heatmap,matrix-method`.
 #
 # == value
 # No value is returned.

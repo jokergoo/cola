@@ -22,6 +22,7 @@ The \code{\link{HierarchicalPartition-class}} has following methods:
   \item{\code{\link{dimension_reduction,HierarchicalPartition-method}}:}{make dimension reduction plots.}
   \item{\code{\link{test_to_known_factors,HierarchicalPartition-method}}:}{test correlation between predicted subgrouping and known annotations, if available.}
   \item{\code{\link{cola_report,HierarchicalPartition-method}}:}{generate a HTML report for the whole analysis.}
+  \item{\code{\link{functional_enrichment,HierarchicalPartition-method}}:}{apply functional enrichment.}
 }}
 \author{
 Zuguang Gu <z.gu@dkfz.de>

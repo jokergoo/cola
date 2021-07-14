@@ -42,6 +42,8 @@ Similarly, to use a robust correlation method, e.g. \code{\link[WGCNA]{bicor}} f
     register_top_value_methods(
         "ATC_bicor" = function(m) ATC(m, cor_fun = WGCNA::bicor)
     )  }
+
+If the number of rows execeeds 30000, it internally uses \code{\link{ATC_approx}}.
 }
 \seealso{
 \url{https://jokergoo.github.io/cola_supplementary/suppl_1_ATC/suppl_1_ATC.html}

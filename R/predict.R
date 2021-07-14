@@ -194,6 +194,8 @@ setMethod(f = "predict_classes",
 # -prefix Used internally.
 # -mc.cores Number of cores. This argument will be removed in future versions.
 # -cores Number of cores, or a ``cluster`` object returned by `parallel::makeCluster`.
+# -width1 Width of the first heatmap.
+# -width2 Width of the second heatmap.
 #
 # == details
 # The signature centroid matrix is a k-column matrix where each column is the centroid of samples 
@@ -246,7 +248,7 @@ setMethod(f = "predict_classes",
 	signature = "matrix",
 	definition = function(object, mat, dist_method = c("euclidean", "correlation", "cosine"), 
 	nperm = 1000, p_cutoff = 0.05, plot = TRUE, col_fun = NULL, split_by_sigatures = FALSE,
-	verbose = TRUE, prefix = "", mc.cores = 1, cores = mc.cores) {
+	verbose = TRUE, prefix = "", mc.cores = 1, cores = mc.cores, width1 = NULL, width2 = NULL) {
 
 	sig_mat = object
 
@@ -365,6 +367,10 @@ setMethod(f = "predict_classes",
 		} else {
 			row_split = NULL
 		}
+
+		if(is.null(width2)) {
+			width2 = max(unit(4*ncol(sig_mat), "mm"), unit(4, "cm"))
+		}
 		if(is.null(col_fun)) {
 			ht_list = Heatmap(mat, name = "New matrix",
 				top_annotation = ha, 
@@ -373,9 +379,9 @@ setMethod(f = "predict_classes",
 				show_column_names = FALSE, row_title = NULL,
 				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
 				column_split = predicted_class2,
-				show_row_dend = FALSE,
+				show_row_dend = FALSE, width = width1,
 				column_title = qq("Based on @{nrow(sig_mat)} signatures")
-			) + Heatmap(sig_mat, cluster_columns = FALSE, width = unit(4*ncol(sig_mat), "mm"),
+			) + Heatmap(sig_mat, cluster_columns = FALSE, width = width2,
 				heatmap_legend_param = list(title = "Signature centroid"))
 		} else {
 			ht_list = Heatmap(mat, name = "New matrix", col = col_fun,
@@ -385,9 +391,9 @@ setMethod(f = "predict_classes",
 				show_column_names = FALSE, row_title = NULL,
 				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
 				column_split = predicted_class2,
-				show_row_dend = FALSE,
+				show_row_dend = FALSE, width = width1,
 				column_title = qq("Based on @{nrow(sig_mat)} signatures")
-			) + Heatmap(sig_mat, col = col_fun, cluster_columns = FALSE, width = unit(4*ncol(sig_mat), "mm"),
+			) + Heatmap(sig_mat, col = col_fun, cluster_columns = FALSE, width = width2,
 				heatmap_legend_param = list(title = "Signature centroid"))
 		}
 		draw(ht_list, merge_legend = TRUE)

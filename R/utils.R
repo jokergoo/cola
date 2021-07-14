@@ -13,7 +13,7 @@ if(!exists("strrep")) {
 # -class A vector of class labels.
 # -ref A vector of reference labels.
 # -full_set The full set of labels. 	
-# -return_map Whether return the mapping or the adjusted labels.
+# -return_map Whether to return the mapping of the adjusted labels.
 #
 # == details
 # In partitions, the exact value of the class label is not of importance. E.g. for two partitions

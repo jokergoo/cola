@@ -10,7 +10,7 @@ Examples: https://jokergoo.github.io/cola_collection/
 
 If you use it in published research, please cite:
 Gu, Z. cola: an R/Bioconductor package for consensus partitioning 
-  through a general framework. Nucleic Acids Research 2020.
+  through a general framework. Nucleic Acids Research 2021.
 
 This message can be suppressed by:
   suppressPackageStartupMessages(library(cola))

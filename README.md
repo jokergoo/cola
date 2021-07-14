@@ -19,7 +19,7 @@
 
 ## Citation
 
-Zuguang Gu, et al., cola: an R/Bioconductor package for consensus partitioning through a general framework, Nucleic Acids Research, 2020. https://doi.org/10.1093/nar/gkaa1146
+Zuguang Gu, et al., cola: an R/Bioconductor package for consensus partitioning through a general framework, Nucleic Acids Research, 2021. https://doi.org/10.1093/nar/gkaa1146
 
 ## Install
 

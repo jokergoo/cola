@@ -5,6 +5,7 @@
 # == param
 # -object A `ConsensusPartition-class` object.
 # -k Number of subgroups.
+# -col Colors for the main heatmap.
 # -silhouette_cutoff Cutoff for silhouette scores. Samples with values 
 #        less than it are not used for finding signature rows. For selecting a 
 #        proper silhouette cutoff, please refer to https://www.stat.berkeley.edu/~s133/Cluster2a.html#tth_tAb1.
@@ -33,7 +34,6 @@
 #              The number of items should be the same as the number of the original matrix rows. The subsetting to the significant 
 #              rows are automatically performed on the annotation object.
 # -right_annotation Annotation put on the right of the heatmap. Same format as ``left_annotation``.
-# -col Colors for the main heatmap.
 # -simplify Only used internally.
 # -prefix Only used internally.
 # -enforce The analysis is cached by default, so that the analysis with the same input will be automatically extracted
@@ -82,6 +82,7 @@
 setMethod(f = "get_signatures",
 	signature = "ConsensusPartition",
 	definition = function(object, k,
+	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
 	silhouette_cutoff = 0.5, 
 	fdr_cutoff = cola_opt$fdr_cutoff, 
 	top_signatures = NULL,
@@ -98,7 +99,6 @@ setMethod(f = "get_signatures",
 	use_raster = TRUE,
 	plot = TRUE, verbose = TRUE, seed = 888,
 	left_annotation = NULL, right_annotation = NULL,
-	col = if(scale_rows) c("green", "white", "red") else c("blue", "white", "red"),
 	simplify = FALSE, prefix = "", enforce = FALSE, hash = NULL, from_hc = FALSE,
 	...) {
 

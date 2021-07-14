@@ -15,11 +15,11 @@ Heatmap of top rows
 
   \item{object}{A \code{\link{ConsensusPartition-class}} object.}
   \item{top_n}{Number of top rows.}
-  \item{k}{-k}
+  \item{k}{Number of subgroups. If it is not specified, it uses the "best k".}
   \item{anno}{A data frame of annotations.}
   \item{anno_col}{A list of colors (color is defined as a named vector) for the annotations. If \code{anno} is a data frame, \code{anno_col} should be a named list where names correspond to the column names in \code{anno}.}
   \item{scale_rows}{Wether to scale rows. }
-  \item{...}{Pass to \code{\link{top_rows_heatmap,matrix-method}}}
+  \item{...}{Pass to \code{\link{top_rows_heatmap,matrix-method}}.}
 
 }
 \value{

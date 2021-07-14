@@ -26,6 +26,7 @@ There are following global parameters:
   \item{\code{fdr_cutoff}}{Used in \code{\link{get_signatures,ConsensusPartition-method}} to globally control the cutoff of FDR for the differential signature tests.}
   \item{\code{color_set_2}}{Colors for the predicted subgroups.}
   \item{\code{help}}{Whether to print help messages.}
+  \item{\code{message}}{Whether to print messages.}
 }
 }
 \examples{
