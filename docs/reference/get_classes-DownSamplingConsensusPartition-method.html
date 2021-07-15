@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,7 +121,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for DownSamplingConsensusPartition</span>
-<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>object</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>object</span>@<span class='kw'>k</span>, <span class='kw'>p_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>reduce</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span><span class='op'>(</span><span class='va'>object</span>, k <span class='op'>=</span> <span class='va'>object</span><span class='op'>@</span><span class='va'>k</span>, p_cutoff <span class='op'>=</span> <span class='fl'>0.05</span>, reduce <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -180,14 +156,15 @@
 label with prediction p-value &gt; <code>p_cutoff</code> is set to <code>NA</code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola_ds</span>)
-<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>golub_cola_ds</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt;           class     p
-#&gt; sample_39     3 0.000
-#&gt; sample_40     3 0.000
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola_ds</span><span class='op'>)</span>
+<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span><span class='op'>(</span><span class='va'>golub_cola_ds</span>, k <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;           class     p
+#&gt; sample_39     2 0.000
+#&gt; sample_40     2 0.000
 #&gt; sample_42     1 0.000
 #&gt; sample_47     1 0.000
 #&gt; sample_48     1 0.000
-#&gt; sample_49     3 0.000
+#&gt; sample_49     2 0.000
 #&gt; sample_41     1 0.000
 #&gt; sample_43     1 0.000
 #&gt; sample_44     1 0.000
@@ -199,133 +176,134 @@ label with prediction p-value &gt; <code>p_cutoff</code> is set to <code>NA</cod
 #&gt; sample_68     1 0.000
 #&gt; sample_69     1 0.000
 #&gt; sample_67     1 0.000
-#&gt; sample_55     3 0.000
-#&gt; sample_56     3 0.000
-#&gt; sample_59     1 0.915
-#&gt; sample_52     2 0.000
-#&gt; sample_53     2 0.000
-#&gt; sample_51     2 0.000
-#&gt; sample_50     2 0.000
+#&gt; sample_55     2 0.000
+#&gt; sample_56     2 0.000
+#&gt; sample_59     1 0.502
+#&gt; sample_52     3 0.000
+#&gt; sample_53     3 0.000
+#&gt; sample_51     3 0.000
+#&gt; sample_50     3 0.000
 #&gt; sample_54     1 0.000
-#&gt; sample_57     2 0.000
+#&gt; sample_57     3 0.166
 #&gt; sample_58     2 0.000
-#&gt; sample_60     2 0.000
+#&gt; sample_60     3 0.000
 #&gt; sample_61     2 0.000
-#&gt; sample_65     2 0.000
+#&gt; sample_65     3 0.000
 #&gt; sample_66     1 0.000
-#&gt; sample_63     2 0.000
-#&gt; sample_64     2 0.057
-#&gt; sample_62     2 0.000
-#&gt; sample_1      3 0.000
+#&gt; sample_63     3 0.000
+#&gt; sample_64     2 0.000
+#&gt; sample_62     3 0.000
+#&gt; sample_1      2 0.000
 #&gt; sample_2      1 0.000
-#&gt; sample_3      3 0.000
-#&gt; sample_4      3 0.000
+#&gt; sample_3      2 0.000
+#&gt; sample_4      2 0.000
 #&gt; sample_5      1 0.000
-#&gt; sample_6      3 0.000
-#&gt; sample_7      3 0.000
-#&gt; sample_8      3 0.000
+#&gt; sample_6      2 0.000
+#&gt; sample_7      2 0.000
+#&gt; sample_8      2 0.000
 #&gt; sample_9      1 0.000
-#&gt; sample_10     1 0.509
+#&gt; sample_10     1 0.000
 #&gt; sample_11     1 0.000
-#&gt; sample_12     2 0.000
+#&gt; sample_12     3 0.000
 #&gt; sample_13     1 0.000
 #&gt; sample_14     1 0.000
 #&gt; sample_15     1 0.000
 #&gt; sample_16     1 0.000
 #&gt; sample_17     1 0.000
-#&gt; sample_18     3 0.000
+#&gt; sample_18     1 0.498
 #&gt; sample_19     1 0.000
 #&gt; sample_20     1 0.000
 #&gt; sample_21     1 0.000
-#&gt; sample_22     3 0.000
-#&gt; sample_23     3 0.000
+#&gt; sample_22     2 0.000
+#&gt; sample_23     2 0.000
 #&gt; sample_24     1 0.000
-#&gt; sample_25     3 0.189
-#&gt; sample_26     3 0.000
-#&gt; sample_27     3 0.000
-#&gt; sample_34     2 0.000
+#&gt; sample_25     1 0.332
+#&gt; sample_26     1 0.000
+#&gt; sample_27     2 0.000
+#&gt; sample_34     3 0.332
 #&gt; sample_35     2 0.000
-#&gt; sample_36     2 0.000
-#&gt; sample_37     2 0.000
-#&gt; sample_38     2 0.000
-#&gt; sample_28     2 0.000
+#&gt; sample_36     3 0.000
+#&gt; sample_37     3 0.000
+#&gt; sample_38     3 0.000
+#&gt; sample_28     3 0.000
 #&gt; sample_29     1 0.000
-#&gt; sample_30     2 0.000
-#&gt; sample_31     2 0.000
-#&gt; sample_32     2 0.000
-#&gt; sample_33     2 0.000</div><div class='input'><span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>golub_cola_ds</span>)</div><div class='output co'>#&gt;           k=2 k=3 k=4 k=5 k=6
-#&gt; sample_39   2   3   3   3   3
-#&gt; sample_40   2   3   3   3   3
+#&gt; sample_30     3 0.000
+#&gt; sample_31     3 0.000
+#&gt; sample_32     3 0.000
+#&gt; sample_33     3 0.000</div><div class='input'><span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span><span class='op'>(</span><span class='va'>golub_cola_ds</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;           k=2 k=3 k=4 k=5 k=6
+#&gt; sample_39   2   2   2   2   2
+#&gt; sample_40   2   2   2   2   2
 #&gt; sample_42   1   1   1   1   1
 #&gt; sample_47   1   1   1   1   1
 #&gt; sample_48   1   1   1   1   1
-#&gt; sample_49   2   3   3   3   3
+#&gt; sample_49   2   2   2   2   2
 #&gt; sample_41   1   1   1   1   1
 #&gt; sample_43   1   1   1   1   1
 #&gt; sample_44   1   1   1   1   1
 #&gt; sample_45   1   1   1   1   1
 #&gt; sample_46   1   1   1   1   1
 #&gt; sample_70   1   1   1   1   1
-#&gt; sample_71   1   1   4   4   4
-#&gt; sample_72   1   1   4   4   4
+#&gt; sample_71   1   1   4  NA   4
+#&gt; sample_72   1   1   4  NA   4
 #&gt; sample_68   1   1   1   1   1
 #&gt; sample_69   1   1   1   1   1
-#&gt; sample_67   1   1  NA   4  NA
-#&gt; sample_55   2   3   3   3   3
-#&gt; sample_56   2   3   3   3   3
-#&gt; sample_59  NA  NA  NA  NA  NA
-#&gt; sample_52   2   2   2   5   5
-#&gt; sample_53   2   2   2   2   2
-#&gt; sample_51   2   2   2   2   2
-#&gt; sample_50   2   2   2   2   2
-#&gt; sample_54   1   1  NA   1   1
-#&gt; sample_57   2   2   2  NA  NA
+#&gt; sample_67   1   1   1   1   4
+#&gt; sample_55   2   2   2   2  NA
+#&gt; sample_56   2   2   2   2   2
+#&gt; sample_59  NA  NA  NA   1   1
+#&gt; sample_52   2   3   3  NA   3
+#&gt; sample_53   2   3   3  NA   4
+#&gt; sample_51   2   3   3   2   2
+#&gt; sample_50   2   3   3  NA   3
+#&gt; sample_54   1   1   1   1   1
+#&gt; sample_57   2  NA  NA  NA   2
 #&gt; sample_58   2   2   2   2   2
-#&gt; sample_60   2   2   2  NA  NA
+#&gt; sample_60   2   3  NA  NA  NA
 #&gt; sample_61   2   2   2   2   2
-#&gt; sample_65   2   2   2   2   2
+#&gt; sample_65   2   3   3  NA  NA
 #&gt; sample_66   1   1   1   1   1
-#&gt; sample_63   2   2   2   5   5
-#&gt; sample_64   2  NA   2  NA   3
-#&gt; sample_62   2   2   2   5   5
-#&gt; sample_1    2   3   3   3   3
+#&gt; sample_63   2   3   3  NA   3
+#&gt; sample_64   2   2   2   2   2
+#&gt; sample_62   2   3   3  NA   3
+#&gt; sample_1    2   2   2  NA   5
 #&gt; sample_2    1   1   1   1   1
-#&gt; sample_3    2   3   3   3   3
-#&gt; sample_4    2   3   3   3   3
+#&gt; sample_3    2   2   2  NA   5
+#&gt; sample_4    2   2   2  NA   5
 #&gt; sample_5    1   1   1   1   1
-#&gt; sample_6    2   3   3   3   3
-#&gt; sample_7    2   3   3   3   3
-#&gt; sample_8    2   3   3   3   3
+#&gt; sample_6    2   2   2  NA   5
+#&gt; sample_7    2   2   2   2   5
+#&gt; sample_8    2   2   2   2   2
 #&gt; sample_9    1   1   1   1   1
-#&gt; sample_10  NA  NA   1  NA  NA
+#&gt; sample_10  NA   1   4  NA   1
 #&gt; sample_11   1   1   1   1   1
-#&gt; sample_12   2   2   2  NA   2
+#&gt; sample_12   2   3   3  NA  NA
 #&gt; sample_13   1   1   1   1   1
 #&gt; sample_14   1   1   1   1   1
 #&gt; sample_15   1   1   1   1   1
 #&gt; sample_16   1   1   1   1   1
-#&gt; sample_17   1   1   1   1   1
-#&gt; sample_18   2   3   3  NA  NA
+#&gt; sample_17   1   1   1   1  NA
+#&gt; sample_18   2  NA   4   3  NA
 #&gt; sample_19   1   1   1   1   1
 #&gt; sample_20   1   1   1   1   1
 #&gt; sample_21   1   1   1   1   1
-#&gt; sample_22   2   3  NA  NA  NA
-#&gt; sample_23   2   3   3   3   3
+#&gt; sample_22   2   2   2  NA  NA
+#&gt; sample_23   2   2   2   2   5
 #&gt; sample_24   1   1   1   1   1
 #&gt; sample_25   2  NA  NA  NA  NA
-#&gt; sample_26   1   3  NA  NA  NA
-#&gt; sample_27   2   3   3   3   3
-#&gt; sample_34   2   2   2   2   2
-#&gt; sample_35   2   2   2  NA  NA
-#&gt; sample_36   2   2   2   2   2
-#&gt; sample_37   2   2   2   2   2
-#&gt; sample_38   2   2   2   2   2
-#&gt; sample_28   2   2   2   2   2
+#&gt; sample_26   1   1   4   3  NA
+#&gt; sample_27   2   2   2   2   2
+#&gt; sample_34   2  NA   3   2   2
+#&gt; sample_35   2   2   2   2   2
+#&gt; sample_36   2   3   3  NA   3
+#&gt; sample_37   2   3   3  NA  NA
+#&gt; sample_38   2   3   3  NA  NA
+#&gt; sample_28   2   3   3  NA   2
 #&gt; sample_29   1   1   1   1   1
-#&gt; sample_30   2   2   2   2   2
-#&gt; sample_31   2   2   2   2   2
-#&gt; sample_32   2   2   2   2   2
-#&gt; sample_33   2   2   2   2   2</div></pre>
+#&gt; sample_30   2   3   3   1   3
+#&gt; sample_31   2   3   3  NA  NA
+#&gt; sample_32   2   3   3   2   2
+#&gt; sample_33   2   3   3   2   2</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -341,7 +319,7 @@ label with prediction p-value &gt; <code>p_cutoff</code> is set to <code>NA</cod
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

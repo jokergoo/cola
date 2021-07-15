@@ -29,13 +29,33 @@ The columns will not further split. The reason for stopping the partitioning is:
 
 <% } else if(node == "0"){ -%>
 
-Child nodes: [Node00<%=ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")%>](#Node00<%=ifelse(is_leaf_node(res_hc, "00"), "-leaf", "")%>), [Node01<%=ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>](#Node01<%=ifelse(is_leaf_node(res_hc, "01"), "-leaf", "")%>).
-
+<% cnode = get_children_nodes(res_hc, node) 
+   cnode_is_leaf = sapply(cnode, function(x) is_leaf_node(res_hc, x)) -%>
+Child nodes: 
+<% for(i in seq_along(cnode)) { -%>
+    <% current_node = paste0("Node", cnode[i], ifelse(cnode_is_leaf[i], "-leaf", "")) -%>
+    <% if(!cnode_is_leaf[i]) { -%>
+        [<%=current_node%>](#<%=current_node%>)
+    <% } else {-%>
+        <%=current_node%>
+    <% } -%>
+    <%=ifelse(i==length(cnode), ".", ",")%>
+<% } -%>
 <% } else { -%>
 
 Parent node: [Node<%=substr(node, 1, nchar(node)-1)%>](#Node<%=substr(node, 1, nchar(node)-1)%>).
-Child nodes: [Node<%=node%>0<%=ifelse(is_leaf_node(res_hc, paste0(node, "0")), "-leaf", "")%>](#Node<%=node%>0<%=ifelse(is_leaf_node(res_hc, paste0(node, "0")), "-leaf", "")%>), [Node<%=node%>1<%=ifelse(is_leaf_node(res_hc, paste0(node, "1")), "-leaf", "")%>](#Node<%=node%>1<%=ifelse(is_leaf_node(res_hc, paste0(node, "1")), "-leaf", "")%>).
-
+<% cnode = get_children_nodes(res_hc, node) 
+   cnode_is_leaf = sapply(cnode, function(x) is_leaf_node(res_hc, x)) -%>
+Child nodes: 
+<% for(i in seq_along(cnode)) { -%>
+    <% current_node = paste0("Node", cnode[i], ifelse(cnode_is_leaf[i], "-leaf", "")) -%>
+    <% if(!cnode_is_leaf[i]) { -%>
+        [<%=current_node%>](#<%=current_node%>)
+    <% } else {-%>
+        <%=current_node%>
+    <% } -%>
+    <%=ifelse(i==length(cnode), ".", ",")%>
+<% } -%>
 <% } -%>
 
 <% } else if(!single_report) { -%>

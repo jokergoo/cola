@@ -55,7 +55,7 @@ golub_cola_rh = hierarchical_partition(
 m = get_matrix(golub_cola)
 set.seed(123)
 golub_cola_ds = consensus_partition_by_down_sampling(
-    m, subset = 50, mc.cores = 6,
+    m, subset = 50, cores = 6,
     anno = anno[, c("ALL.AML"), drop = FALSE],
     anno_col = c("ALL" = "red", "AML" = "blue")
 )

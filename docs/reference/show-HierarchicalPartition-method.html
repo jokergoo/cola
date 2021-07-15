@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,7 +121,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for HierarchicalPartition</span>
-<span class='fu'><a href='show-dispatch.html'>show</a></span>(<span class='no'>object</span>)</pre>
+<span class='fu'><a href='show-dispatch.html'>show</a></span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,35 +135,45 @@
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>No value is returned.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola_rh</span>)
-<span class='no'>golub_cola_rh</span></div><div class='output co'>#&gt; A 'HierarchicalPartition' object with 'ATC:skmeans' method.
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola_rh</span><span class='op'>)</span>
+<span class='va'>golub_cola_rh</span>
+</div><div class='output co'>#&gt; A 'HierarchicalPartition' object with 'ATC:skmeans' method.
 #&gt;   On a matrix with 4116 rows and 72 columns.
-#&gt;   Performed in total 4950 partitions.
+#&gt;   Performed in total 1500 partitions.
 #&gt;   There are 6 groups.
 #&gt; 
 #&gt; Hierarchy of the partition:
 #&gt;   0, 72 cols
-#&gt;   |-- 01, 32 cols
-#&gt;   |   |-- 011, 11 cols
-#&gt;   |   `-- 010, 21 cols
-#&gt;   |       |-- 0101, 10 cols
-#&gt;   |       `-- 0100, 11 cols
-#&gt;   `-- 00, 40 cols
-#&gt;       |-- 001, 17 cols
-#&gt;       `-- 000, 23 cols
-#&gt;           |-- 0001, 11 cols
-#&gt;           `-- 0000, 12 cols
+#&gt;   |-- 01, 35 cols, 263 signatures
+#&gt;   |   |-- 011, 14 cols, 11 signatures (c)
+#&gt;   |   `-- 012, 21 cols, 174 signatures
+#&gt;   |       |-- 0121, 10 cols (b)
+#&gt;   |       `-- 0122, 11 cols (b)
+#&gt;   |-- 02, 24 cols, 134 signatures
+#&gt;   |   |-- 021, 13 cols, 35 signatures (c)
+#&gt;   |   `-- 022, 11 cols (b)
+#&gt;   `-- 03, 13 cols (a)
+#&gt; Stop reason:
+#&gt;   a) Mean silhouette score was too small
+#&gt;   b) Subgroup had too few columns.
+#&gt;   c) There were too few signatures.
 #&gt; 
 #&gt; Following methods can be applied to this 'HierarchicalPartition' object:
 #&gt;  [1] "all_leaves"            "all_nodes"             "cola_report"          
 #&gt;  [4] "collect_classes"       "colnames"              "compare_signatures"   
-#&gt;  [7] "dimension_reduction"   "get_anno_col"          "get_anno"             
-#&gt; [10] "get_classes"           "get_matrix"            "get_signatures"       
-#&gt; [13] "max_depth"             "ncol"                  "nrow"                 
-#&gt; [16] "rownames"              "show"                  "suggest_best_k"       
-#&gt; [19] "test_to_known_factors"
+#&gt;  [7] "dimension_reduction"   "functional_enrichment" "get_anno"             
+#&gt; [10] "get_anno_col"          "get_children_nodes"    "get_classes"          
+#&gt; [13] "get_matrix"            "get_signatures"        "is_leaf_node"         
+#&gt; [16] "max_depth"             "merge_node"            "ncol"                 
+#&gt; [19] "node_info"             "node_level"            "nrow"                 
+#&gt; [22] "rownames"              "show"                  "split_node"           
+#&gt; [25] "suggest_best_k"        "test_to_known_factors" "top_rows_heatmap"     
+#&gt; [28] "top_rows_overlap"     
 #&gt; 
 #&gt; You can get result for a single node by e.g. object["01"]</div></pre>
   </div>
@@ -205,7 +191,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -10,7 +10,7 @@ Suggest the best number of subgroups
 \S4method{suggest_best_k}{ConsensusPartition}(object,
     jaccard_index_cutoff = select_jaccard_cutoff(ncol(object)),
     mean_silhouette_cutoff = NULL,
-    stable_PAC = 0.1, help = TRUE)
+    stable_PAC = 0.1, help = cola_opt$help)
 }
 \arguments{
 

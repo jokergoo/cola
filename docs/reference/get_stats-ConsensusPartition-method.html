@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,7 +121,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>object</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>object</span>@<span class='kw'>k</span>, <span class='kw'>all_stats</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span><span class='op'>(</span><span class='va'>object</span>, k <span class='op'>=</span> <span class='va'>object</span><span class='op'>@</span><span class='va'>k</span>, all_stats <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -167,7 +143,7 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The statistics are:</p>
-<dl'>
+<dl>
   <dt>1-PAC</dt><dd><p>1 - proportion of ambiguous clustering, calculated by <code><a href='PAC.html'>PAC</a></code>.</p></dd>
   <dt>mean_silhouette</dt><dd><p>The mean silhouette score. See <a href='https://en.wikipedia.org/wiki/Silhouette_(clustering)'>https://en.wikipedia.org/wiki/Silhouette_(clustering)</a> .</p></dd>
   <dt>concordance</dt><dd><p>The mean probability that each partition fits the consensus partition, calculated by <code><a href='concordance.html'>concordance</a></code>.</p></dd>
@@ -180,17 +156,22 @@
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A matrix of partition statistics.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span>]
-<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>obj</span>)</div><div class='output co'>#&gt;   k     1-PAC mean_silhouette concordance area_increased      Rand   Jaccard
-#&gt; 2 2 1.0000000       0.9602287   0.9866667     0.50560380 0.4945227 0.4945227
-#&gt; 3 3 1.0000000       0.9486435   0.9801852     0.28098318 0.8247261 0.6559140
-#&gt; 4 4 0.8169447       0.7654815   0.8880556     0.10199548 0.9053208 0.7444562
-#&gt; 5 5 0.7067603       0.7039965   0.8382407     0.06150012 0.9503130 0.8359173
-#&gt; 6 6 0.7216857       0.5401841   0.7842593     0.04201287 0.9358372 0.7657143</div><div class='input'><span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>obj</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;   k 1-PAC mean_silhouette concordance area_increased      Rand   Jaccard
-#&gt; 2 2     1       0.9602287   0.9866667      0.5056038 0.4945227 0.4945227</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span>
+<span class='va'>obj</span> <span class='op'>=</span> <span class='va'>golub_cola</span><span class='op'>[</span><span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span><span class='op'>]</span>
+<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span><span class='op'>(</span><span class='va'>obj</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   k     1-PAC mean_silhouette concordance area_increased      Rand   Jaccard
+#&gt; 2 2 1.0000000       0.9918746   0.9963889     0.50691811 0.4933490 0.4933490
+#&gt; 3 3 1.0000000       0.9852504   0.9930556     0.26319795 0.8595462 0.7182104
+#&gt; 4 4 0.7910448       0.6846335   0.8902778     0.10201295 0.9749609 0.9310345
+#&gt; 5 5 0.7366111       0.7675194   0.8580556     0.06808723 0.9033646 0.7180365
+#&gt; 6 6 0.7309043       0.5925686   0.8097222     0.03587282 0.9280125 0.7321689</div><div class='input'><span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span><span class='op'>(</span><span class='va'>obj</span>, k <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   k 1-PAC mean_silhouette concordance area_increased     Rand  Jaccard
+#&gt; 2 2     1       0.9918746   0.9963889      0.5069181 0.493349 0.493349</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -206,7 +187,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -381,7 +381,7 @@ setMethod(f = "suggest_best_k",
 	definition = function(object, 
 	jaccard_index_cutoff = select_jaccard_cutoff(ncol(object)), 
 	mean_silhouette_cutoff = NULL,
-	stable_PAC = 0.1, help = TRUE) {
+	stable_PAC = 0.1, help = cola_opt$help) {
 
 	# if(verbose) {
 	# 	cat("This function only suggests the best k. It is recommended that users look ...")

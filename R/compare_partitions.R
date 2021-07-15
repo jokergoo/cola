@@ -28,7 +28,7 @@
 # x = hu6800ENTREZID
 # mapped_probes = mappedkeys(x)
 # id_mapping = unlist(as.list(x[mapped_probes]))
-# compare_partitions(golub_cola["ATC:skmeans"], res2["SD:kmeans"], 
+# compare_partitions(golub_cola["ATC:skmeans"], golub_cola["SD:kmeans"], 
 #     id_mapping = id_mapping)
 # }
 setMethod(f = "compare_partitions",
@@ -111,7 +111,7 @@ setMethod(f = "compare_partitions",
 		rmarkdown::render(rmd_file, output_file = output_file, output_dir = tmpdir, quiet = TRUE)
 		browseURL(output_file)
 	} else {
-		rmarkdown::render(rmd_file, output_file = output_file, output_dir = tmpdir, quiet = TRUE)
+		rmarkdown::render(rmd_file, output_file = output_file, output_dir = dirname(output_file), quiet = TRUE)
 	}
 
 	invisible(NULL)

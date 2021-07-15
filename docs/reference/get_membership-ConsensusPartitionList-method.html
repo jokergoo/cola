@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,7 +121,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartitionList</span>
-<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>object</span>, <span class='no'>k</span>)</pre>
+<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>k</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,82 +148,86 @@ when summarizing membership matrix from all methods.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='get_membership-ConsensusPartition-method.html'>get_membership,ConsensusPartition-method</a></code> returns membership matrix for a single top-value method and partitioning method.</p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span>(<span class='no'>golub_cola</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;                    p1          p2
-#&gt; sample_39 0.609172245 0.390827755
-#&gt; sample_40 0.537648393 0.462351607
-#&gt; sample_42 0.922572777 0.077427223
-#&gt; sample_47 0.984409251 0.015590749
-#&gt; sample_48 0.993833314 0.006166686
-#&gt; sample_49 0.534520587 0.465479413
-#&gt; sample_41 0.994297785 0.005702215
-#&gt; sample_43 0.964759319 0.035240681
-#&gt; sample_44 0.984037805 0.015962195
-#&gt; sample_45 0.983873960 0.016126040
-#&gt; sample_46 0.975266770 0.024733230
-#&gt; sample_70 0.887328930 0.112671070
-#&gt; sample_71 0.902868585 0.097131415
-#&gt; sample_72 0.931508876 0.068491124
-#&gt; sample_68 0.994297785 0.005702215
-#&gt; sample_69 0.994077046 0.005922954
-#&gt; sample_67 0.448313849 0.551686151
-#&gt; sample_55 0.571321802 0.428678198
-#&gt; sample_56 0.619610350 0.380389650
-#&gt; sample_59 0.908265546 0.091734454
-#&gt; sample_52 0.033282060 0.966717940
-#&gt; sample_53 0.006764933 0.993235067
-#&gt; sample_51 0.006323456 0.993676544
-#&gt; sample_50 0.006323456 0.993676544
-#&gt; sample_54 0.269030257 0.730969743
-#&gt; sample_57 0.042438995 0.957561005
-#&gt; sample_58 0.007927686 0.992072314
-#&gt; sample_60 0.152756493 0.847243507
-#&gt; sample_61 0.009736789 0.990263211
-#&gt; sample_65 0.008964959 0.991035041
-#&gt; sample_66 0.723777033 0.276222967
-#&gt; sample_63 0.033098801 0.966901199
-#&gt; sample_64 0.059536963 0.940463037
-#&gt; sample_62 0.035249392 0.964750608
-#&gt; sample_1  0.750844370 0.249155630
-#&gt; sample_2  0.614514264 0.385485736
-#&gt; sample_3  0.578693477 0.421306523
-#&gt; sample_4  0.708830713 0.291169287
-#&gt; sample_5  0.994297785 0.005702215
-#&gt; sample_6  0.569903487 0.430096513
-#&gt; sample_7  0.587186859 0.412813141
-#&gt; sample_8  0.580309001 0.419690999
-#&gt; sample_9  0.921582757 0.078417243
-#&gt; sample_10 0.664929555 0.335070445
-#&gt; sample_11 0.933002523 0.066997477
-#&gt; sample_12 0.096072008 0.903927992
-#&gt; sample_13 0.993833314 0.006166686
-#&gt; sample_14 0.964879226 0.035120774
-#&gt; sample_15 0.994297785 0.005702215
-#&gt; sample_16 0.966545036 0.033454964
-#&gt; sample_17 0.933362854 0.066637146
-#&gt; sample_18 0.789678351 0.210321649
-#&gt; sample_19 0.968070071 0.031929929
-#&gt; sample_20 0.994138012 0.005861988
-#&gt; sample_21 0.987976112 0.012023888
-#&gt; sample_22 0.554651567 0.445348433
-#&gt; sample_23 0.576633613 0.423366387
-#&gt; sample_24 0.990422248 0.009577752
-#&gt; sample_25 0.636590006 0.363409994
-#&gt; sample_26 0.934787077 0.065212923
-#&gt; sample_27 0.530491880 0.469508120
-#&gt; sample_34 0.014298323 0.985701677
-#&gt; sample_35 0.038570851 0.961429149
-#&gt; sample_36 0.007977615 0.992022385
-#&gt; sample_37 0.006323456 0.993676544
-#&gt; sample_38 0.013149038 0.986850962
-#&gt; sample_28 0.014668059 0.985331941
-#&gt; sample_29 0.280879764 0.719120236
-#&gt; sample_30 0.020287233 0.979712767
-#&gt; sample_31 0.012644394 0.987355606
-#&gt; sample_32 0.011780524 0.988219476
-#&gt; sample_33 0.006323456 0.993676544</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span>
+<span class='fu'><a href='get_membership-dispatch.html'>get_membership</a></span><span class='op'>(</span><span class='va'>golub_cola</span>, k <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;                    p1          p2
+#&gt; sample_39 0.265865202 0.734134798
+#&gt; sample_40 0.299845340 0.700154660
+#&gt; sample_42 0.074072583 0.925927417
+#&gt; sample_47 0.010883670 0.989116330
+#&gt; sample_48 0.003071420 0.996928580
+#&gt; sample_49 0.299252428 0.700747572
+#&gt; sample_41 0.003071420 0.996928580
+#&gt; sample_43 0.061809064 0.938190936
+#&gt; sample_44 0.003581107 0.996418893
+#&gt; sample_45 0.006456531 0.993543469
+#&gt; sample_46 0.020119598 0.979880402
+#&gt; sample_70 0.062498496 0.937501504
+#&gt; sample_71 0.080287321 0.919712679
+#&gt; sample_72 0.069870495 0.930129505
+#&gt; sample_68 0.003071420 0.996928580
+#&gt; sample_69 0.004090795 0.995909205
+#&gt; sample_67 0.690346012 0.309653988
+#&gt; sample_55 0.297316546 0.702683454
+#&gt; sample_56 0.264250946 0.735749054
+#&gt; sample_59 0.086988108 0.913011892
+#&gt; sample_52 0.986394058 0.013605942
+#&gt; sample_53 0.998878196 0.001121804
+#&gt; sample_51 0.998878196 0.001121804
+#&gt; sample_50 0.998878196 0.001121804
+#&gt; sample_54 0.757136222 0.242863778
+#&gt; sample_57 0.986793928 0.013206072
+#&gt; sample_58 0.995493084 0.004506916
+#&gt; sample_60 0.781417528 0.218582472
+#&gt; sample_61 0.994983397 0.005016603
+#&gt; sample_65 0.995049878 0.004950122
+#&gt; sample_66 0.417377129 0.582622871
+#&gt; sample_63 0.985884371 0.014115629
+#&gt; sample_64 0.948474801 0.051525199
+#&gt; sample_62 0.985580528 0.014419472
+#&gt; sample_1  0.206289898 0.793710102
+#&gt; sample_2  0.629261344 0.370738656
+#&gt; sample_3  0.270289571 0.729710429
+#&gt; sample_4  0.204271832 0.795728168
+#&gt; sample_5  0.003071420 0.996928580
+#&gt; sample_6  0.287975474 0.712024526
+#&gt; sample_7  0.296050508 0.703949492
+#&gt; sample_8  0.264159843 0.735840157
+#&gt; sample_9  0.073213440 0.926786560
+#&gt; sample_10 0.176173720 0.823826280
+#&gt; sample_11 0.076343461 0.923656539
+#&gt; sample_12 0.888786744 0.111213256
+#&gt; sample_13 0.003071420 0.996928580
+#&gt; sample_14 0.077031416 0.922968584
+#&gt; sample_15 0.003071420 0.996928580
+#&gt; sample_16 0.057050012 0.942949988
+#&gt; sample_17 0.231442412 0.768557588
+#&gt; sample_18 0.122607124 0.877392876
+#&gt; sample_19 0.057050012 0.942949988
+#&gt; sample_20 0.003071420 0.996928580
+#&gt; sample_21 0.004179928 0.995820072
+#&gt; sample_22 0.272186309 0.727813691
+#&gt; sample_23 0.279854456 0.720145544
+#&gt; sample_24 0.006396945 0.993603055
+#&gt; sample_25 0.225593504 0.774406496
+#&gt; sample_26 0.073157116 0.926842884
+#&gt; sample_27 0.305748356 0.694251644
+#&gt; sample_34 0.990238134 0.009761866
+#&gt; sample_35 0.964071724 0.035928276
+#&gt; sample_36 0.998878196 0.001121804
+#&gt; sample_37 0.998878196 0.001121804
+#&gt; sample_38 0.995762947 0.004237053
+#&gt; sample_28 0.989572340 0.010427660
+#&gt; sample_29 0.782810180 0.217189820
+#&gt; sample_30 0.995797419 0.004202581
+#&gt; sample_31 0.988567246 0.011432754
+#&gt; sample_32 0.996002771 0.003997229
+#&gt; sample_33 0.998878196 0.001121804</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -263,7 +243,7 @@ when summarizing membership matrix from all methods.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,7 +121,10 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span>(<span class='no'>object</span>, <span class='kw'>jaccard_index_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.95</span>)</pre>
+<span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span><span class='op'>(</span><span class='va'>object</span>,
+    jaccard_index_cutoff <span class='op'>=</span> <span class='fu'>select_jaccard_cutoff</span><span class='op'>(</span><span class='fu'><a href='ncol-dispatch.html'>ncol</a></span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span><span class='op'>)</span>,
+    mean_silhouette_cutoff <span class='op'>=</span> <span class='cn'>NULL</span>,
+    stable_PAC <span class='op'>=</span> <span class='fl'>0.1</span>, help <span class='op'>=</span> <span class='va'>cola_opt</span><span class='op'>$</span><span class='va'>help</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -158,19 +137,32 @@
       <th>jaccard_index_cutoff</th>
       <td><p>The cutoff for Jaccard index for comparing to previous k.</p></td>
     </tr>
+    <tr>
+      <th>mean_silhouette_cutoff</th>
+      <td><p>Cutoff for mean silhourtte scores.</p></td>
+    </tr>
+    <tr>
+      <th>stable_PAC</th>
+      <td><p>Cutoff for stable PAC. This argument only take effect when <code>mean_silhouette_cutoff</code> is set to <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>help</th>
+      <td><p>Whether to print help message.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The best k is selected according to following rules:</p>
 <ul>
-<li><p>All k with Jaccard index larger than 0.95 are removed because increasing k does not provide enough extra information. If all k are removed, it is marked as no subgroup is detected.</p></li>
-<li><p>For all k with 1-PAC score larger than 0.9, the maximal k is taken as the best k, and other k are marked as optional k.</p></li>
+<li><p>All k with Jaccard index larger than <code>jaccard_index_cutoff</code> are removed because increasing k does not provide enough extra information. If all k are removed, it is marked as no subgroup is detected.</p></li>
+<li><p>If all k with Jaccard index larger than 0.75, k with the highest mean silhourtte score is taken as the best k.</p></li>
+<li><p>For all k with mean silhouette score larger than <code>mean_silhouette_cutoff</code>, the maximal k is taken as the best k, and other k are marked as optional best k.</p></li>
+<li><p>If argument <code>mean_silhouette_cutoff</code> is set to NULL, which means we do not filter by mean silhouette scores while by 1-PAC scores. Similarly, k with the highest 1-PAC is taken the best k and other k are marked as optional best k.</p></li>
 <li><p>If it does not fit the second rule. The k with the maximal vote of the highest 1-PAC score, highest mean silhouette, and highest concordance is taken as the best k.</p></li>
 </ul>
 
-<p>Additionally, if 1-PAC for the best k is larger than 0.9 (10% ambiguity for
-the partition), cola marks it as a stable partition. It should be noted that
+<p>It should be noted that
 it is difficult to find the best k deterministically, we encourage users to
 compare results for all k and determine a proper one which best explain
 their studies.</p>
@@ -180,11 +172,18 @@ their studies.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>The best k.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='no'>obj</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span>]
-<span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span>(<span class='no'>obj</span>)</div><div class='output co'>#&gt; [1] 3
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span>
+<span class='va'>obj</span> <span class='op'>=</span> <span class='va'>golub_cola</span><span class='op'>[</span><span class='st'>"ATC"</span>, <span class='st'>"skmeans"</span><span class='op'>]</span>
+<span class='fu'><a href='suggest_best_k-dispatch.html'>suggest_best_k</a></span><span class='op'>(</span><span class='va'>obj</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>The best k suggested by this function might not reflect the real</span>
+#&gt; <span class='message'>subgroups in the data (especially when you expect a large best k). It</span>
+#&gt; <span class='message'>is recommended to directly look at the plots from</span>
+#&gt; <span class='message'>select_partition_number() or other related plotting functions.</span></div><div class='output co'>#&gt; [1] 3
 #&gt; attr(,"optional")
 #&gt; [1] 2</div></pre>
   </div>
@@ -202,7 +201,7 @@ their studies.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -168,6 +168,8 @@ hierarchical_partition = function(data,
 		stop_wrap("Wrong format of `combination_method`.")
 	}
 
+	combination_method = lapply(combination_method, unname)
+
 	if(verbose) {
 		if(length(combination_method) == 1) {
 			qqcat("* running @{combination_method[[1]][1]}:@{combination_method[[1]][2]}.\n")
@@ -913,7 +915,6 @@ dim.HierarchicalPartition = function(x) {
 # -n_columns Number of columns.
 # -n_signatures Number of signatures.
 # -p_signatures Percent of signatures.
-# -node_height Height of the node in the dendrogram
 # -is_leaf Whether the node is a leaf
 #
 setMethod(f = "node_info",

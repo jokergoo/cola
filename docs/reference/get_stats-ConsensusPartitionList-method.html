@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,7 +121,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartitionList</span>
-<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>object</span>, <span class='no'>k</span>, <span class='kw'>all_stats</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>k</span>, all_stats <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -168,51 +144,55 @@
 
     <p>A matrix of partition statistics for a selected k. Rows in the 
 matrix correspond to combinations of top-value methods and partitioning methods.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span>(<span class='no'>golub_cola</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;             k     1-PAC mean_silhouette concordance area_increased      Rand
-#&gt; SD:skmeans  2 0.6553995       0.9064890   0.9505556      0.4908054 0.5179969
-#&gt; CV:skmeans  2 0.6808604       0.8880965   0.9402778      0.4899117 0.5179969
-#&gt; MAD:skmeans 2 0.7050044       0.8300409   0.9241667      0.4905336 0.5179969
-#&gt; ATC:skmeans 2 1.0000000       0.9602287   0.9866667      0.5056038 0.4945227
-#&gt; SD:mclust   2 0.3050302       0.8020404   0.7658333      0.4206131 0.5179969
-#&gt; CV:mclust   2 0.9056190       0.9340854   0.9402778      0.4515678 0.5246479
-#&gt; MAD:mclust  2 0.8327480       0.9221557   0.9536111      0.4519860 0.5320814
-#&gt; ATC:mclust  2 0.4433714       0.6696123   0.8418519      0.4075390 0.5070423
-#&gt; SD:kmeans   2 0.6753623       0.9366896   0.9565741      0.4721032 0.5320814
-#&gt; CV:kmeans   2 0.9155280       0.9619138   0.9759259      0.4732467 0.5320814
-#&gt; MAD:kmeans  2 0.6811594       0.9425210   0.9659259      0.4745559 0.5320814
-#&gt; ATC:kmeans  2 1.0000000       0.9648659   0.9856481      0.5030414 0.4992175
-#&gt; SD:pam      2 0.5478490       0.7326234   0.8897222      0.4922305 0.4929577
-#&gt; CV:pam      2 0.5443371       0.8335799   0.9152778      0.4990158 0.4945227
-#&gt; MAD:pam     2 0.6518876       0.8205751   0.9236111      0.4998962 0.4933490
-#&gt; ATC:pam     2 0.5935031       0.7591574   0.8985185      0.4765846 0.5246479
-#&gt; SD:hclust   2 0.4214223       0.8656393   0.9102778      0.4434748 0.5492958
-#&gt; CV:hclust   2 0.1966637       0.7391751   0.8315741      0.4548719 0.5492958
-#&gt; MAD:hclust  2 0.4253731       0.8392771   0.9059259      0.4481700 0.5590767
-#&gt; ATC:hclust  2 0.5465320       0.7759363   0.8945370      0.4755652 0.4933490
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span>
+<span class='fu'><a href='get_stats-dispatch.html'>get_stats</a></span><span class='op'>(</span><span class='va'>golub_cola</span>, k <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;             k     1-PAC mean_silhouette concordance area_increased      Rand
+#&gt; SD:skmeans  2 1.0000000       0.9953730   0.9977778      0.4880976 0.5121283
+#&gt; CV:skmeans  2 1.0000000       0.9916216   0.9961111      0.4839104 0.5179969
+#&gt; MAD:skmeans 2 1.0000000       0.9720555   0.9886111      0.4869463 0.5179969
+#&gt; ATC:skmeans 2 1.0000000       0.9918746   0.9963889      0.5069181 0.4933490
+#&gt; SD:mclust   2 0.7946170       0.9258006   0.9669444      0.4928132 0.5121283
+#&gt; CV:mclust   2 0.9126427       0.9401687   0.9544444      0.4645412 0.5179969
+#&gt; MAD:mclust  2 0.9130817       0.9169410   0.9686111      0.4662366 0.5402973
+#&gt; ATC:mclust  2 0.9881475       0.9485706   0.9694444      0.3386532 0.6494523
+#&gt; SD:kmeans   2 1.0000000       0.9842643   0.9838889      0.4752546 0.5179969
+#&gt; CV:kmeans   2 1.0000000       0.9745355   0.9905556      0.4715537 0.5320814
+#&gt; MAD:kmeans  2 1.0000000       0.9994386   0.9997222      0.4760038 0.5246479
+#&gt; ATC:kmeans  2 1.0000000       0.9682558   0.9869444      0.5051609 0.4945227
+#&gt; SD:pam      2 0.8274802       0.9258975   0.9652778      0.4807613 0.5246479
+#&gt; CV:pam      2 0.7251975       0.9059746   0.9513889      0.5016730 0.4945227
+#&gt; MAD:pam     2 0.8257243       0.9257311   0.9638889      0.4842816 0.5179969
+#&gt; ATC:pam     2 0.9991220       0.9549769   0.9816667      0.4979682 0.5027387
+#&gt; SD:hclust   2 0.9556629       0.9385404   0.9716667      0.4628792 0.5402973
+#&gt; CV:hclust   2 0.4543459       0.8352513   0.9111111      0.4581123 0.5402973
+#&gt; MAD:hclust  2 0.7458297       0.9200550   0.9538889      0.4697769 0.5179969
+#&gt; ATC:hclust  2 0.6865672       0.8549144   0.9361111      0.4933646 0.4945227
 #&gt;               Jaccard
-#&gt; SD:skmeans  0.5179969
+#&gt; SD:skmeans  0.5121283
 #&gt; CV:skmeans  0.5179969
 #&gt; MAD:skmeans 0.5179969
-#&gt; ATC:skmeans 0.4945227
-#&gt; SD:mclust   0.5179969
-#&gt; CV:mclust   0.5246479
-#&gt; MAD:mclust  0.5320814
-#&gt; ATC:mclust  0.5070423
-#&gt; SD:kmeans   0.5320814
+#&gt; ATC:skmeans 0.4933490
+#&gt; SD:mclust   0.5121283
+#&gt; CV:mclust   0.5179969
+#&gt; MAD:mclust  0.5402973
+#&gt; ATC:mclust  0.6494523
+#&gt; SD:kmeans   0.5179969
 #&gt; CV:kmeans   0.5320814
-#&gt; MAD:kmeans  0.5320814
-#&gt; ATC:kmeans  0.4992175
-#&gt; SD:pam      0.4929577
+#&gt; MAD:kmeans  0.5246479
+#&gt; ATC:kmeans  0.4945227
+#&gt; SD:pam      0.5246479
 #&gt; CV:pam      0.4945227
-#&gt; MAD:pam     0.4933490
-#&gt; ATC:pam     0.5246479
-#&gt; SD:hclust   0.5492958
-#&gt; CV:hclust   0.5492958
-#&gt; MAD:hclust  0.5590767
-#&gt; ATC:hclust  0.4933490</div></pre>
+#&gt; MAD:pam     0.5179969
+#&gt; ATC:pam     0.5027387
+#&gt; SD:hclust   0.5402973
+#&gt; CV:hclust   0.5402973
+#&gt; MAD:hclust  0.5179969
+#&gt; ATC:hclust  0.4945227</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -228,7 +208,7 @@ matrix correspond to combinations of top-value methods and partitioning methods.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

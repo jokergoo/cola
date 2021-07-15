@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,8 +120,7 @@
     <p>Ability to correlate to other rows</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ATC</span>(<span class='no'>mat</span>, <span class='kw'>cor_fun</span> <span class='kw'>=</span> <span class='kw pkg'>stat</span><span class='kw ns'>::</span><span class='no'>cor</span>, <span class='kw'>min_cor</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>power</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-    <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>n_sampling</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1000</span>, <span class='fl'>500</span>), <span class='kw'>q_sd</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>group</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>ATC</span><span class='op'>(</span><span class='va'>mat</span>, cor_fun <span class='op'>=</span> <span class='fu'>stats</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span>, min_cor <span class='op'>=</span> <span class='fl'>0</span>, power <span class='op'>=</span> <span class='fl'>1</span>, k_neighbours <span class='op'>=</span> <span class='op'>-</span><span class='fl'>1</span>, group <span class='op'>=</span> <span class='cn'>NULL</span>, mc.cores <span class='op'>=</span> <span class='fl'>1</span>, cores <span class='op'>=</span> <span class='va'>mc.cores</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -167,16 +142,16 @@
       <td><p>Power on the correlation values.</p></td>
     </tr>
     <tr>
+      <th>k_neighbours</th>
+      <td><p>Nearest k neighbours.</p></td>
+    </tr>
+    <tr>
       <th>mc.cores</th>
+      <td><p>Number of cores. This argument will be removed in future versions.</p></td>
+    </tr>
+    <tr>
+      <th>cores</th>
       <td><p>Number of cores.</p></td>
-    </tr>
-    <tr>
-      <th>n_sampling</th>
-      <td><p>When there are too many rows in the matrix, to get the curmulative distribution of how one row correlates other rows, actually we don't need to use all the rows in the matrix, e.g. 1000 rows can already give a very nice estimation.</p></td>
-    </tr>
-    <tr>
-      <th>q_sd</th>
-      <td><p>Percentile of the standard deviation for the rows. Rows with values less than it are ignored.</p></td>
     </tr>
     <tr>
       <th>group</th>
@@ -197,39 +172,45 @@ cumulative distribution function of <code>X</code> where <code>X</code> is the a
 <p>By default the ATC scores are calculated by Pearson correlation, to use Spearman correlation, you can register
 a new top-value method by:</p>
 <p></p><pre>
-    <span class='fu'><a href='register_top_value_methods.html'>register_top_value_methods</a></span>(
-        <span class='st'>"ATC_spearman"</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>m</span>) <span class='fu'>ATC</span>(<span class='no'>m</span>, <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"spearman"</span>)
-    )</pre>
+    <span class='fu'><a href='register_top_value_methods.html'>register_top_value_methods</a></span><span class='op'>(</span>
+        <span class='st'>"ATC_spearman"</span> <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span> <span class='fu'>ATC</span><span class='op'>(</span><span class='va'>m</span>, method <span class='op'>=</span> <span class='st'>"spearman"</span><span class='op'>)</span>
+    <span class='op'>)</span>  </pre>
 
 <p>Similarly, to use a robust correlation method, e.g. <code><a href='https://rdrr.io/pkg/WGCNA/man/bicor.html'>bicor</a></code> function, you can do like:</p>
 <p></p><pre>
-    <span class='fu'><a href='register_top_value_methods.html'>register_top_value_methods</a></span>(
-        <span class='st'>"ATC_bicor"</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>m</span>) <span class='fu'>ATC</span>(<span class='no'>m</span>, <span class='kw'>cor_fun</span> <span class='kw'>=</span> <span class='kw pkg'>WGCNA</span><span class='kw ns'>::</span><span class='no'><a href='https://rdrr.io/pkg/WGCNA/man/bicor.html'>bicor</a></span>)
-    )</pre>
+    <span class='fu'><a href='register_top_value_methods.html'>register_top_value_methods</a></span><span class='op'>(</span>
+        <span class='st'>"ATC_bicor"</span> <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span> <span class='fu'>ATC</span><span class='op'>(</span><span class='va'>m</span>, cor_fun <span class='op'>=</span> <span class='fu'>WGCNA</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/WGCNA/man/bicor.html'>bicor</a></span><span class='op'>)</span>
+    <span class='op'>)</span>  </pre>
 
+<p>If the number of rows execeeds 30000, it internally uses <code><a href='ATC_approx.html'>ATC_approx</a></code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><a href='https://jokergoo.github.io/cola_supplementary/suppl_1_ATC/suppl_1_ATC.html'>https://jokergoo.github.io/cola_supplementary/suppl_1_ATC/suppl_1_ATC.html</a></p></div>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A vector of numeric values with the same order as rows in the input matrix.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>12345</span>)
-<span class='no'>nr1</span> <span class='kw'>=</span> <span class='fl'>100</span>
-<span class='no'>mat1</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>100</span>*<span class='no'>nr1</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>nr1</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>12345</span><span class='op'>)</span>
+<span class='va'>nr1</span> <span class='op'>=</span> <span class='fl'>100</span>
+<span class='va'>mat1</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>*</span><span class='va'>nr1</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='va'>nr1</span><span class='op'>)</span>
 
-<span class='no'>nr2</span> <span class='kw'>=</span> <span class='fl'>10</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>mvtnorm</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: mvtnorm</span></div><div class='input'><span class='no'>sigma</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fl'>0.8</span>, <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>nr2</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='no'>nr2</span>); <span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span>(<span class='no'>sigma</span>) <span class='kw'>=</span> <span class='fl'>1</span>
-<span class='no'>mat2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/mvtnorm/man/Mvnorm.html'>rmvnorm</a></span>(<span class='fl'>100</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0</span>, <span class='no'>nr2</span>), <span class='kw'>sigma</span> <span class='kw'>=</span> <span class='no'>sigma</span>))
+<span class='va'>nr2</span> <span class='op'>=</span> <span class='fl'>10</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='http://mvtnorm.R-forge.R-project.org'>mvtnorm</a></span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Loading required package: mvtnorm</span></div><div class='input'><span class='va'>sigma</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>0.8</span>, nrow <span class='op'>=</span> <span class='va'>nr2</span>, ncol <span class='op'>=</span> <span class='va'>nr2</span><span class='op'>)</span>; <span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span><span class='op'>(</span><span class='va'>sigma</span><span class='op'>)</span> <span class='op'>=</span> <span class='fl'>1</span>
+<span class='va'>mat2</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/mvtnorm/man/Mvnorm.html'>rmvnorm</a></span><span class='op'>(</span><span class='fl'>100</span>, mean <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='va'>nr2</span><span class='op'>)</span>, sigma <span class='op'>=</span> <span class='va'>sigma</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='no'>nr3</span> <span class='kw'>=</span> <span class='fl'>50</span>
-<span class='no'>sigma</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fl'>0.5</span>, <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>nr3</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='no'>nr3</span>); <span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span>(<span class='no'>sigma</span>) <span class='kw'>=</span> <span class='fl'>1</span>
-<span class='no'>mat3</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/pkg/mvtnorm/man/Mvnorm.html'>rmvnorm</a></span>(<span class='fl'>100</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>0</span>, <span class='no'>nr3</span>), <span class='kw'>sigma</span> <span class='kw'>=</span> <span class='no'>sigma</span>))
+<span class='va'>nr3</span> <span class='op'>=</span> <span class='fl'>50</span>
+<span class='va'>sigma</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>0.5</span>, nrow <span class='op'>=</span> <span class='va'>nr3</span>, ncol <span class='op'>=</span> <span class='va'>nr3</span><span class='op'>)</span>; <span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span><span class='op'>(</span><span class='va'>sigma</span><span class='op'>)</span> <span class='op'>=</span> <span class='fl'>1</span>
+<span class='va'>mat3</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/pkg/mvtnorm/man/Mvnorm.html'>rmvnorm</a></span><span class='op'>(</span><span class='fl'>100</span>, mean <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='va'>nr3</span><span class='op'>)</span>, sigma <span class='op'>=</span> <span class='va'>sigma</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='no'>mat</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='no'>mat1</span>, <span class='no'>mat2</span>, <span class='no'>mat3</span>)
-<span class='no'>ATC_score</span> <span class='kw'>=</span> <span class='fu'>ATC</span>(<span class='no'>mat</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>ATC_score</span>, <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>16</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='no'>nr1</span>), <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>2</span>, <span class='no'>nr2</span>), <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>3</span>, <span class='no'>nr3</span>)))</div><div class='img'><img src='ATC-1.png' alt='' width='700' height='433' /></div></pre>
+<span class='va'>mat</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='va'>mat1</span>, <span class='va'>mat2</span>, <span class='va'>mat3</span><span class='op'>)</span>
+<span class='va'>ATC_score</span> <span class='op'>=</span> <span class='fu'>ATC</span><span class='op'>(</span><span class='va'>mat</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>ATC_score</span>, pch <span class='op'>=</span> <span class='fl'>16</span>, col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='va'>nr1</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='va'>nr2</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>3</span>, <span class='va'>nr3</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='ATC-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -245,7 +226,7 @@ a new top-value method by:</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

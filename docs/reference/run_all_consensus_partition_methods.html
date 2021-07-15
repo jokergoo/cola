@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,16 +120,14 @@
     <p>Consensus partitioning for all combinations of methods</p>
     </div>
 
-    <pre class="usage"><span class='fu'>run_all_consensus_partition_methods</span>(<span class='no'>data</span>,
-    <span class='kw'>top_value_method</span> <span class='kw'>=</span> <span class='fu'><a href='all_top_value_methods.html'>all_top_value_methods</a></span>(),
-    <span class='kw'>partition_method</span> <span class='kw'>=</span> <span class='fu'><a href='all_partition_methods.html'>all_partition_methods</a></span>(),
-    <span class='kw'>max_k</span> <span class='kw'>=</span> <span class='fl'>6</span>,
-    <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>1000</span>, <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span>(<span class='fu'><a href='nrow-dispatch.html'>nrow</a></span>(<span class='no'>data</span>)*<span class='fl'>0.1</span>)),
-    <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span>(<span class='fl'>3000</span>, <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span>(<span class='fu'><a href='nrow-dispatch.html'>nrow</a></span>(<span class='no'>data</span>)*<span class='fl'>0.3</span>)),
-    <span class='kw'>length.out</span> <span class='kw'>=</span> <span class='fl'>3</span>),
-    <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>anno</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>anno_col</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-    <span class='kw'>sample_by</span> <span class='kw'>=</span> <span class='st'>"row"</span>, <span class='kw'>p_sampling</span> <span class='kw'>=</span> <span class='fl'>0.8</span>, <span class='kw'>partition_repeat</span> <span class='kw'>=</span> <span class='fl'>50</span>,
-    <span class='kw'>scale_rows</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>run_all_consensus_partition_methods</span><span class='op'>(</span><span class='va'>data</span>,
+    top_value_method <span class='op'>=</span> <span class='fu'><a href='all_top_value_methods.html'>all_top_value_methods</a></span><span class='op'>(</span><span class='op'>)</span>,
+    partition_method <span class='op'>=</span> <span class='fu'><a href='all_partition_methods.html'>all_partition_methods</a></span><span class='op'>(</span><span class='op'>)</span>,
+    max_k <span class='op'>=</span> <span class='fl'>6</span>, k <span class='op'>=</span> <span class='cn'>NULL</span>,
+    top_n <span class='op'>=</span> <span class='cn'>NULL</span>,
+    mc.cores <span class='op'>=</span> <span class='fl'>1</span>, cores <span class='op'>=</span> <span class='va'>mc.cores</span>, anno <span class='op'>=</span> <span class='cn'>NULL</span>, anno_col <span class='op'>=</span> <span class='cn'>NULL</span>,
+    sample_by <span class='op'>=</span> <span class='st'>"row"</span>, p_sampling <span class='op'>=</span> <span class='fl'>0.8</span>, partition_repeat <span class='op'>=</span> <span class='fl'>50</span>,
+    scale_rows <span class='op'>=</span> <span class='cn'>NULL</span>, verbose <span class='op'>=</span> <span class='cn'>TRUE</span>, help <span class='op'>=</span> <span class='va'>cola_opt</span><span class='op'>$</span><span class='va'>help</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -175,12 +149,20 @@
       <td><p>Maximal number of subgroups to try. The function will try <code>2:max_k</code> subgroups.</p></td>
     </tr>
     <tr>
+      <th>k</th>
+      <td><p>Alternatively, you can specify a vector k.</p></td>
+    </tr>
+    <tr>
       <th>top_n</th>
       <td><p>Number of rows with top values. The value can be a vector with length &gt; 1. When n &gt; 5000,  the function only randomly sample 5000 rows from top n rows. If <code>top_n</code> is a vector, paritition will be applied to every values in <code>top_n</code> and consensus partition is summarized from all partitions.</p></td>
     </tr>
     <tr>
       <th>mc.cores</th>
-      <td><p>Number of cores to use.</p></td>
+      <td><p>Number of cores to use. This argument will be removed in future versions.</p></td>
+    </tr>
+    <tr>
+      <th>cores</th>
+      <td><p>Number of cores, or a <code>cluster</code> object returned by <code><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></code>.</p></td>
     </tr>
     <tr>
       <th>anno</th>
@@ -210,6 +192,10 @@
       <th>verbose</th>
       <td><p>Whether to print messages.</p></td>
     </tr>
+    <tr>
+      <th>help</th>
+      <td><p>Whether to print help messages.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -220,17 +206,21 @@
 
     <p>A <code><a href='ConsensusPartitionList-class.html'>ConsensusPartitionList-class</a></code> object. Simply type object in the interactive R session
 to see which functions can be applied on it.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>123</span>)
-<span class='no'>m</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>1</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> -<span class='fl'>1</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>)),
-          <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> -<span class='fl'>1</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>1</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>))
-         ) + <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>40</span>*<span class='fl'>40</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>40</span>)
-<span class='no'>rl</span> <span class='kw'>=</span> <span class='fu'>run_all_consensus_partition_methods</span>(<span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>m</span>, <span class='kw'>top_n</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>20</span>, <span class='fl'>30</span>, <span class='fl'>40</span>))
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
+<span class='va'>m</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='op'>-</span><span class='fl'>1</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>,
+          <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='op'>-</span><span class='fl'>1</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>
+         <span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>40</span><span class='op'>*</span><span class='fl'>40</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>40</span><span class='op'>)</span>
+<span class='va'>rl</span> <span class='op'>=</span> <span class='fu'>run_all_consensus_partition_methods</span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>m</span>, top_n <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>30</span>, <span class='fl'>40</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -246,7 +236,7 @@ to see which functions can be applied on it.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

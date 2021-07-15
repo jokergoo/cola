@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,8 +121,9 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for matrix</span>
-<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>object</span>, <span class='no'>mat</span>, <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"euclidean"</span>, <span class='st'>"correlation"</span>, <span class='st'>"cosine"</span>),
-    <span class='kw'>nperm</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>p_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>mat</span>, dist_method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"euclidean"</span>, <span class='st'>"correlation"</span>, <span class='st'>"cosine"</span><span class='op'>)</span>,
+    nperm <span class='op'>=</span> <span class='fl'>1000</span>, p_cutoff <span class='op'>=</span> <span class='fl'>0.05</span>, plot <span class='op'>=</span> <span class='cn'>TRUE</span>, col_fun <span class='op'>=</span> <span class='cn'>NULL</span>, split_by_sigatures <span class='op'>=</span> <span class='cn'>FALSE</span>,
+    verbose <span class='op'>=</span> <span class='cn'>TRUE</span>, prefix <span class='op'>=</span> <span class='st'>""</span>, mc.cores <span class='op'>=</span> <span class='fl'>1</span>, cores <span class='op'>=</span> <span class='va'>mc.cores</span>, width1 <span class='op'>=</span> <span class='cn'>NULL</span>, width2 <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,12 +153,36 @@
       <td><p>Whether to draw the plot that visualizes the process of prediction.</p></td>
     </tr>
     <tr>
+      <th>col_fun</th>
+      <td><p>A color mapping function generated from <code>colorRamp2</code>. It is set to both heatmaps.</p></td>
+    </tr>
+    <tr>
       <th>verbose</th>
       <td><p>Whether to print messages.</p></td>
     </tr>
     <tr>
+      <th>split_by_sigatures</th>
+      <td><p>Should the heatmaps be split based on k-means on the main heatmap, or on the patterns of the signature heatmap.</p></td>
+    </tr>
+    <tr>
       <th>prefix</th>
       <td><p>Used internally.</p></td>
+    </tr>
+    <tr>
+      <th>mc.cores</th>
+      <td><p>Number of cores. This argument will be removed in future versions.</p></td>
+    </tr>
+    <tr>
+      <th>cores</th>
+      <td><p>Number of cores, or a <code>cluster</code> object returned by <code><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>width1</th>
+      <td><p>Width of the first heatmap.</p></td>
+    </tr>
+    <tr>
+      <th>width2</th>
+      <td><p>Width of the second heatmap.</p></td>
     </tr>
     </table>
 
@@ -211,107 +212,110 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='no'>res</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC:skmeans"</span>]
-<span class='no'>mat</span> <span class='kw'>=</span> <span class='fu'><a href='get_matrix-dispatch.html'>get_matrix</a></span>(<span class='no'>res</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span>
+<span class='va'>res</span> <span class='op'>=</span> <span class='va'>golub_cola</span><span class='op'>[</span><span class='st'>"ATC:skmeans"</span><span class='op'>]</span>
+<span class='va'>mat</span> <span class='op'>=</span> <span class='fu'><a href='get_matrix-dispatch.html'>get_matrix</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span>
 <span class='co'># note scaling should be applied here because the matrix was scaled in the cola analysis</span>
-<span class='no'>mat2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='no'>mat</span>)))
+<span class='va'>mat2</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>mat</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
+<span class='va'>tb</span> <span class='op'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span><span class='op'>(</span><span class='va'>res</span>, k <span class='op'>=</span> <span class='fl'>3</span>, plot <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; * 72/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
+#&gt; * cache hash: 6dd0bdce30e1cd9e7f715c58e34e0105 (seed 888).
 #&gt; * calculating row difference between subgroups by Ftest.
-#&gt; * split rows into 4 groups by k-means clustering.
-#&gt; * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.</div><div class='input'><span class='no'>sig_mat</span> <span class='kw'>=</span> <span class='no'>tb</span>[, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span>(<span class='st'>"scaled_mean"</span>, <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span>(<span class='no'>tb</span>))]
-<span class='no'>sig_mat</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>sig_mat</span>)
-<span class='fu'><a href='colnames-dispatch.html'>colnames</a></span>(<span class='no'>sig_mat</span>) <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span>(<span class='st'>"class"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span>(<span class='fu'><a href='ncol-dispatch.html'>ncol</a></span>(<span class='no'>sig_mat</span>)))
+#&gt; * split rows into 3 groups by k-means clustering.
+#&gt; * 2050 signatures (49.8%) under fdr &lt; 0.05, group_diff &gt; 0.</div><div class='input'><span class='va'>sig_mat</span> <span class='op'>=</span> <span class='va'>tb</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>grepl</a></span><span class='op'>(</span><span class='st'>"scaled_mean"</span>, <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span><span class='op'>(</span><span class='va'>tb</span><span class='op'>)</span><span class='op'>)</span><span class='op'>]</span>
+<span class='va'>sig_mat</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>sig_mat</span><span class='op'>)</span>
+<span class='fu'><a href='colnames-dispatch.html'>colnames</a></span><span class='op'>(</span><span class='va'>sig_mat</span><span class='op'>)</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"class"</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='fu'><a href='ncol-dispatch.html'>ncol</a></span><span class='op'>(</span><span class='va'>sig_mat</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'># this is how the signature centroid matrix looks like:</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>sig_mat</span>)</div><div class='output co'>#&gt;          class1      class2     class3
-#&gt; [1,] -0.5519215  0.52395127  0.3740407
-#&gt; [2,] -0.4025209  0.06789322  0.7546084
-#&gt; [3,] -0.3077090  0.58853214 -0.2459700
-#&gt; [4,] -0.1548451  0.47963596 -0.4051056
-#&gt; [5,] -0.2048139 -0.15871813  0.6803041
-#&gt; [6,] -0.3427458  0.40763038  0.1061578</div><div class='input'>
-<span class='no'>mat2</span> <span class='kw'>=</span> <span class='no'>mat2</span>[<span class='no'>tb</span>$<span class='no'>which_row</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>sig_mat</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;           class1     class2     class3
+#&gt; [1,]  0.53519553 -0.5002490  0.2974125
+#&gt; [2,]  0.01991684 -0.3097325  0.7180644
+#&gt; [3,]  0.58903898 -0.3514180 -0.1563374
+#&gt; [4,]  0.50343231 -0.1528579 -0.4918005
+#&gt; [5,] -0.09171790 -0.2294764  0.7145305
+#&gt; [6,]  0.02098543 -0.2997821  0.6920673</div><div class='input'>
+<span class='va'>mat2</span> <span class='op'>=</span> <span class='va'>mat2</span><span class='op'>[</span><span class='va'>tb</span><span class='op'>$</span><span class='va'>which_row</span>, , drop <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>]</span>
 
 <span class='co'># now we predict the class for `mat2` based on `sig_mat`</span>
-<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>sig_mat</span>, <span class='no'>mat2</span>)</div><div class='output co'>#&gt; Predict classes based on 3-group classification (euclidean method) on a 72-column matrix.</div><div class='output co'>#&gt; <span class='message'>`use_raster` is automatically set to TRUE for a matrix with more than</span>
+<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span><span class='op'>(</span><span class='va'>sig_mat</span>, <span class='va'>mat2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>`use_raster` is automatically set to TRUE for a matrix with more than</span>
 #&gt; <span class='message'>2000 rows. You can control `use_raster` argument by explicitly setting</span>
 #&gt; <span class='message'>TRUE/FALSE to it.</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>Set `ht_opt$message = FALSE` to turn off this message.</span></div><div class='img'><img src='predict_classes-matrix-method-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;            class     p
-#&gt; sample_39 class3 0.000
-#&gt; sample_40 class3 0.000
-#&gt; sample_42 class1 0.000
-#&gt; sample_47 class1 0.000
-#&gt; sample_48 class1 0.000
-#&gt; sample_49 class3 0.000
-#&gt; sample_41 class1 0.000
-#&gt; sample_43 class1 0.000
-#&gt; sample_44 class1 0.000
-#&gt; sample_45 class1 0.000
-#&gt; sample_46 class1 0.000
-#&gt; sample_70 class1 0.000
-#&gt; sample_71 class1 0.000
-#&gt; sample_72 class1 0.000
-#&gt; sample_68 class1 0.000
-#&gt; sample_69 class1 0.000
-#&gt; sample_67 class1 0.000
-#&gt; sample_55 class3 0.000
-#&gt; sample_56 class3 0.000
-#&gt; sample_59 class1 0.000
-#&gt; sample_52 class2 0.000
-#&gt; sample_53 class2 0.000
-#&gt; sample_51 class2 0.000
-#&gt; sample_50 class2 0.000
-#&gt; sample_54 class1 0.000
-#&gt; sample_57 class2 0.000
-#&gt; sample_58 class2 0.000
-#&gt; sample_60 class2 0.230
-#&gt; sample_61 class2 0.000
-#&gt; sample_65 class2 0.000
-#&gt; sample_66 class1 0.000
-#&gt; sample_63 class2 0.000
-#&gt; sample_64 class2 0.000
-#&gt; sample_62 class2 0.000
-#&gt; sample_1  class3 0.000
-#&gt; sample_2  class1 0.000
-#&gt; sample_3  class3 0.000
-#&gt; sample_4  class3 0.000
-#&gt; sample_5  class1 0.000
-#&gt; sample_6  class3 0.000
-#&gt; sample_7  class3 0.000
-#&gt; sample_8  class3 0.000
-#&gt; sample_9  class1 0.000
-#&gt; sample_10 class3 0.000
-#&gt; sample_11 class1 0.000
-#&gt; sample_12 class2 0.000
-#&gt; sample_13 class1 0.000
-#&gt; sample_14 class1 0.000
-#&gt; sample_15 class1 0.000
-#&gt; sample_16 class1 0.000
-#&gt; sample_17 class1 0.000
-#&gt; sample_18 class3 0.000
-#&gt; sample_19 class1 0.000
-#&gt; sample_20 class1 0.000
-#&gt; sample_21 class1 0.000
-#&gt; sample_22 class2 0.016
-#&gt; sample_23 class3 0.000
-#&gt; sample_24 class1 0.000
-#&gt; sample_25 class2 0.998
-#&gt; sample_26 class1 0.000
-#&gt; sample_27 class3 0.000
-#&gt; sample_34 class2 0.000
-#&gt; sample_35 class2 0.000
-#&gt; sample_36 class2 0.000
-#&gt; sample_37 class2 0.000
-#&gt; sample_38 class2 0.000
-#&gt; sample_28 class2 0.000
-#&gt; sample_29 class1 0.000
-#&gt; sample_30 class2 0.000
-#&gt; sample_31 class2 0.000
-#&gt; sample_32 class2 0.000
-#&gt; sample_33 class2 0.000</div><div class='input'># }
+#&gt; <span class='message'>Set `ht_opt$message = FALSE` to turn off this message.</span></div><div class='img'><img src='predict_classes-matrix-method-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;            class p
+#&gt; sample_39 class3 0
+#&gt; sample_40 class3 0
+#&gt; sample_42 class2 0
+#&gt; sample_47 class2 0
+#&gt; sample_48 class2 0
+#&gt; sample_49 class3 0
+#&gt; sample_41 class2 0
+#&gt; sample_43 class2 0
+#&gt; sample_44 class2 0
+#&gt; sample_45 class2 0
+#&gt; sample_46 class2 0
+#&gt; sample_70 class2 0
+#&gt; sample_71 class2 0
+#&gt; sample_72 class2 0
+#&gt; sample_68 class2 0
+#&gt; sample_69 class2 0
+#&gt; sample_67 class2 0
+#&gt; sample_55 class3 0
+#&gt; sample_56 class3 0
+#&gt; sample_59 class2 0
+#&gt; sample_52 class1 0
+#&gt; sample_53 class1 0
+#&gt; sample_51 class1 0
+#&gt; sample_50 class1 0
+#&gt; sample_54 class2 0
+#&gt; sample_57 class1 0
+#&gt; sample_58 class1 0
+#&gt; sample_60 class2 0
+#&gt; sample_61 class1 0
+#&gt; sample_65 class1 0
+#&gt; sample_66 class2 0
+#&gt; sample_63 class1 0
+#&gt; sample_64 class1 0
+#&gt; sample_62 class1 0
+#&gt; sample_1  class3 0
+#&gt; sample_2  class2 0
+#&gt; sample_3  class3 0
+#&gt; sample_4  class3 0
+#&gt; sample_5  class2 0
+#&gt; sample_6  class3 0
+#&gt; sample_7  class3 0
+#&gt; sample_8  class3 0
+#&gt; sample_9  class2 0
+#&gt; sample_10 class2 0
+#&gt; sample_11 class2 0
+#&gt; sample_12 class1 0
+#&gt; sample_13 class2 0
+#&gt; sample_14 class2 0
+#&gt; sample_15 class2 0
+#&gt; sample_16 class2 0
+#&gt; sample_17 class2 0
+#&gt; sample_18 class3 0
+#&gt; sample_19 class2 0
+#&gt; sample_20 class2 0
+#&gt; sample_21 class2 0
+#&gt; sample_22 class1 0
+#&gt; sample_23 class3 0
+#&gt; sample_24 class2 0
+#&gt; sample_25 class1 0
+#&gt; sample_26 class2 0
+#&gt; sample_27 class3 0
+#&gt; sample_34 class1 0
+#&gt; sample_35 class1 0
+#&gt; sample_36 class1 0
+#&gt; sample_37 class1 0
+#&gt; sample_38 class1 0
+#&gt; sample_28 class1 0
+#&gt; sample_29 class2 0
+#&gt; sample_30 class1 0
+#&gt; sample_31 class1 0
+#&gt; sample_32 class1 0
+#&gt; sample_33 class1 0</div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -328,7 +332,7 @@ p-value is simply calculated by <code><a href='https://rdrr.io/r/stats/cor.test.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

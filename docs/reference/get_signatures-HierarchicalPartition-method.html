@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,15 +121,15 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for HierarchicalPartition</span>
-<span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>object</span>, <span class='kw'>depth</span> <span class='kw'>=</span> <span class='fu'><a href='max_depth-HierarchicalPartition-method.html'>max_depth</a></span>(<span class='no'>object</span>),
-    <span class='kw'>group_diff</span> <span class='kw'>=</span> <span class='no'>cola_opt</span>$<span class='no'>group_diff</span>,
-    <span class='kw'>row_km</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-    <span class='kw'>scale_rows</span> <span class='kw'>=</span> <span class='no'>object</span>[<span class='fl'>1</span>]@<span class='kw'>scale_rows</span>,
-    <span class='kw'>anno</span> <span class='kw'>=</span> <span class='fu'><a href='get_anno-dispatch.html'>get_anno</a></span>(<span class='no'>object</span>),
-    <span class='kw'>anno_col</span> <span class='kw'>=</span> <span class='fu'><a href='get_anno_col-dispatch.html'>get_anno_col</a></span>(<span class='no'>object</span>),
-    <span class='kw'>show_column_names</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>column_names_gp</span> <span class='kw'>=</span> <span class='fu'>gpar</span>(<span class='kw'>fontsize</span> <span class='kw'>=</span> <span class='fl'>8</span>),
-    <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>888</span>,
-    <span class='no'>...</span>)</pre>
+<span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span><span class='op'>(</span><span class='va'>object</span>, merge_node <span class='op'>=</span> <span class='fu'><a href='merge_node_param.html'>merge_node_param</a></span><span class='op'>(</span><span class='op'>)</span>,
+    group_diff <span class='op'>=</span> <span class='va'>object</span><span class='op'>@</span><span class='va'>param</span><span class='op'>$</span><span class='va'>group_diff</span>,
+    row_km <span class='op'>=</span> <span class='cn'>NULL</span>, diff_method <span class='op'>=</span> <span class='st'>"Ftest"</span>, fdr_cutoff <span class='op'>=</span> <span class='va'>object</span><span class='op'>@</span><span class='va'>param</span><span class='op'>$</span><span class='va'>fdr_cutoff</span>,
+    scale_rows <span class='op'>=</span> <span class='va'>object</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>@</span><span class='va'>scale_rows</span>,
+    anno <span class='op'>=</span> <span class='fu'><a href='get_anno-dispatch.html'>get_anno</a></span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>,
+    anno_col <span class='op'>=</span> <span class='fu'><a href='get_anno_col-dispatch.html'>get_anno_col</a></span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>,
+    show_column_names <span class='op'>=</span> <span class='cn'>FALSE</span>, column_names_gp <span class='op'>=</span> <span class='fu'>gpar</span><span class='op'>(</span>fontsize <span class='op'>=</span> <span class='fl'>8</span><span class='op'>)</span>,
+    verbose <span class='op'>=</span> <span class='cn'>TRUE</span>, plot <span class='op'>=</span> <span class='cn'>TRUE</span>, seed <span class='op'>=</span> <span class='fl'>888</span>,
+    <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -163,8 +139,8 @@
       <td><p>a <code><a href='HierarchicalPartition-class.html'>HierarchicalPartition-class</a></code> object.</p></td>
     </tr>
     <tr>
-      <th>depth</th>
-      <td><p>depth of the hierarchy.</p></td>
+      <th>merge_node</th>
+      <td><p>Parameters to merge sub-dendrograms, see <code><a href='merge_node_param.html'>merge_node_param</a></code>.</p></td>
     </tr>
     <tr>
       <th>group_diff</th>
@@ -173,6 +149,14 @@
     <tr>
       <th>row_km</th>
       <td><p>Number of groups for performing k-means clustering on rows. By default it is automatically selected.</p></td>
+    </tr>
+    <tr>
+      <th>diff_method</th>
+      <td><p>Methods to get rows which are significantly different between subgroups.</p></td>
+    </tr>
+    <tr>
+      <th>fdr_cutoff</th>
+      <td><p>Cutoff for FDR of the difference test between subgroups.</p></td>
     </tr>
     <tr>
       <th>scale_rows</th>
@@ -219,51 +203,68 @@ each node of the partition hierarchy.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A data frame with more than two columns:</p>
-<dl'>
+<dl>
   <dt><code>which_row</code>:</dt><dd><p>row index corresponding to the original matrix.</p></dd>
   <dt><code>km</code>:</dt><dd><p>the k-means groups if <code>row_km</code> is set.</p></dd>
   <dt>other_columns:</dt><dd><p>the mean value (depending rows are scaled or not) in each subgroup.</p></dd>
 
 </dl>
 
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola_rh</span>)
-<span class='no'>tb</span> <span class='kw'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span>(<span class='no'>golub_cola_rh</span>)</div><div class='output co'>#&gt; * get signatures at node 0 with 3 subgroups.
-#&gt;   - find 2076 signatures at node 0
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola_rh</span><span class='op'>)</span>
+<span class='va'>tb</span> <span class='op'>=</span> <span class='fu'><a href='get_signatures-dispatch.html'>get_signatures</a></span><span class='op'>(</span><span class='va'>golub_cola_rh</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; * get signatures at node 0 with 3 subgroups.
+#&gt;   * 72/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
+#&gt;   * cache hash: df948a18a7e5d2906ae59b3b0dadba84 (seed 888).
+#&gt;   * calculating row difference between subgroups by Ftest.
 #&gt; * get signatures at node 01 with 3 subgroups.
-#&gt;   - find 637 signatures at node 01
-#&gt; * get signatures at node 010 with 3 subgroups.
-#&gt;   - find 344 signatures at node 010
-#&gt; * get signatures at node 00 with 3 subgroups.
-#&gt;   - find 636 signatures at node 00
-#&gt; * get signatures at node 000 with 3 subgroups.
-#&gt;   - find 132 signatures at node 000
-#&gt; * split rows into 4 groups by k-means clustering.
-#&gt; * found 2422 signatures (58.8%).
-#&gt; * randomly sample 2000 rows from 2422 total rows.
-#&gt; * making heatmaps for signatures</div><div class='img'><img src='get_signatures-HierarchicalPartition-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span>(<span class='no'>tb</span>)</div><div class='output co'>#&gt;   which_row mean_0000 mean_0001 mean_001 mean_0100 mean_0101 mean_011
-#&gt; 1         2  2.056537  2.070191 2.047250  1.713408  1.628708 1.823007
-#&gt; 2         3  2.349348  2.193934 2.364970  2.148984  2.187586 2.161018
-#&gt; 3         9  4.113246  4.346280 4.188412  4.147203  4.164618 4.091096
-#&gt; 4        11  2.444931  2.608965 2.382964  2.465490  2.267883 2.303006
-#&gt; 5        12  2.387866  2.713141 2.344943  2.536416  2.272842 2.317408
-#&gt; 6        13  2.428032  3.010466 3.454463  2.682136  2.508659 3.067405
-#&gt;   group_diff scaled_mean_0000 scaled_mean_0001 scaled_mean_001 scaled_mean_0100
-#&gt; 1  0.4414828        0.4574200        0.4997269      0.42864479       -0.6057522
-#&gt; 2  0.2159865        0.4862940       -0.2553399      0.56084458       -0.4698417
-#&gt; 3  0.2551838       -0.3388728        0.9289148      0.07005792       -0.1541363
-#&gt; 4  0.3410819        0.1643419        0.9886740     -0.14706705        0.2676581
-#&gt; 5  0.4402992       -0.1398600        1.1410901     -0.30889557        0.4451371
-#&gt; 6  1.0264305       -0.6624699        0.1429906      0.75700502       -0.3110644
-#&gt;   scaled_mean_0101 scaled_mean_011 km
-#&gt; 1      -0.86819221      -0.2661637  4
-#&gt; 2      -0.28563472      -0.4124129  4
-#&gt; 3      -0.05938999      -0.4593795  2
-#&gt; 4      -0.72538828      -0.5488848  1
-#&gt; 5      -0.59283370      -0.4173290  1
-#&gt; 6      -0.55096996       0.2217332  4</div><div class='input'># }
+#&gt;   * 34/35 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
+#&gt;   * cache hash: fd6cb0e6b28c330c0037d330bb31d43f (seed 888).
+#&gt;   * calculating row difference between subgroups by Ftest.
+#&gt; * get signatures at node 012 with 2 subgroups.
+#&gt;   * 21/21 samples (in 2 classes) remain after filtering by silhouette (&gt;= 0.5).
+#&gt;   * cache hash: cc85a83aaad10020c62e2896d2134428 (seed 888).
+#&gt;   * calculating row difference between subgroups by Ftest.
+#&gt; * get signatures at node 02 with 4 subgroups.
+#&gt;   * 22/24 samples (in 4 classes) remain after filtering by silhouette (&gt;= 0.5).
+#&gt;   * cache hash: b4289c13b12b3e8b551f946ee2a18a97 (seed 888).
+#&gt;   * calculating row difference between subgroups by Ftest.
+#&gt; * split rows into 3 groups by k-means clustering.
+#&gt; * found 406 signatures (9.9%).
+#&gt; * making heatmaps for signatures</div><div class='img'><img src='get_signatures-HierarchicalPartition-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>tb</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   which_row is_sig_0 is_sig_01 is_sig_012 is_sig_02 mean_011 mean_0121
+#&gt; 1        13     TRUE     FALSE      FALSE     FALSE 2.409001  2.808335
+#&gt; 2        14     TRUE     FALSE      FALSE     FALSE 3.045547  3.274776
+#&gt; 3        23     TRUE     FALSE      FALSE     FALSE 2.509441  2.256267
+#&gt; 4        27     TRUE     FALSE      FALSE     FALSE 2.811535  2.804268
+#&gt; 5        49     TRUE     FALSE      FALSE     FALSE 2.206253  1.985050
+#&gt; 6        55     TRUE     FALSE      FALSE     FALSE 1.901859  1.730209
+#&gt;   mean_0122 mean_021 mean_022  mean_03 group_diff scaled_mean_011
+#&gt; 1  3.172863 3.151196 2.473851 3.416935  1.0079338      -0.6887893
+#&gt; 2  3.523893 3.489694 3.232000 3.622120  0.5765729      -0.7997206
+#&gt; 3  2.362513 1.966976 1.931570 2.118717  0.5778706       0.9960673
+#&gt; 4  2.563821 2.468962 2.276081 2.318835  0.5354536       0.7919305
+#&gt; 5  1.898408 1.580641 1.655638 1.671343  0.6256121       1.0418882
+#&gt; 6  1.805149 1.389140 1.642238 1.702764  0.5127196       0.6682061
+#&gt;   scaled_mean_0121 scaled_mean_0122 scaled_mean_021 scaled_mean_022
+#&gt; 1       -0.1365408       0.36757343       0.3376106      -0.5991061
+#&gt; 2       -0.2227008       0.40437893       0.3182938      -0.3303790
+#&gt; 3        0.1939446       0.53056017      -0.7226070      -0.8347816
+#&gt; 4        0.7707318       0.06930904      -0.2074094      -0.7700740
+#&gt; 5        0.4213718       0.17832481      -0.7130695      -0.5026885
+#&gt; 6        0.1135815       0.35572096      -0.9884626      -0.1706655
+#&gt;   scaled_mean_03 group_diff_scaled km
+#&gt; 1     0.70510613          1.393895  1
+#&gt; 2     0.65163676          1.451357  1
+#&gt; 3    -0.24185088          1.830849  3
+#&gt; 4    -0.64535445          1.562005  1
+#&gt; 5    -0.45863456          1.754958  3
+#&gt; 6     0.02490016          1.656669  3</div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -280,7 +281,7 @@ each node of the partition hierarchy.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -88,11 +88,11 @@ message(qq("* making density heatmap of global distribution for each sample (@{n
 library(ComplexHeatmap)
 <% if(is.null(get_anno(res_hc))) { -%>
 densityHeatmap(mat, ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
-    mc.cores = <%=n_cores%>)
+    mc.cores = <%=cores%>)
 <% } else { -%>
 densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hc), 
     col = get_anno_col(res_hc)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
-    mc.cores = <%=n_cores%>)
+    mc.cores = <%=cores%>)
 <% } -%>
 ```
 
@@ -117,7 +117,6 @@ In the output from `node_info()`, there are the following columns:
 - `n_columns`: Number of columns used.
 - `n_signatures`: Number of signatures with the `best_k`.
 - `p_signatures`: Proportion of hte signatures in total number of rows in the matrix.
-- `node_height`: Height of the node in the hierarchy dendrogram.
 - `is_leaf`: Whether the node is a leaf.
 
 **cola** uses a special way to encode the nodes in the hierarchy. The length of
@@ -191,14 +190,10 @@ cat("\n\n\\*\\*: 1-PAC > 0.95, \\*: 1-PAC > 0.9")
 
 ### Partition hierarchy
 
-<% node_heights = node_info(res_hc)$node_height
-node_heights = sort(node_heights[node_heights > 0])
-for(digit in 1:7) {
-    if(length(node_heights) == length(unique(floor(node_heights*10^digit)))) {
-        node_heights = floor(node_heights*10^digit)/10^digit
-        break
-    }
-}
+<% df_foo = node_info(res_hc)
+    n_signatures = df_foo$n_signatures[!df_foo$is_leaf]
+    n_signatures = sort(n_signatures[!is.na(n_signatures)])
+
 max_depth = max_depth(res_hc)
 -%>
 
@@ -208,8 +203,8 @@ message(qq("* collecting classifications for each ndoe height"), appendLF = FALS
 ```
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-<% for(nh in node_heights) { -%>
-knitr_add_tab_item('collect_classes(res_hc, merge_node = merge_node_param(node_height = <%=nh%>))', 'node_height \u2265 <%=nh%>', prefix = 'collect-classes-from-hierarchical-partition')
+<% for(ns in n_signatures) { -%>
+knitr_add_tab_item('collect_classes(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', prefix = 'collect-classes-from-hierarchical-partition')
 <% } -%>
 knitr_insert_tabs('collect-classes-from-hierarchical-partition')
 ```
@@ -218,8 +213,8 @@ Following shows the table of the partitions (You need to click the **show/hide
 code output** link to see it).
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
-<% for(nh in node_heights) { -%>
-knitr_add_tab_item('get_classes(res_hc, merge_node = merge_node_param(node_height = <%=nh%>))', 'node_height \u2265 <%=nh%>', prefix = 'get-classes-from-hierarchical-partition', hide_and_show = TRUE)
+<% for(ns in n_signatures) { -%>
+knitr_add_tab_item('get_classes(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', prefix = 'get-classes-from-hierarchical-partition', hide_and_show = TRUE)
 <% } -%>
 knitr_insert_tabs('get-classes-from-hierarchical-partition')
 ```
@@ -281,12 +276,12 @@ message(qq("* making dimension reduction plots"), appendLF = FALSE)
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% for(nh in node_heights) { -%>
+<% for(ns in n_signatures) { -%>
 knitr_add_tab_item('par(mfrow = c(1, 2))
-dimension_reduction(res_hc, merge_node = merge_node_param(node_height = <%=nh%>),
+dimension_reduction(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>),
     method = "<%=dr_method%>", top_value_method = "SD", top_n = <%=top_n%>, scale_rows = FALSE)
-dimension_reduction(res_hc, merge_node = merge_node_param(node_height = <%=nh%>),
-    method = "<%=dr_method%>", top_value_method = "ATC", top_n = <%=top_n%>, scale_rows = TRUE)', 'node_height \u2265 <%=nh%>', prefix = 'dimension-reduction-by-depth', opt = "fig.width = 14, fig.height = 7, out.width = '100%'")
+dimension_reduction(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>),
+    method = "<%=dr_method%>", top_value_method = "ATC", top_n = <%=top_n%>, scale_rows = TRUE)', 'n_signatures \u2265 <%=ns%>', prefix = 'dimension-reduction-by-depth', opt = "fig.width = 14, fig.height = 7, out.width = '100%'")
 <%}-%>
 knitr_insert_tabs('dimension-reduction-by-depth')
 ```
@@ -305,8 +300,8 @@ message(qq("* making signature heatmaps"), appendLF = FALSE)
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% for(nh in node_heights) { -%>
-knitr_add_tab_item('get_signatures(res_hc, merge_node = merge_node_param(node_height = <%=nh%>))', 'node_height \u2265 <%=nh%>', opt = 'results="hide"', prefix = 'get-signatures-from-hierarchical-partition')
+<% for(ns in n_signatures) { -%>
+knitr_add_tab_item('get_signatures(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', opt = 'results="hide"', prefix = 'get-signatures-from-hierarchical-partition')
 <%}-%>
 knitr_insert_tabs('get-signatures-from-hierarchical-partition')
 ```
@@ -348,8 +343,8 @@ message(qq("* testing correlation of subgroups to known annotations"))
 ```
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
-<% for(nh in node_heights) { -%>
-knitr_add_tab_item('test_to_known_factors(res_hc, merge_node = merge_node_param(node_height = <%=nh%>))', 'node_height \u2265 <%=nh%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
+<% for(ns in n_signatures) { -%>
+knitr_add_tab_item('test_to_known_factors(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
 <%}-%>
 knitr_insert_tabs('test-to-known-factors-from-hierarchical-partition')
 ```

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,57 +120,61 @@
     <p>Example ConsensusPartitionList object from Golub dataset</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)</pre>
+    <pre class="usage"><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Following code was used to generate <code>golub_cola</code>:</p>
 <p></p><pre>
-    library(cola)
+    <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/jokergoo/cola'>cola</a></span><span class='op'>)</span>
 
-    library(golubEsets)  # from bioc
-    data(Golub_Merge)
-    m = exprs(Golub_Merge)
-    colnames(m) = paste0("sample_", colnames(m))
-    anno = pData(Golub_Merge)
+    <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>golubEsets</span><span class='op'>)</span>  <span class='co'># from bioc</span>
+    <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>Golub_Merge</span><span class='op'>)</span>
+    <span class='va'>m</span> <span class='op'>=</span> <span class='fu'>exprs</span><span class='op'>(</span><span class='va'>Golub_Merge</span><span class='op'>)</span>
+    <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='st'>"sample_"</span>, <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span><span class='op'>)</span>
+    <span class='va'>anno</span> <span class='op'>=</span> <span class='fu'>pData</span><span class='op'>(</span><span class='va'>Golub_Merge</span><span class='op'>)</span>
 
-    m[m &amp;lt;= 1] = NA
-    m = log10(m)
+    <span class='va'>m</span><span class='op'>[</span><span class='va'>m</span> <span class='op'>&lt;=</span> <span class='fl'>1</span><span class='op'>]</span> <span class='op'>=</span> <span class='cn'>NA</span>
+    <span class='va'>m</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>log10</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span>
 
-    m = adjust_matrix(m)
+    <span class='va'>m</span> <span class='op'>=</span> <span class='fu'><a href='adjust_matrix.html'>adjust_matrix</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span>
 
-    library(preprocessCore)  # from bioc
-    cn = colnames(m)
-    rn = rownames(m)
-    m = normalize.quantiles(m)
-    colnames(m) = cn
-    rownames(m) = rn
+    <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/bmbolstad/preprocessCore'>preprocessCore</a></span><span class='op'>)</span>  <span class='co'># from bioc</span>
+    <span class='va'>cn</span> <span class='op'>=</span> <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span>
+    <span class='va'>rn</span> <span class='op'>=</span> <span class='fu'><a href='rownames-dispatch.html'>rownames</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span>
+    <span class='va'>m</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/preprocessCore/man/normalize.quantiles.html'>normalize.quantiles</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span>
+    <span class='fu'><a href='colnames-dispatch.html'>colnames</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span> <span class='op'>=</span> <span class='va'>cn</span>
+    <span class='fu'><a href='rownames-dispatch.html'>rownames</a></span><span class='op'>(</span><span class='va'>m</span><span class='op'>)</span> <span class='op'>=</span> <span class='va'>rn</span>
 
-    set.seed(123)
-    golub_cola = run_all_consensus_partition_methods(
-        m, mc.cores = 2, 
-        anno = anno[, c("ALL.AML"), drop = FALSE],
-        anno_col = c("ALL" = "red", "AML" = "blue")
-    )  </pre>
+    <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
+    <span class='va'>golub_cola</span> <span class='op'>=</span> <span class='fu'><a href='run_all_consensus_partition_methods.html'>run_all_consensus_partition_methods</a></span><span class='op'>(</span>
+        <span class='va'>m</span>, cores <span class='op'>=</span> <span class='fl'>6</span>, 
+        anno <span class='op'>=</span> <span class='va'>anno</span><span class='op'>[</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ALL.AML"</span><span class='op'>)</span>, drop <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>]</span>,
+        anno_col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"ALL"</span> <span class='op'>=</span> <span class='st'>"red"</span>, <span class='st'>"AML"</span> <span class='op'>=</span> <span class='st'>"blue"</span><span class='op'>)</span>
+    <span class='op'>)</span>  </pre>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><a href='https://jokergoo.github.io/cola_examples/Golub_leukemia/'>https://jokergoo.github.io/cola_examples/Golub_leukemia/</a></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='no'>golub_cola</span></div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 20 methods.
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span>
+<span class='va'>golub_cola</span>
+</div><div class='output co'>#&gt; A 'ConsensusPartitionList' object with 20 methods.
 #&gt;   On a matrix with 4116 rows and 72 columns.
 #&gt;   Top rows are extracted by 'SD, CV, MAD, ATC' methods.
 #&gt;   Subgroups are detected by 'hclust, kmeans, skmeans, pam, mclust' method.
 #&gt;   Number of partitions are tried for k = 2, 3, 4, 5, 6.
-#&gt;   Performed in total 15000 partitions by row resampling.
+#&gt;   Performed in total 5000 partitions by row resampling.
 #&gt; 
 #&gt; Following methods can be applied to this 'ConsensusPartitionList' object:
 #&gt;  [1] "cola_report"           "collect_classes"       "collect_plots"        
 #&gt;  [4] "collect_stats"         "colnames"              "functional_enrichment"
-#&gt;  [7] "get_anno_col"          "get_anno"              "get_classes"          
+#&gt;  [7] "get_anno"              "get_anno_col"          "get_classes"          
 #&gt; [10] "get_matrix"            "get_membership"        "get_stats"            
 #&gt; [13] "is_best_k"             "is_stable_k"           "ncol"                 
 #&gt; [16] "nrow"                  "rownames"              "show"                 
@@ -218,7 +198,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -89,35 +89,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -163,6 +139,12 @@
           <p><code><a href="ATC.html">ATC()</a></code> </p>
         </td>
         <td><p>Ability to correlate to other rows</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ATC_approx.html">ATC_approx()</a></code> </p>
+        </td>
+        <td><p>Ability to correlate to other rows - an approximated method</p></td>
       </tr><tr>
         
         <td>
@@ -400,6 +382,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="compare_partitions-ConsensusPartition-method.html">compare_partitions(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Compare two partitionings</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="compare_signatures-ConsensusPartition-method.html">compare_signatures(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Compare Signatures from Different k</p></td>
@@ -421,6 +409,12 @@
           <p><code><a href="concordance.html">concordance()</a></code> </p>
         </td>
         <td><p>Concordance to the consensus partition</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="config_ATC.html">config_ATC()</a></code> </p>
+        </td>
+        <td><p>Adjust parameters for default ATC method</p></td>
       </tr><tr>
         
         <td>
@@ -538,6 +532,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="functional_enrichment-HierarchicalPartition-method.html">functional_enrichment(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Perform functional enrichment on signature genes</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="functional_enrichment-dispatch.html">functional_enrichment-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for functional_enrichment</p></td>
@@ -595,6 +595,12 @@
           <p><code><a href="get_anno_col-dispatch.html">get_anno_col-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for get_anno_col</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="get_children_nodes-HierarchicalPartition-method.html">get_children_nodes(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Test whether a node is a leaf node</p></td>
       </tr><tr>
         
         <td>
@@ -766,7 +772,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="is_leaf_node.html">is_leaf_node()</a></code> </p>
+          <p><code><a href="is_leaf_node-HierarchicalPartition-method.html">is_leaf_node(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Test whether a node is a leaf node</p></td>
       </tr><tr>
@@ -787,6 +793,12 @@
           <p><code><a href="is_stable_k-dispatch.html">is_stable_k-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for is_stable_k</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="knee_finder2.html">knee_finder2()</a></code> </p>
+        </td>
+        <td><p>Find the knee/elbow of a list of sorted points</p></td>
       </tr><tr>
         
         <td>
@@ -820,6 +832,18 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="merge_node-HierarchicalPartition-method.html">merge_node(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Merge node</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="merge_node_param.html">merge_node_param()</a></code> </p>
+        </td>
+        <td><p>Parameters to merge branches in subgroup dendrogram.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="ncol-ConsensusPartition-method.html">ncol(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Number of columns in the matrix</p></td>
@@ -847,6 +871,18 @@
           <p><code><a href="ncol-dispatch.html">ncol-dispatch</a></code> </p>
         </td>
         <td><p>Method dispatch page for ncol</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="node_info-HierarchicalPartition-method.html">node_info(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Information on the nodes</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="node_level-HierarchicalPartition-method.html">node_level(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Information on the nodes</p></td>
       </tr><tr>
         
         <td>
@@ -1018,6 +1054,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="split_node-HierarchicalPartition-method.html">split_node(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Split node</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="suggest_best_k-ConsensusPartition-method.html">suggest_best_k(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Suggest the best number of subgroups</p></td>
@@ -1084,7 +1126,19 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="top_rows_heatmap-ConsensusPartition-method.html">top_rows_heatmap(<i>&lt;ConsensusPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Heatmap of top rows</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="top_rows_heatmap-ConsensusPartitionList-method.html">top_rows_heatmap(<i>&lt;ConsensusPartitionList&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Heatmap of top rows from different top-value methods</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="top_rows_heatmap-HierarchicalPartition-method.html">top_rows_heatmap(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
         </td>
         <td><p>Heatmap of top rows from different top-value methods</p></td>
       </tr><tr>
@@ -1105,6 +1159,12 @@
           <p><code><a href="top_rows_overlap-ConsensusPartitionList-method.html">top_rows_overlap(<i>&lt;ConsensusPartitionList&gt;</i>)</a></code> </p>
         </td>
         <td><p>Overlap of top rows from different top-value methods</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="top_rows_overlap-HierarchicalPartition-method.html">top_rows_overlap(<i>&lt;HierarchicalPartition&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Overlap of top rows on different nodes</p></td>
       </tr><tr>
         
         <td>
@@ -1136,7 +1196,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

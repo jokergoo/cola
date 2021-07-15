@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,12 +120,21 @@
     <p>Hierarchical partition</p>
     </div>
 
-    <pre class="usage"><span class='fu'>hierarchical_partition</span>(<span class='no'>data</span>,
-    <span class='kw'>top_value_method</span> <span class='kw'>=</span> <span class='st'>"ATC"</span>,
-    <span class='kw'>partition_method</span> <span class='kw'>=</span> <span class='st'>"skmeans"</span>,
-    <span class='kw'>PAC_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>min_samples</span> <span class='kw'>=</span> <span class='fl'>6</span>, <span class='kw'>subset</span> <span class='kw'>=</span> <span class='fl'>Inf</span>,
-    <span class='kw'>min_n_signatures</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='kw'>min_p_signatures</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
-    <span class='kw'>max_k</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>mc.cores</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>help</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>hierarchical_partition</span><span class='op'>(</span><span class='va'>data</span>,
+    top_n <span class='op'>=</span> <span class='cn'>NULL</span>,
+    top_value_method <span class='op'>=</span> <span class='st'>"ATC"</span>,
+    partition_method <span class='op'>=</span> <span class='st'>"skmeans"</span>,
+    combination_method <span class='op'>=</span>  <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span><span class='va'>top_value_method</span>, <span class='va'>partition_method</span><span class='op'>)</span>,
+    anno <span class='op'>=</span> <span class='cn'>NULL</span>, anno_col <span class='op'>=</span> <span class='cn'>NULL</span>,
+    mean_silhouette_cutoff <span class='op'>=</span> <span class='fl'>0.9</span>, min_samples <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='op'>(</span><span class='fl'>6</span>, <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='fu'><a href='ncol-dispatch.html'>ncol</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span><span class='op'>*</span><span class='fl'>0.01</span><span class='op'>)</span><span class='op'>)</span>, subset <span class='op'>=</span> <span class='cn'>Inf</span>,
+    group_diff <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>scale_rows</span>, <span class='fl'>0.5</span>, <span class='fl'>0</span><span class='op'>)</span>,
+    fdr_cutoff <span class='op'>=</span> <span class='va'>cola_opt</span><span class='op'>$</span><span class='va'>fdr_cutoff</span>,
+    min_n_signatures <span class='op'>=</span> <span class='cn'>NULL</span>,
+    filter_fun <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>mat</span><span class='op'>)</span> <span class='op'>{</span>
+    <span class='va'>s</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/matrixStats/man/rowSds.html'>rowSds</a></span><span class='op'>(</span><span class='va'>mat</span><span class='op'>)</span>
+    <span class='va'>s</span> <span class='op'>&gt;</span> <span class='fu'><a href='https://rdrr.io/r/stats/quantile.html'>quantile</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>s</span><span class='op'>[</span><span class='va'>s</span> <span class='op'>&gt;</span> <span class='fl'>1e-10</span><span class='op'>]</span><span class='op'>)</span>, <span class='fl'>0.05</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+    <span class='op'>}</span>,
+    max_k <span class='op'>=</span> <span class='fl'>4</span>, scale_rows <span class='op'>=</span> <span class='cn'>TRUE</span>, verbose <span class='op'>=</span> <span class='cn'>TRUE</span>, mc.cores <span class='op'>=</span> <span class='fl'>1</span>, cores <span class='op'>=</span> <span class='va'>mc.cores</span>, help <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,20 +144,44 @@
       <td><p>a numeric matrix where subgroups are found by columns.</p></td>
     </tr>
     <tr>
+      <th>top_n</th>
+      <td><p>Number of rows with top values.</p></td>
+    </tr>
+    <tr>
       <th>top_value_method</th>
-      <td><p>a single top-value method. Available methods are in <code><a href='all_top_value_methods.html'>all_top_value_methods</a></code>.</p></td>
+      <td><p>a single or a vector of top-value methods. Available methods are in <code><a href='all_top_value_methods.html'>all_top_value_methods</a></code>.</p></td>
     </tr>
     <tr>
       <th>partition_method</th>
-      <td><p>a single partition method. Available methods are in <code><a href='all_partition_methods.html'>all_partition_methods</a></code>.</p></td>
+      <td><p>a single or a vector of partition methods. Available methods are in <code><a href='all_partition_methods.html'>all_partition_methods</a></code>.</p></td>
     </tr>
     <tr>
-      <th>PAC_cutoff</th>
-      <td><p>the cutoff of PAC scores to determine whether to continue looking for subgroups.</p></td>
+      <th>combination_method</th>
+      <td><p>A list of combinations of top-value methods and partitioning methods. The value can be a two-column data frame where the first column is the top-value methods and the second column is the partitioning methods. Or it can be a vector of combination names in a form of "top_value_method:partitioning_method".</p></td>
+    </tr>
+    <tr>
+      <th>anno</th>
+      <td><p>A data frame with known annotation of samples. The annotations will be plotted in heatmaps and the correlation to predicted subgroups will be tested.</p></td>
+    </tr>
+    <tr>
+      <th>anno_col</th>
+      <td><p>A list of colors (color is defined as a named vector) for the annotations. If <code>anno</code> is a data frame, <code>anno_col</code> should be a named list where names correspond to the column names in <code>anno</code>.</p></td>
+    </tr>
+    <tr>
+      <th>mean_silhouette_cutoff</th>
+      <td><p>The cutoff to test whether partition in current node is stable.</p></td>
     </tr>
     <tr>
       <th>min_samples</th>
       <td><p>the cutoff of number of samples to determine whether to continue looking for subgroups.</p></td>
+    </tr>
+    <tr>
+      <th>group_diff</th>
+      <td><p>Pass to <code><a href='get_signatures-ConsensusPartition-method.html'>get_signatures,ConsensusPartition-method</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>fdr_cutoff</th>
+      <td><p>Pass to <code><a href='get_signatures-ConsensusPartition-method.html'>get_signatures,ConsensusPartition-method</a></code>.</p></td>
     </tr>
     <tr>
       <th>subset</th>
@@ -183,12 +192,16 @@
       <td><p>Minimal number of signatures under the best classification.</p></td>
     </tr>
     <tr>
-      <th>min_p_signatures</th>
-      <td><p>Minimal proportion of signatures under the best classification. If the corresponding values are smaller than both <code>min_n_signatures</code> and <code>min_p_signatures</code>, the hierarchical partitioning stops on that node.</p></td>
+      <th>filter_fun</th>
+      <td><p>A self-defined function which filters the original matrix and returns a submatrix for partitioning.</p></td>
     </tr>
     <tr>
       <th>max_k</th>
       <td><p>maximal number of partitions to try. The function will try <code>2:max_k</code> partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, <code>max_k</code> should not be set to a large value.</p></td>
+    </tr>
+    <tr>
+      <th>scale_rows</th>
+      <td><p>Whether rows are scaled?</p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -196,7 +209,11 @@
     </tr>
     <tr>
       <th>mc.cores</th>
-      <td><p>multiple cores to use.</p></td>
+      <td><p>multiple cores to use. This argument will be removed in future versions.</p></td>
+    </tr>
+    <tr>
+      <th>cores</th>
+      <td><p>Number of cores, or a <code>cluster</code> object returned by <code><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></code>.</p></td>
     </tr>
     <tr>
       <th>help</th>
@@ -218,22 +235,26 @@ node of the parent node. E.g. for the node <code>0011</code>, the depth is 4 and
 
     <p>A <code><a href='HierarchicalPartition-class.html'>HierarchicalPartition-class</a></code> object. Simply type object in the interactive R session
 to see which functions can be applied on it.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>123</span>)
-<span class='no'>m</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>)),
-          <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>)),
-          <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>),
-                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>20</span>*<span class='fl'>20</span>, <span class='kw'>mean</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.3</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>20</span>))
-         ) + <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>60</span>*<span class='fl'>60</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>0.5</span>), <span class='kw'>nr</span> <span class='kw'>=</span> <span class='fl'>60</span>)
-<span class='no'>rh</span> <span class='kw'>=</span> <span class='fu'>hierarchical_partition</span>(<span class='no'>m</span>, <span class='kw'>top_value_method</span> <span class='kw'>=</span> <span class='st'>"SD"</span>, <span class='kw'>partition_method</span> <span class='kw'>=</span> <span class='st'>"kmeans"</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
+<span class='va'>m</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>2</span>, sd <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>,
+          <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>1</span>, sd <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>,
+          <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>0</span>, sd <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span>,
+                <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>20</span><span class='op'>*</span><span class='fl'>20</span>, mean <span class='op'>=</span> <span class='fl'>1</span>, sd <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>
+         <span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>60</span><span class='op'>*</span><span class='fl'>60</span>, sd <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>)</span>, nr <span class='op'>=</span> <span class='fl'>60</span><span class='op'>)</span>
+<span class='va'>rh</span> <span class='op'>=</span> <span class='fu'>hierarchical_partition</span><span class='op'>(</span><span class='va'>m</span>, top_value_method <span class='op'>=</span> <span class='st'>"SD"</span>, partition_method <span class='op'>=</span> <span class='st'>"kmeans"</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -249,7 +270,7 @@ to see which functions can be applied on it.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -23,7 +23,6 @@ It returns the following node-level information:
   \item{n_columns}{Number of columns.}
   \item{n_signatures}{Number of signatures.}
   \item{p_signatures}{Percent of signatures.}
-  \item{node_height}{Height of the node in the dendrogram}
   \item{is_leaf}{Whether the node is a leaf}
 }
 }

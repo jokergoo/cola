@@ -210,7 +210,7 @@ plot_grid(p1, p2, p3, nrow = 1, labels = c("A", "B", "C"))
 
 <% if(do_go_enrichment) { %>
 
-### Gene Ontology enrichment (FDR < `r fdr_cutoff`) {.tabset}
+### Gene Ontology enrichment {.tabset}
 
 ```{r}
 message("* applying GO enrichment")
@@ -289,10 +289,10 @@ all_go_id = rownames(pm)
 i_figure = i_figure + 1
 ```
 
-```{r, fig.width = 12, fig.height = 7, fig.cap = "Figure @{i_figure}. Gene ontology enrichment on the three sets of genes illustrated in the previous Figure."}
+```{r, fig.width = 12, fig.height = 7, fig.cap = qq("Figure @{i_figure}. Gene ontology enrichment (FDR < @{fdr_cutoff}) on the three sets of genes illustrated in the previous Figure.")}
 message(qq("* clustering @{nrow(pm)} significant GO terms"))
 
-library(simplifyEnrichment)
+suppressPackageStartupMessages(library(simplifyEnrichment))
 sim_mat = GO_similarity(all_go_id, ont = "BP")
 col_fun_p = colorRamp2(c(0, -log10(fdr_cutoff), 4), c("green", "white", "red"))
 ht_fdr = Heatmap(-log10(pm), col = col_fun_p, name = "FDR",
@@ -325,7 +325,7 @@ for(nm in names(tb_list)) {
 
 ### Gene Ontology enrichment
 
-Functional enrichment was not applied because the matrix rows cannot be mapped to genes.
+Functional enrichment was not applied because the matrix rows cannot be mapped to genes (Entrez ID).
 
 <% } -%>
 
@@ -335,7 +335,7 @@ Functional enrichment was not applied because the matrix rows cannot be mapped t
 <br>
 
 <style>
-#gene-ontology-enrichment div {
+#gene-ontology-enrichment div.tab-content {
 	max-height: 400px;
 	overflow-y: auto;
 }

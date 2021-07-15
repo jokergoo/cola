@@ -43,7 +43,7 @@ require(hu6800.db)
 x = hu6800ENTREZID
 mapped_probes = mappedkeys(x)
 id_mapping = unlist(as.list(x[mapped_probes]))
-compare_partitions(golub_cola["ATC:skmeans"], res2["SD:kmeans"], 
+compare_partitions(golub_cola["ATC:skmeans"], golub_cola["SD:kmeans"], 
     id_mapping = id_mapping)
 }
 }

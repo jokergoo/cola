@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,7 +120,7 @@
     <p>Global parameters</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cola_opt</span>(<span class='no'>...</span>, <span class='kw'>RESET</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>READ.ONLY</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>LOCAL</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>ADD</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>cola_opt</span><span class='op'>(</span><span class='va'>...</span>, RESET <span class='op'>=</span> <span class='cn'>FALSE</span>, READ.ONLY <span class='op'>=</span> <span class='cn'>NULL</span>, LOCAL <span class='op'>=</span> <span class='cn'>FALSE</span>, ADD <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -174,30 +150,37 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>There are following global parameters:</p>
-<dl'>
+<dl>
   <dt><code>group_diff</code></dt><dd><p>Used in <code><a href='get_signatures-ConsensusPartition-method.html'>get_signatures,ConsensusPartition-method</a></code> to globally control the minimal difference between subgroups.</p></dd>
   <dt><code>fdr_cutoff</code></dt><dd><p>Used in <code><a href='get_signatures-ConsensusPartition-method.html'>get_signatures,ConsensusPartition-method</a></code> to globally control the cutoff of FDR for the differential signature tests.</p></dd>
   <dt><code>color_set_2</code></dt><dd><p>Colors for the predicted subgroups.</p></dd>
+  <dt><code>help</code></dt><dd><p>Whether to print help messages.</p></dd>
+  <dt><code>message</code></dt><dd><p>Whether to print messages.</p></dd>
 
 </dl>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>cola_opt</span></div><div class='output co'>#&gt;  Option      Value                                                                                                                                                  
+    <pre class="examples"><div class='input'><span class='va'>cola_opt</span>
+</div><div class='output co'>#&gt;  Option      Value                                                                                                                                                  
 #&gt;  -----------:-------------------------------------------------------------------
 #&gt;  group_diff  0                                                                                                                                                      
 #&gt;  fdr_cutoff  0.05                                                                                                                                                   
+#&gt;  help        TRUE                                                                                                                                                   
 #&gt;  color_set_1 #E41A1C, #377EB8, #4DAF4A, #984EA3, #FF7F00, #FFFF33, #A65628, #F781BF, #999999, #1B9E77, #D95F02, #7570B3, #E7298A, #66A61E, #E6AB02, #A6761D, #666666
 #&gt;  color_set_2 #66C2A5, #FC8D62, #8DA0CB, #E78AC3, #A6D854, #FFD92F, #E5C494, #B3B3B3, #7FC97F, #BEAED4, #FDC086, #FFFF99, #386CB0, #F0027F, #BF5B17, #666666         
-#&gt;  message     TRUE                                                                                                                                                   </div><div class='input'><span class='no'>cola_opt</span>$<span class='no'>group_diff</span> <span class='kw'>=</span> <span class='fl'>0.2</span>  <span class='co'># e.g. for methylation datasets</span>
-<span class='no'>cola_opt</span>$<span class='no'>fdr_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.1</span>  <span class='co'># e.g. for methylation datasets</span>
-<span class='no'>cola_opt</span></div><div class='output co'>#&gt;  Option      Value                                                                                                                                                  
+#&gt;  message     TRUE                                                                                                                                                   </div><div class='input'><span class='va'>cola_opt</span><span class='op'>$</span><span class='va'>group_diff</span> <span class='op'>=</span> <span class='fl'>0.2</span>  <span class='co'># e.g. for methylation datasets</span>
+<span class='va'>cola_opt</span><span class='op'>$</span><span class='va'>fdr_cutoff</span> <span class='op'>=</span> <span class='fl'>0.1</span>  <span class='co'># e.g. for methylation datasets</span>
+<span class='va'>cola_opt</span>
+</div><div class='output co'>#&gt;  Option      Value                                                                                                                                                  
 #&gt;  -----------:-------------------------------------------------------------------
 #&gt;  group_diff  0.2                                                                                                                                                    
 #&gt;  fdr_cutoff  0.1                                                                                                                                                    
+#&gt;  help        TRUE                                                                                                                                                   
 #&gt;  color_set_1 #E41A1C, #377EB8, #4DAF4A, #984EA3, #FF7F00, #FFFF33, #A65628, #F781BF, #999999, #1B9E77, #D95F02, #7570B3, #E7298A, #66A61E, #E6AB02, #A6761D, #666666
 #&gt;  color_set_2 #66C2A5, #FC8D62, #8DA0CB, #E78AC3, #A6D854, #FFD92F, #E5C494, #B3B3B3, #7FC97F, #BEAED4, #FDC086, #FFFF99, #386CB0, #F0027F, #BF5B17, #666666         
-#&gt;  message     TRUE                                                                                                                                                   </div><div class='input'><span class='fu'>cola_opt</span>(<span class='kw'>RESET</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div></pre>
+#&gt;  message     TRUE                                                                                                                                                   </div><div class='input'><span class='fu'>cola_opt</span><span class='op'>(</span>RESET <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -213,7 +196,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

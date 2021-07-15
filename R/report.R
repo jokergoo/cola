@@ -249,6 +249,8 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	od = getOption("digits")
 	wd = getwd()
 	nv = length(dev.list())
+	ohelp = cola_opt$help
+	cola_opt$help = FALSE
 	on.exit({
 		options(digits = od)
 		setwd(wd)
@@ -261,6 +263,7 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 			dev.off2()
 			nv2 = length(dev.list())
 		}
+		cola_opt$help = ohelp
 	})
 
 	options(digits = 3)

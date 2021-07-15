@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -144,7 +120,7 @@
     <p>The proportion of ambiguous clustering (PAC score)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>PAC</span>(<span class='no'>consensus_mat</span>, <span class='kw'>x1</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>x2</span> <span class='kw'>=</span> <span class='fl'>0.9</span>, <span class='kw'>class</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>PAC</span><span class='op'>(</span><span class='va'>consensus_mat</span>, x1 <span class='op'>=</span> <span class='fl'>0.1</span>, x2 <span class='op'>=</span> <span class='fl'>0.9</span>, class <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,13 +152,22 @@
     <h2 class="hasAnchor" id="see"><a class="anchor" href="#see"></a>See</h2>
 
     <p>See <a href='https://www.nature.com/articles/srep06207'>https://www.nature.com/articles/srep06207</a> for explanation of PAC score.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='fu'>PAC</span>(<span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span>(<span class='no'>golub_cola</span>[<span class='fl'>1</span>, <span class='fl'>1</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div><div class='output co'>#&gt; [1] 0.6240219</div><div class='input'><span class='fu'>PAC</span>(<span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span>(<span class='no'>golub_cola</span>[<span class='fl'>1</span>, <span class='fl'>1</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>))</div><div class='output co'>#&gt; [1] 0.6400626</div><div class='input'><span class='fu'>PAC</span>(<span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span>(<span class='no'>golub_cola</span>[<span class='fl'>1</span>, <span class='fl'>1</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>4</span>))</div><div class='output co'>#&gt; [1] 0.5575117</div><div class='input'><span class='fu'>PAC</span>(<span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span>(<span class='no'>golub_cola</span>[<span class='fl'>1</span>, <span class='fl'>1</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>5</span>))</div><div class='output co'>#&gt; [1] 0.4737872</div><div class='input'><span class='fu'>PAC</span>(<span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span>(<span class='no'>golub_cola</span>[<span class='fl'>1</span>, <span class='fl'>1</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>6</span>))</div><div class='output co'>#&gt; [1] 0.4115806</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span>
+<span class='fu'>PAC</span><span class='op'>(</span><span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>]</span>, k <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.1478873</div><div class='input'><span class='fu'>PAC</span><span class='op'>(</span><span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>]</span>, k <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.4878717</div><div class='input'><span class='fu'>PAC</span><span class='op'>(</span><span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>]</span>, k <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.5219092</div><div class='input'><span class='fu'>PAC</span><span class='op'>(</span><span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>]</span>, k <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.4374022</div><div class='input'><span class='fu'>PAC</span><span class='op'>(</span><span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>]</span>, k <span class='op'>=</span> <span class='fl'>6</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.3955399</div><div class='input'>
 <span class='co'># with specifying `class`</span>
-<span class='fu'>PAC</span>(<span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span>(<span class='no'>golub_cola</span>[<span class='fl'>1</span>, <span class='fl'>1</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>),
-    <span class='kw'>class</span> <span class='kw'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>golub_cola</span>[<span class='fl'>1</span>, <span class='fl'>1</span>], <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)[, <span class='fl'>1</span>])</div><div class='output co'>#&gt; [1] 0.5785777</div></pre>
+<span class='fu'>PAC</span><span class='op'>(</span><span class='fu'><a href='get_consensus-ConsensusPartition-method.html'>get_consensus</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>]</span>, k <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>, 
+    class <span class='op'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>[</span><span class='fl'>1</span>, <span class='fl'>1</span><span class='op'>]</span>, k <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 0.04433714</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -198,7 +183,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

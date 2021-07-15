@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,15 +121,17 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartition</span>
-<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>object</span>, <span class='no'>k</span>, <span class='no'>mat</span>,
-    <span class='kw'>silhouette_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.5</span>,
-    <span class='kw'>fdr_cutoff</span> <span class='kw'>=</span> <span class='no'>cola_opt</span>$<span class='no'>fdr_cutoff</span>,
-    <span class='kw'>group_diff</span> <span class='kw'>=</span> <span class='no'>cola_opt</span>$<span class='no'>group_diff</span>,
-    <span class='kw'>scale_rows</span> <span class='kw'>=</span> <span class='no'>object</span>@<span class='kw'>scale_rows</span>,
-    <span class='kw'>diff_method</span> <span class='kw'>=</span> <span class='st'>"Ftest"</span>,
-    <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"euclidean"</span>, <span class='st'>"correlation"</span>, <span class='st'>"cosine"</span>), <span class='kw'>nperm</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-    <span class='kw'>p_cutoff</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>plot</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>force</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-    <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>help</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+<span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>k</span>, <span class='va'>mat</span>,
+    silhouette_cutoff <span class='op'>=</span> <span class='fl'>0.5</span>,
+    fdr_cutoff <span class='op'>=</span> <span class='va'>cola_opt</span><span class='op'>$</span><span class='va'>fdr_cutoff</span>,
+    group_diff <span class='op'>=</span> <span class='va'>cola_opt</span><span class='op'>$</span><span class='va'>group_diff</span>,
+    scale_rows <span class='op'>=</span> <span class='va'>object</span><span class='op'>@</span><span class='va'>scale_rows</span>,
+    diff_method <span class='op'>=</span> <span class='st'>"Ftest"</span>,
+    dist_method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"euclidean"</span>, <span class='st'>"correlation"</span>, <span class='st'>"cosine"</span><span class='op'>)</span>, nperm <span class='op'>=</span> <span class='fl'>1000</span>,
+    p_cutoff <span class='op'>=</span> <span class='fl'>0.05</span>, plot <span class='op'>=</span> <span class='cn'>TRUE</span>, col_fun <span class='op'>=</span> <span class='cn'>NULL</span>,
+    split_by_sigatures <span class='op'>=</span> <span class='cn'>FALSE</span>, force <span class='op'>=</span> <span class='cn'>FALSE</span>,
+    verbose <span class='op'>=</span> <span class='cn'>TRUE</span>, help <span class='op'>=</span> <span class='cn'>TRUE</span>, prefix <span class='op'>=</span> <span class='st'>""</span>,
+    mc.cores <span class='op'>=</span> <span class='fl'>1</span>, cores <span class='op'>=</span> <span class='va'>mc.cores</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -207,6 +185,14 @@
       <td><p>Whether to draw the plot that visualizes the process of prediction. Send to <code><a href='predict_classes-matrix-method.html'>predict_classes,matrix-method</a></code>.</p></td>
     </tr>
     <tr>
+      <th>col_fun</th>
+      <td><p>A color mapping function generated from <code>colorRamp2</code>. It is set to both heatmaps.</p></td>
+    </tr>
+    <tr>
+      <th>split_by_sigatures</th>
+      <td><p>Should the heatmaps be split based on k-means on the main heatmap, or on the patterns of the signature heatmap.</p></td>
+    </tr>
+    <tr>
       <th>force</th>
       <td><p>If the value is <code>TRUE</code> and when <code><a href='get_signatures-ConsensusPartition-method.html'>get_signatures,ConsensusPartition-method</a></code> internally failed, top 1000 rows with the highest between-group mean difference are used for constructing the signature centroid matrix. It is basically used internally.</p></td>
     </tr>
@@ -221,6 +207,14 @@
     <tr>
       <th>prefix</th>
       <td><p>Used internally.</p></td>
+    </tr>
+    <tr>
+      <th>mc.cores</th>
+      <td><p>Number of cores. This argument will be removed in future versions.</p></td>
+    </tr>
+    <tr>
+      <th>cores</th>
+      <td><p>Number of cores, or a <code>cluster</code> object returned by <code><a href='https://rdrr.io/r/parallel/makeCluster.html'>makeCluster</a></code>.</p></td>
     </tr>
     </table>
 
@@ -245,180 +239,173 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='no'>res</span> <span class='kw'>=</span> <span class='no'>golub_cola</span>[<span class='st'>"ATC:skmeans"</span>]
-<span class='no'>mat</span> <span class='kw'>=</span> <span class='fu'><a href='get_matrix-dispatch.html'>get_matrix</a></span>(<span class='no'>res</span>)
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span>
+<span class='va'>res</span> <span class='op'>=</span> <span class='va'>golub_cola</span><span class='op'>[</span><span class='st'>"ATC:skmeans"</span><span class='op'>]</span>
+<span class='va'>mat</span> <span class='op'>=</span> <span class='fu'><a href='get_matrix-dispatch.html'>get_matrix</a></span><span class='op'>(</span><span class='va'>res</span><span class='op'>)</span>
 <span class='co'># note scaling should be applied here because the matrix was scaled in the cola analysis</span>
-<span class='no'>mat2</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span>(<span class='no'>mat</span>)))
-<span class='no'>cl</span> <span class='kw'>=</span> <span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='no'>mat2</span>)</div><div class='output co'>#&gt; The matrix has been scaled in cola analysis, thus the new matrix should
+<span class='va'>mat2</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>mat</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>cl</span> <span class='op'>=</span> <span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span><span class='op'>(</span><span class='va'>res</span>, k <span class='op'>=</span> <span class='fl'>3</span>, <span class='va'>mat2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; The matrix has been scaled in cola analysis, thus the new matrix should
 #&gt; also be scaled with the same method ('z-score'). Please double check.
 #&gt; Set `help = FALSE` to suppress this message. 
 #&gt; 
-#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
-#&gt; * calculating row difference between subgroups by Ftest.
-#&gt; * split rows into 4 groups by k-means clustering.
-#&gt; * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
-#&gt; Predict classes based on 3-group classification (euclidean method) on a 72-column matrix.</div><div class='img'><img src='predict_classes-ConsensusPartition-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># compare the real classification and the predicted classification</span>
-<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>cola_class</span> <span class='kw'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)[, <span class='st'>"class"</span>],
-           <span class='kw'>predicted</span> <span class='kw'>=</span> <span class='no'>cl</span>[, <span class='st'>"class"</span>])</div><div class='output co'>#&gt;    cola_class predicted
+#&gt; * take top 500/500 most significant signatures for prediction.</div><div class='img'><img src='predict_classes-ConsensusPartition-method-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># compare the real classification and the predicted classification</span>
+<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>cola_class <span class='op'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span><span class='op'>(</span><span class='va'>res</span>, k <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span><span class='op'>[</span>, <span class='st'>"class"</span><span class='op'>]</span>,
+           predicted <span class='op'>=</span> <span class='va'>cl</span><span class='op'>[</span>, <span class='st'>"class"</span><span class='op'>]</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;    cola_class predicted
 #&gt; 1           3         3
 #&gt; 2           3         3
-#&gt; 3           1         1
-#&gt; 4           1         1
-#&gt; 5           1         1
+#&gt; 3           2         2
+#&gt; 4           2         2
+#&gt; 5           2         2
 #&gt; 6           3         3
-#&gt; 7           1         1
-#&gt; 8           1         1
-#&gt; 9           1         1
-#&gt; 10          1         1
-#&gt; 11          1         1
-#&gt; 12          1         1
-#&gt; 13          1         1
-#&gt; 14          1         1
-#&gt; 15          1         1
-#&gt; 16          1         1
-#&gt; 17          1         1
+#&gt; 7           2         2
+#&gt; 8           2         2
+#&gt; 9           2         2
+#&gt; 10          2         2
+#&gt; 11          2         2
+#&gt; 12          2         2
+#&gt; 13          2         2
+#&gt; 14          2         2
+#&gt; 15          2         2
+#&gt; 16          2         2
+#&gt; 17          2         2
 #&gt; 18          3         3
 #&gt; 19          3         3
-#&gt; 20          1         1
-#&gt; 21          2         2
-#&gt; 22          2         2
-#&gt; 23          2         2
-#&gt; 24          2         2
-#&gt; 25          1         1
-#&gt; 26          2         2
-#&gt; 27          2         2
+#&gt; 20          2         2
+#&gt; 21          1         1
+#&gt; 22          1         1
+#&gt; 23          1         1
+#&gt; 24          1         1
+#&gt; 25          2         2
+#&gt; 26          1         1
+#&gt; 27          1         1
 #&gt; 28          2         2
-#&gt; 29          2         2
-#&gt; 30          2         2
-#&gt; 31          1         1
-#&gt; 32          2         2
-#&gt; 33          2         2
-#&gt; 34          2         2
+#&gt; 29          1         1
+#&gt; 30          1         1
+#&gt; 31          2         2
+#&gt; 32          1         1
+#&gt; 33          1         1
+#&gt; 34          1         1
 #&gt; 35          3         3
-#&gt; 36          1         1
+#&gt; 36          2         2
 #&gt; 37          3         3
 #&gt; 38          3         3
-#&gt; 39          1         1
+#&gt; 39          2         2
 #&gt; 40          3         3
 #&gt; 41          3         3
 #&gt; 42          3         3
-#&gt; 43          1         1
-#&gt; 44          3         3
-#&gt; 45          1         1
-#&gt; 46          2         2
-#&gt; 47          1         1
-#&gt; 48          1         1
-#&gt; 49          1         1
-#&gt; 50          1         1
-#&gt; 51          1         1
+#&gt; 43          2         2
+#&gt; 44          2         2
+#&gt; 45          2         2
+#&gt; 46          1         1
+#&gt; 47          2         2
+#&gt; 48          2         2
+#&gt; 49          2         2
+#&gt; 50          2         2
+#&gt; 51          2         2
 #&gt; 52          3         3
-#&gt; 53          1         1
-#&gt; 54          1         1
-#&gt; 55          1         1
-#&gt; 56          2         2
+#&gt; 53          2         2
+#&gt; 54          2         2
+#&gt; 55          2         2
+#&gt; 56          1         1
 #&gt; 57          3         3
-#&gt; 58          1         1
-#&gt; 59          3         2
-#&gt; 60          1         1
+#&gt; 58          2         2
+#&gt; 59          1         1
+#&gt; 60          2         2
 #&gt; 61          3         3
-#&gt; 62          2         2
-#&gt; 63          2         2
-#&gt; 64          2         2
-#&gt; 65          2         2
-#&gt; 66          2         2
-#&gt; 67          2         2
-#&gt; 68          1         1
-#&gt; 69          2         2
-#&gt; 70          2         2
-#&gt; 71          2         2
-#&gt; 72          2         2</div><div class='input'><span class='co'># change to correlation method</span>
-<span class='no'>cl</span> <span class='kw'>=</span> <span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='no'>mat2</span>, <span class='kw'>dist_method</span> <span class='kw'>=</span> <span class='st'>"correlation"</span>)</div><div class='output co'>#&gt; The matrix has been scaled in cola analysis, thus the new matrix should
+#&gt; 62          1         1
+#&gt; 63          1         1
+#&gt; 64          1         1
+#&gt; 65          1         1
+#&gt; 66          1         1
+#&gt; 67          1         1
+#&gt; 68          2         2
+#&gt; 69          1         1
+#&gt; 70          1         1
+#&gt; 71          1         1
+#&gt; 72          1         1</div><div class='input'><span class='co'># change to correlation method</span>
+<span class='va'>cl</span> <span class='op'>=</span> <span class='fu'><a href='predict_classes-dispatch.html'>predict_classes</a></span><span class='op'>(</span><span class='va'>res</span>, k <span class='op'>=</span> <span class='fl'>3</span>, <span class='va'>mat2</span>, dist_method <span class='op'>=</span> <span class='st'>"correlation"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; The matrix has been scaled in cola analysis, thus the new matrix should
 #&gt; also be scaled with the same method ('z-score'). Please double check.
 #&gt; Set `help = FALSE` to suppress this message. 
 #&gt; 
-#&gt; * 70/72 samples (in 3 classes) remain after filtering by silhouette (&gt;= 0.5).
-#&gt; * cache hash: d7b0ab9e8457e94218da8307be387574 (seed 888).
-#&gt; * calculating row difference between subgroups by Ftest.
-#&gt;   - row difference is extracted from cache.
-#&gt; * use k-means partition that are already calculated in previous runs.
-#&gt; * 2076 signatures (50.4%) under fdr &lt; 0.05, group_diff &gt; 0.
-#&gt; Predict classes based on 3-group classification (correlation method) on a 72-column matrix.</div><div class='img'><img src='predict_classes-ConsensusPartition-method-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># compare the real classification and the predicted classification</span>
-<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>cola_class</span> <span class='kw'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>res</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>)[, <span class='st'>"class"</span>],
-           <span class='kw'>predicted</span> <span class='kw'>=</span> <span class='no'>cl</span>[, <span class='st'>"class"</span>])</div><div class='output co'>#&gt;    cola_class predicted
+#&gt; * take top 500/500 most significant signatures for prediction.</div><div class='img'><img src='predict_classes-ConsensusPartition-method-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># compare the real classification and the predicted classification</span>
+<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>cola_class <span class='op'>=</span> <span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span><span class='op'>(</span><span class='va'>res</span>, k <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span><span class='op'>[</span>, <span class='st'>"class"</span><span class='op'>]</span>,
+           predicted <span class='op'>=</span> <span class='va'>cl</span><span class='op'>[</span>, <span class='st'>"class"</span><span class='op'>]</span><span class='op'>)</span> 
+</div><div class='output co'>#&gt;    cola_class predicted
 #&gt; 1           3         3
 #&gt; 2           3         3
-#&gt; 3           1         1
-#&gt; 4           1         1
-#&gt; 5           1         1
+#&gt; 3           2         2
+#&gt; 4           2         2
+#&gt; 5           2         2
 #&gt; 6           3         3
-#&gt; 7           1         1
-#&gt; 8           1         1
-#&gt; 9           1         1
-#&gt; 10          1         1
-#&gt; 11          1         1
-#&gt; 12          1         1
-#&gt; 13          1         1
-#&gt; 14          1         1
-#&gt; 15          1         1
-#&gt; 16          1         1
-#&gt; 17          1         1
+#&gt; 7           2         2
+#&gt; 8           2         2
+#&gt; 9           2         2
+#&gt; 10          2         2
+#&gt; 11          2         2
+#&gt; 12          2         2
+#&gt; 13          2         2
+#&gt; 14          2         2
+#&gt; 15          2         2
+#&gt; 16          2         2
+#&gt; 17          2         2
 #&gt; 18          3         3
 #&gt; 19          3         3
-#&gt; 20          1         1
-#&gt; 21          2         2
-#&gt; 22          2         2
-#&gt; 23          2         2
-#&gt; 24          2         2
-#&gt; 25          1         1
-#&gt; 26          2         2
-#&gt; 27          2         2
+#&gt; 20          2         2
+#&gt; 21          1         1
+#&gt; 22          1         1
+#&gt; 23          1         1
+#&gt; 24          1         1
+#&gt; 25          2         2
+#&gt; 26          1         1
+#&gt; 27          1         1
 #&gt; 28          2         2
-#&gt; 29          2         2
-#&gt; 30          2         2
-#&gt; 31          1         1
-#&gt; 32          2         2
-#&gt; 33          2         2
-#&gt; 34          2         2
+#&gt; 29          1         1
+#&gt; 30          1         1
+#&gt; 31          2         2
+#&gt; 32          1         1
+#&gt; 33          1         1
+#&gt; 34          1         1
 #&gt; 35          3         3
-#&gt; 36          1         1
+#&gt; 36          2         2
 #&gt; 37          3         3
 #&gt; 38          3         3
-#&gt; 39          1         1
+#&gt; 39          2         2
 #&gt; 40          3         3
 #&gt; 41          3         3
 #&gt; 42          3         3
-#&gt; 43          1         1
-#&gt; 44          3         3
-#&gt; 45          1         1
-#&gt; 46          2         2
-#&gt; 47          1         1
-#&gt; 48          1         1
-#&gt; 49          1         1
-#&gt; 50          1         1
-#&gt; 51          1         1
+#&gt; 43          2         2
+#&gt; 44          2         2
+#&gt; 45          2         2
+#&gt; 46          1         1
+#&gt; 47          2         2
+#&gt; 48          2         2
+#&gt; 49          2         2
+#&gt; 50          2         2
+#&gt; 51          2         2
 #&gt; 52          3         3
-#&gt; 53          1         1
-#&gt; 54          1         1
-#&gt; 55          1         1
-#&gt; 56          2         2
+#&gt; 53          2         2
+#&gt; 54          2         2
+#&gt; 55          2         2
+#&gt; 56          1         1
 #&gt; 57          3         3
-#&gt; 58          1         1
-#&gt; 59          3         2
-#&gt; 60          1         1
+#&gt; 58          2         2
+#&gt; 59          1         1
+#&gt; 60          2         2
 #&gt; 61          3         3
-#&gt; 62          2         2
-#&gt; 63          2         2
-#&gt; 64          2         2
-#&gt; 65          2         2
-#&gt; 66          2         2
-#&gt; 67          2         2
-#&gt; 68          1         1
-#&gt; 69          2         2
-#&gt; 70          2         2
-#&gt; 71          2         2
-#&gt; 72          2         2</div><div class='input'># }
+#&gt; 62          1         1
+#&gt; 63          1         1
+#&gt; 64          1         1
+#&gt; 65          1         1
+#&gt; 66          1         1
+#&gt; 67          1         1
+#&gt; 68          2         2
+#&gt; 69          1         1
+#&gt; 70          1         1
+#&gt; 71          1         1
+#&gt; 72          1         1</div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -435,7 +422,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

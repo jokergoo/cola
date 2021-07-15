@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -90,35 +90,11 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/cola_quick.html">A Quick Start of cola Package</a>
-    </li>
-    <li>
-      <a href="../articles/functional_enrichment.html">Automatic Functional Enrichment on Signature Genes</a>
-    </li>
-    <li>
-      <a href="../articles/hierarchical.html">Hierarchical Consensus Partitioning</a>
-    </li>
-    <li>
-      <a href="../articles/predict.html">Predict Classes for New Samples</a>
-    </li>
-    <li>
-      <a href="../articles/work_with_big_datasets.html">Work with Big Datasets</a>
-    </li>
-  </ul>
-</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/jokergoo/cola/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -145,7 +121,7 @@
     </div>
 
     <pre class="usage"><span class='co'># S4 method for ConsensusPartitionList</span>
-<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>object</span>, <span class='no'>k</span>)</pre>
+<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>k</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -168,82 +144,86 @@ by weighting the mean silhouette scores in each method.</p>
 
     <p>A data frame with subgroup labels and other columns which are entropy of the percent membership matrix
 and the silhouette scores which measure the stability of a sample to stay in its group.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Zuguang Gu &lt;z.gu@dkfz.de&gt;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>golub_cola</span>)
-<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span>(<span class='no'>golub_cola</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;    class    entropy silhouette
-#&gt; 1      1 0.96533165  0.7505154
-#&gt; 2      1 0.99590637  0.5666583
-#&gt; 3      1 0.39304833  0.8388608
-#&gt; 4      1 0.11591029  0.8500240
-#&gt; 5      1 0.05414058  0.8500240
-#&gt; 6      1 0.99655883  0.6277406
-#&gt; 7      1 0.05070886  0.8500240
-#&gt; 8      1 0.22002818  0.8388608
-#&gt; 9      1 0.11812529  0.8500240
-#&gt; 10     1 0.11909828  0.8500240
-#&gt; 11     1 0.16724883  0.8500240
-#&gt; 12     1 0.50792051  0.8429163
-#&gt; 13     1 0.45983587  0.8287910
-#&gt; 14     1 0.36026742  0.8388608
-#&gt; 15     1 0.05070886  0.8500240
-#&gt; 16     1 0.05234636  0.8500240
-#&gt; 17     2 0.99227801  0.3530249
-#&gt; 18     1 0.98527242  0.6277406
-#&gt; 19     1 0.95831675  0.7742325
-#&gt; 20     1 0.44223285  0.8388608
-#&gt; 21     2 0.21059316  0.9498095
-#&gt; 22     2 0.05848631  0.9498095
-#&gt; 23     2 0.05528721  0.9498095
-#&gt; 24     2 0.05528721  0.9498095
-#&gt; 25     2 0.84006967  0.7241225
-#&gt; 26     2 0.25336525  0.9498095
-#&gt; 27     2 0.06671818  0.9498095
-#&gt; 28     2 0.61669566  0.8484613
-#&gt; 29     2 0.07904313  0.9498095
-#&gt; 30     2 0.07385061  0.9498095
-#&gt; 31     1 0.85025315  0.6549276
-#&gt; 32     2 0.20970171  0.9498095
-#&gt; 33     2 0.32560409  0.9498095
-#&gt; 34     2 0.22006977  0.9498095
-#&gt; 35     1 0.80993708  0.7742325
-#&gt; 36     1 0.96182446  0.4974049
-#&gt; 37     1 0.98205724  0.5666583
-#&gt; 38     1 0.87022691  0.7742325
-#&gt; 39     1 0.05070886  0.8500240
-#&gt; 40     1 0.98585425  0.6277406
-#&gt; 41     1 0.97795404  0.6277406
-#&gt; 42     1 0.98130972  0.7048961
-#&gt; 43     1 0.39657755  0.8500240
-#&gt; 44     1 0.92002316  0.6849900
-#&gt; 45     1 0.35461758  0.8388608
-#&gt; 46     2 0.45641902  0.7548411
-#&gt; 47     1 0.05414058  0.8500240
-#&gt; 48     1 0.21945533  0.8500240
-#&gt; 49     1 0.05070886  0.8500240
-#&gt; 50     1 0.21143285  0.8500240
-#&gt; 51     1 0.35324693  0.8500240
-#&gt; 52     1 0.74209711  0.8042626
-#&gt; 53     1 0.20397989  0.8500240
-#&gt; 54     1 0.05189532  0.8500240
-#&gt; 55     1 0.09392989  0.8500240
-#&gt; 56     1 0.99136469  0.6443877
-#&gt; 57     1 0.98298797  0.5666583
-#&gt; 58     1 0.07798073  0.8500240
-#&gt; 59     1 0.94547738  0.7505154
-#&gt; 60     1 0.34779975  0.8429163
-#&gt; 61     1 0.99731563  0.6277406
-#&gt; 62     2 0.10810020  0.9498095
-#&gt; 63     2 0.23570078  0.9498095
-#&gt; 64     2 0.06706583  0.9498095
-#&gt; 65     2 0.05528721  0.9498095
-#&gt; 66     2 0.10101179  0.9498095
-#&gt; 67     2 0.11035134  0.9498095
-#&gt; 68     2 0.85664678  0.7356050
-#&gt; 69     2 0.14305025  0.9498095
-#&gt; 70     2 0.09785362  0.9498095
-#&gt; 71     2 0.09237835  0.9498095
-#&gt; 72     2 0.05528721  0.9498095</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>golub_cola</span><span class='op'>)</span>
+<span class='fu'><a href='get_classes-dispatch.html'>get_classes</a></span><span class='op'>(</span><span class='va'>golub_cola</span>, k <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;           class    entropy  silhouette
+#&gt; sample_39     2 0.83546869  0.77456368
+#&gt; sample_40     2 0.88110176  0.72177524
+#&gt; sample_42     2 0.38094115  0.87509347
+#&gt; sample_47     2 0.08659599  0.86861045
+#&gt; sample_48     2 0.03006108  0.86861045
+#&gt; sample_49     2 0.88037515  0.72177524
+#&gt; sample_41     2 0.03006108  0.86861045
+#&gt; sample_43     2 0.33458476  0.87509347
+#&gt; sample_44     2 0.03425504  0.86861045
+#&gt; sample_45     2 0.05625610  0.86861045
+#&gt; sample_46     2 0.14211153  0.86861045
+#&gt; sample_70     2 0.33728419  0.87509347
+#&gt; sample_71     2 0.40319077  0.87509347
+#&gt; sample_72     2 0.36544018  0.87509347
+#&gt; sample_68     2 0.03006108  0.86861045
+#&gt; sample_69     2 0.03834360  0.86861045
+#&gt; sample_67     1 0.89277364  0.52123495
+#&gt; sample_55     2 0.87798589  0.77687868
+#&gt; sample_56     2 0.83309360  0.77456368
+#&gt; sample_59     2 0.42633580  0.87509347
+#&gt; sample_52     1 0.10384674  0.93236179
+#&gt; sample_53     1 0.01261116  0.93236179
+#&gt; sample_51     1 0.01261116  0.93236179
+#&gt; sample_50     1 0.01261116  0.93236179
+#&gt; sample_54     1 0.79977030  0.68466844
+#&gt; sample_57     1 0.10136692  0.93236179
+#&gt; sample_58     1 0.04161273  0.93236179
+#&gt; sample_60     1 0.75757068  0.68466844
+#&gt; sample_61     1 0.04554145  0.93236179
+#&gt; sample_65     1 0.04503343  0.93236179
+#&gt; sample_66     2 0.98021214 -0.03954292
+#&gt; sample_63     1 0.10698274  0.93236179
+#&gt; sample_64     1 0.29284090  0.93236179
+#&gt; sample_62     1 0.10883934  0.93236179
+#&gt; sample_1      2 0.73433090  0.81258118
+#&gt; sample_2      1 0.95123756  0.40154933
+#&gt; sample_3      2 0.84187985  0.77687868
+#&gt; sample_4      2 0.73038992  0.81258118
+#&gt; sample_5      2 0.03006108  0.86861045
+#&gt; sample_6      2 0.86609165  0.77687868
+#&gt; sample_7      2 0.87640935  0.72177524
+#&gt; sample_8      2 0.83295898  0.77456368
+#&gt; sample_9      2 0.37780274  0.87509347
+#&gt; sample_10     2 0.67163462  0.82205795
+#&gt; sample_11     2 0.38916224  0.87509347
+#&gt; sample_12     1 0.50356469  0.82668750
+#&gt; sample_13     2 0.03006108  0.86861045
+#&gt; sample_14     2 0.39163184  0.86861045
+#&gt; sample_15     2 0.03006108  0.86861045
+#&gt; sample_16     2 0.31562152  0.87509347
+#&gt; sample_17     2 0.78051729  0.80481898
+#&gt; sample_18     2 0.53680882  0.86193165
+#&gt; sample_19     2 0.31562152  0.87509347
+#&gt; sample_20     2 0.03006108  0.86861045
+#&gt; sample_21     2 0.03904881  0.86861045
+#&gt; sample_22     2 0.84458439  0.77456368
+#&gt; sample_23     2 0.85525242  0.72177524
+#&gt; sample_24     2 0.05582276  0.86861045
+#&gt; sample_25     2 0.77025035  0.81258118
+#&gt; sample_26     2 0.37759644  0.87509347
+#&gt; sample_27     2 0.88820455  0.72177524
+#&gt; sample_34     1 0.07921029  0.93236179
+#&gt; sample_35     1 0.22330137  0.93236179
+#&gt; sample_36     1 0.01261116  0.93236179
+#&gt; sample_37     1 0.01261116  0.93236179
+#&gt; sample_38     1 0.03949932  0.93236179
+#&gt; sample_28     1 0.08361511  0.93236179
+#&gt; sample_29     1 0.75500290  0.73701828
+#&gt; sample_30     1 0.03922760  0.93236179
+#&gt; sample_31     1 0.09014840  0.93236179
+#&gt; sample_32     1 0.03760030  0.93236179
+#&gt; sample_33     1 0.01261116  0.93236179</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -259,7 +239,7 @@ and the silhouette scores which measure the stability of a sample to stay in its
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

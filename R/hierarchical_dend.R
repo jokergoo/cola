@@ -196,13 +196,12 @@ setMethod(f = "max_depth",
 # -depth Depth of the dendrogram.
 # -min_n_signatures Minimal number of signatures for the partitioning on each node.
 # -min_p_signatures Minimal fraction of sigatures compared to the total number of rows on each node.
-# -node_height The height of the sub-dendrogram to cut
 #
 merge_node_param = function(depth = Inf, min_n_signatures = -Inf, 
-	min_p_signatures = -Inf, node_height = -Inf) {
+	min_p_signatures = -Inf) {
 	
 	list(depth = depth, min_n_signatures = min_n_signatures, 
-		min_p_signatures = min_p_signatures, node_height = node_height)
+		min_p_signatures = min_p_signatures)
 }
 
 # == title
@@ -306,6 +305,28 @@ setMethod(f = "is_leaf_node",
 	l = node %in% all_leaves
 	l[!node %in% all_nodes] = NA
 	l
+})
+
+# == title
+# Test whether a node is a leaf node
+#
+# == param
+# -object A `HierarchicalPartition-class` object.
+# -node A vector of node IDs.
+# -merge_node Parameters to merge sub-dendrograms, see `merge_node_param`.
+#
+# == value
+# A vector of children nodes.
+#
+setMethod(f = "get_children_nodes",
+	signature = "HierarchicalPartition",
+	definition = function(object, node, merge_node = merge_node_param()) {
+
+	if(is_leaf_node(object, node, merge_node)) {
+		return(NULL)
+	}
+	all_nodes = all_nodes(object, merge_node)
+	all_nodes[nchar(all_nodes) == nchar(node) + 1]
 })
 
 get_children = function(object, node = "0") {
