@@ -539,7 +539,7 @@ hierarchical_partition = function(data,
 		part = part_list[[ stat_tb[ind, "method"] ]]
 		best_k = stat_tb[ind, "k"]
 
-		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because it has the smallest number of subgroups among all @{nrow(stat_tb)} stable partitioning results.\n")
+		if(verbose) qqcat("@{prefix}* select @{part@top_value_method}:@{part@partition_method} (@{best_k} groups) because it has the largest number of signatures among all @{nrow(stat_tb)} stable partitioning results.\n")
 	} else {
 		ind = do.call(order, -stat_tb2[c("mean_silhouette", setdiff(colnames(stat_tb2), "method"))])[1]
 		part = part_list[[ stat_tb2[ind, "method"] ]]
