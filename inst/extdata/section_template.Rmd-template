@@ -4,7 +4,7 @@
 <% 
 if(is_hc) {
     chunk_prefix = paste("node", node, sep = "-")
-    res = res_hc[node]
+    res = res_rh[node]
 } else {
     if(single_report) {
         chunk_prefix = paste(top_value_method, partition_method, sep = "-")
@@ -20,17 +20,17 @@ if(is_hc) {
 
 <% if(!single_report) { %>
 <% if(is_hc) { %>
-### Node<%=paste0(node, ifelse(is_leaf_node(res_hc, node), "-leaf", ""))%>
+### Node<%=paste0(node, ifelse(is_leaf_node(res_rh, node), "-leaf", ""))%>
 
-<% if(is_leaf_node(res_hc, node)) { %>
+<% if(is_leaf_node(res_rh, node)) { %>
 Parent node: [Node<%=substr(node, 1, nchar(node)-1)%>](#Node<%=substr(node, 1, nchar(node)-1)%>).
 The subset of columns are treated as a leaf node in the hierarchical partitioning.
-The columns will not further split. The reason for stopping the partitioning is: <%=attr(res_hc[[node]], "stop_reason")%>
+The columns will not further split. The reason for stopping the partitioning is: <%=attr(res_rh[[node]], "stop_reason")%>
 
 <% } else if(node == "0"){ -%>
 
-<% cnode = get_children_nodes(res_hc, node) 
-   cnode_is_leaf = sapply(cnode, function(x) is_leaf_node(res_hc, x)) -%>
+<% cnode = get_children_nodes(res_rh, node) 
+   cnode_is_leaf = sapply(cnode, function(x) is_leaf_node(res_rh, x)) -%>
 Child nodes: 
 <% for(i in seq_along(cnode)) { -%>
     <% current_node = paste0("Node", cnode[i], ifelse(cnode_is_leaf[i], "-leaf", "")) -%>
@@ -44,8 +44,8 @@ Child nodes:
 <% } else { -%>
 
 Parent node: [Node<%=substr(node, 1, nchar(node)-1)%>](#Node<%=substr(node, 1, nchar(node)-1)%>).
-<% cnode = get_children_nodes(res_hc, node) 
-   cnode_is_leaf = sapply(cnode, function(x) is_leaf_node(res_hc, x)) -%>
+<% cnode = get_children_nodes(res_rh, node) 
+   cnode_is_leaf = sapply(cnode, function(x) is_leaf_node(res_rh, x)) -%>
 Child nodes: 
 <% for(i in seq_along(cnode)) { -%>
     <% current_node = paste0("Node", cnode[i], ifelse(cnode_is_leaf[i], "-leaf", "")) -%>
@@ -88,7 +88,7 @@ can be extracted as:
 
 ```{r <%=chunk_prefix%>-rename}
 <% if(is_hc) { -%>
-res = res_hc["<%=node%>"]
+res = res_rh["<%=node%>"]
 <% } else { -%>
 res = res_list["<%=top_value_method%>", "<%=partition_method%>"]
 # you can also extract it by
@@ -152,7 +152,7 @@ statistics for choosing "optimized" `k`. There are following statistics:
   cluster in the partition k or k-1.
 
 The detailed explanations of these statistics can be found in [the _cola_
-vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13).
+vignette](https://jokergoo.github.io/cola_vignettes/cola.html#toc_13).
 
 Generally speaking, higher 1-PAC score, higher mean silhouette score or higher
 concordance corresponds to better partition. Rand index and Jaccard index
@@ -423,7 +423,7 @@ message("")
 <%} }-%>
 
 If matrix rows can be associated to genes, consider to use `functional_enrichment(res,
-...)` to perform function enrichment for the signature genes. See [this vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/functional_enrichment.html) for more detailed explanations.
+...)` to perform function enrichment for the signature genes. See [this vignette](https://jokergoo.github.io/cola_vignettes/functional_enrichment.html) for more detailed explanations.
 
 
 <% 

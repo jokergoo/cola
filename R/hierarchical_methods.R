@@ -111,7 +111,7 @@ setMethod(f = "get_signatures",
 		sig_lt = list()
 		.env = object@list[[1]]@.env
 		for(p in ap) {
-			best_k = suggest_best_k(object[[p]], help = FALSE)
+			best_k = object@node_level$best_k[[p]]
 			if(verbose) qqcat("* get signatures at node @{p} with @{best_k} subgroups.\n")
 			sig_tb = get_signatures(object[[p]], k = best_k, prefix = "  ", verbose = verbose, plot = FALSE, simplify = TRUE, seed = seed, diff_method = diff_method, 
 				fdr_cutoff = fdr_cutoff, .scale_mean = object@.env$global_scale_mean, .scale_sd = object@.env$global_scale_sd, group_diff = group_diff, ...)
@@ -158,13 +158,6 @@ setMethod(f = "get_signatures",
 	returned_df = cbind(returned_df, group_mean)
 	returned_df$group_diff = apply(group_mean, 1, function(x) max(x) - min(x))
 
-	if(group_diff > 0) {
-		l_diff = returned_df$group_diff >= group_diff
-		mat = mat[l_diff, , drop = FALSE]
-		mat1 = mat1[l_diff, , drop = FALSE]
-		returned_df = returned_df[l_diff, , drop = FALSE]
-	}
-
 	if(scale_rows) {
 		mat1_scaled = t(scale(t(mat)))
 		if(nrow(mat) == 1) {
@@ -177,6 +170,17 @@ setMethod(f = "get_signatures",
 		colnames(group_mean_scaled) = paste0("scaled_mean_", colnames(group_mean_scaled))
 		returned_df = cbind(returned_df, group_mean_scaled)
 		returned_df$group_diff_scaled = apply(group_mean_scaled, 1, function(x) max(x) - min(x))
+	}
+
+	if(group_diff > 0) {
+		if(scale_rows) {
+			l_diff = returned_df$group_diff_scaled >= group_diff
+		} else {
+			l_diff = returned_df$group_diff >= group_diff
+		}
+		mat = mat[l_diff, , drop = FALSE]
+		mat1 = mat1[l_diff, , drop = FALSE]
+		returned_df = returned_df[l_diff, , drop = FALSE]
 	}
 
 	returned_obj = returned_df
@@ -357,7 +361,7 @@ setMethod(f = "compare_signatures",
 	lt = object@list[nodes]
 
 	sig_list = lapply(lt, function(x) {
-		tb = get_signatures(x, k = suggest_best_k(x, help = FALSE), verbose = verbose, ..., plot = FALSE)
+		tb = get_signatures(x, k = attr(x, "best_k"), verbose = verbose, ..., plot = FALSE)
 		if(is.null(tb)) {
 			return(integer(0))
 		} else {

@@ -600,7 +600,7 @@ hierarchical_partition = function(data,
 
 	if(is.null(min_n_signatures)) {
 		if(node_id == "0") {
-			min_n_signatures = n_sig*0.05
+			min_n_signatures = floor(n_sig*0.05)
 			.env$min_n_signatures = min_n_signatures
 		}
 	}
@@ -660,11 +660,24 @@ setMethod(f = "show",
 	signature = "HierarchicalPartition",
 	definition = function(object) {
 
-	qqcat("A 'HierarchicalPartition' object with '@{object@list[[1]]@top_value_method}:@{object@list[[1]]@partition_method}' method.\n")
+	if(length(object@param$combination_method) == 1) {
+		qqcat("A 'HierarchicalPartition' object with '@{object@list[[1]]@top_value_method}:@{object@list[[1]]@partition_method}' method.\n")
+	} else {
+		qqcat("A 'HierarchicalPartition' object with @{length(object@param$combination_method)} combinations of top-value methods and partitioning methods.\n")
+	}
 	qqcat("  On a matrix with @{nrow(object@.env$data)} rows and @{ncol(object@.env$data)} columns.\n")
-	qqcat("  Performed in total @{object@list[[1]]@n_partition*length(object@list)} partitions.\n")
+	qqcat("  Performed in total @{object@list[[1]]@n_partition*length(object@list)*length(object@param$combination_method)} partitions.\n")
 	if(has_hierarchy(object)) {
-		qqcat("  There are @{length(all_leaves(object))} groups.\n")
+		qqcat("  There are @{length(all_leaves(object))} groups under the following parameters:\n")
+		qqcat("    - min_samples: @{object@param$min_samples}\n")
+		qqcat("    - mean_silhouette_cutoff: @{object@param$mean_silhouette_cutoff}\n")
+		qqcat("    - min_n_signatures: @{object@param$min_n_signatures} (signatures are selected based on:)\n")
+		qqcat("      - fdr_cutoff: @{object@param$fdr_cutoff}\n")
+		if(object@list[[1]]@scale_rows) {
+			qqcat("      - group_diff (scaled values): @{object@param$group_diff}\n")
+		} else {
+			qqcat("      - group_diff: @{object@param$group_diff}\n")
+		}
 	}
 	cat("\n")
 

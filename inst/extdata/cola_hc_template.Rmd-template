@@ -30,48 +30,48 @@ ht_opt$message = FALSE
 n_cores = cola:::get_nc(cores)
 ```
 
-<% res_hc = object -%>
+<% res_rh = object -%>
 
 ## Summary
 
-<% same_var_name = var_name == "res_hc" -%>
+<% same_var_name = var_name == "res_rh" -%>
 
 <% if(!same_var_name) { -%>
 
-First the variable is renamed to `res_hc`.
+First the variable is renamed to `res_rh`.
 
 ```{r, eval = FALSE, echo = TRUE}
-res_hc = <%=var_name%>
+res_rh = <%=var_name%>
 ```
 <% } -%>
 
 ```{r, echo = FALSE}
-res_hc = object
+res_rh = object
 ```
 
-The partition hierarchy and all available functions which can be applied to `res_hc` object.
+The partition hierarchy and all available functions which can be applied to `res_rh` object.
 
 ```{r}
-res_hc
+res_rh
 ```
 
 The call of `hierarchical_partition()` was:
 
 ```{r, echo = FALSE}
-cat(paste(deparse(res_hc@call, width.cutoff = 80), collapse = "\n"), "\n")
+cat(paste(deparse(res_rh@call, width.cutoff = 80), collapse = "\n"), "\n")
 ```
 
 Dimension of the input matrix:
 
 ```{r}
-mat = get_matrix(res_hc)
+mat = get_matrix(res_rh)
 dim(mat)
 ```
 
 All the methods that were tried:
 
 ```{r}
-res_hc@.env$combination_methods
+res_rh@param$combination_method
 ```
 
 ### Density distribution
@@ -86,12 +86,12 @@ message(qq("* making density heatmap of global distribution for each sample (@{n
 
 ```{r density-heatmap}
 library(ComplexHeatmap)
-<% if(is.null(get_anno(res_hc))) { -%>
+<% if(is.null(get_anno(res_rh))) { -%>
 densityHeatmap(mat, ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
     mc.cores = <%=cores%>)
 <% } else { -%>
-densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_hc), 
-    col = get_anno_col(res_hc)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
+densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_rh), 
+    col = get_anno_col(res_rh)), ylab = "value", cluster_columns = TRUE, show_column_names = FALSE,
     mc.cores = <%=cores%>)
 <% } -%>
 ```
@@ -103,29 +103,27 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))))
 Some values about the hierarchy:
 
 ```{r}
-all_nodes(res_hc)
-all_leaves(res_hc)
-node_info(res_hc)
+all_nodes(res_rh)
+all_leaves(res_rh)
+node_info(res_rh)
 ```
 
 In the output from `node_info()`, there are the following columns:
 
 - `id`: The node id.
-- `best_method`: The best method selected, i.e. with the highest 1-PAC value.
+- `best_method`: The best method selected.
 - `depth`: Depth of the node in the hierarchy.
 - `best_k`: Best number of groups of the partition on that node.
-- `n_columns`: Number of columns used.
+- `n_columns`: Number of columns in the submatrix.
 - `n_signatures`: Number of signatures with the `best_k`.
 - `p_signatures`: Proportion of hte signatures in total number of rows in the matrix.
 - `is_leaf`: Whether the node is a leaf.
 
-**cola** uses a special way to encode the nodes in the hierarchy. The length of
-the node name is the depth of the node in the hierarchy and the substring
-excluding the last digit is the node name of the parent node. E.g. for the
-node 0011, the depth is 4 and the parent node is 001. For each node, the last
-digit represents the index of the subgroup detected in parent node. The digit is always
-0 or 1. In the consensus partition on every node, the group with the smallest within-distance
-is always encoded as 1 and the merged group of all other columns is encoded as 0.
+Labels of nodes are encoded in a special way. The number of digits
+correspond to the depth of the node in the hierarchy and the value of the
+digits correspond to the index of the subgroup in the current node, E.g. a label
+of “012” means the node is the second subgroup of the partition which is the
+first subgroup of the root node.
 
 ### Suggest the best k
 
@@ -137,17 +135,17 @@ Following table shows the best `k` (number of partitions) for each node in the
 partition hierarchy. Clicking on the node name in the table goes to the
 corresponding section for the partitioning on that node.
 
-[The cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13)
+[The cola vignette](https://jokergoo.github.io/cola_vignettes/cola.html#toc_13)
 explains the definition of the metrics used for determining the best
 number of partitions.
 
 
 ```{r, eval = FALSE}
-suggest_best_k(res_hc)
+suggest_best_k(res_rh)
 ```
 
 ```{r, echo = FALSE}
-tb = suggest_best_k(res_hc)
+tb = suggest_best_k(res_rh)
 stop_reason = attr(tb, "stop_reason")
 stop_reason = sapply(stop_reason, function(x) {
     if(is.null(x)) {
@@ -190,11 +188,15 @@ cat("\n\n\\*\\*: 1-PAC > 0.95, \\*: 1-PAC > 0.9")
 
 ### Partition hierarchy
 
-<% df_foo = node_info(res_hc)
+The nodes of the hierarchy can be merged by setting the `merge_node` parameters. Here we 
+control the hierarchy with the `min_n_signatures` parameter. The value of `min_n_signatures` is
+from `node_info()`.
+
+<% df_foo = node_info(res_rh)
     n_signatures = df_foo$n_signatures[!df_foo$is_leaf]
     n_signatures = sort(n_signatures[!is.na(n_signatures)])
 
-max_depth = max_depth(res_hc)
+max_depth = max_depth(res_rh)
 -%>
 
 ```{r, echo = FALSE, message = FALSE}
@@ -204,7 +206,7 @@ message(qq("* collecting classifications for each ndoe height"), appendLF = FALS
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(ns in n_signatures) { -%>
-knitr_add_tab_item('collect_classes(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', prefix = 'collect-classes-from-hierarchical-partition')
+knitr_add_tab_item('collect_classes(res_rh, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', prefix = 'collect-classes-from-hierarchical-partition')
 <% } -%>
 knitr_insert_tabs('collect-classes-from-hierarchical-partition')
 ```
@@ -214,7 +216,7 @@ code output** link to see it).
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(ns in n_signatures) { -%>
-knitr_add_tab_item('get_classes(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', prefix = 'get-classes-from-hierarchical-partition', hide_and_show = TRUE)
+knitr_add_tab_item('get_classes(res_rh, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', prefix = 'get-classes-from-hierarchical-partition', hide_and_show = TRUE)
 <% } -%>
 knitr_insert_tabs('get-classes-from-hierarchical-partition')
 ```
@@ -236,7 +238,7 @@ if(is.null(dr_method)) {
 if(is.null(dr_method)) {
     dr_method = "PCA"
 }
-top_n = pretty(c(0, nrow(res_hc)*0.1))
+top_n = pretty(c(0, nrow(res_rh)*0.1))
 top_n = top_n[length(top_n)]
 -%>
 
@@ -246,7 +248,7 @@ top_n = top_n[length(top_n)]
 Heatmaps of the top rows:
 
 <% 
-all_top_value_methods = unique(sapply(res_hc@.env$combination_methods, function(x) x[1]))
+all_top_value_methods = unique(sapply(res_rh@.env$combination_methods, function(x) x[1]))
 n_top_value_method = length(all_top_value_methods)
 if(n_top_value_method <= 4) {
     fig_width = 14/4 * n_top_value_method
@@ -263,8 +265,15 @@ message(qq("* making top row heatmaps"), appendLF = FALSE)
 ```
 
 ```{r top-rows-heatmap, fig.width = <%=fig_width%>, fig.height = <%=fig_height%>}
-top_rows_heatmap(res_hc, top_n = <%=top_n%>)
+top_rows_heatmap(res_rh)
 ```
+
+Top rows on each node:
+
+```{r top-rows-overlap, fig.width = 8, fig.height = 6}
+top_rows_overlap(res_rh, method = "upset")
+```
+
 
 ### <%=dr_method%> plot
 
@@ -278,9 +287,9 @@ message(qq("* making dimension reduction plots"), appendLF = FALSE)
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(ns in n_signatures) { -%>
 knitr_add_tab_item('par(mfrow = c(1, 2))
-dimension_reduction(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>),
+dimension_reduction(res_rh, merge_node = merge_node_param(min_n_signatures = <%=ns%>),
     method = "<%=dr_method%>", top_value_method = "SD", top_n = <%=top_n%>, scale_rows = FALSE)
-dimension_reduction(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>),
+dimension_reduction(res_rh, merge_node = merge_node_param(min_n_signatures = <%=ns%>),
     method = "<%=dr_method%>", top_value_method = "ATC", top_n = <%=top_n%>, scale_rows = TRUE)', 'n_signatures \u2265 <%=ns%>', prefix = 'dimension-reduction-by-depth', opt = "fig.width = 14, fig.height = 7, out.width = '100%'")
 <%}-%>
 knitr_insert_tabs('dimension-reduction-by-depth')
@@ -301,7 +310,7 @@ message(qq("* making signature heatmaps"), appendLF = FALSE)
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(ns in n_signatures) { -%>
-knitr_add_tab_item('get_signatures(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', opt = 'results="hide"', prefix = 'get-signatures-from-hierarchical-partition')
+knitr_add_tab_item('get_signatures(res_rh, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', opt = 'results="hide"', prefix = 'get-signatures-from-hierarchical-partition')
 <%}-%>
 knitr_insert_tabs('get-signatures-from-hierarchical-partition')
 ```
@@ -315,7 +324,7 @@ t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 Compare signatures from different nodes:
 
 ```{r, prefix = "comapre_signatures-from-hierarchical-partition"}
-compare_signatures(res_hc, verbose = FALSE)
+compare_signatures(res_rh, verbose = FALSE)
 ```
 
 If there are too many signatures, `top_signatures = ...` can be set to only show the 
@@ -325,11 +334,11 @@ are the union of all signatures of all nodes.
 ```{r, eval = FALSE}
 # code only for demonstration
 # e.g. to show the top 500 most significant rows on each node.
-tb = get_signature(res_hc, top_signatures = 500)
+tb = get_signature(res_rh, top_signatures = 500)
 ```
 
 <% has_known_anno = FALSE
-if(!is.null(res_hc@list[['0']]@anno)) { 
+if(!is.null(res_rh@list[['0']]@anno)) { 
 has_known_anno = TRUE -%>
 
 ### Test to known annotations
@@ -344,7 +353,7 @@ message(qq("* testing correlation of subgroups to known annotations"))
 
 ```{r, results = 'asis', echo = FALSE, include = TRUE}
 <% for(ns in n_signatures) { -%>
-knitr_add_tab_item('test_to_known_factors(res_hc, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
+knitr_add_tab_item('test_to_known_factors(res_rh, merge_node = merge_node_param(min_n_signatures = <%=ns%>))', 'n_signatures \u2265 <%=ns%>', prefix = 'test-to-known-factors-from-hierarchical-partition')
 <%}-%>
 knitr_insert_tabs('test-to-known-factors-from-hierarchical-partition')
 ```
@@ -358,19 +367,19 @@ knitr_insert_tabs('test-to-known-factors-from-hierarchical-partition')
 fs = 2
 is_hc = TRUE
 single_report = FALSE
-all_parents = setdiff(all_nodes(res_hc), all_leaves(res_hc))
-# all_parents = all_nodes(res_hc)
+all_parents = setdiff(all_nodes(res_rh), all_leaves(res_rh))
+# all_parents = all_nodes(res_rh)
 n_section = length(all_parents)
 i_section = 0
 .e = environment()
-all_k = res_hc@list[[1]]@k
+all_k = res_rh@list[[1]]@k
 registerDoParallel(cores)
 
 md_list <- foreach (ind = seq_along(all_parents)) %dopar% {
     i_section = ind
     node = all_parents[ind]
-    top_value_method = res_hc[[node]]@top_value_method
-    partition_method = res_hc[[node]]@partition_method
+    top_value_method = res_rh[[node]]@top_value_method
+    partition_method = res_rh[[node]]@partition_method
     
     tmpfile = tempfile(tmpdir = cola:::.ENV$TEMP_DIR)
     

@@ -115,7 +115,7 @@ Folowing table shows the best `k` (number of partitions) for each combination
 of top-value methods and partitioning methods. Clicking on the method name in
 the table goes to the corresponding section for a single combination of methods.
 
-[The cola vignette](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13)
+[The cola vignette](https://jokergoo.github.io/cola_vignettes/cola.html#toc_13)
 explains the definition of the metrics used for determining the best
 number of partitions.
 
@@ -161,7 +161,7 @@ message(qq("* making consensus heatmaps for all methods"), appendLF = FALSE)
 
 ### Consensus heatmap
 
-Consensus heatmaps for all methods. ([What is a consensus heatmap?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_9))
+Consensus heatmaps for all methods. ([What is a consensus heatmap?](https://jokergoo.github.io/cola_vignettes/cola.html#toc_9))
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% all_k = res_list@list[[1]]@k
@@ -184,7 +184,7 @@ message(qq("* making membership heatmaps for all methods"), appendLF = FALSE)
 
 ### Membership heatmap
 
-Membership heatmaps for all methods. ([What is a membership heatmap?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_12))
+Membership heatmaps for all methods. ([What is a membership heatmap?](https://jokergoo.github.io/cola_vignettes/cola.html#toc_12))
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
@@ -202,7 +202,7 @@ message(qq("* making signature heatmaps for all methods"), appendLF = FALSE)
 
 ### Signature heatmap
 
-Signature heatmaps for all methods. ([What is a signature heatmap?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_21))
+Signature heatmaps for all methods. ([What is a signature heatmap?](https://jokergoo.github.io/cola_vignettes/cola.html#toc_21))
 
 <% if(res_list@list[[1]]@scale_rows) { %>
 Note in following heatmaps, rows are scaled.
@@ -226,7 +226,7 @@ message(qq("* getting statistics for all methods"), appendLF = FALSE)
 
 The statistics used for measuring the stability of consensus partitioning.
 ([How are they
-defined?](http://bioconductor.org/packages/devel/bioc/vignettes/cola/inst/doc/cola.html#toc_13))
+defined?](https://jokergoo.github.io/cola_vignettes/cola.html#toc_13))
 
 ```{r, results = "asis", echo = FALSE, include = TRUE}
 <% for(k in all_k) { -%>
