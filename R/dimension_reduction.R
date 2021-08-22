@@ -22,7 +22,7 @@
 #        the cutoff.
 # -scale_rows Whether to perform scaling on matrix rows.
 # -verbose Whether print messages.
-# -... Other arguments.
+# -... Pass to `dimension_reduction,matrix-method`.
 #
 # == value
 # Locations of the points.

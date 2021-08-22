@@ -516,7 +516,7 @@ hierarchical_partition = function(data,
 			stat_tb$n_signatures[i] = nrow(sig_tb)
 		}
 
-		stat_tb = do.call(rbind, tapply(1:nrow(stat_tb), stat_tb$method, function(ind) {
+		oe = try(stat_tb <- do.call(rbind, tapply(1:nrow(stat_tb), stat_tb$method, function(ind) {
 			if(length(ind) == 1) {
 				return(stat_tb[ind, , drop = FALSE])
 			} else {
@@ -533,7 +533,8 @@ hierarchical_partition = function(data,
 				tb = tb[tb$n_signatures > 0, , drop = FALSE]
 			}
 			tb
-		}))
+		})))
+		if(inherits(oe, "try-error")) browser()
 
 		ind = do.call(order, -stat_tb[, c("n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "k", "method")))])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]

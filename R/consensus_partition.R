@@ -528,7 +528,8 @@ consensus_partition = function(data,
     	class = class_df[, "class"]
 
     	map = relabel_class(class, reference_class, full_set = 1:(k[i]))
-    	l = which( (duplicated(map) | duplicated(map, fromLast = TRUE)) & map != names(map))
+    	l = duplicated(map) | duplicated(map, fromLast = TRUE)
+    	l = l & names(map) != names(which.max(table(class)[names(map)[l]]))
     	unmapped = setdiff(names(map), map)
     	if(any(l)) {
     		map[l] = unmapped

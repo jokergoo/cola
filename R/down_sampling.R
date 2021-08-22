@@ -168,7 +168,7 @@ consensus_partition_by_down_sampling = function(data,
 		anno2 = anno[subset, , drop = FALSE]
 	}
 
-	if(verbose) qqcat("@{prefix} apply consensus_partition_by_down_sampling() with @{length(subset_index)} columns.\n")
+	if(verbose) qqcat("@{prefix}* apply consensus_partition_by_down_sampling() with @{length(subset_index)} columns.\n")
 
 	# top_value_list cannot be repetitively used here
 	.env$all_top_value_list = NULL

@@ -241,18 +241,27 @@ get_hierarchy_table = function(object, merge_node = merge_node_param()) {
 	node_height = object@node_level$node_height
 
 	if(is.null(node_height)) {
-		hierarchy = hierarchy[ n_signatures[hierarchy[, 1]] >= merge_node$min_n_signatures &
-		                       p_signatures[hierarchy[, 1]] >= merge_node$min_p_signatures, , drop = FALSE ]
+		l = n_signatures[hierarchy[, 1]] >= merge_node$min_n_signatures &
+		    p_signatures[hierarchy[, 1]] >= merge_node$min_p_signatures
 	} else {
-		hierarchy = hierarchy[ n_signatures[hierarchy[, 1]] >= merge_node$min_n_signatures &
-		                       p_signatures[hierarchy[, 1]] >= merge_node$min_p_signatures &
-		                       node_height[hierarchy[, 1]] >= merge_node$node_height, , drop = FALSE ]
+		l = n_signatures[hierarchy[, 1]] >= merge_node$min_n_signatures &
+		    p_signatures[hierarchy[, 1]] >= merge_node$min_p_signatures &
+		    node_height[hierarchy[, 1]] >= merge_node$node_height
 	}
 	
-	hierarchy = hierarchy[nchar(hierarchy[, 2]) <= merge_node$depth, , drop = FALSE]
-	hierarchy = hierarchy[ !(hierarchy[, 1] != "0" & !hierarchy[, 1] %in% hierarchy[, 2]), , drop = FALSE]
-	
-	hierarchy
+	l = l & nchar(hierarchy[, 2]) <= merge_node$depth
+	# hierarchy = hierarchy[ !(hierarchy[, 1] != "0" & !hierarchy[, 1] %in% hierarchy[, 2]), , drop = FALSE]
+		
+	# e.g. if a child node has more n_sigature than parent node
+	hierarchy2 = hierarchy[l, , drop = FALSE]
+	max_node = hierarchy2[which.min(nchar(hierarchy2))]
+	if(nchar(max_node) > 1) {
+		for(i in rev(seq_len(nchar(max_node) - 1))) {
+			l = l | hierarchy[, 1] %in% substr(max_node, 0, i)
+		}
+	}
+
+	hierarchy[l, , drop = FALSE]
 }
 
 # == title
