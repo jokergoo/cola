@@ -30,7 +30,7 @@ ht_opt$message = FALSE
 n_cores = get_nc(cores)
 ```
 
-<% res = object -%>
+<% res = object; n_cores = cores -%>
 
 ## Summary
 

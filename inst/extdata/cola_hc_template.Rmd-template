@@ -30,7 +30,7 @@ ht_opt$message = FALSE
 n_cores = cola:::get_nc(cores)
 ```
 
-<% res_rh = object -%>
+<% res_rh = object; n_cores = cores -%>
 
 ## Summary
 
