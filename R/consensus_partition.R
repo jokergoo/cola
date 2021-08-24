@@ -296,7 +296,8 @@ consensus_partition = function(data,
 	}
 	top_n = top_n[l]
 	if(length(top_n) == 0) {
-		stop_wrap("There is no valid top_n.\n")
+		# stop_wrap("There is no valid top_n.\n")
+		top_n = nrow(data)
 	}
 
 	if(is.null(scale_rows)) {
