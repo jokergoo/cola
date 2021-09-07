@@ -238,6 +238,15 @@ consensus_partition = function(data,
 		anno_col = NULL
 	}
 
+	if(!is.null(anno_col)) {
+		anno_col = lapply(anno_col, function(x) {
+			if(is.atomic(x)) {
+				x = x[order(names(x))]
+			}
+			x
+		})
+	}
+
 	if(verbose) qqcat("@{prefix}* run @{top_value_method}:@{partition_method} on a @{nrow(data)}x@{ncol(data)} matrix.\n")
 
 	k = sort(k)

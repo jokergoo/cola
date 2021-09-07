@@ -401,10 +401,10 @@ hierarchical_partition = function(data,
 		if(is.logical(l)) {
 			l[is.na(l)] = FALSE
 			.env$row_index = which(l)
-			if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
+			if(verbose) qqcat("@{prefix}* @{sum(!l)}/@{nrow(data)} rows are pre-filtered out before partitioning.\n")
 		} else {
 			.env$row_index = l
-			if(verbose) qqcat("@{prefix}* @{nrow(data) - length(l)}/@{nrow(data)} rows are removed for partitioning, due to very small variance.\n")
+			if(verbose) qqcat("@{prefix}* @{nrow(data) - length(l)}/@{nrow(data)} rows are pre-filtered out before partitioning.\n")
 		}
 
 		if(!is.null(top_n)) {
@@ -524,17 +524,19 @@ hierarchical_partition = function(data,
 				tb = tb[order(tb$k), ]
 				j = 1
 				for(i in seq_len(nrow(tb))[-1]) {
-					if(tb$n_signatures[i]/tb$n_signatures[j] > 1.1^(i-j)) {
+					if(tb$n_signatures[j] == 0) {
+						
+					} else if(tb$n_signatures[i]/tb$n_signatures[j] > 1.1^(i-j)) {
 						j = i
 					} else {
 						tb$n_signatures[i] = -1
 					}
 				}
-				tb = tb[tb$n_signatures > 0, , drop = FALSE]
+				tb = tb[tb$n_signatures >= 0, , drop = FALSE]
 			}
 			tb
 		})))
-		if(inherits(oe, "try-error")) browser()
+		# if(inherits(oe, "try-error")) browser()
 
 		ind = do.call(order, -stat_tb[, c("n_signatures", setdiff(colnames(stat_tb), c("n_signatures", "k", "method")))])[1]
 		part = part_list[[ stat_tb[ind, "method"] ]]
@@ -722,7 +724,7 @@ setMethod(f = "show",
 				}
 			}
 		}
-		lines = c(qq("  0, @{ncol(object@list[['0']])} cols"), lines)
+		lines = c(qq("  0, @{ncol(object@list[['0']])} cols, @{n_signatures['0']} signatures"), lines)
 		cat(lines, sep = "\n")
 
 		if(length(si)) {
