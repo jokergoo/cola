@@ -882,7 +882,11 @@ setMethod(f = "top_rows_heatmap",
 		}
 	}
 
-	bottom_anno = c(bottom_anno, HeatmapAnnotation(cola_class = get_classes(object), col = list(cola_class = object@subgroup_col)))
+	if(is.null(bottom_anno)) {
+		bottom_anno = HeatmapAnnotation(cola_class = get_classes(object), col = list(cola_class = object@subgroup_col))
+	} else {
+		bottom_anno = c(bottom_anno, HeatmapAnnotation(cola_class = get_classes(object), col = list(cola_class = object@subgroup_col)))
+	}
 
     top_rows_heatmap(mat, all_top_value_list = all_top_value_list, top_n = top_n, 
     	scale_rows = scale_rows, bottom_annotation = bottom_anno, ...)
