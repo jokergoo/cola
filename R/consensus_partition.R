@@ -826,7 +826,7 @@ setMethod(f = "consensus_heatmap",
 	signature = "ConsensusPartition",
 	definition = function(object, k, internal = FALSE,
 	anno = object@anno, anno_col = get_anno_col(object), 
-	show_row_names = FALSE, row_names_gp = gpar(fontsize = 8),
+	show_row_names = FALSE, show_column_names = FALSE, row_names_gp = gpar(fontsize = 8),
 	simplify = FALSE, ...) {
 
 	if(missing(k)) stop_wrap("k needs to be provided.")
@@ -860,7 +860,7 @@ setMethod(f = "consensus_heatmap",
 	
 	ht_list = ht_list +	Heatmap(consensus_mat, name = "Consensus", show_row_names = FALSE, show_row_dend = FALSE,
 		col = colorRamp2(c(0, 1), c("white", "blue")), row_order = mat_col_od, column_order = mat_col_od,
-		cluster_rows = FALSE, cluster_columns = FALSE, show_column_names = FALSE)
+		cluster_rows = FALSE, cluster_columns = FALSE, show_column_names = show_column_names, ...)
 
 	if(!is.null(anno)) {
 		if(is.atomic(anno)) {
@@ -998,7 +998,7 @@ setMethod(f = "membership_heatmap",
 			show_annotation_name = !internal),
 		bottom_annotation = bottom_anno,
 		show_column_names = show_column_names, column_names_gp = column_names_gp,
-		row_title = NULL
+		row_title = NULL, ...
 	)
 	if(internal) {
 		row_title = NULL

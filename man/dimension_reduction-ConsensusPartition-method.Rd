@@ -28,7 +28,7 @@ Visualize samples (the matrix columns) after dimension reduction
   \item{remove}{Whether to remove columns which have less silhouette scores than the cutoff.}
   \item{scale_rows}{Whether to perform scaling on matrix rows.}
   \item{verbose}{Whether print messages.}
-  \item{...}{Other arguments.}
+  \item{...}{Pass to \code{\link{dimension_reduction,matrix-method}}.}
 
 }
 \value{
