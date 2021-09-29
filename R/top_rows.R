@@ -314,7 +314,6 @@ setMethod(f = "top_rows_heatmap",
 			col_fun = colorRamp2(c(mat_range[1], mean(mat_range), mat_range[2]), c("blue", "white", "red"))
 			heatmap_name = "expr"
 		}
-		browser()
 		oe = try(
 			draw(Heatmap(mat, name = heatmap_name, col = col_fun, show_row_names = FALSE,
 				column_title = NULL,

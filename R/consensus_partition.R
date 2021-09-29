@@ -791,6 +791,7 @@ setMethod(f = "select_partition_number",
 # -anno_col A list of colors (color is defined as a named vector) for the annotations. If ``anno`` is a data frame,
 #       ``anno_col`` should be a named list where names correspond to the column names in ``anno``.
 # -show_row_names Whether plot row names on the consensus heatmap (which are the column names in the original matrix)
+# -show_column_names Whether show column names.
 # -row_names_gp Graphics parameters for row names.
 # -simplify Internally used.
 # -... other arguments.
@@ -998,7 +999,7 @@ setMethod(f = "membership_heatmap",
 			show_annotation_name = !internal),
 		bottom_annotation = bottom_anno,
 		show_column_names = show_column_names, column_names_gp = column_names_gp,
-		row_title = NULL, ...
+		row_title = NULL
 	)
 	if(internal) {
 		row_title = NULL
