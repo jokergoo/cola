@@ -13,6 +13,7 @@ Predict classes for new samples based on cola classification
     group_diff = cola_opt$group_diff,
     scale_rows = object@scale_rows,
     diff_method = "Ftest",
+    method = "centroid",
     dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
     p_cutoff = 0.05, plot = TRUE, col_fun = NULL,
     split_by_sigatures = FALSE, force = FALSE,
@@ -29,6 +30,7 @@ Predict classes for new samples based on cola classification
   \item{group_diff}{Send to \code{\link{get_signatures,ConsensusPartition-method}} for determining signatures.}
   \item{scale_rows}{Send to \code{\link{get_signatures,ConsensusPartition-method}} for determining signatures.}
   \item{diff_method}{Send to \code{\link{get_signatures,ConsensusPartition-method}} for determining signatures.}
+  \item{method}{Method for predicting class labels. Possible values are "centroid", "svm" and "randomForest".}
   \item{dist_method}{Distance method. Value should be "euclidean", "correlation" or "cosine". Send to \code{\link{predict_classes,matrix-method}}.}
   \item{nperm}{Number of permutatinos. It is used when \code{dist_method} is set to "euclidean" or "cosine". Send to \code{\link{predict_classes,matrix-method}}.}
   \item{p_cutoff}{Cutoff for the p-values for determining class assignment. Send to \code{\link{predict_classes,matrix-method}}.}

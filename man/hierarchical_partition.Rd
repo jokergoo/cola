@@ -13,7 +13,8 @@ hierarchical_partition(data,
     partition_method = "skmeans",
     combination_method =  expand.grid(top_value_method, partition_method),
     anno = NULL, anno_col = NULL,
-    mean_silhouette_cutoff = 0.9, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
+    mean_silhouette_cutoff = 0.9, min_samples = max(6, round(ncol(data)*0.01)),
+    subset = Inf, predict_method = "centroid",
     group_diff = ifelse(scale_rows, 0.5, 0),
     fdr_cutoff = cola_opt$fdr_cutoff,
     min_n_signatures = NULL,
@@ -37,6 +38,7 @@ hierarchical_partition(data,
   \item{group_diff}{Pass to \code{\link{get_signatures,ConsensusPartition-method}}.}
   \item{fdr_cutoff}{Pass to \code{\link{get_signatures,ConsensusPartition-method}}.}
   \item{subset}{Number of columns to randomly sample.}
+  \item{predict_method}{Method for predicting class labels. Possible values are "centroid", "svm" and "randomForest".}
   \item{min_n_signatures}{Minimal number of signatures under the best classification.}
   \item{filter_fun}{A self-defined function which filters the original matrix and returns a submatrix for partitioning.}
   \item{max_k}{maximal number of partitions to try. The function will try \code{2:max_k} partitions. Note this is the number of partitions that will be tried out on each node of the hierarchical partition. Since more subgroups will be found in the whole partition hierarchy, on each node, \code{max_k} should not be set to a large value.}

@@ -316,6 +316,7 @@ setMethod(f = "get_signatures",
 	if(!is.null(p_value)) {
 		returned_df$p_value = p_value
 	}
+	rownames(returned_df) = rownames(object)[l_fdr]
 	attr(returned_df, "sample_used") = column_used_logical
 	attr(returned_df, "hash") = hash
 

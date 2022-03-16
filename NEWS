@@ -1,3 +1,6 @@
+Changes in version 2.0.1
++ `predict_classes()`: support svm/random forest methods for class label prediction.
+
 Changes in version 1.9.1
 + add `uniquely_high_in_one_group` method in `get_signatures()`.
 + add `compare_partitions()`.

@@ -84,7 +84,7 @@ setMethod(f = "collect_plots",
 		if(is.null(.ENV$TEMP_DIR)) {
 			file_name = tempfile(fileext = ".png", tmpdir = ".")
 	        png(file_name, width = image_width, height = image_height, res = resolution)
-	        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, verbose = FALSE, ...), silent = TRUE)
+	        oe = try(fun(res, k = k, internal = TRUE, use_raster = TRUE, ...), silent = TRUE)
 	        dev.off2()
 	        if(!inherits(oe, "try-error")) {
 				return(structure(file_name, cache = FALSE))

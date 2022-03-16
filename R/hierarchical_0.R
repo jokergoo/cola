@@ -59,6 +59,7 @@ HierarchicalPartition = setClass("HierarchicalPartition",
 # -group_diff Pass to `get_signatures,ConsensusPartition-method`.
 # -fdr_cutoff Pass to `get_signatures,ConsensusPartition-method`.
 # -subset Number of columns to randomly sample.
+# -predict_method Method for predicting class labels. Possible values are "centroid", "svm" and "randomForest".
 # -min_n_signatures Minimal number of signatures under the best classification.
 # -filter_fun A self-defined function which filters the original matrix and returns a submatrix for partitioning.
 # -max_k maximal number of partitions to try. The function will try ``2:max_k`` partitions. Note this is the number of
@@ -106,7 +107,8 @@ hierarchical_partition = function(data,
 	partition_method = "skmeans",
 	combination_method =  expand.grid(top_value_method, partition_method),
 	anno = NULL, anno_col = NULL,
-	mean_silhouette_cutoff = 0.9, min_samples = max(6, round(ncol(data)*0.01)), subset = Inf,
+	mean_silhouette_cutoff = 0.9, min_samples = max(6, round(ncol(data)*0.01)), 
+	subset = Inf, predict_method = "centroid",
 	group_diff = ifelse(scale_rows, 0.5, 0), 
 	fdr_cutoff = cola_opt$fdr_cutoff,
 	min_n_signatures = NULL, 
@@ -249,7 +251,7 @@ hierarchical_partition = function(data,
 	.env$group_diff = group_diff
 	.env$fdr_cutoff = fdr_cutoff
 
-	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), subset = subset, anno = anno, anno_col = anno_col,
+	lt = .hierarchical_partition(.env = .env, column_index = seq_len(ncol(data)), subset = subset, predict_method = predict_method, anno = anno, anno_col = anno_col,
 		min_samples = min_samples, node_id = "0", max_k = min(max_k, ncol(data)-1), verbose = verbose, cores = cores, mean_silhouette_cutoff = mean_silhouette_cutoff,
 		top_n = top_n, min_n_signatures = min_n_signatures, group_diff = group_diff, fdr_cutoff = fdr_cutoff, scale_rows = scale_rows, 
 		filter_fun = filter_fun, ...)
@@ -362,7 +364,7 @@ hierarchical_partition = function(data,
 }
 
    
-.hierarchical_partition = function(.env, column_index, node_id = '0', subset = Inf, anno = NULL, anno_col = anno_col,
+.hierarchical_partition = function(.env, column_index, node_id = '0', subset = Inf, predict_method = "centroid", anno = NULL, anno_col = anno_col,
 	min_samples = 6, max_k = 4, verbose = TRUE, cores = 1, scale_rows = TRUE,
 	filter_fun = function(mat) {
 		s = rowSds(mat)
@@ -476,6 +478,7 @@ hierarchical_partition = function(data,
 			nm = qq("@{combination_method[[i]][1]}:@{combination_method[[i]][2]}-row")
 
 			part_list[[nm]] = consensus_partition_by_down_sampling(subset = subset, verbose = verbose, .env = .env, max_k = max_k, prefix = prefix,
+					predict_method = predict_method,
 					top_n = top_n2, top_value_method = combination_method[[i]][1], partition_method = combination_method[[i]][2], 
 					cores = cores, .predict = FALSE, anno = anno2, anno_col = anno_col, scale_rows = scale_rows, ...)
 
@@ -554,7 +557,7 @@ hierarchical_partition = function(data,
 	dist_method = list(...)$dist_method
 	if(is.null(dist_method)) dist_method = "euclidean"
 	if(length(column_index) > subset) {
-		part = convert_to_DownSamplingConsensusPartition(part, column_index, dist_method, verbose, prefix, cores)
+		part = convert_to_DownSamplingConsensusPartition(part, column_index, predict_method, dist_method, verbose, prefix, cores)
 	}
 
 	attr(part, "node_id") = node_id

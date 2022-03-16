@@ -183,6 +183,8 @@ setMethod(f = "get_signatures",
 		returned_df = returned_df[l_diff, , drop = FALSE]
 	}
 
+	rownames(returned_df) = rownames(object)[returned_df$which_row]
+
 	returned_obj = returned_df
 	rownames(returned_obj) = NULL
 

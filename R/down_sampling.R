@@ -42,6 +42,7 @@ DownSamplingConsensusPartition = setClass("DownSamplingConsensusPartition",
 # -prefix Internally used.
 # -anno Annotation data frame.
 # -anno_col Annotation colors.
+# -predict_method Method for predicting class labels. Possible values are "centroid", "svm" and "randomForest".
 # -dist_method Method for predict the class for other columns.
 # -.env An environment, internally used.
 # -.predict Internally used.
@@ -70,6 +71,7 @@ consensus_partition_by_down_sampling = function(data,
 	max_k = 6, k = NULL,
 	subset = min(round(ncol(data)*0.2), 250), pre_select = TRUE,
 	verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
+	predict_method = "centroid",
 	dist_method = c("euclidean", "correlation", "cosine"),
 	.env = NULL, .predict = TRUE, mc.cores = 1, cores = mc.cores, ...) {
 
@@ -178,14 +180,14 @@ consensus_partition_by_down_sampling = function(data,
 	attr(cp, "full_anno") = anno
 	
 	if(.predict) {
-		obj = convert_to_DownSamplingConsensusPartition(cp, column_index, dist_method, verbose, prefix, cores)
+		obj = convert_to_DownSamplingConsensusPartition(cp, column_index, predict_method, dist_method, verbose, prefix, cores)
 		return(obj)
 	} else {
 		return(cp)
 	}
 }
 
-convert_to_DownSamplingConsensusPartition = function(cp, column_index, dist_method, verbose, prefix, cores) {
+convert_to_DownSamplingConsensusPartition = function(cp, column_index, predict_method, dist_method, verbose, prefix, cores) {
 
 	data = cp@.env$data[, column_index, drop = FALSE]
 
@@ -209,10 +211,10 @@ convert_to_DownSamplingConsensusPartition = function(cp, column_index, dist_meth
 	for(k in cp@k) {
 		if(verbose) qqcat("@{prefix}* predict class for @{ncol(data)} samples with k = @{k}\n")
 		if(cp@scale_rows) {
-			cl[[as.character(k)]] = predict_classes(cp, k = k, data2, p_cutoff = Inf, dist_method = dist_method, 
+			cl[[as.character(k)]] = predict_classes(cp, k = k, data2, p_cutoff = Inf, method = predict_method, dist_method = dist_method, 
 				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "), cores = cores)
 		} else {
-			cl[[as.character(k)]] = predict_classes(cp, k = k, data, p_cutoff = Inf, dist_method = dist_method, 
+			cl[[as.character(k)]] = predict_classes(cp, k = k, data, p_cutoff = Inf, method = predict_method, dist_method = dist_method, 
 				plot = FALSE, verbose = verbose, force = TRUE, help = FALSE, prefix = qq("@{prefix}  "), cores = cores)
 		}
 	}

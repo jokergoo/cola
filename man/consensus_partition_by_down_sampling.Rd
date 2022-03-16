@@ -14,6 +14,7 @@ consensus_partition_by_down_sampling(data,
     max_k = 6, k = NULL,
     subset = min(round(ncol(data)*0.2), 250), pre_select = TRUE,
     verbose = TRUE, prefix = "", anno = NULL, anno_col = NULL,
+    predict_method = "centroid",
     dist_method = c("euclidean", "correlation", "cosine"),
     .env = NULL, .predict = TRUE, mc.cores = 1, cores = mc.cores, ...)
 }
@@ -31,6 +32,7 @@ consensus_partition_by_down_sampling(data,
   \item{prefix}{Internally used.}
   \item{anno}{Annotation data frame.}
   \item{anno_col}{Annotation colors.}
+  \item{predict_method}{Method for predicting class labels. Possible values are "centroid", "svm" and "randomForest".}
   \item{dist_method}{Method for predict the class for other columns.}
   \item{.env}{An environment, internally used.}
   \item{.predict}{Internally used.}

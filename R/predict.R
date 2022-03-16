@@ -12,6 +12,7 @@
 # -group_diff Send to `get_signatures,ConsensusPartition-method` for determining signatures.
 # -scale_rows Send to `get_signatures,ConsensusPartition-method` for determining signatures.
 # -diff_method Send to `get_signatures,ConsensusPartition-method` for determining signatures.
+# -method Method for predicting class labels. Possible values are "centroid", "svm" and "randomForest".
 # -dist_method Distance method. Value should be "euclidean", "correlation" or "cosine". Send to `predict_classes,matrix-method`.
 # -nperm Number of permutatinos. It is used when ``dist_method`` is set to "euclidean" or "cosine". Send to `predict_classes,matrix-method`.
 # -p_cutoff Cutoff for the p-values for determining class assignment. Send to `predict_classes,matrix-method`.
@@ -71,6 +72,7 @@ setMethod(f = "predict_classes",
 	group_diff = cola_opt$group_diff, 
 	scale_rows = object@scale_rows, 
 	diff_method = "Ftest",
+	method = "centroid",
 	dist_method = c("euclidean", "correlation", "cosine"), nperm = 1000,
 	p_cutoff = 0.05, plot = TRUE, col_fun = NULL, 
 	split_by_sigatures = FALSE, force = FALSE, 
@@ -118,11 +120,12 @@ setMethod(f = "predict_classes",
 			sig_mat = do.call(cbind, tapply(1:nrow(class_df), class_df$class, function(ind) {
 				rowMeans(data[, ind, drop = FALSE])
 			}))
+			sig_mat_full = data[tb$which_row, , drop = FALSE]
 
-			# if no hash attribute, randomly select one sample from each group
 			if(is.null(hash)) {
 				ind = order(apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(500, nrow(data))]
 				sig_mat = sig_mat[ind, , drop = FALSE]
+				sig_mat_full = sig_mat_full[ind, , drop = FALSE]
 				mat = mat[ind, , drop = FALSE]
 				if(verbose) qqcat("@{prefix}* simply take top @{min(500, nrow(data))} rows with the highest row range.\n")
 			} else {
@@ -131,12 +134,14 @@ setMethod(f = "predict_classes",
 				fdr = object@.env[[hash_nm]]$fdr
 				ind = order(-fdr, apply(sig_mat, 1, function(x) max(x) - min(x)), decreasing = TRUE)[1:min(500, nrow(data))]
 				sig_mat = sig_mat[ind, , drop = FALSE]
+				sig_mat_full = sig_mat_full[ind, , drop = FALSE]
 				mat = mat[ind, , drop = FALSE]
 				if(verbose) qqcat("@{prefix}* simply take top @{min(500, nrow(data))} rows with the most significant FDRs.\n")
 			}
 
 			l = apply(sig_mat, 1, function(x) any(is.na(x)))
 			sig_mat = sig_mat[!l, , drop = FALSE]
+			sig_mat_full = sig_mat_full[!l, , drop = FALSE]
 			mat = mat[!l, , drop = FALSE]
 
 		} else {
@@ -149,6 +154,11 @@ setMethod(f = "predict_classes",
 		} else {
 			sig_mat = tb[, grepl("^mean_\\d+$", colnames(tb))]
 		}
+		data = get_matrix(object, include_all_rows = TRUE)
+		if(object@scale_rows) {
+			data = t(scale(t(data)))
+		}
+		sig_mat_full = data[tb$which_row, , drop = FALSE]
 
 		sig_mat = as.matrix(sig_mat)
 		colnames(sig_mat) = NULL
@@ -159,6 +169,7 @@ setMethod(f = "predict_classes",
 				ind = order(tb$fdr)[1:500]
 				tb = tb[ind, , drop = FALSE]
 				sig_mat = sig_mat[ind, , drop = FALSE]
+				sig_mat_full = sig_mat_full[ind, , drop = FALSE]
 				if(verbose) qqcat("@{prefix}* take top 500/@{nr} most significant signatures for prediction.\n")
 			}
 		}
@@ -166,14 +177,27 @@ setMethod(f = "predict_classes",
 		mat = mat[tb$which_row, , drop = FALSE]
 	}
 
+	
 	if(nrow(mat) > 500) {
 		ind = sample(nrow(mat), 500)
 		mat = mat[ind, , drop = FALSE]
 		sig_mat = sig_mat[ind, , drop = FALSE]
+		sig_mat_full = sig_mat_full[ind, , drop = FALSE]
 	}
-	predict_classes(sig_mat, mat, nperm = nperm, dist_method = dist_method, p_cutoff = p_cutoff, 
-		plot = plot, col_fun = col_fun, split_by_sigatures = split_by_sigatures, 
-		verbose = verbose, prefix = prefix, cores = cores)
+
+	if(method == "centroid") {
+		predict_classes(sig_mat, mat, nperm = nperm, dist_method = dist_method, p_cutoff = p_cutoff, 
+			plot = plot, col_fun = col_fun, split_by_sigatures = split_by_sigatures, 
+			verbose = verbose, prefix = prefix, cores = cores)
+	} else {
+		cl = get_classes(object, k = k)[, 1]
+		cl = as.factor(cl)
+		sample_used = attr(tb, "sample_used")
+		cl = cl[sample_used]
+		sig_mat_full = sig_mat_full[, sample_used, drop = FALSE]
+
+		predict_classes_by_ml(sig_mat_full, cl, mat, method = method, plot = plot, col_fun = col_fun)
+	}
 })
 
 
@@ -377,7 +401,7 @@ setMethod(f = "predict_classes",
 				top_annotation = ha, 
 				row_km = row_km,
 				row_split = row_split,
-				show_column_names = FALSE, row_title = NULL,
+				show_column_names = FALSE,
 				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
 				column_split = predicted_class2,
 				show_row_dend = FALSE, width = width1,
@@ -389,7 +413,7 @@ setMethod(f = "predict_classes",
 				top_annotation = ha, 
 				row_km = row_km,
 				row_split = row_split,
-				show_column_names = FALSE, row_title = NULL,
+				show_column_names = FALSE,
 				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
 				column_split = predicted_class2,
 				show_row_dend = FALSE, width = width1,
@@ -405,6 +429,79 @@ setMethod(f = "predict_classes",
 	return(df)
 })
 
+predict_classes_by_ml = function(test, factor, data, method = "svm", plot = TRUE, col_fun = NULL) {
+
+	if(!method %in% c("svm", "randomForest")) {
+		stop_wrap("method should be in 'svm'/'randomForest'.")
+	}
+
+	factor = factor(factor)
+	if(method == "svm") {
+		check_pkg("e1071", bioc = FALSE)
+		fit = e1071::svm(factor ~ ., data = as.data.frame(t(test)), kernel = "linear")
+		pred = getFromNamespace("predict.svm", "e1071")(fit, as.data.frame(t(data)))
+	} else if(method == "randomForest") {
+		rownames(test) = paste0("R", 1:nrow(test))
+		rownames(data) = paste0("R", 1:nrow(data))
+		fit = randomForest::randomForest(factor ~ ., data = as.data.frame(t(test)))
+		pred = getFromNamespace("predict.randomForest", "randomForest")(fit, as.data.frame(t(data)))
+	}
+
+	if(plot) {
+		predicted_class2 = factor(pred)
+		predicted_col = structure(1:nlevels(factor)+1, names = levels(factor))
+		
+		ha = HeatmapAnnotation(
+				"Predicted\nclasses" = predicted_class2, 
+				col = list(
+					"Predicted\nclasses" = predicted_col),
+				show_annotation_name = TRUE,
+				simple_anno_size = unit(4, "mm"),
+				annotation_name_side = "left")
+		
+		wss = (nrow(data)-1)*sum(apply(data,1,var))
+		max_km = min(c(nrow(data) - 1, 15))
+		# if(verbose) qqcat("* apply k-means on rows with 2~@{max_km} clusters.\n")
+		for (i in 2:max_km) {
+			# if(verbose) qqcat("  - applying k-means with @{i} clusters.\n")
+			wss[i] = sum(kmeans(data, centers = i, iter.max = 50)$withinss)
+		}
+		row_km = min(elbow_finder(1:max_km, wss)[1], knee_finder(1:max_km, wss)[1])
+		
+		row_split = row_km
+
+		width2 = min(unit(4*ncol(test), "mm"), unit(6, "cm"))
+		
+		if(is.null(col_fun)) {
+			ht_list = Heatmap(data, name = "New matrix",
+				top_annotation = ha, 
+				row_split = row_split, column_title = "test matrix",
+				show_column_names = FALSE,
+				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
+				column_split = predicted_class2,
+				show_row_dend = FALSE
+			) + Heatmap(test, name = "signature matrix", column_split = factor, cluster_columns = FALSE, width = width2,
+			top_annotation = HeatmapAnnotation(classes = factor, col = list(classes = predicted_col), simple_anno_size = unit(4, "mm")),
+			show_row_names = FALSE, show_column_names = FALSE, column_title = "signature matrix")
+		} else {
+			ht_list = Heatmap(data, name = "New matrix", col = col_fun,
+				top_annotation = ha, 
+				row_split = row_split, column_title = "test matrix",
+				show_column_names = FALSE,
+				cluster_columns = TRUE, cluster_column_slices = FALSE, show_column_dend = FALSE,
+				column_split = predicted_class2,
+				show_row_dend = FALSE
+			) + Heatmap(test, name = "signature matrix", col = col_fun, column_split = factor, cluster_columns = FALSE, width = width2,
+			top_annotation = HeatmapAnnotation(classes = factor, col = list(classes = predicted_col), simple_anno_size = unit(4, "mm")),
+			show_row_names = FALSE, show_column_names = FALSE, column_title = "signature matrix")
+		}
+		
+		draw(ht_list, merge_legend = TRUE, column_title = qq("Based on @{nrow(test)} signatures"))
+	}
+	df = data.frame(class = pred, p = -Inf)
+	rownames(df) = colnames(data)
+	return(df)
+}
 
 set_counter = function(n, fmt = "%s") {
 
