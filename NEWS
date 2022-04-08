@@ -1,3 +1,6 @@
+Changes in version 2.1.1
++ add hierarchical consensus partitioning
+
 Changes in version 2.0.1
 + `predict_classes()`: support svm/random forest methods for class label prediction.
 
