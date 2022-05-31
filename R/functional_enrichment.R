@@ -219,6 +219,7 @@ setMethod(f = "functional_enrichment",
 # -min_set_size The minimal size of the gene sets.
 # -max_set_size The maximal size of the gene sets.
 # -verbose Whether to print messages.
+# -prefix Used internally.
 # -... Pass to `functional_enrichment,ANY-method`.
 #
 # == details
@@ -236,15 +237,9 @@ setMethod(f = "functional_enrichment",
     row_km = NULL, id_mapping = guess_id_mapping(rownames(object), org_db, verbose), 
     org_db = "org.Hs.eg.db", ontology = "BP",
     min_set_size = 10, max_set_size = 1000, 
-    verbose = TRUE, ...) {
+    verbose = TRUE, prefix = "", ...) {
 
     if(!grepl("\\.db$", org_db)) org_db = paste0(org_db, ".db")
-	arg_lt = list(...)
-	if("prefix" %in% names(arg_lt)) {
-		prefix = arg_lt$prefix
-	} else {
-		prefix = ""
-	}
 
     if(is.na(k)) {
         if(verbose) qqcat("@{prefix}- no best k was defined.\n")
@@ -527,6 +522,11 @@ setMethod(f = "functional_enrichment",
 })
 
 guess_id_type = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
+	l = grepl("^\\d+$", id)
+    if(sum(l)/length(l) > 0.5) {
+        return("ENTREZID")
+    }
+
     l = grepl("^ENS.*G", id)
     if(sum(l)/length(l) > 0.5) {
         return("ENSEMBL")
@@ -587,6 +587,9 @@ guess_id_mapping = function(id, org_db = "org.Hs.eg.db", verbose = TRUE) {
     col = guess_id_type(id, org_db, verbose = verbose)
     if(is.null(col)) {
         return(NULL)
+    }
+    if(col == "ENTREZID") {
+    	return(NULL)
     }
 
     id_mapping = map_to_entrez_id(col, org_db)
