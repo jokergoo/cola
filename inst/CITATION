@@ -6,7 +6,8 @@ citEntry(
    author = "Zuguang Gu, Matthias Schlesner, Daniel Huebschmann",
    journal = "Nucleic Acids Research",
    year = 2021,
-   textVersion = "Gu, Z. (2021) cola: an R/Bioconductor package for consensus partitioning through a general framework. Nucleic Acids Research, https://doi.org/10.1093/nar/gkaa1146."
+   doi = "10.1093/nar/gkaa1146",
+   textVersion = "Gu, Z. (2021) cola: an R/Bioconductor package for consensus partitioning through a general framework. Nucleic Acids Research."
 )
 
 citEntry(
@@ -15,7 +16,8 @@ citEntry(
    author = "Zuguang Gu, Daniel Huebschmann",
    journal = "Briefings in Bioinformatics",
    year = 2022,
-   textVersion = "Gu, Z. (2022) Improve consensus partitioning via a hierarchical procedure. Briefings in Bioinformatics, https://doi.org/10.1093/bib/bbac048."
+   doi = "10.1093/bib/bbac048",
+   textVersion = "Gu, Z. (2022) Improve consensus partitioning via a hierarchical procedure. Briefings in Bioinformatics."
 )
 
 citFooter("This free open-source software implements academic
