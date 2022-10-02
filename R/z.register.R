@@ -208,9 +208,20 @@ get_partition_method = function(method, partition_param = list()) {
 
 		return(x)
 	}
-	attr(fun2, "scale_method") = attr(fun, "scale_method")
-	attr(fun2, "execution_time") = attr(fun, "execution_time")
-	return(fun2)
+
+	fun3 = function(mat, k, column_index = seq_len(ncol(mat))) {
+		oe = try(x <- fun2(mat = mat, k = k, column_index = column_index), silent = TRUE)
+		if(inherits(oe, "try-error")) {
+			at = attributes(oe)
+			oe = paste0("There is an error for partitioning method '", method, "':\n", oe)
+			attributes(oe) = at
+			stop(oe)
+		}
+		return(x)
+	}
+	attr(fun3, "scale_method") = attr(fun, "scale_method")
+	attr(fun3, "execution_time") = attr(fun, "execution_time")
+	return(fun3)
 }
 
 # == title
