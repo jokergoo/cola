@@ -63,7 +63,7 @@ Child nodes:
 <% } -%>
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message-blank, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message-blank, echo = FALSE, message = NA}
 message("-----------------------------------------------------------------")
 ```
 <% } -%>
@@ -71,12 +71,12 @@ message("-----------------------------------------------------------------")
 
 <% 
 if(is_hc) { -%>
-```{r <%=chunk_prefix%>-message0, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message0, echo = FALSE, message = NA}
 section_t1 = Sys.time()
 message("* generating plots for node <%=node%> (<%=i_section%>/<%=n_section%>)")
 ```
 <% } else { -%>
-```{r <%=chunk_prefix%>-message0, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message0, echo = FALSE, message = NA}
 section_t1 = Sys.time()
 message("* generating plots for <%=top_value_method%>:<%=partition_method%> (<%=i_section%>/<%=n_section%>)")
 ```
@@ -107,7 +107,7 @@ res
 into one single page to provide an easy and fast comparison between different `k`.
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message1, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message1, echo = FALSE, message = NA}
 t1 = Sys.time()
 message("  - collecting all plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
@@ -160,7 +160,7 @@ measure how similar the current partition is compared to partition with `k-1`.
 If they are too similar, we won't accept `k` is better than `k-1`.
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message2, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message2, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - plotting various statistics for selecting best k", appendLF = FALSE)
 ```
@@ -226,7 +226,7 @@ Heatmaps for the consensus matrix. It visualizes the probability of two
 samples to be in a same group.
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message3, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message3, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - making consensus heatmaps (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
@@ -242,7 +242,7 @@ knitr_insert_tabs('<%=chunk_prefix%>-consensus-heatmap')
 Heatmaps for the membership of samples in all partitions to see how consistent they are:
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message4, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message4, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - making membership heatmaps (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
@@ -261,7 +261,7 @@ that are significantly different between subgroups can be looked for.
 Following are the heatmaps for signatures.
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message5, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message5, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - getting signatures (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
@@ -345,7 +345,7 @@ tb = get_signature(res, k = ..., diff_method = "uniquely_high_in_one_group")
 ```
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message6, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message6, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - making dimension reduction plots (k = '<%=paste(all_k, collapse=', ')%>')", appendLF = FALSE)
 ```
@@ -380,7 +380,7 @@ knitr_insert_tabs('<%=chunk_prefix%>-dimension-reduction')
 ```
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message7, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message7, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message("  - collecting classifications for all k", appendLF = FALSE)
 ```
@@ -395,7 +395,7 @@ collect_classes(res)
 <% if(has_known_anno) { -%>
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message8, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message8, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("  - testing correlation of subgroups to known annotations"), appendLF = FALSE)
 ```
@@ -410,14 +410,14 @@ test_to_known_factors(res)
 ```
 
 <% if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message9, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message9, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
 <%}-%>
 
 <%} else {
 if(n_cores == 1) { -%>
-```{r <%=chunk_prefix%>-message9, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message9, echo = FALSE, message = NA}
 message("")
 ```
 <%} }-%>
@@ -428,12 +428,12 @@ If matrix rows can be associated to genes, consider to use `functional_enrichmen
 
 <% 
 if(is_hc) { -%>
-```{r <%=chunk_prefix%>-message10, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message10, echo = FALSE, message = NA}
 section_t2 = Sys.time()
 message(paste0("  - section node <%=node%> used in total ", gsub("^ +", "", format(section_t2 - section_t1))))
 ```
 <% } else { -%>
-```{r <%=chunk_prefix%>-message10, echo = FALSE, message = FALSE}
+```{r <%=chunk_prefix%>-message10, echo = FALSE, message = NA}
 section_t2 = Sys.time()
 message(paste0("  - section <%=top_value_method%>:<%=partition_method%> used in total ", gsub("^ +", "", format(section_t2 - section_t1))))
 ```

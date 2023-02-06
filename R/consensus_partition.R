@@ -542,8 +542,9 @@ consensus_partition = function(data,
     	l = l & names(map) != names(which.max(table(class)[names(map)[l]]))
     	unmapped = setdiff(names(map), map)
     	if(any(l)) {
-    		map[l] = unmapped
+    		map[l] = unmapped[1]
     	}
+    	cat("===\n")
     	map2 = structure(names(map), names = map)
     	object_list[[i]]$class_df$class = as.numeric(map[as.character(class)])
 

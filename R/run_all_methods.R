@@ -192,7 +192,7 @@ run_all_consensus_partition_methods = function(data,
 		return(cl_df)
 	})
 	names(reference_class) = as.character(lt[[1]]@k)
-	
+
 	# also adjust between consensus classes
 	if(verbose) cat("  - get reference class labels from all methods, all k.\n")
 	rc = reference_class[[1]]$class_df$class
@@ -205,7 +205,7 @@ run_all_consensus_partition_methods = function(data,
     	l = which( (duplicated(map) | duplicated(map, fromLast = TRUE)) & map != names(map))
     	unmapped = setdiff(names(map), map)
     	if(any(l)) {
-    		map[l] = unmapped
+    		map[l] = unmapped[1]
     	}
     	map2 = structure(names(map), names = map)
     	

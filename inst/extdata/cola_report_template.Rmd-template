@@ -11,7 +11,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 <%= css %>
 </style>
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
@@ -74,7 +74,7 @@ The density distribution for each sample is visualized as in one column in the
 following heatmap. The clustering is based on the distance which is the
 Kolmogorov-Smirnov statistic between two distributions.
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t1 = Sys.time()
 message(qq("* making density heatmap of global distribution for each sample (@{ncol(mat)} samples)"), appendLF = FALSE)
 ```
@@ -91,11 +91,11 @@ densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_list),
 <% } -%>
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))))
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 n_top_value_method = length(res_list@top_value_method)
 n_partition_method = length(res_list@partition_method)
 n_method = n_top_value_method * n_partition_method
@@ -106,7 +106,7 @@ message(qq("  - in total @{n_method} combinations of methods"))
 
 ### Suggest the best k
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t1 = Sys.time()
 message("* Suggesting the best k for each method", appendLF = FALSE)
 ```
@@ -145,7 +145,7 @@ fs = min(c(3*n_top_value_method, 14))/n_partition_method
 
 Cumulative distribution function curves of consensus matrix for all methods.
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making empirical cumulative distribution curves for all methods"), appendLF = FALSE)
 ```
@@ -154,7 +154,7 @@ message(qq("* making empirical cumulative distribution curves for all methods"),
 collect_plots(res_list, fun = plot_ecdf)
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making consensus heatmaps for all methods"), appendLF = FALSE)
 ```
@@ -177,7 +177,7 @@ knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = consensus_heatmap,
 knitr_insert_tabs('collect-consensus-heatmap')
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making membership heatmaps for all methods"), appendLF = FALSE)
 ```
@@ -195,7 +195,7 @@ knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = membership_heatmap
 knitr_insert_tabs('collect-membership-heatmap')
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making signature heatmaps for all methods"), appendLF = FALSE)
 ```
@@ -217,7 +217,7 @@ knitr_add_tab_item('collect_plots(res_list, k = <%=k%>, fun = get_signatures, co
 knitr_insert_tabs('collect-get-signatures')
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* getting statistics for all methods"), appendLF = FALSE)
 ```
@@ -249,7 +249,7 @@ knitr_insert_tabs('collect-stats-from-consensus-partition-list')
 
 ### Partition from all methods
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* collecting classifications for all methods"), appendLF = FALSE)
 ```
@@ -265,7 +265,7 @@ knitr_add_tab_item('collect_classes(res_list, k = <%=k%>)', 'k = <%=k%>', opt = 
 knitr_insert_tabs('collect-classes-from-consensus-partition-list')
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* overlaping top rows from different top-value methods"), appendLF = FALSE)
 ```
@@ -316,7 +316,7 @@ knitr_add_tab_item('top_rows_heatmap(res_list, top_n = <%=top_n%>)', 'top_n = <%
 knitr_insert_tabs('top-rows-heatmap')
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
 
@@ -326,7 +326,7 @@ has_known_anno = TRUE -%>
 
 ### Test to known annotations
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 message(qq("* testing correlation of subgroups to known annotations"))
 ```
 
@@ -389,6 +389,6 @@ for(i in seq_along(md_list)) {
 sessionInfo()
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 message("-----------------------------------------------------------------")
 ```

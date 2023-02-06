@@ -11,7 +11,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 <%= css %>
 </style>
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
@@ -79,7 +79,7 @@ res_rh@param$combination_method
 The density distribution for each sample is visualized as one column in the following heatmap.
 The clustering is based on the distance which is the Kolmogorov-Smirnov statistic between two distributions.
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t1 = Sys.time()
 message(qq("* making density heatmap of global distribution for each sample (@{ncol(mat)} samples)"), appendLF = FALSE)
 ```
@@ -96,7 +96,7 @@ densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res_rh),
 <% } -%>
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))))
 ```
 
@@ -127,7 +127,7 @@ first subgroup of the root node.
 
 ### Suggest the best k
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 message("* suggesting the best k for each node")
 ```
 
@@ -199,7 +199,7 @@ from `node_info()`.
 max_depth = max_depth(res_rh)
 -%>
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t1 = Sys.time()
 message(qq("* collecting classifications for each ndoe height"), appendLF = FALSE)
 ```
@@ -259,7 +259,7 @@ if(n_top_value_method <= 4) {
 }
 -%>
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making top row heatmaps"), appendLF = FALSE)
 ```
@@ -279,7 +279,7 @@ top_rows_overlap(res_rh, method = "upset")
 
 <%=dr_method%> plot which shows how samples are separated.
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making dimension reduction plots"), appendLF = FALSE)
 ```
@@ -303,7 +303,7 @@ knitr_insert_tabs('dimension-reduction-by-depth')
 Signatures on the heatmap are the union of all signatures found on every node
 on the hierarchy. The number of k-means on rows are automatically selected by the function.
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1)))); t1 = Sys.time()
 message(qq("* making signature heatmaps"), appendLF = FALSE)
 ```
@@ -315,7 +315,7 @@ knitr_add_tab_item('get_signatures(res_rh, merge_node = merge_node_param(min_n_s
 knitr_insert_tabs('get-signatures-from-hierarchical-partition')
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))));
 ```
 
@@ -347,7 +347,7 @@ Test correlation between subgroups and known annotations. If the known
 annotation is numeric, one-way ANOVA test is applied, and if the known
 annotation is discrete, chi-squared contingency table test is applied.
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 message(qq("* testing correlation of subgroups to known annotations"))
 ```
 
@@ -410,7 +410,7 @@ sessionInfo()
 ```
 
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 message("-----------------------------------------------------------------")
 ```
 

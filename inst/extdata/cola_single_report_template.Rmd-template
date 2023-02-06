@@ -11,7 +11,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 <%= css %>
 </style>
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 library(knitr)
 library(markdown)
 options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
@@ -72,7 +72,7 @@ The density distribution for each sample is visualized as in one column in the
 following heatmap. The clustering is based on the distance which is the
 Kolmogorov-Smirnov statistic between two distributions.
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t1 = Sys.time()
 message(qq("* making density heatmap of global distribution for each sample (@{ncol(mat)} samples)"), appendLF = FALSE)
 ```
@@ -89,7 +89,7 @@ densityHeatmap(mat, top_annotation = HeatmapAnnotation(df = get_anno(res),
 <% } -%>
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 t2 = Sys.time(); message(paste0(", ", gsub("^ +", "", format(t2 - t1))))
 ```
 
@@ -136,6 +136,6 @@ cat(txt, "\n")
 sessionInfo()
 ```
 
-```{r, echo = FALSE, message = FALSE}
+```{r, echo = FALSE, message = NA}
 message("-----------------------------------------------------------------")
 ```
