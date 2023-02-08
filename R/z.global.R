@@ -54,6 +54,8 @@ if(identical(topenv(), .GlobalEnv)) {
 
 .onLoad = function(...) {
 	TEMPLATE_DIR <<- system.file("extdata", package = "cola")
+
+	RNGkind("L'Ecuyer-CMRG")
 }
 
 

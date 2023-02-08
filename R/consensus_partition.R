@@ -351,7 +351,7 @@ consensus_partition = function(data,
 		if(verbose && n_cores > 1) qqcat("@{prefix}  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{n_cores} cores).\n")
 
 		registerDoParallel(cores)
-		lt <- foreach(j = seq_len(partition_repeat)) %dopar% {
+		lt <- foreach(j = seq_len(partition_repeat)) %dorng% {
 
 			param = data.frame(top_n = numeric(0), k = numeric(0), n_row = numeric(0))
 			partition_list = list()
@@ -544,7 +544,6 @@ consensus_partition = function(data,
     	if(any(l)) {
     		map[l] = unmapped[1]
     	}
-    	cat("===\n")
     	map2 = structure(names(map), names = map)
     	object_list[[i]]$class_df$class = as.numeric(map[as.character(class)])
 

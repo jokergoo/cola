@@ -319,7 +319,7 @@ setMethod(f = "predict_classes",
 			len[1] = nperm - sum(len) + len[1]
 
 			registerDoParallel(cores)
-			diff_ratio_r = do.call(cbind, { foreach (x = len) %dopar% {
+			diff_ratio_r = do.call(cbind, { foreach (x = len) %dorng% {
 				cal_diff_ratio_r(t(mat), t(sig_mat), x, dm)
 			}})
 			stopImplicitCluster()

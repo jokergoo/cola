@@ -71,7 +71,7 @@ ATC_approx = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neigh
 	if(k_neighbours > 0) k_neighbours = min(k_neighbours, ncol(mat)-1)
 
 	registerDoParallel(cores)
-	v_list <- foreach(ind = ind_list) %dopar% {
+	v_list <- foreach(ind = ind_list) %dorng% {
 		v = numeric(length(ind))
 		for(i in seq_along(ind)) {
 			ind2 = seq_len(ncol(mat))[-ind[i]]
@@ -209,7 +209,7 @@ ATC = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours =
 			corm = matrix(NA_real_, nrow = n, ncol = n)
 
 			registerDoParallel(cores)
-			cm_list <- foreach(i = 1:nrow(ind_mat)) %dopar% {
+			cm_list <- foreach(i = 1:nrow(ind_mat)) %dorng% {
 				block_i = ind_mat[i, 1]
 				block_j = ind_mat[i, 2]
 
@@ -239,7 +239,7 @@ ATC = function(mat, cor_fun = stats::cor, min_cor = 0, power = 1, k_neighbours =
 			le = cut(1:n, cores)
 			ind_list = split(1:n, le)
 			registerDoParallel(cores)
-			s_list <- foreach(ind = ind_list) %dopar% {
+			s_list <- foreach(ind = ind_list) %dorng% {
 				rowATC(corm[ind, , drop = FALSE], min_cor = min_cor, power = power, k_neighbours = k_neighbours, self = ind)
 			}
 			stopImplicitCluster()

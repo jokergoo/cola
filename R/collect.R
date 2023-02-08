@@ -74,7 +74,7 @@ setMethod(f = "collect_plots",
 	registerDoParallel(cores)
 
 	dev.null()
-	image <- foreach(ind = seq_len(nrow(comb))) %dopar% {
+	image <- foreach(ind = seq_len(nrow(comb))) %dorng% {
 		i = comb[ind, 1]
 		j = comb[ind, 2]
 

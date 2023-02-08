@@ -38,6 +38,7 @@ Imports: grDevices,
          eulerr,
          foreach,
          doParallel,
+         doRNG,
          irlba
 Suggests: genefilter,
           mvtnorm,

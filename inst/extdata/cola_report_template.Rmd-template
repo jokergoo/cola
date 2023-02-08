@@ -356,7 +356,7 @@ i_section = 0
 comb = expand.grid(res_list@partition_method, res_list@top_value_method, stringsAsFactors = FALSE)[, 2:1]
 .e = environment()
 registerDoParallel(cores)
-md_list <- foreach (ind = seq_len(nrow(comb))) %dopar% {
+md_list <- foreach (ind = seq_len(nrow(comb))) %dorng% {
     i_section = ind
     top_value_method = comb[ind, 1]
     partition_method = comb[ind, 2]

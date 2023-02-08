@@ -375,7 +375,7 @@ i_section = 0
 all_k = res_rh@list[[1]]@k
 registerDoParallel(cores)
 
-md_list <- foreach (ind = seq_along(all_parents)) %dopar% {
+md_list <- foreach (ind = seq_along(all_parents)) %dorng% {
     i_section = ind
     node = all_parents[ind]
     top_value_method = res_rh[[node]]@top_value_method

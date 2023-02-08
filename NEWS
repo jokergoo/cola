@@ -1,5 +1,6 @@
 Changes in version 2.5.1
 + In the rmarkdown, replace `message = FALSE` to `message = NA`.
++ use `%dorng%` for paralell computing
 
 Changes in version 2.1.1
 + add hierarchical consensus partitioning
