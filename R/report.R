@@ -232,9 +232,9 @@ setMethod(f = "cola_report",
 make_report = function(var_name, object, output_dir, title = "cola Report for Consensus Partitioning", 
 	cores = 1, class = class(object), ask = FALSE) {
 
-	if(identical(topenv(), .GlobalEnv)) {
-		stop_wrap("`cola_report()` cannot be run under test mode.")
-	}
+	# if(identical(topenv(), .GlobalEnv)) {
+	# 	stop_wrap("`cola_report()` cannot be run under test mode.")
+	# }
 
 	KNITR_TAB_ENV$prefix = NULL
 
@@ -272,7 +272,7 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	# 	if(cores > 1) qqcat("* `cores` is reset to 1 because multi-core is not supported on this OS.\n")
 	# 	cores = 1
 	# }
-
+	TEMPLATE_DIR = TEMPLATE_DIR
 	report_template = file.path(TEMPLATE_DIR, template_file[class])
 
 	dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
@@ -311,15 +311,15 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	message("* generating R markdown file based on template report")
 	rmd_file = file.path(output_dir, gsub("html$", "Rmd", html_file[class]))
 	brew(report_template, output = rmd_file)
-	op = getOption("markdown.HTML.options")
-	options(markdown.HTML.options = setdiff(op, "base64_images"))
+	op = getOption("markdown.html.options")
+	options(markdown.html.options = c(setdiff(op, c("+base64_images", "-base64_images")), "-base64_images"))
 	md_file = gsub("Rmd$", "md", rmd_file)
 	owd = getwd()
 	setwd(output_dir)
 	message("* rendering R markdown file to html by knitr")
 	knit(rmd_file, md_file, quiet = TRUE)
 	markdownToHTML(md_file, file.path(output_dir, html_file[class]))
-	options(markdown.HTML.options = op)
+	options(markdown.html.options = op)
 	setwd(owd)
 
 	dir.create(file.path(output_dir, "js"), showWarnings = FALSE)
@@ -415,6 +415,7 @@ $(window).on('load', function() {
   }); 
   $('#toc li').first().addClass('tocify-item active');
   $('#loadingflag').hide();
+  $('.frontmatter').hide()
 });
 </script>
 </html>

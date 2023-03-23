@@ -205,6 +205,10 @@ setMethod(f = "collect_plots",
 		}
 	})
 
+	qqcat = function(...) {
+		message(qq(...))
+	}
+
 	all_k = object@k
 	grid.newpage()
 	text_height = grobHeight(textGrob("foo"))

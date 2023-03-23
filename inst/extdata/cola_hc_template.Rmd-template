@@ -363,7 +363,7 @@ knitr_insert_tabs('test-to-known-factors-from-hierarchical-partition')
 
 ## Results for each node
 
-```{r, results = "asis", echo = FALSE}
+```{r, results = "asis", echo = FALSE, message = NA}
 fs = 2
 is_hc = TRUE
 single_report = FALSE
@@ -373,17 +373,16 @@ n_section = length(all_parents)
 i_section = 0
 .e = environment()
 all_k = res_rh@list[[1]]@k
-registerDoParallel(cores)
 
-md_list <- foreach (ind = seq_along(all_parents)) %dorng% {
+md_list = lapply(seq_along(all_parents), function(ind) {
     i_section = ind
     node = all_parents[ind]
     top_value_method = res_rh[[node]]@top_value_method
     partition_method = res_rh[[node]]@partition_method
+
+    tmpfile = tempfile(tmpdir = .ENV$TEMP_DIR)
     
-    tmpfile = tempfile(tmpdir = cola:::.ENV$TEMP_DIR)
-    
-    brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)
+    brew(file.path(TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)
     rmd = paste(readLines(tmpfile), collapse = "\n")
     file.remove(tmpfile)
 
@@ -395,8 +394,7 @@ md_list <- foreach (ind = seq_along(all_parents)) %dorng% {
     }
     dev.off()
     return(txt)
-}
-stopImplicitCluster()
+})
 
 for(i in seq_along(md_list)) {
     cat(md_list[[i]], "\n")

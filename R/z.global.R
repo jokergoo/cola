@@ -45,11 +45,9 @@ TEMPLATE_DIR = NULL
 
 # Only for testing
 if(identical(topenv(), .GlobalEnv)) {
-	if(Sys.info()["user"] == "jokergoo") {
-		TEMPLATE_DIR = "~/project/cola/inst/extdata"
-	} else {
-		TEMPLATE_DIR = "/desktop-home/guz/project/development/cola/inst/extdata"
-	}
+	if(Sys.info()["user"] == "guz") {
+		TEMPLATE_DIR = "~/project/development/cola/inst/extdata"
+	} 
 }
 
 .onLoad = function(...) {

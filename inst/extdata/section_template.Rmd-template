@@ -16,6 +16,7 @@ if(is_hc) {
         res = res_list[top_value_method, partition_method]
     }
 } 
+n_cores = 1
 -%>
 
 <% if(!single_report) { %>
@@ -116,7 +117,6 @@ message("  - collecting all plots (k = '<%=paste(all_k, collapse=', ')%>')", app
 ```{r <%=chunk_prefix%>-all-k, echo = FALSE}
 all_k = res@k
 ```
-
 
 ```{r <%=chunk_prefix%>-collect-plots, fig.width = <%=fs*length(all_k)%>, fig.height = <%=fs*4%>, results = "hide"}
 collect_plots(res)

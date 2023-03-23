@@ -14,7 +14,7 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 ```{r, echo = FALSE, message = NA}
 library(knitr)
 library(markdown)
-options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
+options(markdown.html.options = c(setdiff(op, c("+base64_images", "-base64_images", "+toc", "-toc")), "-base64_images", "-toc"))
 options(width = 100)
 options(digits = 3)
 opts_chunk$set(
@@ -346,7 +346,7 @@ knitr_insert_tabs('test-to-known-factors-from-consensus-partition-list')
 
 ## Results for each method
 
-```{r, results = "asis", echo = FALSE}
+```{r, results = "asis", echo = FALSE, message = NA}
 fs = min(c(3*length(res_list@top_value_method), 14))/length(res_list@top_value_method)
 is_hc = FALSE
 single_report = FALSE
@@ -355,18 +355,15 @@ n_section = n_top_value_method * n_partition_method
 i_section = 0
 comb = expand.grid(res_list@partition_method, res_list@top_value_method, stringsAsFactors = FALSE)[, 2:1]
 .e = environment()
-registerDoParallel(cores)
-md_list <- foreach (ind = seq_len(nrow(comb))) %dorng% {
+md_list = lapply(seq_len(nrow(comb)), function(ind) {
     i_section = ind
     top_value_method = comb[ind, 1]
     partition_method = comb[ind, 2]
     
-    tmpfile = tempfile(tmpdir = cola:::.ENV$TEMP_DIR)
-    
-    brew(file.path(cola:::TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)
+    tmpfile = tempfile(tmpdir = .ENV$TEMP_DIR)
+    brew(file.path(TEMPLATE_DIR, "section_template.Rmd-template"), tmpfile)
     rmd = paste(readLines(tmpfile), collapse = "\n")
     file.remove(tmpfile)
-
     ComplexHeatmap:::dev.null()
     txt = knit(text = rmd, quiet = TRUE, envir = .e)
     devlt = dev.list()
@@ -375,8 +372,7 @@ md_list <- foreach (ind = seq_len(nrow(comb))) %dorng% {
     }
     dev.off()
     return(txt)
-}
-stopImplicitCluster()
+})
 
 for(i in seq_along(md_list)) {
     cat(md_list[[i]], "\n")
