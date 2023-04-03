@@ -349,7 +349,7 @@ consensus_partition = function(data,
 		}
 
 		if(verbose && n_cores > 1) qqcat("@{prefix}  - @{partition_method} repeated for @{partition_repeat} times by @{sample_by}-sampling (p = @{p_sampling}) from top @{top_n[i]} rows (@{n_cores} cores).\n")
-
+		
 		registerDoParallel(cores)
 		lt <- foreach(j = seq_len(partition_repeat)) %dorng% {
 

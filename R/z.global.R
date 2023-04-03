@@ -36,8 +36,24 @@ cola_opt = setGlobalOptions(
 	group_diff = 0,
 	fdr_cutoff = 0.05,
 	help = TRUE,
-	color_set_1 = brewer_pal_set1_col,
-	color_set_2 = brewer_pal_set2_col,
+	color_set_1 = list(
+		.value = brewer_pal_set1_col,
+		.filter = function(x) {
+			if(is.null(names(x))) {
+				names(x) = seq_along(x)
+			}
+			x
+		}
+	),
+	color_set_2 = list(
+		.value = brewer_pal_set2_col,
+		.filter = function(x) {
+			if(is.null(names(x))) {
+				names(x) = seq_along(x)
+			}
+			x
+		}
+	),
 	message = TRUE
 )
 

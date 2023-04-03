@@ -1,3 +1,7 @@
+Changes in version 2.5.3
++ names are automatically added if `cola_opt$color_set_1` and `cola_opt$color_set_2`
+  are specific without names.
+
 Changes in version 2.5.1
 + In the rmarkdown, replace `message = FALSE` to `message = NA`.
 + use `%dorng%` for paralell computing
