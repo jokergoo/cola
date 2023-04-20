@@ -317,7 +317,7 @@ register_partition_methods = function(..., scale_method = c("z-score", "min-max"
 		m2 = m
 	}
 	for(i in seq_along(lt)) {
-		t = microbenchmark(foo <- lt[[i]](m2, 2), times = 1)
+		suppressWarnings(t <- microbenchmark(foo <- lt[[i]](m2, 2), times = 1))
 		attr(lt[[i]], "execution_time") = mean(t$time)
 	}
 
