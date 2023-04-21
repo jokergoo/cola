@@ -1,3 +1,6 @@
+Changes in version 2.5.4
++ adapt the code with markdown v1.6
+
 Changes in version 2.5.3
 + names are automatically added if `cola_opt$color_set_1` and `cola_opt$color_set_2`
   are specific without names.

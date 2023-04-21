@@ -10,8 +10,8 @@ Method dispatch page for \code{get_membership}.
 \code{get_membership} can be dispatched on following classes:
 
 \itemize{
-\item \code{\link{get_membership,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 \item \code{\link{get_membership,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
+\item \code{\link{get_membership,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
 }
 }
 \examples{

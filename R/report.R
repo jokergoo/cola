@@ -62,13 +62,17 @@ message('@{message}')
 )
 	}
 
+	knitr_text = qq(
+"
+@{knitr_text}
+")
+
 	# while(dev.cur() > 1) dev.off()
 
-	op1 = getOption("markdown.HTML.options")
 	op2 = getOption("width")
-	options(markdown.HTML.options = setdiff(op1, c("base64_images", "toc")), width = getOption("width"))
+	options(width = getOption("width"))
 	md = knit(text = knitr_text, quiet = TRUE, envir = parent.frame())
-	html = markdownToHTML(text = md, fragment.only = TRUE)
+	html = mark(text = md, options = c("-embed_resources", "-toc"))
 	# add hide_and_show
 	if(hide_and_show) {
 		html = qq("
@@ -88,7 +92,7 @@ $('#@{tab}-a').click(function(){
 		html = qq("<div id='@{tab}'>\n@{html}\n</div>\n")
 	}
 
-	options(markdown.HTML.options = op1, width = getOption("width"))
+	options(width = getOption("width"))
 	KNITR_TAB_ENV$header = c(KNITR_TAB_ENV$header, header)
 	KNITR_TAB_ENV$current_html = paste0(KNITR_TAB_ENV$current_html, html)
 	return(invisible(NULL))
@@ -311,15 +315,12 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	message("* generating R markdown file based on template report")
 	rmd_file = file.path(output_dir, gsub("html$", "Rmd", html_file[class]))
 	brew(report_template, output = rmd_file)
-	op = getOption("markdown.html.options")
-	options(markdown.html.options = c(setdiff(op, c("+base64_images", "-base64_images")), "-base64_images"))
 	md_file = gsub("Rmd$", "md", rmd_file)
 	owd = getwd()
 	setwd(output_dir)
 	message("* rendering R markdown file to html by knitr")
 	knit(rmd_file, md_file, quiet = TRUE)
-	markdownToHTML(md_file, file.path(output_dir, html_file[class]))
-	options(markdown.html.options = op)
+	mark(md_file, output = file.path(output_dir, html_file[class]), options = c("-embed_resources", "-toc"))
 	setwd(owd)
 
 	dir.create(file.path(output_dir, "js"), showWarnings = FALSE)
@@ -337,6 +338,7 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	## add favicon.ico line to the html file
 	html_file = file.path(output_dir, html_file[class])
 	lines = readLines(html_file)
+	lines = c("<html>", "<head>", "<title>cola Report</title>", "</head>", "<body>", lines, "</body>", "</html>")
 
 	## add name attribute to h2 and h3 tags
 	l = grepl("^\\s*<h(2|3)>(.*?)</h(2|3)>\\s*$", lines)
@@ -353,12 +355,12 @@ make_report = function(var_name, object, output_dir, title = "cola Report for Co
 	lines[ind] = paste0('<link rel="ICON" type="image/x-icon" href="favicon.ico" />\n', lines[ind])
 	
 	### add loading flag
-	ind = which(grepl("^<hr/>", lines[1:500]))[1]
+	ind = which(grepl("^<hr\\s*/>", lines[1:500]))[1]
 	lines[ind] = paste0("<p id='loadingflag' style='text-align:center;'>Document is loading... <img src='Ellipsis-4.2s-119px.gif' style='vertical-align:middle;' /></p>\n", lines[ind])
 
 	## add toc js at the end of the html
 	nl = length(lines)
-	ind = which(grepl("</html>", lines[(nl-10):nl])) + nl - 10 - 1
+	ind = which(grepl("</body>", lines[(nl-10):nl])) + nl - 10 - 1
 	lines[ind] = "
 <script src='js/jquery.tocify.js'></script>
 <div id='toc'></div>
@@ -418,7 +420,7 @@ $(window).on('load', function() {
   $('.frontmatter').hide()
 });
 </script>
-</html>
+</body>
 "
 	writeLines(lines, con = html_file)
 

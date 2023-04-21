@@ -14,7 +14,6 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 ```{r, echo = FALSE, message = NA}
 library(knitr)
 library(markdown)
-options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
 options(width = 100)
 options(digits = 3)
 opts_chunk$set(
@@ -157,7 +156,7 @@ stop_reason = sapply(stop_reason, function(x) {
 
 tb = cbind(node_id = paste0("Node", rownames(tb)), tb, stringsAsFactors = FALSE)
 
-tb$node_id[!tb$is_leaf] = qq("[Node@{tb$node[!tb$is_leaf]}](#Node@{tb$node[!tb$is_leaf]})", collapse = FALSE)
+tb$node_id[!tb$is_leaf] = qq("[Node@{tb$node[!tb$is_leaf]}](#node@{tb$node[!tb$is_leaf]})", collapse = FALSE)
 tb$node_id[tb$is_leaf] = qq("Node@{tb$node[tb$is_leaf]}-leaf", collapse = FALSE)
 tb$is_leaf = ifelse(tb$is_leaf, "\u2713", "")
 
@@ -412,3 +411,8 @@ sessionInfo()
 message("-----------------------------------------------------------------")
 ```
 
+<script type="text/javascript">
+$(function() {
+    $("#TOC > ul > li > a").remove();
+}); 
+</script>

@@ -14,7 +14,6 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 ```{r, echo = FALSE, message = NA}
 library(knitr)
 library(markdown)
-options(markdown.html.options = c(setdiff(op, c("+base64_images", "-base64_images", "+toc", "-toc")), "-base64_images", "-toc"))
 options(width = 100)
 options(digits = 3)
 opts_chunk$set(
@@ -125,7 +124,7 @@ suggest_best_k(res_list)
 
 ```{r, echo = FALSE}
 tb = suggest_best_k(res_list)
-rownames(tb) = qq("[@{rownames(tb)}](#@{gsub(':', '-', rownames(tb))})", collapse = FALSE)
+rownames(tb) = qq("[@{rownames(tb)}](#@{gsub(':', '-', tolower(rownames(tb)))})", collapse = FALSE)
 if(ncol(tb) == 5) {
     colnames(tb) = c("The best k", "1-PAC", "Mean silhouette", "Concordance", "")
 } else {
@@ -388,3 +387,10 @@ sessionInfo()
 ```{r, echo = FALSE, message = NA}
 message("-----------------------------------------------------------------")
 ```
+
+
+<script type="text/javascript">
+$(function() {
+    $("#TOC > ul > li > a").remove();
+}); 
+</script>

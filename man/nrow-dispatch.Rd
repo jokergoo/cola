@@ -11,8 +11,8 @@ Method dispatch page for \code{nrow}.
 
 \itemize{
 \item \code{\link{nrow,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
-\item \code{\link{nrow,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 \item \code{\link{nrow,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
+\item \code{\link{nrow,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
 }
 }
 \examples{

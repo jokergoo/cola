@@ -10,7 +10,7 @@ Register SOM partitioning method
 register_SOM()
 }
 \details{
-The SOM analysis is performed by \code{\link[kohonen]{som}}.
+The SOM analysis is performed by \code{\link[kohonen:supersom]{som}}.
 }
 \examples{
 # There is no example

@@ -14,7 +14,6 @@ css = paste(readLines(paste0(TEMPLATE_DIR, "/custom.css")), collapse = "\n") -%>
 ```{r, echo = FALSE, message = NA}
 library(knitr)
 library(markdown)
-options(markdown.HTML.options = setdiff(c(getOption("markdown.HTML.options")), "base64_images"))
 options(width = 100)
 options(digits = 3)
 opts_chunk$set(
@@ -103,7 +102,7 @@ has_known_anno = TRUE -%>
 ```{r, results = "asis", echo = FALSE}
 fs = min(c(3*1, 14))/1
 
-is_hcp = FALSE
+is_hc = FALSE
 node = NULL
 single_report = TRUE
 
@@ -139,3 +138,10 @@ sessionInfo()
 ```{r, echo = FALSE, message = NA}
 message("-----------------------------------------------------------------")
 ```
+
+
+<script type="text/javascript">
+$(function() {
+    $("#TOC > ul > li > a").remove();
+}); 
+</script>

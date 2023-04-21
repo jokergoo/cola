@@ -635,6 +635,27 @@ setMethod(f = "colnames",
 
 
 # == title
+# Get the original matrix
+#
+# == param
+# -object A `DownSamplingConsensusPartition-class` object.
+# -reduce Whether to return the reduced matrix where columns are randomly sampled.
+#
+# == value
+# A numeric matrix
+setMethod(f = "get_matrix",
+	signature = "DownSamplingConsensusPartition",
+	definition = function(object, reduce = FALSE) {
+
+	if(reduce) {
+		object@.env$data[, object@column_index, drop = FALSE]
+	} else {
+		object@.env$data[, object@full_column_index, drop = FALSE]
+	}
+})
+
+
+# == title
 # Dimension of the matrix
 #
 # == param

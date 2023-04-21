@@ -36,7 +36,7 @@ Child nodes:
 <% for(i in seq_along(cnode)) { -%>
     <% current_node = paste0("Node", cnode[i], ifelse(cnode_is_leaf[i], "-leaf", "")) -%>
     <% if(!cnode_is_leaf[i]) { -%>
-        [<%=current_node%>](#<%=current_node%>)
+        [<%=current_node%>](#<%=tolower(current_node)%>)
     <% } else {-%>
         <%=current_node%>
     <% } -%>
@@ -51,7 +51,7 @@ Child nodes:
 <% for(i in seq_along(cnode)) { -%>
     <% current_node = paste0("Node", cnode[i], ifelse(cnode_is_leaf[i], "-leaf", "")) -%>
     <% if(!cnode_is_leaf[i]) { -%>
-        [<%=current_node%>](#<%=current_node%>)
+        [<%=current_node%>](#<%=tolower(current_node)%>)
     <% } else {-%>
         <%=current_node%>
     <% } -%>

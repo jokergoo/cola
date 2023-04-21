@@ -11,8 +11,9 @@ Method dispatch page for \code{get_matrix}.
 
 \itemize{
 \item \code{\link{get_matrix,ConsensusPartition-method}}, \code{\link{ConsensusPartition-class}} class method
-\item \code{\link{get_matrix,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 \item \code{\link{get_matrix,ConsensusPartitionList-method}}, \code{\link{ConsensusPartitionList-class}} class method
+\item \code{\link{get_matrix,DownSamplingConsensusPartition-method}}, \code{\link{DownSamplingConsensusPartition-class}} class method
+\item \code{\link{get_matrix,HierarchicalPartition-method}}, \code{\link{HierarchicalPartition-class}} class method
 }
 }
 \examples{
