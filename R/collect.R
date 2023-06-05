@@ -78,6 +78,8 @@ setMethod(f = "collect_plots",
 		i = comb[ind, 1]
 		j = comb[ind, 2]
 
+		fun_name = fun_name
+
 		if(verbose) qqcat("* applying @{fun_name}() for @{top_value_method[i]}:@{partition_method[j]}.\n")
 	    res = object[top_value_method[i], partition_method[j]]
 
