@@ -66,15 +66,16 @@ setMethod(f = "collect_plots",
 		resolution = NA
 	}
 
-	if(!multicore_supported()) {
-		if(get_nc(cores) > 1 && verbose) qqcat("* `cores` is reset to 1 because multi-core is not supported on this OS.\n")
+	if(!multicore_supported() || TRUE) {
+		if(get_nc(cores) > 1 && verbose) qqcat("* `cores` is reset to 1 because multi-core is not supported for generating plots.\n")
 		cores = 1
 	}
 	
-	registerDoParallel(cores)
-
+	# param <- SnowParam(workers = cores, type = "SOCK")
+	# registerDoParallel(cores)
 	dev.null()
-	image <- foreach(ind = seq_len(nrow(comb))) %dorng% {
+	# image <- foreach(ind = seq_len(nrow(comb))) %dopar% {
+	image = lapply(seq_len(nrow(comb)), function(ind) {
 		i = comb[ind, 1]
 		j = comb[ind, 2]
 
@@ -113,8 +114,8 @@ setMethod(f = "collect_plots",
 			    }
 			}
 		}
-	}
-	stopImplicitCluster()
+	})
+	# stopImplicitCluster()
 	dev.off2()
 
 	if(any(sapply(image, inherits, "try-error"))) {
