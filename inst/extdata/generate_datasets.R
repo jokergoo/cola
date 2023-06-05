@@ -11,7 +11,7 @@ m = cbind(rbind(matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20),
               matrix(rnorm(20*20, mean = 0.5, sd = 0.5), nr = 20),
               matrix(rnorm(20*20, mean = 1,   sd = 0.5), nr = 20))
        ) + matrix(rnorm(60*60, sd = 0.5), nr = 60)
-cola_rl = run_all_consensus_partition_methods(data = m, cores = 6)
+cola_rl = run_all_consensus_partition_methods(data = m, top_n = 30, cores = 6)
 
 
 ############# golub_cola ##############
