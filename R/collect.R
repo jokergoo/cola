@@ -43,13 +43,13 @@ setMethod(f = "collect_plots",
 	verbose = TRUE, mc.cores = 1, cores = mc.cores, ...) {
 
 	nv = length(dev.list())
-	on.exit({
-		nv2 = length(dev.list())
-		while(nv2 > nv & nv2 > 1) {
-			dev.off2()
-			nv2 = length(dev.list())
-		}
-	})
+	# on.exit({
+	# 	nv2 = length(dev.list())
+	# 	while(nv2 > nv & nv2 > 1) {
+	# 		dev.off2()
+	# 		nv2 = length(dev.list())
+	# 	}
+	# })
 
 	fun_name = deparse(substitute(fun))
 	
@@ -200,13 +200,13 @@ setMethod(f = "collect_plots",
 	definition = function(object, verbose = TRUE) {
 
 	nv = length(dev.list())
-	on.exit({
-		nv2 = length(dev.list())
-		while(nv2 > nv && nv2 > 1) {
-			dev.off2()
-			nv2 = length(dev.list())
-		}
-	})
+	# on.exit({
+	# 	nv2 = length(dev.list())
+	# 	while(nv2 > nv && nv2 > 1) {
+	# 		dev.off2()
+	# 		nv2 = length(dev.list())
+	# 	}
+	# })
 
 	qqcat = function(...) {
 		message(qq(...))
