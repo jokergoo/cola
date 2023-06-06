@@ -73,7 +73,7 @@ setMethod(f = "collect_plots",
 	
 	# param <- SnowParam(workers = cores, type = "SOCK")
 	# registerDoParallel(cores)
-	dev.null()
+	# dev.null()
 	# image <- foreach(ind = seq_len(nrow(comb))) %dopar% {
 	image = lapply(seq_len(nrow(comb)), function(ind) {
 		i = comb[ind, 1]
@@ -116,7 +116,7 @@ setMethod(f = "collect_plots",
 		}
 	})
 	# stopImplicitCluster()
-	dev.off2()
+	# dev.off2()
 
 	if(any(sapply(image, inherits, "try-error"))) {
 		print(image)
