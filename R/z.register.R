@@ -107,10 +107,10 @@ all_top_value_methods = function() {
 }
 
 register_top_value_methods(
-	SD = rowSds,
+	SD = matrixStats::rowSds,
 	CV = function(mat) {
 		s = rowMeans(mat)
-		rowSds(mat)/(s + quantile(s, 0.1))
+		matrixStats::rowSds(mat)/(s + quantile(s, 0.1))
 	},
 	MAD = matrixStats::rowMads,
 	ATC = ATC,
