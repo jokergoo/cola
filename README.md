@@ -6,20 +6,14 @@
 [ ![bioc](http://bioconductor.org//shields/lastcommit/devel/bioc/cola.svg) ](http://bioconductor.org/checkResults/devel/bioc-LATEST/cola/)
 
 
-## Features
-
-1. It modularizes the consensus clustering processes that various methods can
-   be easily integrated in different steps of the analysis.
-2. It provides rich visualizations for intepreting the results.
-3. It allows running multiple methods at the same time and provides
-   functionalities to compare results in a straightforward way.
-4. It provides a new method to extract features which are more efficient to
-   separate subgroups.
-5. It generates detailed HTML reports for the complete analysis.
 
 ## Citation
 
 Zuguang Gu, et al., cola: an R/Bioconductor package for consensus partitioning through a general framework, Nucleic Acids Research, 2021. https://doi.org/10.1093/nar/gkaa1146
+
+Zuguang Gu, et al., Improve consensus partitioning via a hierarchical procedure. Briefings in bioinformatics 2022. https://doi.org/10.1093/bib/bbac048 
+
+
 
 ## Install
 
@@ -38,30 +32,26 @@ library(devtools)
 install_github("jokergoo/cola")
 ```
 
-## Links
+## Methods
 
-Examples for *cola* analysis can be found at https://jokergoo.github.io/cola_examples/ and https://jokergoo.github.io/cola_collection/.
+The **cola** supports two types of consensus partitioning.
 
-Online documentation is at https://jokergoo.github.io/cola.
+### Standard consensus partitioning
 
-Supplementary for the *cola* manuscript is at https://github.com/jokergoo/cola_supplementary and the scripts are at https://github.com/jokergoo/cola_manuscript.
+#### Features
 
-## Vignettes
+1. It modularizes the consensus clustering processes that various methods can
+   be easily integrated in different steps of the analysis.
+2. It provides rich visualizations for intepreting the results.
+3. It allows running multiple methods at the same time and provides
+   functionalities to compare results in a straightforward way.
+4. It provides a new method to extract features which are more efficient to
+   separate subgroups.
+5. It generates detailed HTML reports for the complete analysis.
 
-There are the following vignettes:
 
-<ol style="list-style-type: decimal">
-<li><a href="https://jokergoo.github.io/cola_vignettes/cola_quick.html">A Quick Start of Using cola Package</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/cola.html">A Framework for Consensus Partitioning</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/functional_enrichment.html">Automatic Functional Enrichment on Signature genes</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/predict.html">Predict Classes for New Samples</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/work_with_big_datasets.html">Work with Big Datasets</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/compare_partitions.html">Compare Partitions</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/ATC_methods.html">ATC - More Forms</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/hierarchical.html">Hierarchical consensus partitioning</a></li>
-</ol>
 
-## Consensus Partitioning
+#### Workflow
 
 <img width="700" src="https://user-images.githubusercontent.com/449218/52628723-86af3400-2eb8-11e9-968d-b7f47a408818.png" />
 
@@ -89,7 +79,7 @@ The steps of consensus partitioning is:
 8. If rows in the matrix can be associated to genes, downstream analysis such
    as function enrichment analysis can be performed.
 
-### Usage
+#### Usage
 
 Three lines of code to perfrom *cola* analysis:
 
@@ -103,18 +93,53 @@ rl = run_all_consensus_partition_methods(
 cola_report(rl, output_dir = ...)
 ```
 
-### Plots
+#### Plots
 
 Following plots compare consensus heatmaps with k = 4 under all combinations of methods.
 
 <img src="https://user-images.githubusercontent.com/449218/52631118-3a66f280-2ebe-11e9-8dea-0172d9beab91.png" />
 
 
+### Hierarchical consensus partitioning
+
+
+#### Features
+
+1. It can detect subgroups which show major differences and also moderate differences.
+2. It can detect subgroups with large sizes as well as with tiny sizes.
+3. It generates detailed HTML reports for the complete analysis.
+
+
+#### Hierarchical Consensus Partitioning
+
+
+<img src="https://user-images.githubusercontent.com/449218/126491482-31a9496f-cc4d-4c4f-80b7-7b752d8d8d06.png" width="400" />
+
+
+
+#### Usage
+
+Three lines of code to perfrom hierarchical consensus partitioning analysis:
+
+```r
+mat = adjust_matrix(mat) # optional
+rh = hierarchical_partition(mat, mc.cores = ...)
+cola_report(rh, output_dir = ...)
+```
+
+#### Plots
+
+Following figure shows the hierarchy of the subgroups.
+
+<img src="https://user-images.githubusercontent.com/449218/100014572-d7b2c280-2dd6-11eb-9265-a84d324122f2.png" width="300" />
+
+Following figure shows the signature genes.
+
+<img src="https://user-images.githubusercontent.com/449218/100014657-f913ae80-2dd6-11eb-9bf7-53f733e9f8f0.png" width="600" />
+
+
+
 ## License
 
 MIT @ Zuguang Gu
-
-#### Acknowledgement
-
-The cola icon in logo is made by <a href="https://www.flaticon.com/authors/photo3idea-studio" title="photo3idea_studio">photo3idea_studio</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>.
 

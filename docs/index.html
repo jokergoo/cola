@@ -31,6 +31,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -43,20 +45,69 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">cola</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.9.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.9.1</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
      
+    <span class="caret"></span>
   </a>
-</li>
-<li>
-  <a href="articles/cola.html">Get started</a>
+  <ul class="dropdown-menu" role="menu">
+<li class="dropdown-header">Standard consensus partitioning</li>
+    <li>
+      <a href="articles/cola_quick.html">A Quick Start of Using cola Package</a>
+    </li>
+    <li>
+      <a href="articles/cola_general.html">A Framework for Consensus Partitioning</a>
+    </li>
+    <li>
+      <a href="articles/functional_enrichment.html">Automatic Functional Enrichment on Signature genes</a>
+    </li>
+    <li>
+      <a href="articles/predict.html">Predict Classes for New Samples</a>
+    </li>
+    <li>
+      <a href="articles/work_with_big_datasets.html">Work with Big Datasets</a>
+    </li>
+    <li>
+      <a href="articles/compare_partitions.html">Compare Partitions</a>
+    </li>
+    <li>
+      <a href="articles/ATC_methods.html">ATC - More Forms</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">Hierarchical partitioning</li>
+    <li>
+      <a href="articles/hierarchical.html">Hierarchical consensus partitioning</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">Other examples</li>
+    <li>
+      <a href="articles/AML.html">Re-analyze an AML proteomics dataset</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">On public datasets</li>
+    <li>
+      <a href="articles/examples.html">Applications on public datasets</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">Supplementary files</li>
+    <li>
+      <a href="https://jokergoo.github.io/cola_supplementary/" class="external-link">Supplementary files for cola NAR paper</a>
+    </li>
+    <li>
+      <a href="https://cola-rh.github.io/supplementary/" class="external-link">Supplementary files for cola BIB paper</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="reference/index.html">Reference</a>
@@ -64,7 +115,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/jokergoo/cola/">
+  <a href="https://github.com/jokergoo/cola/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -81,15 +132,40 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="cola-a-general-framework-for-consensus-partitioning-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#cola-a-general-framework-for-consensus-partitioning-" class="anchor"></a>cola: A General Framework for Consensus Partitioning <img src="https://user-images.githubusercontent.com/449218/54158555-03e3af80-444b-11e9-9773-070823101263.png" width="250" align="right" style="border:4px solid black;">
+<div class="section level1">
+<div class="page-header"><h1 id="cola-a-general-framework-for-consensus-partitioning-">cola: A General Framework for Consensus Partitioning <img src="https://user-images.githubusercontent.com/449218/54158555-03e3af80-444b-11e9-9773-070823101263.png" width="250" align="right" style="border:4px solid black;"><a class="anchor" aria-label="anchor" href="#cola-a-general-framework-for-consensus-partitioning-"></a>
 </h1></div>
-
-<div id="features" class="section level2">
-<h2 class="hasAnchor">
-<a href="#features" class="anchor"></a>Features</h2>
-<ol>
+<p><a href="https://github.com/jokergoo/cola/actions" class="external-link"><img src="https://github.com/jokergoo/cola/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="http://bioconductor.org/packages/stats/bioc/cola" class="external-link"><img src="https://bioconductor.org/shields/downloads/devel/cola.svg" alt="bioc"></a> <a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/cola/" class="external-link"><img src="http://bioconductor.org//shields/lastcommit/devel/bioc/cola.svg" alt="bioc"></a></p>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<p>Zuguang Gu, et al., cola: an R/Bioconductor package for consensus partitioning through a general framework, Nucleic Acids Research, 2021. <a href="https://doi.org/10.1093/nar/gkaa1146" class="external-link uri">https://doi.org/10.1093/nar/gkaa1146</a></p>
+<p>Zuguang Gu, et al., Improve consensus partitioning via a hierarchical procedure. Briefings in bioinformatics 2022. <a href="https://doi.org/10.1093/bib/bbac048" class="external-link uri">https://doi.org/10.1093/bib/bbac048</a></p>
+</div>
+<div class="section level2">
+<h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
+</h2>
+<p><em>cola</em> is available on <a href="http://bioconductor.org/packages/devel/bioc/html/cola.html" class="external-link">Bioconductor</a>, you can install it by:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
+<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"cola"</span><span class="op">)</span></span></code></pre></div>
+<p>The latest version can be installed directly from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jokergoo/cola"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a>
+</h2>
+<p>The <strong>cola</strong> supports two types of consensus partitioning.</p>
+<div class="section level3">
+<h3 id="standard-consensus-partitioning">Standard consensus partitioning<a class="anchor" aria-label="anchor" href="#standard-consensus-partitioning"></a>
+</h3>
+<div class="section level4">
+<h4 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
+</h4>
+<ol style="list-style-type: decimal">
 <li>It modularizes the consensus clustering processes that various methods can be easily integrated in different steps of the analysis.</li>
 <li>It provides rich visualizations for intepreting the results.</li>
 <li>It allows running multiple methods at the same time and provides functionalities to compare results in a straightforward way.</li>
@@ -97,52 +173,14 @@
 <li>It generates detailed HTML reports for the complete analysis.</li>
 </ol>
 </div>
-<div id="citation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#citation" class="anchor"></a>Citation</h2>
-<p>Zuguang Gu, et al., cola: an R/Bioconductor package for consensus partitioning through a general framework, Nucleic Acids Research, 2021. <a href="https://doi.org/10.1093/nar/gkaa1146" class="uri">https://doi.org/10.1093/nar/gkaa1146</a></p>
-</div>
-<div id="install" class="section level2">
-<h2 class="hasAnchor">
-<a href="#install" class="anchor"></a>Install</h2>
-<p><em>cola</em> is available on <a href="http://bioconductor.org/packages/devel/bioc/html/cola.html">Bioconductor</a>, you can install it by:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"cola"</span><span class="op">)</span></code></pre></div>
-<p>The latest version can be installed directly from GitHub:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/">devtools</a></span><span class="op">)</span>
-<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"jokergoo/cola"</span><span class="op">)</span></code></pre></div>
-</div>
-<div id="links" class="section level2">
-<h2 class="hasAnchor">
-<a href="#links" class="anchor"></a>Links</h2>
-<p>Examples for <em>cola</em> analysis can be found at <a href="https://jokergoo.github.io/cola_examples/" class="uri">https://jokergoo.github.io/cola_examples/</a> and <a href="https://jokergoo.github.io/cola_collection/" class="uri">https://jokergoo.github.io/cola_collection/</a>.</p>
-<p>Online documentation is at <a href="https://jokergoo.github.io/cola" class="uri">https://jokergoo.github.io/cola</a>.</p>
-<p>Supplementary for the <em>cola</em> manuscript is at <a href="https://github.com/jokergoo/cola_supplementary" class="uri">https://github.com/jokergoo/cola_supplementary</a> and the scripts are at <a href="https://github.com/jokergoo/cola_manuscript" class="uri">https://github.com/jokergoo/cola_manuscript</a>.</p>
-</div>
-<div id="vignettes" class="section level2">
-<h2 class="hasAnchor">
-<a href="#vignettes" class="anchor"></a>Vignettes</h2>
-<p>There are the following vignettes:</p>
-<ol>
-<li><a href="https://jokergoo.github.io/cola_vignettes/cola_quick.html">A Quick Start of Using cola Package</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/cola.html">A Framework for Consensus Partitioning</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/functional_enrichment.html">Automatic Functional Enrichment on Signature genes</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/predict.html">Predict Classes for New Samples</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/work_with_big_datasets.html">Work with Big Datasets</a></li>
-<li><a href="https://jokergoo.github.io/cola_vignettes/hierarchical.html">Hierarchical consensus partitioning</a></li>
-</ol>
-</div>
-<div id="consensus-partitioning" class="section level2">
-<h2 class="hasAnchor">
-<a href="#consensus-partitioning" class="anchor"></a>Consensus Partitioning</h2>
+<div class="section level4">
+<h4 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
+</h4>
 <p><img width="700" src="https://user-images.githubusercontent.com/449218/52628723-86af3400-2eb8-11e9-968d-b7f47a408818.png"></p>
 <p>The steps of consensus partitioning is:</p>
-<ol>
+<ol style="list-style-type: decimal">
 <li>Clean the input matrix. The processing are: adjusting outliers, imputing missing values and removing rows with very small variance. This step is optional.</li>
-<li>Extract subset of rows with highest scores. Here “scores” are calculated by a certain method. For gene expression analysis or methylation data analysis, <span class="math inline"><em>n</em></span> rows with highest variance are used in most cases, where the “method”, or let’s call it <strong>“the top-value method”</strong> is the variance (by <code><a href="https://rdrr.io/r/stats/cor.html">var()</a></code> or <code><a href="https://rdrr.io/r/stats/sd.html">sd()</a></code>). Note the choice of “the top-value method” can be general. It can be e.g. MAD (median absolute deviation) or any user-defined method.</li>
+<li>Extract subset of rows with highest scores. Here “scores” are calculated by a certain method. For gene expression analysis or methylation data analysis, <span class="math inline"><em>n</em></span> rows with highest variance are used in most cases, where the “method”, or let’s call it <strong>“the top-value method”</strong> is the variance (by <code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var()</a></code> or <code><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd()</a></code>). Note the choice of “the top-value method” can be general. It can be e.g. MAD (median absolute deviation) or any user-defined method.</li>
 <li>Scale the rows in the sub-matrix (e.g. gene expression) or not (e.g. methylation data). This step is optional.</li>
 <li>Randomly sample a subset of rows from the sub-matrix with probability <span class="math inline"><em>p</em></span> and perform partition on the columns of the matrix by a certain partition method, with trying different numbers of subgroups.</li>
 <li>Repeat step 4 several times and collect all the partitions.</li>
@@ -150,88 +188,118 @@
 <li>Apply statistical tests to find rows that show significant difference between the predicted subgroups. E.g. to extract subgroup specific genes.</li>
 <li>If rows in the matrix can be associated to genes, downstream analysis such as function enrichment analysis can be performed.</li>
 </ol>
-<div id="usage" class="section level3">
-<h3 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h3>
+</div>
+<div class="section level4">
+<h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h4>
 <p>Three lines of code to perfrom <em>cola</em> analysis:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mat</span> <span class="op">=</span> <span class="fu"><a href="reference/adjust_matrix.html">adjust_matrix</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span> <span class="co"># optional</span>
-<span class="va">rl</span> <span class="op">=</span> <span class="fu"><a href="reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods</a></span><span class="op">(</span>
-    <span class="va">mat</span>, 
-    top_value_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SD"</span>, <span class="st">"MAD"</span>, <span class="va">...</span><span class="op">)</span>,
-    partition_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"hclust"</span>, <span class="st">"kmeans"</span>, <span class="va">...</span><span class="op">)</span>,
-    cores <span class="op">=</span> <span class="va">...</span><span class="op">)</span>
-<span class="fu"><a href="reference/cola_report-dispatch.html">cola_report</a></span><span class="op">(</span><span class="va">rl</span>, output_dir <span class="op">=</span> <span class="va">...</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">mat</span> <span class="op">=</span> <span class="fu"><a href="reference/adjust_matrix.html">adjust_matrix</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span> <span class="co"># optional</span></span>
+<span><span class="va">rl</span> <span class="op">=</span> <span class="fu"><a href="reference/run_all_consensus_partition_methods.html">run_all_consensus_partition_methods</a></span><span class="op">(</span></span>
+<span>    <span class="va">mat</span>, </span>
+<span>    top_value_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SD"</span>, <span class="st">"MAD"</span>, <span class="va">...</span><span class="op">)</span>,</span>
+<span>    partition_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hclust"</span>, <span class="st">"kmeans"</span>, <span class="va">...</span><span class="op">)</span>,</span>
+<span>    cores <span class="op">=</span> <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/cola_report-dispatch.html">cola_report</a></span><span class="op">(</span><span class="va">rl</span>, output_dir <span class="op">=</span> <span class="va">...</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="plots" class="section level3">
-<h3 class="hasAnchor">
-<a href="#plots" class="anchor"></a>Plots</h3>
+<div class="section level4">
+<h4 id="plots">Plots<a class="anchor" aria-label="anchor" href="#plots"></a>
+</h4>
 <p>Following plots compare consensus heatmaps with k = 4 under all combinations of methods.</p>
 <p><img src="https://user-images.githubusercontent.com/449218/52631118-3a66f280-2ebe-11e9-8dea-0172d9beab91.png"></p>
 </div>
 </div>
-<div id="license" class="section level2">
-<h2 class="hasAnchor">
-<a href="#license" class="anchor"></a>License</h2>
-<p>MIT @ Zuguang Gu</p>
-<div id="acknowledgement" class="section level4">
-<h4 class="hasAnchor">
-<a href="#acknowledgement" class="anchor"></a>Acknowledgement</h4>
-<p>The cola icon in logo is made by <a href="https://www.flaticon.com/authors/photo3idea-studio" title="photo3idea_studio">photo3idea_studio</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>.</p>
+<div class="section level3">
+<h3 id="hierarchical-consensus-partitioning">Hierarchical consensus partitioning<a class="anchor" aria-label="anchor" href="#hierarchical-consensus-partitioning"></a>
+</h3>
+<div class="section level4">
+<h4 id="features-1">Features<a class="anchor" aria-label="anchor" href="#features-1"></a>
+</h4>
+<ol style="list-style-type: decimal">
+<li>It can detect subgroups which show major differences and also moderate differences.</li>
+<li>It can detect subgroups with large sizes as well as with tiny sizes.</li>
+<li>It generates detailed HTML reports for the complete analysis.</li>
+</ol>
 </div>
+<div class="section level4">
+<h4 id="hierarchical-consensus-partitioning-1">Hierarchical Consensus Partitioning<a class="anchor" aria-label="anchor" href="#hierarchical-consensus-partitioning-1"></a>
+</h4>
+<p><img src="https://user-images.githubusercontent.com/449218/126491482-31a9496f-cc4d-4c4f-80b7-7b752d8d8d06.png" width="400"></p>
+</div>
+<div class="section level4">
+<h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a>
+</h4>
+<p>Three lines of code to perfrom hierarchical consensus partitioning analysis:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mat</span> <span class="op">=</span> <span class="fu"><a href="reference/adjust_matrix.html">adjust_matrix</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span> <span class="co"># optional</span></span>
+<span><span class="va">rh</span> <span class="op">=</span> <span class="fu"><a href="reference/hierarchical_partition.html">hierarchical_partition</a></span><span class="op">(</span><span class="va">mat</span>, mc.cores <span class="op">=</span> <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/cola_report-dispatch.html">cola_report</a></span><span class="op">(</span><span class="va">rh</span>, output_dir <span class="op">=</span> <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="plots-1">Plots<a class="anchor" aria-label="anchor" href="#plots-1"></a>
+</h4>
+<p>Following figure shows the hierarchy of the subgroups.</p>
+<p><img src="https://user-images.githubusercontent.com/449218/100014572-d7b2c280-2dd6-11eb-9265-a84d324122f2.png" width="300"></p>
+<p>Following figure shows the signature genes.</p>
+<p><img src="https://user-images.githubusercontent.com/449218/100014657-f913ae80-2dd6-11eb-9bf7-53f733e9f8f0.png" width="600"></p>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>MIT @ Zuguang Gu</p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from BIOC at <br><a href="https://www.bioconductor.org/packages/cola">https://​www.bioconductor.org/​packages/​cola</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/jokergoo/cola/">https://​github.com/​jokergoo/​cola/​</a>
-</li>
-</ul>
-</div>
-<div class="license">
-<h2>License</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
-</ul>
-</div>
-<div class="citation">
-<h2>Citation</h2>
-<ul class="list-unstyled">
-<li><a href="authors.html">Citing cola</a></li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>Zuguang Gu <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-7395-8709" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="https://www.bioconductor.org/packages/cola" class="external-link">View on Bioconductor</a></li>
+<li><a href="https://github.com/jokergoo/cola/" class="external-link">Browse source code</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="license">
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/jokergoo/cola/actions"><img src="https://github.com/jokergoo/cola/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="http://bioconductor.org/packages/stats/bioc/cola"><img src="https://bioconductor.org/shields/downloads/devel/cola.svg" alt="bioc"></a></li>
-<li><a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/cola/"><img src="http://bioconductor.org//shields/lastcommit/devel/bioc/cola.svg" alt="bioc"></a></li>
+<li>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+</li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing cola</a></li>
+</ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Zuguang Gu <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-7395-8709" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+</ul>
+</div>
+
+
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Zuguang Gu.</p>
+  <p></p>
+<p>Developed by Zuguang Gu.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -240,5 +308,6 @@
   
 
 
-  </body>
+  <style>nav[data-toggle='toc'] .nav .nav {display: block;}</style>
+</body>
 </html>

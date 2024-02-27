@@ -1,0 +1,310 @@
+---
+title: "Re-analyze an AML proteomics dataset"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: rmarkdown::html_vignette
+---
+
+```{r, echo = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    warning = FALSE,
+    fig.align = "center"
+)
+```
+
+I recently came across a paper entitled ["The proteogenomic subtypes of acute myeloid
+leukemia"](https://www.sciencedirect.com/science/article/pii/S1535610822000587?via%3Dihub)
+published on _Cancer Cell_, which performed subtype classifications on acute
+myeloid leukemia (AML) with the proteomics data. In the paper, the classification was performed
+by hierarchical clustering on the distance matrix of the proteomics dataset.
+
+The motivations for me to reanalyze this dataset are the following two:
+
+1. I have never analyzed proteomics data, thus I want to see how the data looks like;
+2. I have never applied [**cola**](http://bioconductor.org/packages/release/bioc/html/cola.html) package on proteomics datasets. I want to see its performance and whether it can generate biological meaningful results.
+
+First the data (the Excel sheet, `Data S1 Discovery Cohort.xlsx`) is from the [Supplementary Data S1](https://www.sciencedirect.com/science/article/pii/S1535610822000587?dgcid=coauthor#mmc7) of the paper.
+
+
+I first read the clinical annotation data. There are quite a lot of columns and I don't really need all of them.
+
+```{r}
+library(readxl)
+anno = read_xlsx("~/Downloads/Data S1 Discovery Cohort.xlsx", sheet = 2)
+anno = as.data.frame(anno)
+rownames(anno) = anno[, 1] # the first column is sample id
+anno = anno[, -1]
+head(anno)
+```
+
+Next I read the mutation data and covert it into a matrix where rows are genes and columns are samples. I also
+format the gene symbols that if there are mutiple genes annotated for a single mutation, only the 
+first gene symbol is used.
+
+```{r}
+mut = read_xlsx("~/Downloads/Data S1 Discovery Cohort.xlsx", sheet = 3)
+mut = as.data.frame(mut)
+mut[, "Gene"] = gsub(",.*$", "", mut[, "Gene"])
+
+library(reshape2)
+f = function(x) paste(unique(x), collapse = ";")
+mut = acast(mut, Gene ~ Pat_ID, f, value.var = "Type")
+mut[1:5, 1:5]
+```
+
+Next I read the proteomics data matrix. **Note here I use the matrix where
+missing values are all imputed.** In the proteomics data matrix, rows actually 
+correspond to proteins. For the ease of discussion, I always write "genes" to describe rows of the proteomics data matrix.
+
+
+```{r}
+mat = read_xlsx("~/Downloads/Data S1 Discovery Cohort.xlsx", sheet = 6)
+mat = mat[-1, ]
+gene = unname(unlist(mat[, "PG.Genes"]))
+mat = mat[, 1:177]
+cn = colnames(mat)
+mat = as.numeric(as.matrix(mat))
+dim(mat) = c(length(gene), 177)
+colnames(mat) = cn
+
+l = is.na(gene)
+gene = gene[!l]
+mat = mat[!l, ]
+```
+
+Similar as the mutation matrix, I also performed cleaning on gene symbols.
+
+```{r}
+gene = gsub("^;", "", gene)
+gene = gsub(";.*$", "", gene)
+```
+
+There are some genes wrongly formatted to dates in Excel. Here I convert them back;
+
+```{r}
+grep("^\\d+-", gene, value = TRUE)
+
+gene = gsub("^(\\d+)-Mar$", "MAR\\1", gene)
+gene = gsub("^(\\d+)-Sep$", "SEP\\1", gene)
+```
+
+Now I can check whether all genes are unique:
+
+```{r}
+any(duplicated(gene))
+```
+
+Since now all genes are unique, I can assign them as row names of the matrix.
+
+```{r}
+rownames(mat) = gene
+```
+
+Next I adjust the order of the annotation table and mutation matrix to make them consistent to the proteomics data matrix.
+
+```{r}
+anno = anno[colnames(mat), ]
+mut2 = matrix("", nrow = nrow(mut), ncol = ncol(mat))
+rownames(mut2) = rownames(mut)
+colnames(mut2) = colnames(mat)
+mut2[rownames(mut), colnames(mut)] = mut
+
+dim(anno)
+dim(mut2)
+dim(mat)
+
+identical(rownames(anno), colnames(mat))
+identical(colnames(mut2), colnames(mat))
+```
+
+In the paper, the subtype classification was based on hierarchical clustering on the distance matrix of samples. Here I perform the subtype
+classification by consensus partitioning, with the **cola** package.
+
+In the following code, _ATC_ is used to extract top features and _skmeans_ is used for partitioning.
+
+```{r}
+library(cola)
+set.seed(12345)
+mat = adjust_matrix(mat) # simply to remove outliers if there is any
+res = consensus_partition(mat, top_value_method = "ATC", partition_method = "skmeans", verbose = FALSE)
+```
+
+`collect_plots()` generates a lot of plots that help to decide which number of groups gives "the best partition".
+
+```{r, fig.width = 8, fig.height = 8}
+collect_plots(res, verbose = FALSE)
+```
+
+`collect_stats()` applies several quantitative measures for deciding the best k.
+
+```{r, fig.width = 8, fig.height = 8}
+collect_stats(res)
+```
+
+All the plots show 4 is the optimized number of subgroups.
+
+```{r}
+best_k = 4
+```
+
+The subtype labels are saved in the variable `cl`. And the size of each subgroup are:
+
+```{r}
+cl = get_classes(res, k = best_k)[, 1]
+table(cl)
+```
+
+Next I make the signature heatmap which contains genes showing significantly difference between subgroups. 
+The object `tb` contains the results of the signature analysis.
+
+```{r, fig.width = 7, fig.height = 7}
+tb = get_signatures(res, k = best_k, verbose = FALSE)
+head(tb)
+```
+
+
+Next I make an integrative visualization that contains subgroup classification,
+annotations, signatures and mutations. Note in the following plot, columns always
+correspond to the same samples in the heatmap and in the oncoprint.
+
+```{r, fig.height = 18, fig.width = 14, out.width = "100%"}
+m_sig = mat[tb$which_row, ]
+m_sig = t(scale(t(m_sig)))
+
+library(ComplexHeatmap)
+library(circlize)
+Heatmap(m_sig, col = colorRamp2(c(-2, 0, 2), c("green", "white", "red")),
+    top_annotation = HeatmapAnnotation(df = anno[, c("NPM1", "FLT3", "ELN2017", "FAB")],
+        col = list(NPM1 = c("WT" = "#EEEEEE", "Mut" = "pink"),
+                   FLT3 = c("WT" = "#EEEEEE", "ITD" = "brown", "TKD" = "green"),
+                   ELN2017 = c("Intermediate" = "yellow", "Favorable" = "blue", "Adverse" = "red"))
+    ),
+    row_split = tb$km, column_split = cl, show_row_names = FALSE, show_column_names = FALSE,
+    cluster_row_slices = FALSE, cluster_column_slices = FALSE,
+    show_row_dend = FALSE, show_column_dend = FALSE
+) %v%
+oncoPrint(mut2, alter_fun = list(
+    "background" = function(x, y, w, h) 
+        grid.rect(x, y, w - unit(2, "pt"), h - unit(2, "pt"), gp = gpar(fill = "#CCCCCC", col = NA)),
+    "Deletion" = function(x, y, w, h) 
+        grid.rect(x, y, w - unit(2, "pt"), h - unit(2, "pt"), gp = gpar(fill = "orange", col = NA)),
+    "Insertion" = function(x, y, w, h) 
+        grid.rect(x, y, w - unit(2, "pt"), h - unit(2, "pt"), gp = gpar(fill = "red", col = NA)),
+    "MNV" = function(x, y, w, h) 
+        grid.rect(x, y, w - unit(2, "pt"), h - unit(2, "pt"), gp = gpar(fill = "darkgreen", col = NA)),
+    "Replacement" = function(x, y, w, h) 
+        grid.rect(x, y, w - unit(2, "pt"), h - unit(2, "pt"), gp = gpar(fill = "pink", col = NA)),
+    "SNV" = function(x, y, w, h) 
+        grid.rect(x, y, w  - unit(2, "pt"), h*0.33, gp = gpar(fill = "blue", col = NA))
+    ), col = c("Deletion" = "orange", "Insertion" = "red", "MNV" = "darkgreen", "Replacement" = "pink", "SNV" = "blue"),
+    height = unit(24, "cm")
+)
+```
+
+I use `test_between_factors()` to check the correlation between cola subgroups
+and groups in the annotation table `anno`. If the annotation values are numeric,
+one-way ANOVA is used and if the annotation values are categorical, chi-square test
+is used. In the following result, values are p-values from the corresponding tests.
+
+```{r}
+anno2 = anno[, c("Sex",
+                 "Age at Diagnosis [Years]",
+                 "Peripheral Blasts [%]",
+                 "Bone marrow Blasts [%]",
+                 "Precursor",
+                 "NPM1",
+                 "FLT3",
+                 "ELN2017",
+                 "Day 15 bone marrow blasts",
+                 "CR1",
+                 "Allogeneic HSCT")]
+test_between_factors(anno2, as.character(cl))
+```
+
+The tests show annotations of "Peripheral Blasts [%]", "Bone marrow Blasts [%]" and
+"Allogeneic HSCT" have significant relations to the cola subgroup classification.
+
+Next chunk of code visualizes how the different annotations distribute in the cola subgroups.
+Boxplots are used when the annotation values are numeric and barplots are used when the annotation
+values are categorical.
+
+
+```{r, fig.width = 10, fig.height = 12}
+par(mfrow = c(4, 3))
+for(i in seq_len(ncol(anno2))) {
+    if(is.numeric(anno2[[i]])) {
+        boxplot(anno2[[i]] ~ cl, xlab = "cola group", ylab = colnames(anno2)[i], main = colnames(anno2)[i])
+    } else {
+        tbv = table(anno2[[i]], cl)
+        level = rownames(tbv)
+        barplot(table(anno2[[i]], cl), xlab = "cola group", ylab = colnames(anno2)[i],
+            col = 1+ seq_along(level), main = colnames(anno2)[i])
+        legend("topright", pch = 15, legend = level, col = 1+ seq_along(level))
+    }
+}
+```
+
+In the annotation table, there is also the survival data, thus, I can check 
+the survival curves in the four cola subgroups.
+
+```{r, fig.width = 6, fig.height = 6}
+anno$cola = cl  # append `cl` to the annotation table
+library("survival")
+library("survminer")
+fit = survfit(Surv(`OS [months]`, `Death Event`) ~ cola, data = anno)
+ggsurvplot(fit)
+```
+
+Next I check the pairwise survival difference. Values in the results are p-values. We can see cola group 1
+and group 4 show the most significant survival difference.
+
+```{r}
+pairwise_survdiff(Surv(`OS [months]`, `Death Event`) ~ cola, data = anno, p.adjust.method = "none")
+```
+
+Recall the following signature heatmap which I showed before:
+
+```{r, fig.width = 7, fig.height = 7}
+get_signatures(res, k = best_k, verbose = FALSE)
+```
+
+In rows, there are five row groups. I apply Gene Ontology enrichment on the genes
+in the five row groups separately, with the function `functional_enrichment()`. 
+The enrichment results are visualized by the package **simplifyEnrichment**.
+
+In the following heatmap, the left heatmap (green-red) illustrates the adjusted p-values (FDRs)
+of GO terms enriched in the corresponding group of genes. The right heatmap shows the similarity
+of GO terms. The word clouds illustrates the overrepresented keywords from the GO terms in each
+GO cluster.
+
+
+```{r, fig.width = 9}
+lt = functional_enrichment(res, k = best_k, ont = "BP", verbose = FALSE)
+library(simplifyEnrichment)
+simplifyGOFromMultipleLists(lt, verbose = FALSE)
+```
+
+I also apply Gene Ontology enrichment with the Cellular Component (CC) terms. Similar code as below:
+
+```{r, fig.width = 9}
+lt = functional_enrichment(res, k = best_k, ont = "CC", verbose = FALSE)
+library(simplifyEnrichment)
+simplifyGOFromMultipleLists(lt, verbose = FALSE)
+```
+
+
+In the original paper, all 177 samples were classified into six subgroups.
+However, I cannot find the subgroup classification results in the paper or in
+the supplementary files, thus I cannot compare cola classification to the
+classification performed in the paper.
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```

@@ -1,0 +1,266 @@
+---
+title: "ATC - More Forms"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: rmarkdown::html_vignette
+---
+
+
+```{r, echo = FALSE, message = FALSE}
+library(markdown)
+library(knitr)
+knitr::opts_chunk$set(
+    error = FALSE,
+    tidy  = FALSE,
+    message = FALSE,
+    fig.align = "center")
+options(width = 100)
+options(rmarkdown.html_vignette.check_title = FALSE)
+library(cola)
+```
+
+```{r, echo = FALSE, message = FALSE}
+library(matrixStats)
+library(mvtnorm)
+library(ComplexHeatmap)
+test_ATC = function(nr1, nr2, nr3, cor1, cor2, cor3, min_cor = 0, beta = 1, k_neighbours = -1) {
+    
+    sigma = matrix(cor1, nrow = nr1, ncol = nr1); diag(sigma) = 1
+    mat1 = t(rmvnorm(100, mean = rep(0, nr1), sigma = sigma))
+    sigma = matrix(cor2, nrow = nr2, ncol = nr2); diag(sigma) = 1
+    mat2 = t(rmvnorm(100, mean = rep(0, nr2), sigma = sigma))
+    sigma = matrix(cor3, nrow = nr3, ncol = nr3); diag(sigma) = 1
+    mat3 = t(rmvnorm(100, mean = rep(0, nr3), sigma = sigma))
+    mat = t(rbind(mat1, mat2, mat3))
+    grid.newpage()
+    par(mfrow = c(1, 4))
+    plot.new()
+    par(mar = c(5.1, 5, 2, 1), cex = 0.8)
+    v = NULL
+    if(beta == 1) {
+        plot(NULL, xlim = c(0, 1), ylim = c(0, 1), ylab = "P(X <= x)", xlab = "|correlation|")
+    } else {
+        plot(NULL, xlim = c(0, 1), ylim = c(0, 1), ylab = "P(X <= x)", xlab = "|correlation|^beta")
+    }
+    for(i in 1:ncol(mat)) {
+        cor_v <- abs(cor(mat[, i, drop = FALSE], mat[, -i, drop = FALSE]))^beta
+        cor_v = sort(cor_v)
+        if(k_neighbours > 0) {
+            cor_v = rev(rev(cor_v)[1:k_neighbours])
+        }
+        f = ecdf(cor_v)
+        
+        cor_v = seq(min_cor, 1, length = 100)
+        n2 = length(cor_v)
+        v[i] = sum((cor_v[2:n2] - cor_v[1:(n2-1)])*f(cor_v[-n2]))
+        x = seq(0, 1, length = 100)
+        lines(x, f(x), col = ifelse(i <= nr1, "#00000080", ifelse(i <= nr1+nr2, "#FF000080", "#00FF0080")))
+        if(min_cor > 0) abline(v = min_cor, lty = 3, col = "grey")
+    }
+    legend("bottomright", lty = 1, col = 1:3, legend = c("group1", "group2", "group3"))
+    v = (1 - min_cor) - v
+    dx_list = NULL
+    dy_list = NULL
+    for(i in 1:ncol(mat)) {
+        cor_v <- abs(cor(mat[, i, drop = FALSE], mat[, -i, drop = FALSE]))
+        d = density(cor_v)
+        dx_list = c(dx_list, list(d$x))
+        dy_list = c(dy_list, list(d$y))
+    }
+    max_y = max(unlist(dy_list))
+    plot(v, pch = 16, xlab = "row index", ylab = "ATC", 
+        col = ifelse(seq_along(v) <= nr1, "#000000", ifelse(seq_along(v) <= nr1+nr2, "#FF0000", "#00FF00")))
+    plot(colSds(mat), pch = 16, xlab = "row index", ylab = "SD", col = ifelse(seq_along(v) <= nr1, "#000000", ifelse(seq_along(v) <= nr1+nr2, "#FF0000", "#00FF00")))
+    pushViewport(viewport(x = 0, y = 1, width = 0.25, height = 1, just = c("left", "top")))
+    library(ComplexHeatmap)
+    split = factor(c(rep(1, nr1), rep(2, nr2), rep(3, nr3)), levels = c(1, 2, 3))
+    ht = Heatmap(t(mat), row_split = split, cluster_row_slices = FALSE, row_title = NULL,
+        show_row_dend = FALSE, show_column_dend = FALSE, show_heatmap_legend = FALSE,
+        left_annotation = rowAnnotation(split = split, col = list(split = c("1" = 1, "2" = 2, "3" = 3)),
+            annotation_legend_param = list(
+                split = list(labels = c("group1", "group2", "group3"), nrow = 1, title = "")),
+            show_annotation_name = FALSE))
+    draw(ht, newpage = FALSE, padding = unit(c(2, 10, 5, 5), "mm"), heatmap_legend_side = "bottom")
+    popViewport()
+}
+```
+
+For row $i$ in a matrix, denote the variable $X$ as a vector of absolute
+values of the correlation coefficients to all other rows, evaluated at $x$,
+then the ATC score for row $i$ is defined as:
+
+$$ ATC_i = 1 - \int_0^1F_X(x)dx $$
+
+where $F_X(x)$ is the cumulative distribution function (CDF) of $X$. 
+
+Figure S1.1 illustrates the empirical CDF (eCDF) curve of $X$ for a certain row
+$i$. The ATC score corresponds to the red area above the eCDF curve. It can be
+imagined that when row $i$ correlates stronger with other rows (both
+correlation and anti-correlation), the eCDF curve shifts more to the right,
+thus with higher ATC scores.
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 5, fig.align = "center"}
+par(mar = c(4, 4, 1, 1))
+cor_v = c(0.00296, 0.00323, 0.00493, 0.00511, 0.00513, 0.00653, 0.00838, 0.00859, 0.00923, 0.0116, 0.0141, 0.0142, 0.0144, 0.0161, 0.0186, 0.0195, 0.0205, 0.0222, 0.0231, 0.0237, 0.0242, 0.025, 0.0255, 0.0277, 0.028, 0.029, 0.029, 0.0314, 0.0322, 0.0355, 0.0357, 0.0363, 0.0379, 0.0392, 0.0411, 0.0423, 0.0426, 0.0441, 0.0449, 0.046, 0.0501, 0.0508, 0.0529, 0.0536, 0.054, 0.0541, 0.0549, 0.0567, 0.0576, 0.0581, 0.0605, 0.0608, 0.0639, 0.0671, 0.0682, 0.0698, 0.0717, 0.0737, 0.0747, 0.075, 0.0773, 0.0816, 0.0834, 0.0837, 0.0869, 0.0899, 0.0928, 0.0937, 0.0945, 0.0946, 0.0964, 0.0981, 0.099, 0.101, 0.102, 0.102, 0.103, 0.104, 0.106, 0.109, 0.111, 0.115, 0.115, 0.116, 0.116, 0.121, 0.124, 0.127, 0.127, 0.127, 0.133, 0.135, 0.135, 0.135, 0.138, 0.143, 0.144, 0.146, 0.156, 0.16, 0.164, 0.169, 0.173, 0.178, 0.179, 0.179, 0.194, 0.202, 0.211, 0.253, 0.396, 0.429, 0.447, 0.455, 0.457, 0.465, 0.466, 0.477, 0.487, 0.488, 0.498, 0.518, 0.519, 0.522, 0.524, 0.526, 0.528, 0.539, 0.54, 0.541, 0.544, 0.546, 0.548, 0.551, 0.552, 0.556, 0.558, 0.559, 0.565, 0.568, 0.568, 0.574, 0.574, 0.576, 0.576, 0.579, 0.58, 0.582, 0.585, 0.59, 0.591, 0.592, 0.594, 0.596, 0.597, 0.609, 0.614, 0.615, 0.628)
+cor_v = sort(cor_v)
+f = ecdf(cor_v)
+x = seq(0, 1, length = 100)
+y = f(x)
+plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x = |correlation|", ylab = "P(X <= x)")
+x2 = seq(0, 1, length = 100)
+polygon(c(x2, rev(x2)), c(f(x2), rep(1, length(x2))), col = "#FF000040", border = NA)
+polygon(c(x2, rev(x2)), c(f(x2), rep(0, length(x2))), col = "#00FF0040", border = NA)
+lines(x, y)
+text(0.2, 0.9, "ATC score")
+```
+
+
+A simulation test is performed to demonstrate the attributes of the ATC method. A
+matrix with 160 rows, 100 columns with random values drawn from a multivariate
+normal distribution is generated. The 160 rows are configured as follows:
+
+1. 100 rows with mean of 0. The covariance matrix is set to 0 and set 1 to the
+   diagonal;
+2. 10 rows with mean of 0. The covariance matrix is set to 0.8 and set 1 to the
+   diagonal. This simulates high correlations but in a small group of rows;
+3. 50 rows with mean of 0. The covariance matrix is set to 0.5 and set 1 to the
+   diagonal. This simulates intermediate correlations but in a large group of
+   rows.
+
+```{r, echo = FALSE, fig.width = 14, fig.height = 14/4, fig.align = "center"}
+set.seed(12345)
+test_ATC(100, 10, 50, 0, 0.8, 0.5)
+```
+
+The first plot in Figure S1.2 is the heatmap for the random matrix, split
+by the three groups of rows. In the second plot, they are eCDF curves of the
+correlation of the 160 rows. The third plot is the ATC scores
+for all 160 rows and the fourth plot is the standard deviation for the 160
+rows. Different colors represent different row groups.
+
+All the 160 rows have a similar variance of 1 that they cannot be distinguished
+by using variance. As a contrast, the rows with non-zero covariance have
+higher ATC scores (the red and green groups). The ATC scores are even higher
+when the number of correlated rows increases, although the correlation value
+itself is relatively small (the green group). This shows ATC method can assign
+higher scores for rows which correlate to more other rows.
+
+Since the eCDF curve monotonically increases from 0 to 1, for intervals with fixed
+width, they contribute more to the ATC scores if they are close to 0 (Figure S1.3).
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 5, fig.align = "center"}
+par(mar = c(4, 4, 1, 1))
+cor_v = c(0.00296, 0.00323, 0.00493, 0.00511, 0.00513, 0.00653, 0.00838, 0.00859, 0.00923, 0.0116, 0.0141, 0.0142, 0.0144, 0.0161, 0.0186, 0.0195, 0.0205, 0.0222, 0.0231, 0.0237, 0.0242, 0.025, 0.0255, 0.0277, 0.028, 0.029, 0.029, 0.0314, 0.0322, 0.0355, 0.0357, 0.0363, 0.0379, 0.0392, 0.0411, 0.0423, 0.0426, 0.0441, 0.0449, 0.046, 0.0501, 0.0508, 0.0529, 0.0536, 0.054, 0.0541, 0.0549, 0.0567, 0.0576, 0.0581, 0.0605, 0.0608, 0.0639, 0.0671, 0.0682, 0.0698, 0.0717, 0.0737, 0.0747, 0.075, 0.0773, 0.0816, 0.0834, 0.0837, 0.0869, 0.0899, 0.0928, 0.0937, 0.0945, 0.0946, 0.0964, 0.0981, 0.099, 0.101, 0.102, 0.102, 0.103, 0.104, 0.106, 0.109, 0.111, 0.115, 0.115, 0.116, 0.116, 0.121, 0.124, 0.127, 0.127, 0.127, 0.133, 0.135, 0.135, 0.135, 0.138, 0.143, 0.144, 0.146, 0.156, 0.16, 0.164, 0.169, 0.173, 0.178, 0.179, 0.179, 0.194, 0.202, 0.211, 0.253, 0.396, 0.429, 0.447, 0.455, 0.457, 0.465, 0.466, 0.477, 0.487, 0.488, 0.498, 0.518, 0.519, 0.522, 0.524, 0.526, 0.528, 0.539, 0.54, 0.541, 0.544, 0.546, 0.548, 0.551, 0.552, 0.556, 0.558, 0.559, 0.565, 0.568, 0.568, 0.574, 0.574, 0.576, 0.576, 0.579, 0.58, 0.582, 0.585, 0.59, 0.591, 0.592, 0.594, 0.596, 0.597, 0.609, 0.614, 0.615, 0.628)
+cor_v = sort(cor_v)
+f = ecdf(cor_v)
+x = seq(0, 1, length = 100)
+y = f(x)
+plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "x = |correlation|", ylab = "P(X <= x)")
+x2 = seq(0, 1, length = 100)
+polygon(c(x2, rev(x2)), c(f(x2), rep(1, length(x2))), col = "#FF000040", border = NA)
+polygon(c(x2, rev(x2)), c(f(x2), rep(0, length(x2))), col = "#00FF0040", border = NA)
+lines(x, y)
+abline(v = seq(0.05, 0.95, by = 0.05), lty = 3, col = "grey")
+```
+
+There can be scenarios when a huge number of rows correlate to each other but
+only with very small correlation values. It results in small right-shift of
+the eCDF curves for these rows, compared to the scenario where rows are
+completely uncorrelated. Since the correlation values are close to zero, these
+small shifts of the eCDF curves results in a relative large increase of ATC
+scores.
+
+To decrease such effect, the ATC definition can be modified to: For row $i$ in
+the matrix, denote the variable $X$ as a vector of absolute values of the
+correlation coefficients to all other rows, evaluated at $x$, and denote $Y = X^\beta$,
+evaluated at $y$, then the ATC score for row $i$ is defined as:
+
+$$ ATC_i = (1-\alpha) - \int_\alpha^1F_Y(y)dy $$
+
+Where $F_Y(y)$ is the CDF of $Y$. Now $ATC_i$ is the red area above eCDF curve only on the right of 
+$y =\alpha$. The coefficient $\beta$ is the power added to the absolute
+correlations that it decreases more for the smaller correlations. By Default
+$\alpha$ is set to 0 and $\beta$ is set to 1.
+
+We slightly change the previous simulation test that in the first group, we
+set 500 rows with pairwise correlation to 0.1, which generates 560 rows.
+Similarly, there are four plots illustrated in Figure S1.4.
+
+```{r, echo = FALSE, fig.width = 14, fig.height = 14/4, fig.align = "center"}
+set.seed(12345)
+test_ATC(500, 10, 50, 0.1, 0.8, 0.5)
+```
+
+In Figure S1.4, we can see group 1 (the black dots), since there are quite a lot of rows, they
+gain high ATC scores even when they only have tiny correlation values (compare 
+to the rows in group 2, the red dots).
+
+To remove the effect of small correlation, we can set a value larger than 0 to
+$\alpha$, e.g. 0.3:
+
+```{r, echo = FALSE, fig.width = 14, fig.height = 14/4, fig.align = "center"}
+set.seed(12345)
+test_ATC(500, 10, 50, 0.1, 0.8, 0.5, min_cor = 0.3)
+```
+
+In Figure S1.5, now we see the ATC scores for rows in group 1 decrease.
+
+We can also set $\beta$, e.g. 3, to decrease the value for rows in group 1, as shown in Figure S1.6.
+
+```{r, echo = FALSE, fig.width = 14, fig.height = 14/4, fig.align = "center"}
+set.seed(12345)
+test_ATC(500, 10, 50, 0.1, 0.8, 0.5, beta = 3)
+```
+
+## ATC with a categorical variable
+
+In previous section, 
+for row $i$ in a matrix, the variable $\mathbf{X_i}$ is a vector of absolute
+values of the correlation coefficients to all other rows. When there is also a categorical
+variable available, $\mathbf{X_i}$ can only contain those rows which are in the same category as row $i$.
+
+$$ \mathbf{X_i} = \{ abs(\rho_{i, j}) | c_i = c_j, i \ne j\} $$
+
+where $\rho_{i,j}$ is the correlation between row $i$ and row $j$. $c_i$ and $c_j$ are the category labels for row $i$ and row $j$.
+
+An example of the application is when calculating ATC scores for the methylation dataset, the CpG sites may be in CpG islands
+or CGI seas. Calculating correlation of methylation between CGIs and CGI seas may not be proper, thus, the CpG annotation (i.e.,
+whether the CpG is in CGI or sea) can be provided as an additional categorical variable so that the correlations are only calculated
+for the CpG sites with the same annotations.
+
+The categorical variable can be set with the argument `group`. E.g.:
+
+```{r, eval = FALSE}
+ATC(m, ..., group = cgi_anno)
+```
+
+## ATC-kNN
+
+ATC method tends to capture global correlation relationships, thus, it is able to capture, e.g. global batch effect. However, sometimes,
+the real biological meaningful correlation structure only exists in a small portion of rows while not globally. If there exists a globl
+batch effect, although the individual correlation is small, after accumulated by thousands of features, it leads to a large ATC score, which
+hides those features which really show meaningful correlations. 
+
+Here we provide a method ATC-kNN which only considers $k$ other rows with the most similar correlations to row $i$. You can simply set
+the argument `k_neighbours`.
+
+
+```{r, eval = FALSE}
+ATC(m, ..., k_neighbours = 100)
+```
+
+The next plot uses the same simulation dataset as previous ones, but only the
+nearest 10 neighbours (which is the smallest number of rows in the three
+groups) are considered for correlating. As expected, rows in the second group
+gain the highest ATC scores.
+
+```{r, echo = FALSE, fig.width = 14, fig.height = 14/4, fig.align = "center"}
+set.seed(12345)
+test_ATC(500, 10, 50, 0.1, 0.8, 0.5, k_neighbours = 10)
+```
+
+Note, in many cases, ATC is very similar as ATC-kNN. ATC-kNN shows its advantage only when the meaningful correlation structure exists in a very small
+portion of rows.
+
+
+

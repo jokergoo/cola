@@ -1,7 +1,17 @@
 pandoc: 2.11.4
-pkgdown: 1.6.1
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  AML: AML.html
+  ATC_methods: ATC_methods.html
   cola: cola.html
-last_built: 2021-07-15T13:23Z
+  cola_general: cola_general.html
+  cola_quick: cola_quick.html
+  compare_partitions: compare_partitions.html
+  examples: examples.html
+  functional_enrichment: functional_enrichment.html
+  hierarchical: hierarchical.html
+  predict: predict.html
+  work_with_big_datasets: work_with_big_datasets.html
+last_built: 2024-02-27T18:26Z
 

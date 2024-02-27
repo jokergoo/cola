@@ -1,1 +1,52 @@
 destination: docs
+
+navbar:
+  title: "cola"
+  left:
+    - text: "Articles"
+      menu:
+        - text: Standard consensus partitioning
+        - text: "A Quick Start of Using cola Package"
+          href: articles/cola_quick.html
+        - text: "A Framework for Consensus Partitioning"
+          href: articles/cola_general.html
+        - text: "Automatic Functional Enrichment on Signature genes"
+          href: articles/functional_enrichment.html
+        - text: "Predict Classes for New Samples"
+          href: articles/predict.html
+        - text: "Work with Big Datasets"
+          href: articles/work_with_big_datasets.html
+        - text: "Compare Partitions"
+          href: articles/compare_partitions.html
+        - text: "ATC - More Forms"
+          href: articles/ATC_methods.html
+
+        - text: -------
+        - text: Hierarchical partitioning
+        - text: "Hierarchical consensus partitioning"
+          href: articles/hierarchical.html
+        
+        - text: -------
+        - text: Other examples
+        - text: "Re-analyze an AML proteomics dataset"
+          href: articles/AML.html
+
+        - text: -------
+        - text: On public datasets
+        - text: "Applications on public datasets"
+          href: articles/examples.html
+
+        - text: -------
+        - text: Supplementary files
+        - text: "Supplementary files for cola NAR paper"
+          href: https://jokergoo.github.io/cola_supplementary/
+        - text: "Supplementary files for cola BIB paper"
+          href: https://cola-rh.github.io/supplementary/
+
+    - text: "Reference"
+      href: reference/index.html
+
+
+template:
+  includes:
+    after_body: "<style>nav[data-toggle='toc'] .nav .nav {display: block;}</style>"

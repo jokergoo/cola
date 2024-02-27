@@ -1,0 +1,19 @@
+---
+title: "Applications on public datasets"
+author: "Zuguang Gu (z.gu@dkfz.de)"
+date: '`r Sys.Date()`'
+output: rmarkdown::html_vignette
+---
+
+
+## Consensus partitioning
+
+- [on 206 GDS datasets](https://cola-gds.github.io/)
+- [on 223 recount2 datasets](https://cola-recount2.github.io/)
+- [On the six datasets used in the cola manuscript](https://jokergoo.github.io/cola_examples/)
+
+
+## Hierarchical consensus partitioning
+
+https://cola-rh.github.io/
+
